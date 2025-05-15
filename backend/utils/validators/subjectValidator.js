@@ -14,7 +14,7 @@ const createSubjectValidator = [
             if (subject) {
                 console.log(subject);
 
-                return Promise.reject(new CustomError('Subject already exists', 400));
+                throw new CustomError('Subject already exists', 400);
             }
             return true;
         }),
@@ -40,7 +40,7 @@ const updateSubjectValidator = [
         .custom(async (value) => {
             let subject = await Subject.findOne({ name: value });
             if (subject) {
-                return Promise.reject(new CustomError('Subject already exists', 400));
+                throw new CustomError('Subject already exists', 400);
             }
             return true;
         }),

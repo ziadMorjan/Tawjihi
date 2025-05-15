@@ -6,7 +6,7 @@ const validationMiddleware = function (req, res, next) {
     console.log(errors.array());
     if (!errors.isEmpty()) {
         let message = errors.array().map((el) => el.msg).join('. ');
-        throw new CustomError(message, 400);
+        return next(new CustomError(message, 400));
     }
     next();
 }

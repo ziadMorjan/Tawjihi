@@ -12,7 +12,7 @@ const createBranchValidator = [
         .custom(async (value) => {
             let branch = await Branch.findOne({ name: value });
             if (branch) {
-                return Promise.reject(new CustomError('Branch already exists', 400));
+                throw new CustomError('Branch already exists', 400);
             }
             return true;
         }),
@@ -38,7 +38,7 @@ const updateBranchValidator = [
         .custom(async (value) => {
             let branch = await Branch.findOne({ name: value });
             if (branch) {
-                return Promise.reject(new CustomError('Branch already exists', 400));
+                throw new CustomError('Branch already exists', 400);
             }
             return true;
         }),

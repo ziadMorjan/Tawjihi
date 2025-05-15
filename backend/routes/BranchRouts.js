@@ -1,4 +1,12 @@
 const express = require("express");
+
+const {
+    createBranchValidator,
+    updateBranchValidator,
+    getBranchValidator,
+    deleteBranchValidator
+} = require("../utils/validators/branchValidator");
+
 const {
     getAllBranches,
     createBranch,
@@ -11,11 +19,11 @@ let router = express.Router();
 
 router.route("/")
     .get(getAllBranches)
-    .post(createBranch);
+    .post(createBranchValidator, createBranch);
 
 router.route("/:id")
-    .get(getBranch)
-    .patch(updateBranch)
-    .delete(deleteBranch);
+    .get(getBranchValidator, getBranch)
+    .patch(updateBranchValidator, updateBranch)
+    .delete(deleteBranchValidator, deleteBranch);
 
 module.exports = router;
