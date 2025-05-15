@@ -1,7 +1,5 @@
 const express = require('express');
 
-let router = express.Router();
-
 const {
     getUserValidator,
     createUserValidator,
@@ -15,11 +13,20 @@ const {
     getUser,
     updateUser,
     deleteUser,
+    uploadUserImage,
+    resizeUserImage
 } = require("../controllers/UserController");
+
+let router = express.Router();
 
 router.route("/")
     .get(getAllUsers)
-    .post(createUserValidator, createUser);
+    .post(
+        uploadUserImage,
+        resizeUserImage,
+        createUserValidator,
+        createUser
+    );
 
 router.route("/:id")
     .get(getUserValidator, getUser)

@@ -42,4 +42,14 @@ const UserSchema = new mongoose.Schema(
     }
 );
 
+UserSchema.post("save", function (doc) {
+    if (doc.coverImage)
+        doc.coverImage = `${process.env.BASE_URL}/images/users/${doc.coverImage}`;
+});
+
+UserSchema.post("init", function (doc) {
+    if (doc.coverImage)
+        doc.coverImage = `${process.env.BASE_URL}/images/users/${doc.coverImage}`;
+});
+
 module.exports = mongoose.model('User', UserSchema);
