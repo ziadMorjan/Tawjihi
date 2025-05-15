@@ -1,3 +1,4 @@
+const { default: slugify } = require("slugify");
 const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 const CustomError = require("../utils/CustomError");
 
@@ -14,6 +15,9 @@ const getAll = (model) => asyncErrorHandler(async function (req, res) {
 });
 
 const createOne = (model) => asyncErrorHandler(async function (req, res) {
+    if (req.body.name)
+        req.body.slug = slugify(req.body.name);
+
     let newDoc = await model.create(req.body);
 
     res.status(201).json({
@@ -40,6 +44,9 @@ const getOne = (model, modelName = "") => asyncErrorHandler(async function (req,
 });
 
 let updateOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
+    if (req.body.name)
+        req.body.slug = slugify(req.body.name);
+
     let updatedDoc = await model.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true,

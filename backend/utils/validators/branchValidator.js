@@ -1,20 +1,18 @@
 const validator = require('express-validator');
 const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Subject = require('../../models/Subject');
+const Branch = require('../../models/Branch');
 const CustomError = require('../CustomError');
 
-const createSubjectValidator = [
+const createBranchValidator = [
     validator.check('name')
         .notEmpty()
         .withMessage('Name is required')
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long')
         .custom(async (value) => {
-            let subject = await Subject.findOne({ name: value });
-            if (subject) {
-                console.log(subject);
-
-                throw new CustomError('Subject already exists', 400);
+            let branch = await Branch.findOne({ name: value });
+            if (branch) {
+                throw new CustomError('Branch already exists', 400);
             }
             return true;
         }),
@@ -26,21 +24,21 @@ const createSubjectValidator = [
     validationMiddleware
 ];
 
-const updateSubjectValidator = [
+const updateBranchValidator = [
     validator.check("id")
         .notEmpty()
-        .withMessage("Subject ID is required")
+        .withMessage("Branch ID is required")
         .isMongoId()
-        .withMessage("Invalid Subject ID"),
+        .withMessage("Invalid Branch ID"),
 
     validator.check('name')
         .optional()
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long')
         .custom(async (value) => {
-            let subject = await Subject.findOne({ name: value });
-            if (subject) {
-                throw new CustomError('Subject already exists', 400);
+            let branch = await Branch.findOne({ name: value });
+            if (branch) {
+                throw new CustomError('Branch already exists', 400);
             }
             return true;
         }),
@@ -52,29 +50,29 @@ const updateSubjectValidator = [
     validationMiddleware
 ];
 
-const getSubjectValidator = [
+const getBranchValidator = [
     validator.check("id")
         .notEmpty()
-        .withMessage("Subject ID is required")
+        .withMessage("Branch ID is required")
         .isMongoId()
-        .withMessage("Invalid Subject ID"),
+        .withMessage("Invalid Branch ID"),
 
     validationMiddleware
 ];
 
-const deleteSubjectValidator = [
+const deleteBranchValidator = [
     validator.check("id")
         .notEmpty()
-        .withMessage("Subject ID is required")
+        .withMessage("Branch ID is required")
         .isMongoId()
-        .withMessage("Invalid Subject ID"),
+        .withMessage("Invalid Branch ID"),
 
     validationMiddleware
 ];
 
 module.exports = {
-    createSubjectValidator,
-    updateSubjectValidator,
-    getSubjectValidator,
-    deleteSubjectValidator
+    createBranchValidator,
+    updateBranchValidator,
+    getBranchValidator,
+    deleteBranchValidator
 }

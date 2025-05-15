@@ -1,0 +1,48 @@
+const mongoose = require('mongoose');
+
+const CourseSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        slug: {
+            type: String,
+            lowercase: true,
+        },
+        description: {
+            type: String,
+            minlength: 10,
+            maxlength: 1000,
+        },
+        coverImage: String,
+        teacher: {
+            type: mongoose.Types.ObjectId,
+            ref: "User",
+            required: true
+        },
+        branches: [{
+            type: mongoose.Types.ObjectId,
+            ref: "Branch",
+            required: true
+        }]
+    },
+    {
+        timestamps: true,
+    }
+);
+
+CourseSchema.pre(/^find/, function (next) {
+    this
+        .populate({
+            path: 'teacher',
+            select: 'name _id'
+        })
+        .populate({
+            path: 'branches',
+            select: 'name _id'
+        });
+    next();
+});
+
+module.exports = mongoose.model('Course', CourseSchema);
