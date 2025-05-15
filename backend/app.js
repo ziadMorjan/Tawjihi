@@ -13,6 +13,7 @@ let app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.static('uploads'));
 app.use(morgan('dev'));
 
 // Mount routes
