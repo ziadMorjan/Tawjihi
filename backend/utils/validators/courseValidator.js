@@ -46,6 +46,20 @@ const createCourseValidator = [
             return true;
         }),
 
+    validator.check("price")
+        .notEmpty().withMessage("price is required")
+        .isNumeric().withMessage("price must be number"),
+
+    validator.check("priceAfterDiscount")
+        .optional()
+        .custom((value, { req }) => {
+            if (req.body.price) {
+                if (value > req.body.price)
+                    throw new CustomError("priceAfterDiscount must be less than price", 400);
+            }
+            return true;
+        }),
+
     validationMiddleware
 ];
 
@@ -97,6 +111,22 @@ const updateCourseValidator = [
 
             if (!result)
                 throw new CustomError("One or more provided branches do not exist in the db", 404);
+            return true;
+        }),
+
+
+    validator.check("price")
+        .optional()
+        .notEmpty().withMessage("price is required")
+        .isNumeric().withMessage("price must be number"),
+
+    validator.check("priceAfterDiscount")
+        .optional()
+        .custom((value, { req }) => {
+            if (req.body.price) {
+                if (value > req.body.price)
+                    throw new CustomError("priceAfterDiscount must be less than price", 400);
+            }
             return true;
         }),
 

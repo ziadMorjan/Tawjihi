@@ -1,6 +1,11 @@
 const express = require('express');
 
 const {
+    protect,
+    allowedTo
+} = require('../middlewares/authMiddleware');
+
+const {
     createCourseValidator,
     updateCourseValidator,
     getCourseValidator,
@@ -19,11 +24,26 @@ let router = express.Router();
 
 router.route('/')
     .get(getAllCourses)
-    .post(createCourseValidator, createCourse);
+    .post(
+        protect,
+        allowedTo('teacher'),
+        createCourseValidator,
+        createCourse,
+    );
 
 router.route('/:id')
     .get(getCourseValidator, getCourse)
-    .patch(updateCourseValidator, updateCourse)
-    .delete(deleteCourseValidator, deleteCourse);
+    .patch(
+        protect,
+        allowedTo('teacher'),
+        updateCourseValidator,
+        updateCourse,
+    )
+    .delete(
+        protect,
+        allowedTo('teacher', 'admin'),
+        deleteCourseValidator,
+        deleteCourse,
+    );
 
 module.exports = router;
