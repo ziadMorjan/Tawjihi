@@ -1,5 +1,10 @@
 const express = require('express');
 
+const {
+    protect,
+    allowedTo
+} = require('../middlewares/authMiddleware');
+
 let router = express.Router();
 
 const {
@@ -19,11 +24,26 @@ const {
 
 router.route("/")
     .get(getAllSubjects)
-    .post(createSubjectValidator, createSubject);
+    .post(
+        protect,
+        allowedTo("admin"),
+        createSubjectValidator,
+        createSubject,
+    );
 
 router.route("/:id")
     .get(getSubjectValidator, getSubject)
-    .patch(updateSubjectValidator, updateSubject)
-    .delete(deleteSubjectValidator, deleteSubject);
+    .patch(
+        protect,
+        allowedTo("admin"),
+        updateSubjectValidator,
+        updateSubject
+    )
+    .delete(
+        protect,
+        allowedTo("admin"),
+        deleteSubjectValidator,
+        deleteSubject
+    );
 
 module.exports = router;

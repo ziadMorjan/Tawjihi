@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcryptjs = require("bcryptjs");
 
 const UserSchema = new mongoose.Schema(
     {
@@ -20,9 +21,14 @@ const UserSchema = new mongoose.Schema(
             type: String,
             minlength: 8,
             required: [true, "password is required"],
+            select: false
         },
-        phone: String,
+        phone: {
+            type: String,
+            required: true
+        },
         coverImage: String,
+        cv: String,
         role: {
             type: String,
             enum: ["admin", "teacher", "user"],
@@ -41,6 +47,12 @@ const UserSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+UserSchema.pre("save", function (next) {
+    if (!this.isModified("password")) next();
+    this.password = bcryptjs.hashSync(this.password, 10);
+    next();
+})
 
 UserSchema.post("save", function (doc) {
     if (doc.coverImage)

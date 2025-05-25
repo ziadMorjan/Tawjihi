@@ -25,7 +25,24 @@ const CourseSchema = new mongoose.Schema(
             type: mongoose.Types.ObjectId,
             ref: "Branch",
             required: true
-        }]
+        }],
+        price: {
+            type: Number,
+            required: true,
+        },
+        priceAfterDiscount: {
+            type: Number
+        },
+        reviewsQuantity: {
+            type: Number,
+            default: 0
+        },
+        averageRating: {
+            type: Number,
+            min: 0,
+            max: 5,
+            default: 0
+        },
     },
     {
         timestamps: true,
