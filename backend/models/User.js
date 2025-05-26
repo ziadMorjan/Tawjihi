@@ -36,6 +36,7 @@ const UserSchema = new mongoose.Schema(
         },
         resetPasswordCode: String,
         resetPasswordCodeExpired: Date,
+        resetPasswordCodeVerified: Boolean,
         PasswordChangedAt: Date,
         isActive: {
             type: Boolean,

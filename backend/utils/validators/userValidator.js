@@ -1,4 +1,5 @@
 const validator = require('express-validator');
+const bcryptjs = require("bcryptjs");
 const { validationMiddleware } = require('../../middlewares/validationMiddleware');
 const User = require('../../models/User');
 const CustomError = require('../CustomError');
@@ -127,9 +128,90 @@ const deleteUserValidator = [
     validationMiddleware
 ];
 
+const changePasswordValidator = [
+    validator.check("id")
+        .notEmpty()
+        .withMessage("User ID is required")
+        .isMongoId()
+        .withMessage("Invalid User ID"),
+
+    validator.check('currentPassword')
+        .notEmpty()
+        .withMessage('current password is required')
+        .custom(async (value, { req }) => {
+            let user = await User.findById(req.user.id).select("+password");
+
+            if (!bcryptjs.compareSync(value, user.password)) {
+                throw new CustomError('Wrong current password', 400);
+            }
+            return true;
+        }),
+
+    validator.check('newPassword')
+        .notEmpty()
+        .withMessage('new password is required')
+        .isLength({ min: 8 })
+        .withMessage('new password must be at least 8 chars')
+        .custom(async (value, { req }) => {
+            if (req.body.newConfirmPassword !== value) {
+                throw new CustomError('new password does not match confirm new password', 400);
+            }
+            return true;
+        }),
+
+    validationMiddleware
+];
+
+
+const activateUserValidator = [
+    validator.check("id")
+        .notEmpty()
+        .withMessage("User ID is required")
+        .isMongoId()
+        .withMessage("Invalid User ID"),
+
+    validationMiddleware
+];
+
+
+const deactivateUserValidator = [
+    validator.check("id")
+        .notEmpty()
+        .withMessage("User ID is required")
+        .isMongoId()
+        .withMessage("Invalid User ID"),
+
+    validationMiddleware
+];
+
+const acceptTeacherValidator = [
+    validator.check("id")
+        .notEmpty()
+        .withMessage("User ID is required")
+        .isMongoId()
+        .withMessage("Invalid User ID"),
+
+    validationMiddleware
+];
+
+const refuseTeacherValidator = [
+    validator.check("id")
+        .notEmpty()
+        .withMessage("User ID is required")
+        .isMongoId()
+        .withMessage("Invalid User ID"),
+
+    validationMiddleware
+];
+
 module.exports = {
     createUserValidator,
     updateUserValidator,
     getUserValidator,
-    deleteUserValidator
+    deleteUserValidator,
+    changePasswordValidator,
+    activateUserValidator,
+    deactivateUserValidator,
+    acceptTeacherValidator,
+    refuseTeacherValidator
 }
