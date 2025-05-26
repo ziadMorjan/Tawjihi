@@ -75,7 +75,67 @@ const loginValidator = [
     validationMiddleware
 ]
 
+const forgetPasswordValidator = [
+    validator.check("email")
+        .notEmpty()
+        .withMessage('email is required')
+        .custom(async (value) => {
+            let user = await User.findOne({ email: value });
+            if (!user) {
+                throw new CustomError('No user found with this email', 404);
+            }
+            return true;
+        }),
+
+    validationMiddleware
+]
+
+const verifyResetCodValidator = [
+    validator.check("resetCode")
+        .notEmpty()
+        .withMessage('resetCode is required')
+        .custom(async (value) => {
+            if (value < 100000 || value > 999999) {
+                throw new CustomError('Invalid reset code', 400);
+            }
+            return true;
+        }),
+
+    validationMiddleware
+]
+
+const resetPasswordValidator = [
+    validator.check("email")
+        .notEmpty()
+        .withMessage('email is required')
+        .custom(async (value) => {
+            let user = await User.findOne({ email: value });
+            if (!user) {
+                throw new CustomError('No user found', 404);
+            }
+            return true;
+        }),
+
+    validator.check('newPassword')
+        .notEmpty()
+        .withMessage('newPassword is required')
+        .isLength({ min: 8 })
+        .withMessage('newPassword must be at least 8 chars')
+        .custom(async (value, { req }) => {
+            if (req.body.newConfirmPassword !== value) {
+                throw new CustomError('newPassword does not match new confirm password', 400);
+            }
+            return true;
+        }),
+
+
+    validationMiddleware
+]
+
 module.exports = {
     signupValidator,
-    loginValidator
+    loginValidator,
+    forgetPasswordValidator,
+    verifyResetCodValidator,
+    resetPasswordValidator
 }

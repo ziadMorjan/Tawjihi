@@ -6,10 +6,21 @@ const {
 } = require('../middlewares/authMiddleware');
 
 const {
+    addUserIdToReqParams,
+    updateMeMiddleware,
+    activationMiddleware
+} = require("../middlewares/userMiddleware");
+
+const {
     getUserValidator,
     createUserValidator,
     updateUserValidator,
-    deleteUserValidator
+    deleteUserValidator,
+    changePasswordValidator,
+    activateUserValidator,
+    deactivateUserValidator,
+    acceptTeacherValidator,
+    refuseTeacherValidator
 } = require("../utils/validators/userValidator");
 
 const {
@@ -19,10 +30,41 @@ const {
     updateUser,
     deleteUser,
     uploadUserImage,
-    resizeUserImage
+    resizeUserImage,
+    deleteMe,
+    changePassword,
+    acceptTeacher,
+    refuseTeacher
 } = require("../controllers/UserController");
 
 let router = express.Router();
+
+router.route("/deleteMe")
+    .delete(
+        protect,
+        allowedTo("user", "teacher"),
+        addUserIdToReqParams,
+        deleteMe
+    );
+
+router.route("/updateMe")
+    .patch(
+        protect,
+        allowedTo("admin", "user", "teacher"),
+        addUserIdToReqParams,
+        updateMeMiddleware,
+        updateUserValidator,
+        updateUser
+    );
+
+router.route("/changePassword")
+    .patch(
+        protect,
+        allowedTo("admin", "user", "teacher"),
+        addUserIdToReqParams,
+        changePasswordValidator,
+        changePassword
+    );
 
 router.route("/")
     .get(getAllUsers)
@@ -33,6 +75,41 @@ router.route("/")
         resizeUserImage,
         createUserValidator,
         createUser
+    );
+
+router.route("/:id/activate")
+    .patch(
+        protect,
+        allowedTo("admin"),
+        activateUserValidator,
+        activationMiddleware(true),
+        updateUser
+    );
+
+router.route("/:id/deactivate")
+    .patch(
+        protect,
+        allowedTo("admin"),
+        deactivateUserValidator,
+        activationMiddleware(false),
+        updateUser
+    );
+
+router.route("/:id/acceptTeacher")
+    .patch(
+        protect,
+        allowedTo("admin"),
+        acceptTeacherValidator,
+        activationMiddleware(true),
+        acceptTeacher
+    );
+
+router.route("/:id/refuseTeacher")
+    .delete(
+        protect,
+        allowedTo("admin"),
+        refuseTeacherValidator,
+        refuseTeacher
     );
 
 router.route("/:id")

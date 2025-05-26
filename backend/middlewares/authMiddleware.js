@@ -10,6 +10,7 @@ const protect = asyncErrorHandler(async function (req, res, next) {
         throw new CustomError("You are not logged in", 401);
 
     let token = authHeader.split(" ")[1];
+
     if (!token)
         throw new CustomError("You are not logged in", 401);
 
@@ -19,11 +20,14 @@ const protect = asyncErrorHandler(async function (req, res, next) {
         throw new CustomError("Invalid token", 401);
 
     let user = await User.findById(decoded.id);
+
     if (!user || !user.isActive)
         throw new CustomError("The user provided in the token not found", 401);
 
-    if (user.PasswordChangedAt.getTime() > decoded.iat * 1000)
-        throw new CustomError("User recently changed password, please login again", 401);
+    if (user.PasswordChangedAt) {
+        if (user.PasswordChangedAt.getTime() > decoded.iat * 1000)
+            throw new CustomError("User recently changed password, please login again", 401);
+    }
 
     req.user = user;
     next();
@@ -32,6 +36,7 @@ const protect = asyncErrorHandler(async function (req, res, next) {
 const allowedTo = (...roles) => asyncErrorHandler(async function (req, res, next) {
     if (!roles.includes(req.user.role))
         throw new CustomError("You are not allowed to perform this action", 403);
+
     next();
 });
 
