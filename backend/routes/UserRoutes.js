@@ -29,8 +29,8 @@ const {
     getUser,
     updateUser,
     deleteUser,
-    uploadUserImage,
-    resizeUserImage,
+    uploadUserFiles,
+    handleUserFiles,
     deleteMe,
     changePassword,
     acceptTeacher,
@@ -53,6 +53,8 @@ router.route("/updateMe")
         allowedTo("admin", "user", "teacher"),
         addUserIdToReqParams,
         updateMeMiddleware,
+        uploadUserFiles,
+        handleUserFiles,
         updateUserValidator,
         updateUser
     );
@@ -71,8 +73,8 @@ router.route("/")
     .post(
         protect,
         allowedTo("admin"),
-        uploadUserImage,
-        resizeUserImage,
+        uploadUserFiles,
+        handleUserFiles,
         createUserValidator,
         createUser
     );
@@ -122,8 +124,8 @@ router.route("/:id")
     .patch(
         protect,
         allowedTo("admin"),
-        uploadUserImage,
-        resizeUserImage,
+        uploadUserFiles,
+        handleUserFiles,
         updateUserValidator,
         updateUser
     )

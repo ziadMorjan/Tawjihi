@@ -3,7 +3,7 @@ const path = require("path");
 const crypto = require("crypto");
 const sharp = require("sharp");
 const User = require("../models/User");
-const { uploadImage } = require("../middlewares/uploadImageMiddleware");
+const { uploadMultipleFields } = require("../middlewares/uploadsMiddleware");
 const {
     getAll,
     createOne,
@@ -16,29 +16,6 @@ const { createToken } = require("../utils/JWTs");
 const CustomError = require("../utils/CustomError");
 const { sendEmail } = require("../utils/emails");
 
-const uploadUserImage = uploadImage("coverImage");
-
-const resizeUserImage = asyncErrorHandler(async function (req, res, next) {
-    if (req.file) {
-        let unique = crypto.randomUUID();
-        let name = `user-${unique}-${Date.now()}.jpeg`;
-        const uploadDir = path.join(__dirname, '..', 'uploads', 'images', 'users');
-        // Ensure directory exists
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        const filePath = path.join(uploadDir, name);
-        await sharp(req.file.buffer)
-            .resize(500, 500)
-            .toFormat("jpeg")
-            .jpeg({ quality: 90 })
-            .toFile(filePath);
-
-        req.body.coverImage = name;
-    }
-    next();
-});
-
 const getAllUsers = getAll(User);
 
 const createUser = createOne(User);
@@ -48,6 +25,53 @@ const getUser = getOne(User, "User");
 const updateUser = updateOne(User, "User");
 
 const deleteUser = deleteOne(User, "User");
+
+const uploadUserFiles = uploadMultipleFields([{ name: "coverImage", maxCount: 1 }, { name: "cv", maxCount: 1 }]);
+
+const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
+    if (req.files) {
+        if (req.files.coverImage[0]) {
+            let { mimetype } = req.files.coverImage[0];
+            if (!mimetype.startsWith("image"))
+                throw new CustomError("invalid file type for cover image");
+
+            let unique = crypto.randomUUID();
+            let name = `user-${unique}-${Date.now()}.jpeg`;
+            const uploadDir = path.join(__dirname, '..', 'uploads', 'images', 'users');
+            // Ensure directory exists
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const filePath = path.join(uploadDir, name);
+            const buffer = await sharp(req.files.coverImage[0].buffer)
+                .resize(500, 500)
+                .toFormat("jpeg")
+                .jpeg({ quality: 90 })
+                .toBuffer();
+
+            fs.writeFileSync(filePath, buffer);
+            req.body.coverImage = name;
+        }
+        if (req.files.cv[0]) {
+            let { mimetype } = req.files.cv[0];
+            if (!mimetype.endsWith("pdf"))
+                throw new CustomError("invalid file type for cv");
+
+            let unique = crypto.randomUUID();
+            let name = `cv-${unique}-${Date.now()}.pdf`;
+            const uploadDir = path.join(__dirname, '..', 'uploads', 'files', 'users');
+            // Ensure directory exists
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const filePath = path.join(uploadDir, name);
+            fs.writeFileSync(filePath, req.files.cv[0].buffer);
+            req.body.cv = name;
+        }
+    }
+    next();
+});
+
 
 const deleteMe = asyncErrorHandler(async function (req, res) {
     await User.findByIdAndUpdate(req.params.id, { isActive: false });
@@ -132,8 +156,8 @@ let refuseTeacher = asyncErrorHandler(async function (req, res) {
 });
 
 module.exports = {
-    uploadUserImage,
-    resizeUserImage,
+    uploadUserFiles,
+    handleUserFiles,
     getAllUsers,
     createUser,
     getUser,

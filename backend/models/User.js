@@ -55,14 +55,15 @@ UserSchema.pre("save", function (next) {
     next();
 })
 
-UserSchema.post("save", function (doc) {
+const setFileUrlInRes = doc => {
     if (doc.coverImage)
         doc.coverImage = `${process.env.BASE_URL}/images/users/${doc.coverImage}`;
-});
+    if (doc.cv)
+        doc.cv = `${process.env.BASE_URL}/files/users/${doc.cv}`;
+}
 
-UserSchema.post("init", function (doc) {
-    if (doc.coverImage)
-        doc.coverImage = `${process.env.BASE_URL}/images/users/${doc.coverImage}`;
-});
+UserSchema.post("save", doc => setFileUrlInRes(doc));
+
+UserSchema.post("init", doc => setFileUrlInRes(doc));
 
 module.exports = mongoose.model('User', UserSchema);
