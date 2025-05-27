@@ -1,9 +1,17 @@
 const { default: slugify } = require("slugify");
 const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 const CustomError = require("../utils/CustomError");
+const QueryManipulater = require("../utils/QueryManipulater");
 
 const getAll = (model) => asyncErrorHandler(async function (req, res) {
-    let docs = await model.find();
+    let qm = new QueryManipulater(req, model)
+        .filter()
+        .selectFields()
+        .search()
+        .sort()
+        .paginate();
+
+    let docs = await qm.query;
 
     res.status(200).json({
         status: "success",

@@ -1,8 +1,8 @@
 const express = require("express");
 
 const {
-    uploadUserImage,
-    resizeUserImage,
+    uploadUserFiles,
+    handleUserFiles
 } = require("../controllers/UserController");
 
 const {
@@ -25,8 +25,8 @@ let router = express.Router();
 
 router.route("/signup")
     .post(
-        uploadUserImage,
-        resizeUserImage,
+        uploadUserFiles,
+        handleUserFiles,
         signupValidator,
         signup
     );

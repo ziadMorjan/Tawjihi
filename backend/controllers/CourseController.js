@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const sharp = require("sharp");
-const { uploadImage } = require("../middlewares/uploadImageMiddleware");
+const { uploadSingleImage } = require("../middlewares/uploadsMiddleware");
 const {
     getAll,
     createOne,
@@ -13,7 +13,7 @@ const {
 const Course = require('../models/Course');
 const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 
-const uploadCourseImage = uploadImage("coverImage");
+const uploadCourseImage = uploadSingleImage("coverImage");
 
 const resizeCourseImage = asyncErrorHandler(async function (req, res, next) {
     if (req.file) {
