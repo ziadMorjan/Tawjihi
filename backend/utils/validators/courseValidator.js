@@ -3,6 +3,7 @@ const { validationMiddleware } = require('../../middlewares/validationMiddleware
 const User = require('../../models/User');
 const Branch = require('../../models/Branch');
 const CustomError = require('../CustomError');
+const Course = require('../../models/Course');
 
 const createCourseValidator = [
     validator.check('name')
@@ -68,7 +69,13 @@ const updateCourseValidator = [
         .notEmpty()
         .withMessage("Course ID is required")
         .isMongoId()
-        .withMessage("Invalid Course ID"),
+        .withMessage("Invalid Course ID").
+        custom(async function (courseId) {
+            let course = await Course.findById(courseId);
+            if (!course)
+                throw new CustomError("No course found", 404);
+            return true;
+        }),
 
     validator.check('name')
         .optional()
@@ -149,7 +156,13 @@ const deleteCourseValidator = [
         .notEmpty()
         .withMessage("Course ID is required")
         .isMongoId()
-        .withMessage("Invalid Course ID"),
+        .withMessage("Invalid Course ID").
+        custom(async function (courseId) {
+            let course = await Course.findById(courseId);
+            if (!course)
+                throw new CustomError("No course found", 404);
+            return true;
+        }),
 
     validationMiddleware
 ];

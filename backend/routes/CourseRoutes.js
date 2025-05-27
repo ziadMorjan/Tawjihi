@@ -5,6 +5,8 @@ const {
     allowedTo
 } = require('../middlewares/authMiddleware');
 
+const { checkCourseBelongToTeacher } = require("../middlewares/courseMiddleware");
+
 const {
     createCourseValidator,
     updateCourseValidator,
@@ -37,12 +39,14 @@ router.route('/:id')
         protect,
         allowedTo('teacher'),
         updateCourseValidator,
+        checkCourseBelongToTeacher,
         updateCourse,
     )
     .delete(
         protect,
         allowedTo('teacher', 'admin'),
         deleteCourseValidator,
+        checkCourseBelongToTeacher,
         deleteCourse,
     );
 
