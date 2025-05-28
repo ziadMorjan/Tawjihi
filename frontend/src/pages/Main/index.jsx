@@ -18,12 +18,16 @@ import { Card } from "../../components/card";
 import { ModalTeacher } from "../../components/modalTeacher";
 import { LogoAndButton } from "../../components/LogoAndButton";
 
+//Hooks
+import { useApi } from "../../hooks/useApi";
+
 
 
 const MainPage = () => {
   const [active, setActive] = useState(false);
   const menuItems = ["الدورات المجانية", "احدث الدورات", "دورات الخصم"];
-  const data = [1, 2, 3];
+
+  const {data ,isLoading} = useApi('http://10.10.10.59:5000/api/v1/courses')
   return (
     <>
       <ModalTeacher isOpen="true" />
@@ -57,19 +61,24 @@ const MainPage = () => {
       </WrapperUl>
       <LineColor />
       <Containers>
-        <WrapperCard>
-          {data.map((item) => {
-            return (
-              <Card
-                imgSrc="/assets/img/logo.png"
-                name="علي حسن"
-                desc="اللغة العربية"
-                starIcon="5"
-                price="0"
-              />
-            );
-          })}
-        </WrapperCard>
+<WrapperCard>
+  {isLoading ? (
+    <p>Loading...</p>
+  ) : (
+    data.map((item, index) => (
+      <Card
+        key={index}
+        imgSrc="/assets/img/logo.png"
+        name={item.name}
+        desc={item.desc}
+        starIcon={item.averageRating}
+        price={item.price}
+      />
+    ))
+  )}
+</WrapperCard>
+
+
       </Containers>
       <DiscoverSection />
 

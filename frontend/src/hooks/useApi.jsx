@@ -14,8 +14,8 @@ export const useApi = (url)=>{
            try{
             setIsLoading(true)
             const res = await axios.get(url)
-            console.log(res)
-            // setData(res.data)
+            console.log(res.data.data.docs)
+             setData(res.data.data.docs)
         }catch(e){
             setError(e.message)
         }finally{

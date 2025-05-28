@@ -20,7 +20,7 @@ export const Card = ({ imgSrc, name, desc, starIcon, price }) => {
 
       {(starIcon || price !== undefined) && (
         <IconStarDiv>
-          {starIcon && (
+          {starIcon > 0 && (
             <StarWrapper>
               {Array.from({ length: starIcon }, (_, index) => (
                 <span key={index}>⭐</span>
@@ -30,7 +30,7 @@ export const Card = ({ imgSrc, name, desc, starIcon, price }) => {
 
           {price !== undefined && (
             <span>
-              {price === String(0) ? (
+              {price == 0 ? (
                 <strong>مجاني</strong>
               ) : (
                 <>
