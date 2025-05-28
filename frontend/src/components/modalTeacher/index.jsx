@@ -1,4 +1,4 @@
-//style
+// style
 import {
   ModalDiv,
   Form,
@@ -11,12 +11,12 @@ import {
   ErrorText,
 } from "./style";
 
-//react
+// react
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-//yup
+// yup
 import * as yup from "yup";
-// react hooks
+// hooks
 import { useContext, useEffect, useState } from "react";
 import { ModalContext } from "../../context/ModalContext";
 
@@ -40,14 +40,14 @@ const schema = yup.object({
     .required("كلمة المرور مطلوبة")
     .matches(fullPasswordRegex, "invalid-password"),
   rePassword: yup
-    .string("اعد كتابة كلمة السر بشكل صحيح")
+    .string()
     .required("تأكيد كلمة المرور مطلوب")
     .oneOf([yup.ref("password")], "كلمتا المرور غير متطابقتين"),
   cv: yup
-    .string("ادخل الرابط")
+    .string()
     .required("رابط السيرة الذاتية مطلوب")
     .url("ادخل الرابط بشكل صحيح "),
-  comment: yup.string("ادخل التعليق"),
+  comment: yup.string(),
 });
 
 export const ModalTeacher = () => {
@@ -61,7 +61,6 @@ export const ModalTeacher = () => {
 
   const { isOpen, setIsOpen } = useContext(ModalContext);
   const [res, setRes] = useState(false);
-
   const passwordValue = watch("password");
 
   const passwordRules = [
@@ -93,7 +92,7 @@ export const ModalTeacher = () => {
     reset();
     setTimeout(() => {
       setRes(false);
-    }, 2000); 
+    }, 2000);
   };
 
   const onCancel = () => {
@@ -102,15 +101,24 @@ export const ModalTeacher = () => {
     setIsOpen(false);
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      setRes(false);
-    }
+useEffect(() => {
+  // Prevent horizontal scroll always
+  document.body.style.overflowX = "hidden";
 
-    return () => {
-      document.body.style.overflowX = "hidden";
-    };
-  }, [isOpen]);
+  // Toggle vertical scroll based on modal open state
+  if (isOpen) {
+    document.body.style.overflowY = "hidden";
+  } else {
+    document.body.style.overflowY = "auto";
+  }
+
+  // Cleanup on unmount or modal close
+  return () => {
+    document.body.style.overflowY = "auto";
+    document.body.style.overflowX = "hidden"; // keep this always locked
+  };
+}, [isOpen]);
+
 
   return (
     <>
