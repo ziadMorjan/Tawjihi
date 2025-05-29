@@ -45,13 +45,8 @@ justify-content: space-between;
 export const WrapperCard = styled.div`
 display: flex;
 align-items: center;
-justify-content: start;
+justify-content: center;
 flex-wrap: wrap;
 gap: 20px;
 margin: 70px 0px;
-
-@media (max-width: 767px) {
-  flex-direction: column;
-}
-
 `

@@ -1,3 +1,9 @@
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 /* ================================
    🎨 Educational Platform Color Variables
    ================================ */
@@ -132,7 +138,12 @@ body.dark-mode .button-primary {
   z-index: 9999;
 }
 
-
+/* In global.css or index.css */
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden !important;
+  }
+}
 
 
 ul {
