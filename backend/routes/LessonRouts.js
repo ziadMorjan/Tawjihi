@@ -24,8 +24,11 @@ const {
     uploadLessonVideo,
     handVideo
 } = require('../controllers/LessonController');
+const resourceRouts = require('./ResourceRouts');
 
 let router = express.Router({ mergeParams: true });
+
+router.use("/:lessonId/resources", resourceRouts);
 
 router.route('/')
     .get(getAllLessons)

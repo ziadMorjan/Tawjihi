@@ -20,7 +20,7 @@ const handVideo = asyncErrorHandler(async function (req, res, next) {
     if (req.file) {
         let { mimetype } = req.file;
         if (!mimetype.startsWith("video"))
-            throw new CustomError("invalid file type for video");
+            throw new CustomError("invalid file type for video", 400);
 
         let unique = crypto.randomUUID();
         let ext = mimetype.split("/")[1];

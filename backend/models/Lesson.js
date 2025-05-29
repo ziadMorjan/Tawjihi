@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const resourceSchema = require('./Resource');
 
 const lessonSchema = new mongoose.Schema(
     {
@@ -21,7 +22,8 @@ const lessonSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Course',
             required: true
-        }
+        },
+        resources: [resourceSchema]
     },
     { timestamps: true }
 );
@@ -29,7 +31,15 @@ const lessonSchema = new mongoose.Schema(
 
 const setFileUrlInRes = doc => {
     if (doc.video)
-        doc.video = `${process.env.BASE_URL}/lessons/videos/${doc.video}`;
+        if (!doc.video.startsWith("http"))
+            doc.video = `${process.env.BASE_URL}/lessons/videos/${doc.video}`;
+    if (doc.resources) {
+        doc.resources = doc.resources.map(res => {
+            if (!res.content.startsWith("http"))
+                res.content = `${process.env.BASE_URL}/lessons/resources/${res.content}`;
+            return res;
+        })
+    }
 }
 
 lessonSchema.post("save", doc => setFileUrlInRes(doc));
