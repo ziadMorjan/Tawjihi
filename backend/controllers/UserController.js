@@ -59,7 +59,7 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
 
             let unique = crypto.randomUUID();
             let name = `cv-${unique}-${Date.now()}.pdf`;
-            const uploadDir = path.join(__dirname, '..', 'uploads', 'files', 'users');
+            const uploadDir = path.join(__dirname, '..', 'uploads', 'cvs');
             // Ensure directory exists
             if (!fs.existsSync(uploadDir)) {
                 fs.mkdirSync(uploadDir, { recursive: true });

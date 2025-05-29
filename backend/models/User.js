@@ -59,7 +59,7 @@ const setFileUrlInRes = doc => {
     if (doc.coverImage)
         doc.coverImage = `${process.env.BASE_URL}/images/users/${doc.coverImage}`;
     if (doc.cv)
-        doc.cv = `${process.env.BASE_URL}/files/users/${doc.cv}`;
+        doc.cv = `${process.env.BASE_URL}/cvs/${doc.cv}`;
 }
 
 UserSchema.post("save", doc => setFileUrlInRes(doc));
