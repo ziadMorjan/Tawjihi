@@ -5,7 +5,7 @@ import { AnimationWrapper, Info } from "./style";
 //component
 import { H1, Pargrahph } from "../typography";
 import { Button } from "../Buttons/button";
-import { DiscoverCoruses } from "../discoverAnimations";
+import { DiscoverCoruses } from "../Animations/discover";
 
 export const DiscoverSection = () => {
   return (
