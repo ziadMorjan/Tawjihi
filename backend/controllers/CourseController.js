@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const sharp = require("sharp");
-const { uploadSingleImage } = require("../middlewares/uploadsMiddleware");
+const { uploadSingleField } = require("../middlewares/uploadsMiddleware");
 const {
     getAll,
     createOne,
@@ -13,7 +13,7 @@ const {
 const Course = require('../models/Course');
 const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 
-const uploadCourseImage = uploadSingleImage("coverImage");
+const uploadCourseImage = uploadSingleField("coverImage");
 
 const resizeCourseImage = asyncErrorHandler(async function (req, res, next) {
     if (req.file) {
@@ -25,12 +25,13 @@ const resizeCourseImage = asyncErrorHandler(async function (req, res, next) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
         const filePath = path.join(uploadDir, name);
-        await sharp(req.file.buffer)
+        const buffer = await sharp(req.file.buffer)
             .resize(500, 500)
             .toFormat("jpeg")
             .jpeg({ quality: 90 })
-            .toFile(filePath);
+            .toBuffer();
 
+        fs.writeFileSync(filePath, buffer);
         req.body.coverImage = name;
     }
     next();
