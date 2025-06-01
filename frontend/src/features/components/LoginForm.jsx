@@ -7,6 +7,9 @@ import * as yup from "yup";
 //axios
 import axios from "axios";
 
+//Path
+import { PATH } from "../../routes";
+
 //styled
 import {
   Form,
@@ -17,7 +20,6 @@ import {
   ErrorText,
   FormActions,
 } from "./style";
-
 
 // Validation schema
 const schema = yup.object({
@@ -60,8 +62,7 @@ export const LoginForm = () => {
 
       <FormGroup>
         <Label>
-          <Link to="/restPassword">هل نسيت كلمة السر</Link>{" "}
-          
+          <Link to={`/${PATH.ForgetPassword}`}>هل نسيت كلمة السر</Link>{" "}
         </Label>
       </FormGroup>
 

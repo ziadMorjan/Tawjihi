@@ -6,6 +6,10 @@ import { lazy } from "react"
 //components
 import { LoginForm } from "../features/components/LoginForm";
 import { RegisterForm } from "../features/components/Register";
+import { ForgetPassword } from "../features/components/ForgetPassword";
+import { VerificationCode } from "../features/components/VerificationCode";
+import { ResetPassword } from "../features/components/ResetPassword";
+
 
 //pages
 const Main = lazy(() => {
@@ -31,13 +35,21 @@ export const PATH = {
     About: 'about',
     Auth: 'auth',
     Login: "auth/login",
-    Register: "auth/register"
+    Register: "auth/register",
+    ForgetPassword: 'forget-password',
+    VerificationCode: 'verification-code',
+    ResetPassword: 'reset-password',
 }
 
 
 export const routers = [
     { index: true, element: <Main /> },
     { path: PATH.About, element: <About /> },
+
+    { path: PATH.ForgetPassword, element: <ForgetPassword /> },
+    { path: PATH.VerificationCode, element: <VerificationCode /> },
+    { path: PATH.ResetPassword, element: <ResetPassword /> },
+
 
     {
         path: PATH.Auth,
@@ -46,6 +58,7 @@ export const routers = [
             { index: true, element: <Navigate to="login" /> }, // <--- default route
             { path: "login", element: <LoginForm /> },
             { path: "register", element: <RegisterForm /> },
+
         ],
     },
 
