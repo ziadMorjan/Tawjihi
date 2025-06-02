@@ -54,3 +54,52 @@ export const BounceDot = styled.span`
   animation-delay: ${(props) => props.delay};
   color: var(--color-primary, #1e90ff);
 `;
+
+
+
+
+const shimmer = keyframes`
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+`;
+
+export const SkeletonWrapper = styled.div`
+  width: 250px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const SkeletonElement = styled.div`
+  background: linear-gradient(
+    90deg,
+    #eee 25%,
+    #f5f5f5 37%,
+    #eee 63%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmer} 1.5s infinite;
+  border-radius: 4px;
+`;
+
+export const SkeletonAvatar = styled(SkeletonElement)`
+  width: 100%;
+  height: 150px;
+  border-radius: 10px;
+`;
+
+export const SkeletonLine = styled(SkeletonElement)`
+  height: 16px;
+  width: 100%;
+`;
+
+export const SkeletonLineShort = styled(SkeletonLine)`
+  width: 60%;
+`;

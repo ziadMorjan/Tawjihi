@@ -1,15 +1,24 @@
 // style
 import { CardDiv, IconStarDiv, StarWrapper, TeacherInfo } from "./style";
 
-export const Card = ({ imgSrc, teacherImg, name, desc, starIcon, price }) => {
+export const Card = ({
+  imgSrc,
+  teacherName,
+  teacherImg,
+  name,
+  desc,
+  starIcon,
+  price,
+  priceAfterDiscount,
+}) => {
   return (
     <CardDiv>
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "card"}`} />}
 
       {teacherImg && name && (
         <TeacherInfo>
-          <img src={teacherImg} alt={name} />
-          <span>{name}</span>
+          <img src={teacherImg} alt={teacherImg} />
+          <span>{teacherName}</span>
         </TeacherInfo>
       )}
 
@@ -24,7 +33,22 @@ export const Card = ({ imgSrc, teacherImg, name, desc, starIcon, price }) => {
           {starIcon > 0 && (
             <StarWrapper>
               {Array.from({ length: starIcon }, (_, index) => (
-                <span key={index}>⭐</span>
+                <span
+                  key={index}
+                  style={{ color: "#e5e222", fontSize: "24px" }}
+                >
+                  ★
+                </span>
+              ))}
+            </StarWrapper>
+          )}
+
+          {starIcon === 0 && (
+            <StarWrapper>
+              {Array.from({ length: 5 }, (_, index) => (
+                <span key={index} style={{ color: "#ccc", fontSize: "24px" }}>
+                  ★
+                </span>
               ))}
             </StarWrapper>
           )}
@@ -35,7 +59,8 @@ export const Card = ({ imgSrc, teacherImg, name, desc, starIcon, price }) => {
                 <strong>مجاني</strong>
               ) : (
                 <>
-                  السعر: <strong>{price} ₪</strong> <del>50.00 ₪</del>
+                  السعر: <strong>{price} ₪</strong>{" "}
+                  {priceAfterDiscount && <del>{priceAfterDiscount} ₪</del>}
                 </>
               )}
             </span>
