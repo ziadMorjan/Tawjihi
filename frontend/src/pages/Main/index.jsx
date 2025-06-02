@@ -1,10 +1,10 @@
-//react
+// react
 import { useState } from "react";
 
-//style
+// style
 import { Wrapper, WrapperCard, Wrappers, WrapperUl } from "./style";
 
-//layouts
+// layouts
 import { NavBar } from "../../layout/navBar";
 import Footer from "../../layout/footer";
 
@@ -14,39 +14,27 @@ import { Containers } from "../../components/Container";
 import SearchBar from "../../components/search";
 import { LineColor } from "../../components/lineColor";
 import { DiscoverSection } from "../../components/discoverSection";
-import { Card } from "../../components/card";
+import { Card } from "../../components/card/courseCard";
 import { ModalTeacher } from "../../components/modalTeacher";
 import { LogoAndButton } from "../../components/LogoAndButton";
 
-//Hooks
+// Hooks
+import { useApi } from "../../hooks/useApi";
+import { API_URL } from "../../config";
+import { CardSkeleton } from "../../components/Loading/LoadingCard";
 
 const MainPage = () => {
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(1); // 0: Free, 1: Newest, 2: Discounted
   const menuItems = ["الدورات المجانية", "احدث الدورات", "دورات الخصم"];
 
-  const data = [
-    {
-      name: "محمد عبد الله",
-      desc: "دورة أساسيات React",
-      averageRating: 5,
-      price: 49.99,
-      teacherImg: "https://randomuser.me/api/portraits/men/32.jpg",
-    },
-    {
-      name: "أحمد منصور",
-      desc: "تعلم JavaScript من الصفر",
-      averageRating: 4,
-      price: 0,
-      teacherImg: "https://randomuser.me/api/portraits/men/45.jpg",
-    },
-    {
-      name: "ليلى الخطيب",
-      desc: "تصميم واجهات المستخدم UI/UX",
-      averageRating: 3,
-      price: 29.99,
-      teacherImg: "https://randomuser.me/api/portraits/women/65.jpg",
-    },
-  ];
+  const { data, isLoading } = useApi(`${API_URL}/courses`);
+
+  const filteredCourses = data.filter((course) => {
+    if (active === 0) return course.price === 0;
+    if (active === 1) return true;
+    if (active === 2) return course.priceAfterDiscount !== undefined;
+    return true;
+  });
 
   return (
     <>
@@ -65,39 +53,45 @@ const MainPage = () => {
       </Wrappers>
 
       <WrapperUl>
-        {menuItems.map((item, index) => {
-          if (active === false) {
-            setActive(1);
-          }
-          return (
-            <li
-              key={index}
-              className={active === index ? "active" : ""}
-              onClick={() => {
-                setActive(index);
-              }}
-            >
-              {item}
-            </li>
-          );
-        })}
+        {menuItems.map((item, index) => (
+          <li
+            key={index}
+            className={active === index ? "active" : ""}
+            onClick={() => setActive(index)}
+          >
+            {item}
+          </li>
+        ))}
       </WrapperUl>
+
       <LineColor />
+
       <Containers>
         <WrapperCard>
-          {data.map((item, index) => (
-            <Card
-              key={index}
-              imgSrc="/assets/img/logo.png"
-              name={item.name}
-              desc={item.desc}
-              starIcon={item.averageRating}
-              price={item.price}
-              teacherImg={item.teacherImg}
-            />
-          ))}
+          {isLoading ? (
+            // Show 3 loading skeleton cards
+            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+          ) : filteredCourses.length === 0 ? (
+            <p>لا توجد دورات مطابقة.</p>
+          ) : (
+            filteredCourses
+              .slice(0, 2)
+              .map((item, index) => (
+                <Card
+                  key={index}
+                  imgSrc="/assets/img/logo.png"
+                  name={item.name}
+                  starIcon={item.averageRating}
+                  price={item.price}
+                  priceAfterDiscount={item.priceAfterDiscount}
+                  teacherName={item.teacher?.name}
+                  teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+                />
+              ))
+          )}
         </WrapperCard>
       </Containers>
+
       <DiscoverSection />
 
       <Wrapper>
@@ -119,6 +113,7 @@ const MainPage = () => {
           ))}
         </WrapperCard>
       </Containers>
+
       <Footer />
     </>
   );

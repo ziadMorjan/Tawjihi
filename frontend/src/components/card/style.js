@@ -8,7 +8,6 @@ export const CardDiv = styled.div`
   cursor: pointer;
   transition: all 0.2s linear;
   margin-top: 50px;
-  box-shadow: 0 0 0 0 var(--color-border);
 
   & img {
     width: 100%;
@@ -22,7 +21,7 @@ export const CardDiv = styled.div`
   }
 
   &:hover {
-    box-shadow: 0px 0px 4px 1px var(--color-primary);
+    box-shadow: 0px 0px 1px 1px var(--color-primary);
   }
 
   @media (max-width: 767px) {
