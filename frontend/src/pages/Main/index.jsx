@@ -19,19 +19,39 @@ import { ModalTeacher } from "../../components/modalTeacher";
 import { LogoAndButton } from "../../components/LogoAndButton";
 
 //Hooks
-import { useApi } from "../../hooks/useApi";
-
-
 
 const MainPage = () => {
   const [active, setActive] = useState(false);
   const menuItems = ["الدورات المجانية", "احدث الدورات", "دورات الخصم"];
 
-  const {data ,isLoading} = useApi('http://10.10.10.59:5000/api/v1/courses')
+  const data = [
+    {
+      name: "محمد عبد الله",
+      desc: "دورة أساسيات React",
+      averageRating: 5,
+      price: 49.99,
+      teacherImg: "https://randomuser.me/api/portraits/men/32.jpg",
+    },
+    {
+      name: "أحمد منصور",
+      desc: "تعلم JavaScript من الصفر",
+      averageRating: 4,
+      price: 0,
+      teacherImg: "https://randomuser.me/api/portraits/men/45.jpg",
+    },
+    {
+      name: "ليلى الخطيب",
+      desc: "تصميم واجهات المستخدم UI/UX",
+      averageRating: 3,
+      price: 29.99,
+      teacherImg: "https://randomuser.me/api/portraits/women/65.jpg",
+    },
+  ];
+
   return (
     <>
       <ModalTeacher isOpen="true" />
-<LogoAndButton/>
+      <LogoAndButton />
       <NavBar />
 
       <Wrappers>
@@ -46,6 +66,9 @@ const MainPage = () => {
 
       <WrapperUl>
         {menuItems.map((item, index) => {
+          if (active === false) {
+            setActive(1);
+          }
           return (
             <li
               key={index}
@@ -61,24 +84,19 @@ const MainPage = () => {
       </WrapperUl>
       <LineColor />
       <Containers>
-<WrapperCard>
-  {isLoading ? (
-    <p>Loading...</p>
-  ) : (
-    data.map((item, index) => (
-      <Card
-        key={index}
-        imgSrc="/assets/img/logo.png"
-        name={item.name}
-        desc={item.desc}
-        starIcon={item.averageRating}
-        price={item.price}
-      />
-    ))
-  )}
-</WrapperCard>
-
-
+        <WrapperCard>
+          {data.map((item, index) => (
+            <Card
+              key={index}
+              imgSrc="/assets/img/logo.png"
+              name={item.name}
+              desc={item.desc}
+              starIcon={item.averageRating}
+              price={item.price}
+              teacherImg={item.teacherImg}
+            />
+          ))}
+        </WrapperCard>
       </Containers>
       <DiscoverSection />
 
@@ -90,16 +108,15 @@ const MainPage = () => {
 
       <Containers>
         <WrapperCard>
-          {data.map((item) => {
-            return (
-              <Card
-                imgSrc="/assets/img/logo.png"
-                name="علي حسن"
-                desc="اللغة العربية"
-                starIcon="5"
-              />
-            );
-          })}
+          {data.map((teacher, index) => (
+            <Card
+              key={index}
+              imgSrc={teacher.img || "/assets/img/logo.png"}
+              name={teacher.name}
+              desc={teacher.subject}
+              starIcon={teacher.rating}
+            />
+          ))}
         </WrapperCard>
       </Containers>
       <Footer />

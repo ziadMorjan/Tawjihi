@@ -1,46 +1,37 @@
 import styled from "styled-components";
 
 export const CardDiv = styled.div`
-width: fit-content;
-border:1px solid var(--color-primary);
-border-radius: 8px;
-padding: 10px;
-cursor: pointer;
-transition: all 0.2s linear;
-width: 350px;
+  width: 350px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s linear;
+  margin-top: 50px;
+  box-shadow: 0 0 0 0 var(--color-border);
 
-
-
-box-shadow: 0px 0px 0px 0px var(--color-border);
-
-
-
-& img{
+  & img {
     width: 100%;
     border-bottom: 1px solid var(--color-primary);
-    
-}
+    border-radius: 8px 8px 0 0;
+  }
 
-& span{
+  & span {
     display: block;
     margin: 5px 0px;
-}
+  }
 
-&:hover{
-    transform: scale(1.03);
-    box-shadow: 0px 0px 1px 1px var(--color-primary);
+  &:hover {
+    box-shadow: 0px 0px 4px 1px var(--color-primary);
+  }
 
-}
-
-@media (max-width: 767px){
+  @media (max-width: 767px) {
     width: 350px;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-`
-
-
+  }
+`;
 
 export const IconStarDiv = styled.div`
   display: flex;
@@ -55,4 +46,24 @@ export const StarWrapper = styled.div`
   display: flex;
   gap: 4px;
   font-size: 18px;
+`;
+
+export const TeacherInfo = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+
+  & img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+  }
+
+  & span {
+    font-weight: 500;
+    color: #333;
+  }
 `;

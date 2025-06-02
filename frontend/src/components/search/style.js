@@ -27,7 +27,7 @@ export const SvgICon = styled.svg`
 `;
 
 export const InputBar = styled.input`
-  width: 40vw;
+  width: 60%;
   height: 50px;
   border: none;
   outline: none;
@@ -40,5 +40,9 @@ export const InputBar = styled.input`
 
   &::placeholder {
     font-size: 18px;
+  }
+
+  @media (max-width: 768px) {
+    width: 80%;    
   }
 `;
