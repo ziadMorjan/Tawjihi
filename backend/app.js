@@ -8,6 +8,7 @@ const userRoutes = require('./routes/UserRoutes');
 const courseRoutes = require('./routes/CourseRoutes');
 const authRoutes = require('./routes/AuthRouts');
 const lessonRouts = require('./routes/LessonRouts');
+const enrollmentRouts = require('./routes/EnrollmentRouts');
 const defaultRoutes = require('./routes/DefaultRoute');
 
 const { globalErrorHandler } = require('./middlewares/errorMiddleware');
@@ -27,6 +28,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/courses', courseRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/lessons', lessonRouts);
+app.use('/api/v1/Enrollments', enrollmentRouts);
 app.use(defaultRoutes);
 
 // global error handler
