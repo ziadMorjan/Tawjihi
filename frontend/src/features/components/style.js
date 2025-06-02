@@ -117,20 +117,38 @@ export const FormForgetPassword = styled(Form)`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
+
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+
+  @media (max-width: 576px) {
+    padding: 1rem;
+    max-width: 90%;
+    align-items: start;
+
+    & input {
+      width: 100%;
+    }
+
+    & label {
+      width: 100%;
+      text-align: right;
+    }
+  }
 
   & label {
     margin: 5px 0px;
   }
-  & input{
-  
-    width: 300px;}
+
+  & input {
+    width: 100%;
+  }
 `;
 
 

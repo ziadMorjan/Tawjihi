@@ -1,20 +1,21 @@
-//style
-import { CardDiv, IconStarDiv, StarWrapper } from "./style";
+// style
+import { CardDiv, IconStarDiv, StarWrapper, TeacherInfo } from "./style";
 
-export const Card = ({ imgSrc, name, desc, starIcon, price }) => {
+export const Card = ({ imgSrc, teacherImg, name, desc, starIcon, price }) => {
   return (
     <CardDiv>
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "card"}`} />}
 
-      {name && (
-        <span>
-          تم الإنشاء بواسطة : <strong>{name}</strong>
-        </span>
+      {teacherImg && name && (
+        <TeacherInfo>
+          <img src={teacherImg} alt={name} />
+          <span>{name}</span>
+        </TeacherInfo>
       )}
 
       {desc && (
         <span>
-          تفاصيل: <strong>{desc}</strong>
+          <strong>{desc}</strong>
         </span>
       )}
 
@@ -30,7 +31,7 @@ export const Card = ({ imgSrc, name, desc, starIcon, price }) => {
 
           {price !== undefined && (
             <span>
-              {price == 0 ? (
+              {price === 0 ? (
                 <strong>مجاني</strong>
               ) : (
                 <>

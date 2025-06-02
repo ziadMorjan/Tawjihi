@@ -1,5 +1,3 @@
-import React from "react";
-import { Link } from "react-router-dom";
 import { NotFoundContainer, Title, Description, BackButton } from "./style";
 
 const NotFound = () => {
