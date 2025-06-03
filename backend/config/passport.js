@@ -10,7 +10,14 @@ const googleStrategy = new GoogleStrategy(
     },
     async (accessToken, refreshToken, profile, done) => {
         try {
-            let user = await User.findOne({ googleId: profile.id });
+            let user = await User.findOne({ $or: [{ googleId: profile.id }, { email: profile.emails[0].value }] });
+            if (user) {
+                user = await User.findOneAndUpdate(
+                    { email: user.email },
+                    { googleId: profile.id },
+                    { new: true, runValidators: true }
+                );
+            }
             if (!user) {
                 user = await User.create({
                     googleId: profile.id,
@@ -34,10 +41,17 @@ const facebookStrategy = new FacebookStrategy(
     },
     async (accessToken, refreshToken, profile, done) => {
         try {
-            let user = await User.findOne({ facebookId: profile.id });
+            let user = await User.findOne({ $or: [{ facebookId: profile.id }, { email: profile.emails[0].value }] });
+            if (user) {
+                user = await User.findOneAndUpdate(
+                    { email: user.email },
+                    { facebookId: profile.id },
+                    { new: true, runValidators: true }
+                );
+            }
             if (!user) {
                 user = await User.create({
-                    email: profile.emails[0],
+                    email: profile.emails[0].value,
                     name: profile.displayName,
                     googleId: profile.id
                 });
