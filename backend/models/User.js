@@ -17,10 +17,11 @@ const UserSchema = new mongoose.Schema(
             unique: [true, "email must be unique"],
             lowercase: true,
         },
+        googleId: String,
+        facebookId: String,
         password: {
             type: String,
             minlength: 8,
-            required: [true, "password is required"],
             select: false
         },
         phone: {

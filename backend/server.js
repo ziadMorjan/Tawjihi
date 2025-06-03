@@ -12,11 +12,10 @@ process.on('uncaughtException', (err) => {
 const app = require('./app');
 
 let port = process.env.PORT || 5000;
-let host = process.env.HOST || 'localhost';
 
 let server = app.listen(port, () => {
     console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`Server is running on port http://${host}:${port}`);
+    console.log(`Server is running on http://${process.env.BASE_URL}`);
 });
 
 db.connectDB(process.env.DB_URI);

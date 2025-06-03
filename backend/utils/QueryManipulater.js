@@ -35,7 +35,7 @@ module.exports = class QueryManipulater {
             let sort = this.req.query.select.split(",").join(" ");
             this.query = this.query.select(sort);
         } else {
-            this.query = this.query.sort("createdAt");
+            this.query = this.query.sort("-createdAt");
 
         }
         return this;

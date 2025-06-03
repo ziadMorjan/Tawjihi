@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const passport = require("passport");
 
 const branchRoutes = require('./routes/BranchRouts');
 const subjectRoutes = require('./routes/SubjectRoutes');
@@ -11,15 +12,21 @@ const lessonRouts = require('./routes/LessonRouts');
 const enrollmentRouts = require('./routes/EnrollmentRouts');
 const defaultRoutes = require('./routes/DefaultRoute');
 
+const { googleStrategy, facebookStrategy } = require("./config/passport");
+
 const { globalErrorHandler } = require('./middlewares/errorMiddleware');
 
 let app = express();
+
+passport.use(googleStrategy);
+passport.use(facebookStrategy);
 
 // Middleware
 app.use(express.json());
 app.use(express.static('uploads'));
 app.use(morgan('dev'));
 app.use(cors());
+app.use(passport.initialize());
 
 // Mount routes
 app.use('/api/v1/branches', branchRoutes);
