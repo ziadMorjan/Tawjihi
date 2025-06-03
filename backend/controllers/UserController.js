@@ -106,7 +106,7 @@ let acceptTeacher = asyncErrorHandler(async function (req, res) {
     if (user.role !== "teacher")
         throw new CustomError("this user is not a teacher", 400);
 
-    if (user.isActive)
+    if (user.isActive === true)
         throw new CustomError("this teacher is already active", 400);
 
     let emailBody = `Hi ${user.name}\n\n we have accepted you to join us as a teacher you can login now using your email and password`;
@@ -137,7 +137,7 @@ let refuseTeacher = asyncErrorHandler(async function (req, res) {
 
     let emailBody = `Hi ${user.name}\n\n Unlucky we could not accept you to join us as a teacher,\n\n strength your cv and try to join us later`;
 
-    if (user.isActive)
+    if (user.isActive === true)
         emailBody = `Hi ${user.name}\n\n Unlucky we will refuse you teacher`;
 
     let options = {
