@@ -68,7 +68,7 @@ export const ForgetPassword = () => {
       <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
         <FormGroup>
           <H3>إعادة تعيين كلمة المرور</H3>
-          <Pargrahph>
+          <Pargrahph size="16px" >
             من فضلك أدخل بريدك الإلكتروني لإرسال رمز التحقق لإعادة تعيين كلمة
             المرور
           </Pargrahph>

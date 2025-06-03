@@ -68,13 +68,20 @@ const shimmer = keyframes`
 `;
 
 export const SkeletonWrapper = styled.div`
-  width: 250px;
+  width: 320px;
   padding: 16px;
   border-radius: 8px;
-  background: #fff;
+  background: transparent;
+  border: 1px solid var(--color-primary);
+
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  @media (max-width: 768px) {
+    width: 350px;
+    
+  }
 `;
 
 export const SkeletonElement = styled.div`
@@ -84,6 +91,7 @@ export const SkeletonElement = styled.div`
     #f5f5f5 37%,
     #eee 63%
   );
+  
   background-size: 200% 100%;
   animation: ${shimmer} 1.5s infinite;
   border-radius: 4px;

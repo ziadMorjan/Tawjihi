@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
 export const CardDiv = styled.div`
-  width: 350px;
+  width: 320px;
   border: 1px solid var(--color-primary);
   border-radius: 8px;
   padding: 10px;
   cursor: pointer;
   transition: all 0.2s linear;
-  margin-top: 50px;
+  margin-top: 0px;
 
   & img {
     width: 100%;
@@ -46,6 +46,7 @@ export const StarWrapper = styled.div`
   gap: 4px;
   font-size: 18px;
 `;
+
 
 export const TeacherInfo = styled.div`
   display: flex;

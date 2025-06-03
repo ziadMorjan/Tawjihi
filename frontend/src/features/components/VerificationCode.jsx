@@ -75,7 +75,7 @@ export const VerificationCode = () => {
       <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
         <FormGroup>
           <H3>التحقق من الرمز</H3>
-          <Pargrahph>سوف نرسل لك كود التحقق عبر الايميل الخاص بك</Pargrahph>
+          <Pargrahph size='16px'>سوف نرسل لك كود التحقق عبر الايميل الخاص بك</Pargrahph>
           <Label>رمز التحقق</Label>
           <div style={{ display: "flex", gap: "10px", direction: "ltr" }}>
             {arr.map((_, index) => (

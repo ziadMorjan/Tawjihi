@@ -8,6 +8,8 @@ export const PargType = styled.p`
   white-space: nowrap;
   margin: auto;
   padding: 0;
+  margin-top: 50px ;
+  margin-bottom: -50px;
 
   /* Typing animation */
   animation: typing 6s 1s forwards;
@@ -32,4 +34,8 @@ export const Pargraph = styled.p`
 opacity: 0.7;
 font-size: 18px;
 word-wrap: 20px;
+margin: 20px 0;
+
+  font-size: ${(props) => props.size || "14px"};
+
 `

@@ -17,11 +17,13 @@ import { DiscoverSection } from "../../components/discoverSection";
 import { Card } from "../../components/card/courseCard";
 import { ModalTeacher } from "../../components/modalTeacher";
 import { LogoAndButton } from "../../components/LogoAndButton";
+import { CardSkeleton } from "../../components/Loading/LoadingCard";
 
 // Hooks
 import { useApi } from "../../hooks/useApi";
+
+//Api
 import { API_URL } from "../../config";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
 
 const MainPage = () => {
   const [active, setActive] = useState(1); // 0: Free, 1: Newest, 2: Discounted
@@ -75,7 +77,7 @@ const MainPage = () => {
             <p>لا توجد دورات مطابقة.</p>
           ) : (
             filteredCourses
-              .slice(0, 2)
+              .slice(0, 3)
               .map((item, index) => (
                 <Card
                   key={index}

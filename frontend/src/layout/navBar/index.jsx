@@ -32,6 +32,8 @@ export const NavBar = () => {
         <li><Link to={PATH.News}>اخر الاخبار</Link></li>
       </ul>
 
+      
+
       <LoginAndRegisterButton
         onClick={() => setIsOpen(true)}
         color="var(--color-primary)"
