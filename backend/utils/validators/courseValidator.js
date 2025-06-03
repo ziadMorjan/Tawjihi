@@ -26,6 +26,8 @@ const createCourseValidator = [
             let teacher = await User.findById(value);
             if (!teacher)
                 throw new CustomError("The provided teacher does not exist in the db", 404);
+            if (teacher.id !== value)
+                throw new CustomError("You can not create a course for another teacher", 403);
             return true;
         }),
 
