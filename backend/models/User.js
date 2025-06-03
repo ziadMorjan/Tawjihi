@@ -26,7 +26,6 @@ const UserSchema = new mongoose.Schema(
         },
         phone: {
             type: String,
-            required: true
         },
         coverImage: String,
         cv: String,
