@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const ColorDiv = styled.div`
 
 width: 20%;
-margin: auto;
+margin:auto;
 height: 1px;
 background-color:rgb(197, 198, 214);
 position: relative;

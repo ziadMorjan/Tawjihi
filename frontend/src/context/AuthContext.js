@@ -6,10 +6,10 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
 
     // Global Data
-    const [auth, setIsAuth] = useState(false);
+    const [isAuth, setIsAuth] = useState(true);
     return (
         // Provider Context
-        <AuthContext.Provider value={{ auth, setIsAuth }}>
+        <AuthContext.Provider value={{ isAuth, setIsAuth }}>
             {children}
         </AuthContext.Provider>
     );

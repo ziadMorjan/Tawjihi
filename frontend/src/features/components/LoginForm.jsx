@@ -20,6 +20,10 @@ import {
   ErrorText,
   FormActions,
 } from "./style";
+import { SocialMediaIcon } from "../../components/Icon/socialMediaIcon";
+import { Pargrahph } from "../../components/typography";
+import { MiddleLineLetter } from "../../components/MiddleLineLetter";
+import { WrapperElementFlexCenter } from "../../styles/style";
 
 // Validation schema
 const schema = yup.object({
@@ -69,6 +73,19 @@ export const LoginForm = () => {
       <FormActions>
         <Button type="submit"> تسجيل الدخول </Button>
       </FormActions>
+
+<MiddleLineLetter text={"أو تسجيل الدخول باستخدام"} />     
+           <WrapperElementFlexCenter>
+        <SocialMediaIcon icon={"google"} />
+        <SocialMediaIcon icon={"facebook"} />
+      </WrapperElementFlexCenter>
+
+      <Pargrahph size='16px'>
+        ليس لديك حساب؟{" "}
+        <Link to={`/${PATH.Register}`}>إنشاء حساب جديد</Link>
+      </Pargrahph>
+      
+
     </Form>
   );
 };

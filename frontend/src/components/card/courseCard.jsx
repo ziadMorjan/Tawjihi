@@ -1,5 +1,102 @@
-// style
+import React from "react";
+//style
+import { WrapperElementFlexSpace } from "../../styles/style";
 import { CardDiv, IconStarDiv, StarWrapper, TeacherInfo } from "./style";
+
+
+const FullStar = () => (
+  <svg
+    width="24"
+    height="24"
+    fill="#facc15"
+    stroke="#fbbf24"
+    strokeWidth="1.5"
+    viewBox="0 0 24 24"
+  >
+    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+  </svg>
+);
+
+const HalfStar = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+      <linearGradient id="halfGrad" x1="100%" y1="0%" x2="0%" y2="0%">
+        <stop offset="50%" stopColor="#facc15" />
+        <stop offset="50%" stopColor="#e5e7eb" />
+      </linearGradient>
+    </defs>
+    <path
+      fill="url(#halfGrad)"
+      stroke="#fbbf24"
+      strokeWidth="1.5"
+      d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+    />
+  </svg>
+);
+
+const EmptyStar = () => (
+  <svg
+    width="24"
+    height="24"
+    fill="none"
+    stroke="#d1d5db"
+    strokeWidth="1.5"
+    viewBox="0 0 24 24"
+  >
+    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+  </svg>
+);
+
+// Cart Icon with animation on toggle
+const CartIcon = ({ active, onClick }) => {
+  return (
+    <svg
+      onClick={onClick}
+      style={{
+        cursor: "pointer",
+        fill: active ? "#1e40af" : "none",
+        stroke: "#2563eb",
+        transition: "fill 0.3s ease, transform 0.2s ease",
+        transform: active ? "scale(1.2)" : "scale(1)",
+      }}
+      width="24"
+      height="24"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
+      <circle cx="9" cy="21" r="1" fill={active ? "#1e40af" : "#2563eb"} />
+      <circle cx="20" cy="21" r="1" fill={active ? "#1e40af" : "#2563eb"} />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+  );
+};
+
+// Heart Icon with animation on toggle
+const HeartIcon = ({ active, onClick }) => {
+  return (
+    <svg
+      onClick={onClick}
+      style={{
+        cursor: "pointer",
+        fill: active ? "#dc2626" : "none",
+        stroke: "#ef4444",
+        transition: "fill 0.3s ease, transform 0.2s ease",
+        transform: active ? "scale(1.2)" : "scale(1)",
+      }}
+      width="24"
+      height="24"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.78 0L12 5.62l-1.02-1.02a5.5 5.5 0 0 0-7.78 7.78l1.02 1.02L12 21.23l7.78-7.78 1.02-1.02a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  );
+};
+
 
 export const Card = ({
   imgSrc,
@@ -7,19 +104,33 @@ export const Card = ({
   teacherImg,
   name,
   desc,
-  starIcon,
+  starIcon = 0,
   price,
   priceAfterDiscount,
 }) => {
+  const [cartActive, setCartActive] = React.useState(false);
+  const [heartActive, setHeartActive] = React.useState(false);
+
+  const fullStars = Math.floor(starIcon);
+  const hasHalfStar = starIcon % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
   return (
     <CardDiv>
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "card"}`} />}
 
-      {teacherImg && name && (
-        <TeacherInfo>
-          <img src={teacherImg} alt={teacherImg} />
-          <span>{teacherName}</span>
-        </TeacherInfo>
+      {(teacherImg || teacherName) && (
+        <WrapperElementFlexSpace>
+          <TeacherInfo>
+            {teacherImg && <img src={teacherImg} alt={teacherName} />}
+            <span>{teacherName}</span>
+          </TeacherInfo>
+
+          <div style={{ marginTop: "12px", display: "flex", gap: "16px" }}>
+            <CartIcon active={cartActive} onClick={() => setCartActive(!cartActive)} />
+            <HeartIcon active={heartActive} onClick={() => setHeartActive(!heartActive)} />
+          </div>
+        </WrapperElementFlexSpace>
       )}
 
       {desc && (
@@ -28,45 +139,30 @@ export const Card = ({
         </span>
       )}
 
-      {(starIcon || price !== undefined) && (
-        <IconStarDiv>
-          {starIcon > 0 && (
-            <StarWrapper>
-              {Array.from({ length: starIcon }, (_, index) => (
-                <span
-                  key={index}
-                  style={{ color: "#e5e222", fontSize: "24px" }}
-                >
-                  ★
-                </span>
-              ))}
-            </StarWrapper>
-          )}
+      <IconStarDiv>
+        <StarWrapper>
+          {Array.from({ length: fullStars }).map((_, index) => (
+            <FullStar key={`full-${index}`} />
+          ))}
+          {hasHalfStar && <HalfStar key="half" />}
+          {Array.from({ length: emptyStars }).map((_, index) => (
+            <EmptyStar key={`empty-${index}`} />
+          ))}
+        </StarWrapper>
 
-          {starIcon === 0 && (
-            <StarWrapper>
-              {Array.from({ length: 5 }, (_, index) => (
-                <span key={index} style={{ color: "#ccc", fontSize: "24px" }}>
-                  ★
-                </span>
-              ))}
-            </StarWrapper>
-          )}
-
-          {price !== undefined && (
-            <span>
-              {price === 0 ? (
-                <strong>مجاني</strong>
-              ) : (
-                <>
-                  السعر: <strong>{price} ₪</strong>{" "}
-                  {priceAfterDiscount && <del>{priceAfterDiscount} ₪</del>}
-                </>
-              )}
-            </span>
-          )}
-        </IconStarDiv>
-      )}
+        {price !== undefined && (
+          <span>
+            {price === 0 ? (
+              <strong>مجاني</strong>
+            ) : (
+              <>
+                السعر: <strong>{price} ₪</strong>{" "}
+                {priceAfterDiscount && <del>{priceAfterDiscount} ₪</del>}
+              </>
+            )}
+          </span>
+        )}
+      </IconStarDiv>
     </CardDiv>
   );
 };

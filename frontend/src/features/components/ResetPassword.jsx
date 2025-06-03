@@ -100,7 +100,7 @@ export const ResetPassword = () => {
       <LogoAndButton />
       <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
         <H3>إعادة تعيين كلمة المرور</H3>
-        <Pargrahph>قم بإدخال كلمة المرور الجديدة الخاصة بك</Pargrahph>
+        <Pargrahph size='16px'>قم بإدخال كلمة المرور الجديدة الخاصة بك</Pargrahph>
 
         <FormGroup>
           <Label>كلمة المرور</Label>
