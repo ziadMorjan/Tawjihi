@@ -10,6 +10,7 @@ const courseRoutes = require('./routes/CourseRoutes');
 const authRoutes = require('./routes/AuthRouts');
 const lessonRouts = require('./routes/LessonRouts');
 const enrollmentRouts = require('./routes/EnrollmentRouts');
+const newsRouts = require('./routes/NewsRouts');
 const defaultRoutes = require('./routes/DefaultRoute');
 
 const { googleStrategy, facebookStrategy } = require("./config/passport");
@@ -35,7 +36,8 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/courses', courseRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/lessons', lessonRouts);
-app.use('/api/v1/Enrollments', enrollmentRouts);
+app.use('/api/v1/enrollments', enrollmentRouts);
+app.use('/api/v1/news', newsRouts);
 app.use(defaultRoutes);
 
 // global error handler
