@@ -4,12 +4,14 @@ const JWTs = require("../utils/JWTs");
 const User = require("../models/User");
 
 const protect = asyncErrorHandler(async function (req, res, next) {
+    let token;
     let authHeader = req.headers.authorization || req.headers.Authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer "))
-        throw new CustomError("You are not logged in", 401);
+    if (authHeader)
+        token = authHeader.split(" ")[1];
 
-    let token = authHeader.split(" ")[1];
+    if (req.cookies.token)
+        ({ token } = req.cookies);
 
     if (!token)
         throw new CustomError("You are not logged in", 401);

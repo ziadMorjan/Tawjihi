@@ -10,28 +10,21 @@ const OAuthSuccess = () => {
   const [loading, setLoading] = useState(true);
   const { setIsAuth } = useContext(AuthContext);
 
-useEffect(() => {
-  
-axios.get(`${API_URL}/users/me`, { withCredentials: true })
-    .then((response) => {
-      console.log("OAuth /auth/me response:", response);
-
-      // If token returned in response (in dev mode)
-      if (response.data?.token) {
-        console.log("Token from response:", response.data.token);
-        localStorage.setItem("token", response.data.token);
-      }
-
-      setIsAuth(true);
-      navigate(PATH.Main);
-    })
-    .catch((error) => {
-      console.error("error:", error);
-      setIsAuth(false);
-      navigate(`/${PATH.Auth}/login`);
-    })
-    .finally(() => setLoading(false));
-}, [navigate, setIsAuth]);
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/users/me`, { withCredentials: true })
+      .then((response) => {
+        console.log("user:", response.data.data.doc);
+        setIsAuth(true);
+        navigate(PATH.Main);
+      })
+      .catch((error) => {
+        console.error("error:", error);
+        setIsAuth(false);
+        navigate(`/${PATH.Auth}/login`);
+      })
+      .finally(() => setLoading(false));
+  }, [navigate, setIsAuth]);
 
   if (loading) return <div>Logging in...</div>;
   return null;

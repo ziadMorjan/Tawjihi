@@ -34,12 +34,6 @@ app.use(express.json());
 app.use(express.static('uploads'));
 app.use(passport.initialize());
 
-// Optional: debug middleware to check cookies on requests
-// app.use((req, res, next) => {
-//   console.log('Cookies:', req.cookies);
-//   next();
-// });
-
 // Mount routes
 app.use('/api/v1/branches', branchRoutes);
 app.use('/api/v1/subjects', subjectRoutes);
