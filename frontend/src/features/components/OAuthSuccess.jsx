@@ -23,7 +23,7 @@ useEffect(() => {
       }
 
       setIsAuth(true);
-      navigate(PATH.Main);
+      // navigate(PATH.Main);
     })
     .catch((error) => {
       console.error("OAuth /auth/me error:", error);
