@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const passport = require("passport");
+const cookieParser = require('cookie-parser');
 
 const branchRoutes = require('./routes/BranchRouts');
 const subjectRoutes = require('./routes/SubjectRoutes');
@@ -24,6 +25,7 @@ passport.use(facebookStrategy);
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.static('uploads'));
 app.use(morgan('dev'));
 app.use(cors());

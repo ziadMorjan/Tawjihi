@@ -15,7 +15,7 @@ let port = process.env.PORT || 5000;
 
 let server = app.listen(port, () => {
     console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`Server is running on http://${process.env.BASE_URL}`);
+    console.log(`Server is running on ${process.env.BASE_URL}`);
 });
 
 db.connectDB(process.env.DB_URI);
