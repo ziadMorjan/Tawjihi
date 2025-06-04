@@ -20,13 +20,14 @@ export const WrapperElementFlexCenter = styled.div`
 
 export const WrapperElementFlexSpace = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: start;
   justify-content: space-between;
   width: 100%;
 
   @media (max-width: 767px) {
     justify-content: space-around;
-    align-items: center;
+  align-items: start;
  
 
     

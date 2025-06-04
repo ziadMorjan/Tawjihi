@@ -1,69 +1,115 @@
 import styled from "styled-components";
 
 export const CardDiv = styled.div`
-  width: 320px;
-  border: 1px solid var(--color-primary);
-  border-radius: 8px;
-  padding: 10px;
-  cursor: pointer;
-  transition: all 0.2s linear;
-  margin-top: 0px;
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  }
 
   & img {
     width: 100%;
-    border-bottom: 1px solid var(--color-primary);
-    border-radius: 8px 8px 0 0;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 24px 24px 0 0;
+    transition: transform 0.3s ease;
   }
 
-  & span {
-    display: block;
-    margin: 5px 0px;
+  &:hover img {
+    transform: scale(1.05);
   }
 
-  &:hover {
-    box-shadow: 0px 0px 1px 1px var(--color-primary);
+  & > span {
+    padding: 0 20px;
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #374151;
   }
 
   @media (max-width: 767px) {
-    width: 350px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    max-width: 100%;
   }
 `;
 
 export const IconStarDiv = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
+  align-items: center;
+  padding: 12px 20px 16px;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 `;
 
 export const StarWrapper = styled.div`
   display: flex;
   gap: 4px;
-  font-size: 18px;
 `;
-
 
 export const TeacherInfo = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 10px;
-  gap: 10px;
+  gap: 12px;
 
   & img {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     object-fit: cover;
     border-radius: 50%;
-    border: 1px solid #ccc;
+    border: 2px solid #d1d5db;
   }
+`;
+
+export const TeacherInfoAndCourse = styled.div`
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  gap: 4px;
 
   & span {
-    font-weight: 500;
-    color: #333;
+    font-size: 14px;
+    opacity: 0.7;
+  }
+`;
+
+export const ActionIcons = styled.div`
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+`;
+
+export const PriceBadge = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e3a8a;
+  background-color: #e0f2fe;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-right: auto;
+`;
+
+export const RatingStarsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  & span {
+    font-size: 14px;
+    color: #6b7280;
   }
 `;
