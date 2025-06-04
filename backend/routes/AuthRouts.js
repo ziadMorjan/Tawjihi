@@ -28,7 +28,7 @@ const oauthCallbackHandler = function (req, res) {
     const options = {
         httpOnly: true,
         sameSite: isDev ? 'Lax' : 'None',
-        secure: !isDev,
+        // secure: !isDev,
         maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 

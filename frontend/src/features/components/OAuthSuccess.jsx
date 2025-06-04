@@ -11,8 +11,8 @@ const OAuthSuccess = () => {
   const { setIsAuth } = useContext(AuthContext);
 
 useEffect(() => {
-  axios
-    .get(`${API_URL}/users/me`, { withCredentials: true })
+  
+axios.get(`${API_URL}/users/me`, { withCredentials: true })
     .then((response) => {
       console.log("OAuth /auth/me response:", response);
 
@@ -26,7 +26,7 @@ useEffect(() => {
       navigate(PATH.Main);
     })
     .catch((error) => {
-      console.error("OAuth /auth/me error:", error);
+      console.error("error:", error);
       setIsAuth(false);
       navigate(`/${PATH.Auth}/login`);
     })
