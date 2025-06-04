@@ -18,21 +18,27 @@ const { googleStrategy, facebookStrategy } = require("./config/passport");
 
 const { globalErrorHandler } = require('./middlewares/errorMiddleware');
 
-let app = express();
+const app = express();
 
 passport.use(googleStrategy);
 passport.use(facebookStrategy);
 
 // Middleware
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.static('uploads'));
 app.use(morgan('dev'));
 app.use(cors({
-    origin: 'http://localhost:3000', // your local frontend
-    credentials: true               // allow sending cookies
+    origin: 'http://localhost:3000', // your local frontend URL
+    credentials: true               // allow sending cookies cross-origin
 }));
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.static('uploads'));
 app.use(passport.initialize());
+
+// Optional: debug middleware to check cookies on requests
+// app.use((req, res, next) => {
+//   console.log('Cookies:', req.cookies);
+//   next();
+// });
 
 // Mount routes
 app.use('/api/v1/branches', branchRoutes);
@@ -45,7 +51,7 @@ app.use('/api/v1/enrollments', enrollmentRouts);
 app.use('/api/v1/news', newsRouts);
 app.use(defaultRoutes);
 
-// global error handler
-app.use(globalErrorHandler)
+// Global error handler
+app.use(globalErrorHandler);
 
 module.exports = app;
