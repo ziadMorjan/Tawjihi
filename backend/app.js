@@ -28,7 +28,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('uploads'));
 app.use(morgan('dev'));
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000', // your local frontend
+    credentials: true               // allow sending cookies
+}));
 app.use(passport.initialize());
 
 // Mount routes
