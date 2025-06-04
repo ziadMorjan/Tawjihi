@@ -68,6 +68,15 @@ router.route("/changePassword")
         changePassword
     );
 
+router.route("/me")
+    .get(
+        protect,
+        allowedTo("admin", "user", "teacher"),
+        addUserIdToReqParams,
+        getUserValidator,
+        getUser
+    );
+
 router.route("/")
     .get(getAllUsers)
     .post(
