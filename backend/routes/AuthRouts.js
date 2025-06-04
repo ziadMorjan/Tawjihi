@@ -27,19 +27,27 @@ const oauthCallbackHandler = function (req, res) {
     const isDev = process.env.NODE_ENV !== 'production';
     const options = {
         httpOnly: true,
-        sameSite: isDev ? 'Lax' : 'None', // 'Lax' allows cookies on refresh and form submissions
-        secure: !isDev, // secure only in production (HTTPS)
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        sameSite: isDev ? 'Lax' : 'None',
+        secure: !isDev,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
-    // Set JWT in httpOnly cookie
     res.cookie('token', token, options);
-
     res.cookie('user', req.user.id, options);
 
-    // Redirect to frontend route after login
+    // Instead of redirect only, send token in JSON for dev/debug
+    if (isDev) {
+        return res.status(200).json({
+            status: "success",
+            token,
+            user: req.user
+        });
+    }
+
+    // Production: redirect frontend after login
     res.redirect('http://localhost:3000/oauth-success');
 };
+
 
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback",

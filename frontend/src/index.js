@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom';
 //Provider Context Modal
 import { ModalProvider } from './context/ModalContext';
 import { AuthProvider } from './context/AuthContext';
+import { CookiesProvider } from 'react-cookie';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,8 +16,11 @@ root.render(
     <BrowserRouter>
       <ModalProvider>
         <AuthProvider>
-
+          <CookiesProvider>
         <App />
+
+          </CookiesProvider>
+
         </AuthProvider>
       </ModalProvider>
     </BrowserRouter>
