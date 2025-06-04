@@ -27,12 +27,10 @@ const oauthCallbackHandler = function (req, res) {
 
     const options = {
         httpOnly: true,
-        sameSite: 'Lax',
+        sameSite: 'None',
+        secure: process.env.NODE_ENV === 'production',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     }
-
-    if (process.env.NODE_ENV === 'production')
-        options.secure = true; // Use secure cookies in production
 
     // Set JWT in httpOnly cookie
     res.cookie('token', token, options);
@@ -40,7 +38,7 @@ const oauthCallbackHandler = function (req, res) {
     res.cookie('user', req.user.id, options);
 
     // Redirect to frontend route after login
-    res.redirect('http://localhost:3000');
+    res.redirect('http://localhost:3000/oauth-success');
 };
 
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
