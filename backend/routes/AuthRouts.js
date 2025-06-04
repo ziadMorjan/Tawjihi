@@ -28,24 +28,13 @@ const oauthCallbackHandler = function (req, res) {
     const options = {
         httpOnly: true,
         sameSite: isDev ? 'Lax' : 'None',
-        // secure: !isDev,
+        secure: !isDev,
         maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
     res.cookie('token', token, options);
-    res.cookie('user', req.user.id, options);
 
-    // Instead of redirect only, send token in JSON for dev/debug
-    if (isDev) {
-        return res.status(200).json({
-            status: "success",
-            token,
-            user: req.user
-        });
-    }
-
-    // Production: redirect frontend after login
-    res.redirect('http://localhost:3000/oauth-success');
+    res.redirect(process.env.OAUTH_REDIRECT_URL);
 };
 
 

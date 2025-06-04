@@ -1,5 +1,4 @@
 const express = require('express');
-const jwt = require("jsonwebtoken");
 const {
     protect,
     allowedTo
@@ -38,22 +37,6 @@ const {
 } = require("../controllers/UserController");
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET;
-
-// ✅ Public route for reading token from cookie (OAuth login support)
-router.get("/public-me", (req, res) => {
-    const token = req.cookies.token;
-    if (!token) {
-        return res.status(401).json({ message: "Unauthorized - no token" });
-    }
-
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        return res.json({ user: decoded.id, token });
-    } catch (err) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
-});
 
 router.route("/deleteMe")
     .delete(

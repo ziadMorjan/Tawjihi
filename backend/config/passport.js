@@ -53,7 +53,7 @@ const facebookStrategy = new FacebookStrategy(
                 user = await User.create({
                     email: profile.emails[0].value,
                     name: profile.displayName,
-                    googleId: profile.id
+                    facebookId: profile.id
                 });
             }
             done(null, user);
