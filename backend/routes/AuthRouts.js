@@ -24,13 +24,13 @@ let router = express.Router();
 
 const oauthCallbackHandler = function (req, res) {
     const token = createToken(req.user.id);
-
+    const isDev = process.env.NODE_ENV !== 'production';
     const options = {
         httpOnly: true,
-        sameSite: 'None',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    }
+        sameSite: isDev ? 'Lax' : 'None', // 'Lax' allows cookies on refresh and form submissions
+        secure: !isDev, // secure only in production (HTTPS)
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    };
 
     // Set JWT in httpOnly cookie
     res.cookie('token', token, options);
