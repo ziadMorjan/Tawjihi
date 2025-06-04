@@ -1,16 +1,10 @@
-//style
-import axios from "axios";
+// src/features/components/SocialMediaIcon.jsx
 import { SocialWrapper } from "./style";
 import { API_URL } from "../../config";
 
 export const SocialMediaIcon = ({ icon }) => {
-  const handleGoogle = async ({ icon }) => {
-    try {
-      const res = await axios.get(`${API_URL}/auth/${icon}`);
-      console.log(res);
-    } catch (error) {
-      console.error("Axios request error:", error);
-    }
+  const handleOAuth = () => {
+    window.location.href = `${API_URL}/auth/${icon}`; 
   };
 
   return (
@@ -18,7 +12,7 @@ export const SocialMediaIcon = ({ icon }) => {
       <img
         src={`/assets/img/${icon}.png`}
         alt={icon}
-        onClick={() => handleGoogle(icon)}
+        onClick={handleOAuth}
       />
     </SocialWrapper>
   );

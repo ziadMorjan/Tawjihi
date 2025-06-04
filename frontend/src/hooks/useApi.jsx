@@ -1,6 +1,5 @@
-// axios
+// src/hooks/useApi.js
 import axios from "axios";
-// react
 import { useEffect, useState } from "react";
 
 export const useApi = (url) => {
@@ -41,5 +40,5 @@ export const useApi = (url) => {
     }
   };
 
-  return { data, isLoading, error, postData };
+  return { data, isLoading, error, postData , };
 };
