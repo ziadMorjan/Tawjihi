@@ -25,12 +25,23 @@ let router = express.Router();
 const oauthCallbackHandler = function (req, res) {
     const token = createToken(req.user.id);
 
-    res.status(201).json({
-        status: "success",
-        user: req.user,
-        token
-    });
-}
+    const options = {
+        httpOnly: true,
+        sameSite: 'Lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    }
+
+    if (process.env.NODE_ENV === 'production')
+        options.secure = true; // Use secure cookies in production
+
+    // Set JWT in httpOnly cookie
+    res.cookie('token', token, options);
+
+    res.cookie('user', req.user.id, options);
+
+    // Redirect to frontend route after login
+    res.redirect('http://localhost:3000');
+};
 
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback",
