@@ -1,9 +1,18 @@
 import React from "react";
-//style
 import { WrapperElementFlexSpace } from "../../styles/style";
-import { CardDiv, IconStarDiv, StarWrapper, TeacherInfo } from "./style";
+import {
+  CardDiv,
+  IconStarDiv,
+  StarWrapper,
+  TeacherInfo,
+  TeacherInfoAndCourse,
+  ActionIcons,
+  PriceBadge,
+  RatingStarsContainer,
+} from "./style";
+import { Pargrahph } from "../typography";
 
-
+// SVG components
 const FullStar = () => (
   <svg
     width="24"
@@ -47,56 +56,49 @@ const EmptyStar = () => (
   </svg>
 );
 
-// Cart Icon with animation on toggle
-const CartIcon = ({ active, onClick }) => {
-  return (
-    <svg
-      onClick={onClick}
-      style={{
-        cursor: "pointer",
-        fill: active ? "#1e40af" : "none",
-        stroke: "#2563eb",
-        transition: "fill 0.3s ease, transform 0.2s ease",
-        transform: active ? "scale(1.2)" : "scale(1)",
-      }}
-      width="24"
-      height="24"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      viewBox="0 0 24 24"
-    >
-      <circle cx="9" cy="21" r="1" fill={active ? "#1e40af" : "#2563eb"} />
-      <circle cx="20" cy="21" r="1" fill={active ? "#1e40af" : "#2563eb"} />
-      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-    </svg>
-  );
-};
+const CartIcon = ({ active, onClick }) => (
+  <svg
+    onClick={onClick}
+    style={{
+      cursor: "pointer",
+      fill: active ? "#1e40af" : "none",
+      stroke: "#2563eb",
+      transition: "fill 0.3s ease, transform 0.2s ease",
+      transform: active ? "scale(1.2)" : "scale(1)",
+    }}
+    width="24"
+    height="24"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+  >
+    <circle cx="9" cy="21" r="1" fill={active ? "#1e40af" : "#2563eb"} />
+    <circle cx="20" cy="21" r="1" fill={active ? "#1e40af" : "#2563eb"} />
+    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+  </svg>
+);
 
-// Heart Icon with animation on toggle
-const HeartIcon = ({ active, onClick }) => {
-  return (
-    <svg
-      onClick={onClick}
-      style={{
-        cursor: "pointer",
-        fill: active ? "#dc2626" : "none",
-        stroke: "#ef4444",
-        transition: "fill 0.3s ease, transform 0.2s ease",
-        transform: active ? "scale(1.2)" : "scale(1)",
-      }}
-      width="24"
-      height="24"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      viewBox="0 0 24 24"
-    >
-      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.78 0L12 5.62l-1.02-1.02a5.5 5.5 0 0 0-7.78 7.78l1.02 1.02L12 21.23l7.78-7.78 1.02-1.02a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
-  );
-};
-
+const HeartIcon = ({ active, onClick }) => (
+  <svg
+    onClick={onClick}
+    style={{
+      cursor: "pointer",
+      fill: active ? "#dc2626" : "none",
+      stroke: "#ef4444",
+      transition: "fill 0.3s ease, transform 0.2s ease",
+      transform: active ? "scale(1.2)" : "scale(1)",
+    }}
+    width="24"
+    height="24"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+  >
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.78 0L12 5.62l-1.02-1.02a5.5 5.5 0 0 0-7.78 7.78l1.02 1.02L12 21.23l7.78-7.78 1.02-1.02a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+);
 
 export const Card = ({
   imgSrc,
@@ -117,50 +119,74 @@ export const Card = ({
 
   return (
     <CardDiv>
-      {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "card"}`} />}
+      <ActionIcons>
+        <CartIcon
+          active={cartActive}
+          onClick={() => setCartActive(!cartActive)}
+        />
+        <HeartIcon
+          active={heartActive}
+          onClick={() => setHeartActive(!heartActive)}
+        />
+      </ActionIcons>
 
-      {(teacherImg || teacherName) && (
-        <WrapperElementFlexSpace>
-          <TeacherInfo>
-            {teacherImg && <img src={teacherImg} alt={teacherName} />}
-            <span>{teacherName}</span>
-          </TeacherInfo>
+      {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "الدورة"}`} />}
 
-          <div style={{ marginTop: "12px", display: "flex", gap: "16px" }}>
-            <CartIcon active={cartActive} onClick={() => setCartActive(!cartActive)} />
-            <HeartIcon active={heartActive} onClick={() => setHeartActive(!heartActive)} />
-          </div>
-        </WrapperElementFlexSpace>
-      )}
+      <WrapperElementFlexSpace style={{ padding: "16px" }}>
+        <Pargrahph size="25px">الدورة : {name} </Pargrahph>
+        <TeacherInfo>
+          {teacherImg && <img src={teacherImg} alt={`صورة ${teacherName}`} />}
+          <TeacherInfoAndCourse>
+            {teacherName && (
+              <>
+              <span>teacher : </span>
+              <span>{teacherName}</span>
+              </>
+            )}
+          </TeacherInfoAndCourse>
+        </TeacherInfo>
+      </WrapperElementFlexSpace>
 
       {desc && (
-        <span>
+        <span style={{ padding: "0 20px", marginTop: "4px" }}>
           <strong>{desc}</strong>
         </span>
       )}
 
       <IconStarDiv>
-        <StarWrapper>
-          {Array.from({ length: fullStars }).map((_, index) => (
-            <FullStar key={`full-${index}`} />
-          ))}
-          {hasHalfStar && <HalfStar key="half" />}
-          {Array.from({ length: emptyStars }).map((_, index) => (
-            <EmptyStar key={`empty-${index}`} />
-          ))}
-        </StarWrapper>
+        <RatingStarsContainer>
+          <StarWrapper>
+            {Array.from({ length: fullStars }).map((_, index) => (
+              <FullStar key={`full-${index}`} />
+            ))}
+            {hasHalfStar && <HalfStar key="half" />}
+            {Array.from({ length: emptyStars }).map((_, index) => (
+              <EmptyStar key={`empty-${index}`} />
+            ))}
+          </StarWrapper>
+        </RatingStarsContainer>
 
         {price !== undefined && (
-          <span>
+          <PriceBadge>
             {price === 0 ? (
-              <strong>مجاني</strong>
+              <>مجاني</>
             ) : (
               <>
-                السعر: <strong>{price} ₪</strong>{" "}
-                {priceAfterDiscount && <del>{priceAfterDiscount} ₪</del>}
+                {price} ₪{" "}
+                {priceAfterDiscount && (
+                  <del
+                    style={{
+                      fontSize: "14px",
+                      color: "#9ca3af",
+                      marginLeft: "6px",
+                    }}
+                  >
+                    {priceAfterDiscount} ₪
+                  </del>
+                )}
               </>
             )}
-          </span>
+          </PriceBadge>
         )}
       </IconStarDiv>
     </CardDiv>

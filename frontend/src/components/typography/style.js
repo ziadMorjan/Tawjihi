@@ -34,7 +34,9 @@ export const Pargraph = styled.p`
 opacity: 0.7;
 font-size: 18px;
 word-wrap: 20px;
-margin: 20px 0;
+margin: 10px 0;
+display: flex;
+
 
   font-size: ${(props) => props.size || "14px"};
 

@@ -68,11 +68,10 @@ const shimmer = keyframes`
 `;
 
 export const SkeletonWrapper = styled.div`
-  width: 320px;
+  width: 380px;
   padding: 16px;
   border-radius: 8px;
   background: transparent;
-  border: 1px solid var(--color-primary);
 
   display: flex;
   flex-direction: column;

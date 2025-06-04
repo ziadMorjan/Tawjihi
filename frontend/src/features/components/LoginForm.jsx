@@ -34,6 +34,8 @@ const schema = yup.object({
   password: yup.string().required("كلمة المرور مطلوبة"),
 });
 
+
+
 export const LoginForm = () => {
   const {
     register,
@@ -49,6 +51,8 @@ export const LoginForm = () => {
       console.error("Submission error:", error);
     }
   };
+
+
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -74,9 +78,9 @@ export const LoginForm = () => {
         <Button type="submit"> تسجيل الدخول </Button>
       </FormActions>
 
-<MiddleLineLetter text={"أو تسجيل الدخول باستخدام"} />     
-           <WrapperElementFlexCenter>
-        <SocialMediaIcon icon={"google"} />
+<MiddleLineLetter text={"أو تسجيل الدخول باستخدام"} />
+      <WrapperElementFlexCenter>
+        <SocialMediaIcon icon={"google"}  />
         <SocialMediaIcon icon={"facebook"} />
       </WrapperElementFlexCenter>
 
