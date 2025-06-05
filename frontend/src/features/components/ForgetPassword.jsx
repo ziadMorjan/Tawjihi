@@ -9,7 +9,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 // Components
-import { LogoAndButton } from "../../components/LogoAndButton";
 import { H3, Pargrahph } from "../../components/typography";
 
 // Styled
@@ -26,6 +25,10 @@ import {
 // Paths
 import { PATH } from "../../routes";
 
+// Config
+import { API_URL } from "../../config";
+import { useState } from "react";
+
 // Validation Schema
 const schema = yup
   .object()
@@ -39,6 +42,7 @@ const schema = yup
 
 export const ForgetPassword = () => {
   const navigate = useNavigate();
+  const [serverError, setServerError] = useState("");
 
   const {
     register,
@@ -48,27 +52,28 @@ export const ForgetPassword = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/forget-password",
-        data
-      );
+      const response = await axios.post(`${API_URL}/auth/forgetPassword`, data);
       console.log("Submitted:", response.data);
+      localStorage.setItem("email", data.email);
       navigate(`/${PATH.VerificationCode}`);
     } catch (error) {
-      console.error(
-        "Submission error:",
-        error?.response?.data?.message || error.message
-      );
+      const message =
+        error.response?.data?.message ||
+        "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
+
+      localStorage.removeItem("email");
+      setServerError(message);
     }
   };
 
   return (
     <>
-      <LogoAndButton />
       <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
+        {serverError && <ErrorText>{serverError}</ErrorText>}
+
         <FormGroup>
           <H3>إعادة تعيين كلمة المرور</H3>
-          <Pargrahph size="16px" >
+          <Pargrahph size="16px">
             من فضلك أدخل بريدك الإلكتروني لإرسال رمز التحقق لإعادة تعيين كلمة
             المرور
           </Pargrahph>

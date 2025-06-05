@@ -1,13 +1,23 @@
-//react
+// react
+import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router-dom";
 
-//yup
+// yup
 import * as yup from "yup";
-//axios
+
+// axios
 import axios from "axios";
 
-//styled
+// context
+import { AuthContext } from "../../context/AuthContext";
+
+// config
+import { API_URL } from "../../config";
+import { PATH } from "../../routes";
+
+// styled components
 import {
   Form,
   FormGroup,
@@ -23,16 +33,19 @@ import {
   CheckboxLabel,
 } from "./style";
 
-// Password regex
+// Password validation regex
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
 // Validation schema
 const schema = yup.object({
-  firstName: yup
+  name: yup
     .string()
     .required("الاسم الأول مطلوب")
     .min(3, "ادخل الاسم كامل"),
-  phone: yup.string().required("رقم الهاتف مطلوب"),
+  phone: yup
+    .string()
+    .required("رقم الهاتف مطلوب")
+    .matches(/^\d{10}$/, "رقم الهاتف غير صالح، يجب أن يكون 10 أرقام"),
   email: yup
     .string()
     .required("البريد الإلكتروني مطلوب")
@@ -41,7 +54,7 @@ const schema = yup.object({
     .string()
     .required("كلمة المرور مطلوبة")
     .matches(passwordRegex, "invalid-password"),
-  rePassword: yup
+  confirmPassword: yup
     .string()
     .required("تأكيد كلمة المرور مطلوب")
     .oneOf([yup.ref("password")], "كلمتا المرور غير متطابقتين"),
@@ -49,53 +62,66 @@ const schema = yup.object({
 });
 
 export const RegisterForm = () => {
+  const navigate = useNavigate();
+  const { setIsAuth } = useContext(AuthContext);
+
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm({ resolver: yupResolver(schema) });
+    reset,
+  } = useForm({
+    resolver: yupResolver(schema),
+    mode: "onChange",
+  });
 
-  const passwordValue = watch("password");
+  const passwordValue = watch("password") || "";
 
   const passwordRules = [
-    {
-      label: "يجب أن تحتوي على حرف صغير (a-z)",
-      isValid: /[a-z]/.test(passwordValue || ""),
-    },
-    {
-      label: "يجب أن تحتوي على حرف كبير (A-Z)",
-      isValid: /[A-Z]/.test(passwordValue || ""),
-    },
-    {
-      label: "يجب أن تحتوي على رقم (0-9)",
-      isValid: /\d/.test(passwordValue || ""),
-    },
-    {
-      label: "يجب أن تحتوي على رمز خاص مثل (@, $, !, %, *, ?, &)",
-      isValid: /[@$!%*?&]/.test(passwordValue || ""),
-    },
-    {
-      label: "يجب أن تكون 8 أحرف على الأقل",
-      isValid: (passwordValue || "").length >= 8,
-    },
+    { label: "يجب أن تحتوي على حرف صغير (a-z)", isValid: /[a-z]/.test(passwordValue) },
+    { label: "يجب أن تحتوي على حرف كبير (A-Z)", isValid: /[A-Z]/.test(passwordValue) },
+    { label: "يجب أن تحتوي على رقم (0-9)", isValid: /\d/.test(passwordValue) },
+    { label: "يجب أن تحتوي على رمز خاص مثل (@, $, !, %, *, ?, &)", isValid: /[@$!%*?&]/.test(passwordValue) },
+    { label: "يجب أن تكون 8 أحرف على الأقل", isValid: passwordValue.length >= 8 },
   ];
 
   const onSubmit = async (data) => {
+    setLoading(true);
+    setServerError("");
+
     try {
-      const response = await axios.post("http://localhost:3000/register", data);
-      console.log("Submitted:", response.data);
+      const response = await axios.post(`${API_URL}/auth/signup`, data, { withCredentials: true });
+
+      // Optionally store user if returned
+      if (response.data.user) {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      }
+
+      // Set auth context and redirect
+      setIsAuth(true);
+      reset();
+      navigate(PATH.Main);
     } catch (error) {
-      console.error("Submission error:", error);
+      const message =
+        error.response?.data?.message || "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
+      setServerError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
+      {serverError && <ErrorText>{serverError}</ErrorText>}
+
       <FormGroup>
         <Label>الاسم كامل</Label>
-        <Input type="text" {...register("firstName")} />
-        {errors.firstName && <ErrorText>{errors.firstName.message}</ErrorText>}
+        <Input type="text" {...register("name")} />
+        {errors.name && <ErrorText>{errors.name.message}</ErrorText>}
       </FormGroup>
 
       <FormGroup>
@@ -132,9 +158,9 @@ export const RegisterForm = () => {
 
       <FormGroup>
         <Label>تأكيد كلمة المرور</Label>
-        <Input type="password" {...register("rePassword")} />
-        {errors.rePassword && (
-          <ErrorText>{errors.rePassword.message}</ErrorText>
+        <Input type="password" {...register("confirmPassword")} />
+        {errors.confirmPassword && (
+          <ErrorText>{errors.confirmPassword.message}</ErrorText>
         )}
       </FormGroup>
 
@@ -149,7 +175,9 @@ export const RegisterForm = () => {
       </FormGroup>
 
       <FormActions>
-        <Button type="submit">تسجيل</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? "جاري التسجيل..." : "تسجيل"}
+        </Button>
       </FormActions>
     </Form>
   );

@@ -19,19 +19,30 @@ import {
   FormForgetPassword,
 } from "./style";
 
-// Validation schema for 6-digit verification code
+// Paths
+import { PATH } from "../../routes";
+
+// Config
+import { API_URL } from "../../config";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Validation schema for 6-digit verification resetCode
 const schema = yup.object({
-  code: yup
+  resetCode: yup
     .string()
     .length(6, "يجب أن يتكون رمز التحقق من 6 أرقام")
     .required("رمز التحقق مطلوب"),
 });
 
 export const VerificationCode = () => {
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState("");
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -41,13 +52,18 @@ export const VerificationCode = () => {
 
   const onSubmit = async (data) => {
     try {
-      const code = inputsRef.current.map((input) => input.value).join("");
-      const response = await axios.post("http://localhost:3000/verify-code", {
-        code,
+      const resetCode = inputsRef.current.map((input) => input.value).join("");
+      const response = await axios.post(`${API_URL}/auth/verifyResetCode`, {
+        resetCode,
       });
       console.log("Submitted:", response.data);
+      navigate(`/${PATH.ResetPassword}`);
+      reset();
     } catch (error) {
-      console.error("Submission error:", error);
+      const message =
+        error.response?.data?.message ||
+        "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
+      setServerError(message);
     }
   };
 
@@ -59,7 +75,7 @@ export const VerificationCode = () => {
 
     // Set combined value to hidden field
     const combinedCode = inputsRef.current.map((input) => input.value).join("");
-    setValue("code", combinedCode);
+    setValue("resetCode", combinedCode);
 
     // Move to next input
     if (value && index < inputsRef.current.length - 1) {
@@ -73,9 +89,13 @@ export const VerificationCode = () => {
     <>
       <LogoAndButton />
       <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
+        {serverError && <ErrorText>{serverError}</ErrorText>}
+
         <FormGroup>
           <H3>التحقق من الرمز</H3>
-          <Pargrahph size='16px'>سوف نرسل لك كود التحقق عبر الايميل الخاص بك</Pargrahph>
+          <Pargrahph size="16px">
+            سوف نرسل لك كود التحقق عبر الايميل الخاص بك
+          </Pargrahph>
           <Label>رمز التحقق</Label>
           <div style={{ display: "flex", gap: "10px", direction: "ltr" }}>
             {arr.map((_, index) => (
@@ -88,8 +108,10 @@ export const VerificationCode = () => {
               />
             ))}
           </div>
-          <input type="hidden" {...register("code")} />
-          {errors.code && <ErrorText>{errors.code.message}</ErrorText>}
+          <input type="hidden" {...register("resetCode")} />
+          {errors.resetCode && (
+            <ErrorText>{errors.resetCode.message}</ErrorText>
+          )}
         </FormGroup>
 
         <FormActions>

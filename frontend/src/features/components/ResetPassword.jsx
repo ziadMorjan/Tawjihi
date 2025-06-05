@@ -29,17 +29,22 @@ import {
 
 import { PATH } from "../../routes";
 
+// Config
+import { API_URL } from "../../config";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+
 // Password validation regex
 const fullPasswordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 // Validation schema
 const schema = yup.object({
-  password: yup
+  newPassword: yup
     .string()
     .required("كلمة المرور مطلوبة")
     .matches(fullPasswordRegex, "invalid-password"),
-  rePassword: yup
+  newConfirmPassword: yup
     .string()
     .required("تأكيد كلمة المرور مطلوب")
     .oneOf([yup.ref("password")], "كلمتا المرور غير متطابقتين"),
@@ -47,12 +52,14 @@ const schema = yup.object({
 
 export const ResetPassword = () => {
   const navigate = useNavigate();
+  const { setIsAuth } = useContext(AuthContext);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
+    reset,
   } = useForm({ resolver: yupResolver(schema) });
 
   const passwordValue = watch("password");
@@ -82,14 +89,26 @@ export const ResetPassword = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/reset-password",
-        {
-          password: data.password,
-        }
-      );
+      const response = await axios.post(`${API_URL}/auth/resetPassword`, {
+        newPassword: data.newPassword,
+        newConfirmPassword: data.newConfirmPassword,
+        email: localStorage.getItem("email"),
+      },{
+        withCredentials: true,
+      });
+
       console.log("Password reset:", response.data);
-      navigate(`/${PATH.VerificationCode}`);
+
+      if (response.data.user) {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      }
+
+      setIsAuth(true);
+      reset();
+      localStorage.removeItem('email')
+
+      navigate(`/${PATH.Main}`);
+
     } catch (error) {
       console.error("Submission error:", error);
     }
@@ -100,7 +119,9 @@ export const ResetPassword = () => {
       <LogoAndButton />
       <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
         <H3>إعادة تعيين كلمة المرور</H3>
-        <Pargrahph size='16px'>قم بإدخال كلمة المرور الجديدة الخاصة بك</Pargrahph>
+        <Pargrahph size="16px">
+          قم بإدخال كلمة المرور الجديدة الخاصة بك
+        </Pargrahph>
 
         <FormGroup>
           <Label>كلمة المرور</Label>
