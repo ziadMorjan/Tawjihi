@@ -30,7 +30,6 @@ const OAuthSuccess = () => {
   }, [navigate, setIsAuth]);
 
   if (loading) return <div>Logging in...</div>;
-  return null;
 };
 
 export default OAuthSuccess;
