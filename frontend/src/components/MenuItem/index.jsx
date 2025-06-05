@@ -9,7 +9,16 @@ import {
   PersonOutline as PersonOutlineIcon,
   Logout as LogoutIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
+  Cookie,
 } from "@mui/icons-material";
+import { convertToObj } from "../../utils/convertToObject";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import { PATH } from "../../routes";
+
+import axios from "axios";
+
+import { API_URL } from "../../config";
 
 // Styled Menu
 const StyledMenu = styled((props) => (
@@ -48,12 +57,25 @@ const StyledMenu = styled((props) => (
 export default function CustomizedMenus() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const { setIsAuth } = React.useContext(AuthContext);
 
+  const navigate = useNavigate();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
-    setAnchorEl(null);
+
+  let user = localStorage.getItem("user");
+  if (user) {
+    user = convertToObj(user);
+  }
+
+  const handleClose = async () => {
+    localStorage.removeItem("user");
+    await axios.get(`${API_URL}/auth/logout`, {
+      withCredentials: true,
+    });
+    setIsAuth(false);
+    navigate(`${PATH.Main}`);
   };
 
   return (
@@ -74,33 +96,32 @@ export default function CustomizedMenus() {
           minWidth: "100%",
         }}
       >
-        مرحبا علي
+        {user ? user.name : "زائر"}
       </Button>
 
       <StyledMenu
         id="customized-menu"
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
         slotProps={{
           list: {
             "aria-labelledby": "customized-button",
           },
         }}
       >
-        <MenuItem onClick={handleClose} disableRipple>
+        <MenuItem disableRipple>
           <PersonOutlineIcon />
           الصفحة الشخصية
         </MenuItem>
 
         <Divider sx={{ my: 0.5, borderColor: "#eee" }} />
 
-        <MenuItem onClick={handleClose} disableRipple>
+        <MenuItem disableRipple>
           <FavoriteBorderIcon />
           المفضلة
         </MenuItem>
 
-        <MenuItem onClick={handleClose} disableRipple>
+        <MenuItem disableRipple>
           <ShoppingCartOutlinedIcon />
           السلة
         </MenuItem>

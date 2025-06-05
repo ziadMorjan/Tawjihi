@@ -4,6 +4,7 @@ const {
     uploadUserFiles,
     handleUserFiles
 } = require("../controllers/UserController");
+const { protect } = require("../middlewares/authMiddleware");
 const {
     signupValidator,
     loginValidator,
@@ -16,7 +17,8 @@ const {
     login,
     forgetPassword,
     verifyResetCod,
-    resetPassword
+    resetPassword,
+    logout
 } = require("../controllers/AuthController");
 const { createToken } = require("../utils/JWTs");
 
@@ -81,5 +83,11 @@ router.patch(
     resetPasswordValidator,
     resetPassword
 );
+
+router.get("/logout",
+    protect,
+    logout
+);
+
 
 module.exports = router;
