@@ -38,6 +38,9 @@ const MainPage = () => {
     return true;
   });
 
+  if (localStorage.getItem("user")) {
+  }
+
   return (
     <>
       <ModalTeacher isOpen="true" />

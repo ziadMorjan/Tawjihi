@@ -1,5 +1,5 @@
 //react
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 //style
@@ -12,8 +12,9 @@ import Hamburger from "../../components/humborgar";
 //Paths of routers
 import { PATH } from "../../routes";
 
-// context 
+// context
 import { ModalContext } from "../../context/ModalContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -21,18 +22,34 @@ export const NavBar = () => {
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
+  const { setIsAuth } = useContext(AuthContext);
+  let user = localStorage.getItem("user");
+  useEffect(() => {
+    if (user) {
+      setIsAuth(true);
+    }
+  }, []);
+
   return (
     <Nav className="navBar">
       <Hamburger isOpen={menuOpen} toggleMenu={toggleMenu} />
       <ul className={`navBarItems ${menuOpen ? "open" : ""}`}>
-        <li><Link to={PATH.Main}>الصفحة الرئيسة</Link></li>
-        <li><Link to={PATH.Courses}>الدورات</Link></li>
-        <li><Link to={`/${PATH.About}`}>من نحن</Link></li>
-        <li><Link to={PATH.Contact}>تواصل معنا</Link></li>
-        <li><Link to={PATH.News}>اخر الاخبار</Link></li>
+        <li>
+          <Link to={PATH.Main}>الصفحة الرئيسة</Link>
+        </li>
+        <li>
+          <Link to={PATH.Courses}>الدورات</Link>
+        </li>
+        <li>
+          <Link to={`/${PATH.About}`}>من نحن</Link>
+        </li>
+        <li>
+          <Link to={PATH.Contact}>تواصل معنا</Link>
+        </li>
+        <li>
+          <Link to={PATH.News}>اخر الاخبار</Link>
+        </li>
       </ul>
-
-      
 
       <LoginAndRegisterButton
         onClick={() => setIsOpen(true)}

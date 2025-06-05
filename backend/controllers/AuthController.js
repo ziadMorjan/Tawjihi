@@ -6,6 +6,25 @@ const { createToken } = require("../utils/JWTs");
 const CustomError = require("../utils/CustomError");
 const { sendEmail } = require("../utils/emails");
 
+const sendAuthRes = function (res, user, statusCode) {
+    const token = createToken(user.id);
+    const isDev = process.env.NODE_ENV !== 'production';
+    const options = {
+        httpOnly: true,
+        sameSite: isDev ? 'Lax' : 'None',
+        secure: !isDev,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+
+    res.cookie('token', token, options);
+
+    res.status(statusCode).json({
+        status: "success",
+        user,
+        token
+    });
+}
+
 const signup = asyncErrorHandler(async function (req, res, next) {
     if (req.body.role === "teacher")
         req.body.isActive = false;
@@ -18,14 +37,7 @@ const signup = asyncErrorHandler(async function (req, res, next) {
             message: "We reive your request to join us as a teacher, we will contact with you in 24 hours",
         });
     }
-
-    let token = createToken(user.id);
-
-    res.status(201).json({
-        status: "success",
-        user,
-        token
-    });
+    sendAuthRes(res, user, 201);
 });
 
 const login = asyncErrorHandler(async function (req, res) {
@@ -34,13 +46,7 @@ const login = asyncErrorHandler(async function (req, res) {
     if (!user.isActive || !bcryptjs.compareSync(req.body.password, user.password))
         throw new CustomError("Wrong email or password", 400);
 
-    let token = createToken(user.id);
-
-    res.status(200).json({
-        status: "success",
-        token
-    });
-
+    sendAuthRes(res, user, 200);
 });
 
 const forgetPassword = asyncErrorHandler(async function (req, res) {
@@ -112,18 +118,29 @@ const resetPassword = asyncErrorHandler(async function (req, res) {
     user.PasswordChangedAt = Date.now();
     await user.save();
 
-    let token = createToken(user.id);
+    sendAuthRes(res, user, 201);
+});
 
+const logout = (req, res) => {
+    const isDev = process.env.NODE_ENV !== 'production';
+    const options = {
+        httpOnly: true,
+        sameSite: isDev ? 'Lax' : 'None',
+        secure: !isDev,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+    res.clearCookie("token", options);
     res.status(200).json({
         status: "success",
-        token
+        message: "Logged out"
     });
-});
+}
 
 module.exports = {
     signup,
     login,
     forgetPassword,
     verifyResetCod,
-    resetPassword
+    resetPassword,
+    logout
 }

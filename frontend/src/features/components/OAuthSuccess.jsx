@@ -15,7 +15,10 @@ const OAuthSuccess = () => {
       .get(`${API_URL}/users/me`, { withCredentials: true })
       .then((response) => {
         console.log("user:", response.data.data.doc);
-        setIsAuth(true);
+        if (response.data.data.doc) {
+          localStorage.setItem("user", JSON.stringify(response.data.data.doc));
+          // setIsAuth(true);
+        }
         navigate(PATH.Main);
       })
       .catch((error) => {

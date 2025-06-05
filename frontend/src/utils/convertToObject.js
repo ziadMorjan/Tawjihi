@@ -1,0 +1,1 @@
+export const convertToObj = (str) => JSON.parse(str)
