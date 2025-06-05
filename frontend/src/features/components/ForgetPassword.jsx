@@ -1,11 +1,15 @@
-//react
+// React
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-//yup
+
+// Yup
 import * as yup from "yup";
-//axios
+
+// Axios
 import axios from "axios";
-//hooks
+
+// Hooks
 import { useNavigate } from "react-router-dom";
 
 // Components
@@ -27,7 +31,6 @@ import { PATH } from "../../routes";
 
 // Config
 import { API_URL } from "../../config";
-import { useState } from "react";
 
 // Validation Schema
 const schema = yup
@@ -43,50 +46,59 @@ const schema = yup
 export const ForgetPassword = () => {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const onSubmit = async (data) => {
+    setLoading(true);
+    setServerError("");
+
     try {
       const response = await axios.post(`${API_URL}/auth/forgetPassword`, data);
       console.log("Submitted:", response.data);
+
       localStorage.setItem("email", data.email);
       navigate(`/${PATH.VerificationCode}`);
     } catch (error) {
       const message =
         error.response?.data?.message ||
-        "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
+        "حدث خطأ أثناء إرسال البريد الإلكتروني. حاول مرة أخرى.";
 
       localStorage.removeItem("email");
       setServerError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
-        {serverError && <ErrorText>{serverError}</ErrorText>}
+    <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
+      {serverError && <ErrorText>{serverError}</ErrorText>}
 
-        <FormGroup>
-          <H3>إعادة تعيين كلمة المرور</H3>
-          <Pargrahph size="16px">
-            من فضلك أدخل بريدك الإلكتروني لإرسال رمز التحقق لإعادة تعيين كلمة
-            المرور
-          </Pargrahph>
+      <FormGroup>
+        <H3>إعادة تعيين كلمة المرور</H3>
+        <Pargrahph size="16px">
+          من فضلك أدخل بريدك الإلكتروني لإرسال رمز التحقق لإعادة تعيين كلمة
+          المرور
+        </Pargrahph>
 
-          <Label>البريد الإلكتروني</Label>
-          <Input type="email" {...register("email")} />
-          {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
-        </FormGroup>
+        <Label>البريد الإلكتروني</Label>
+        <Input type="email" {...register("email")} disabled={loading} />
+        {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
+      </FormGroup>
 
-        <FormActions>
-          <Button type="submit">ارسل كود التحقق</Button>
-        </FormActions>
-      </FormForgetPassword>
-    </>
+      <FormActions>
+        <Button type="submit" disabled={loading}>
+          {loading ? "جاري الإرسال..." : "ارسل كود التحقق"}
+        </Button>
+      </FormActions>
+    </FormForgetPassword>
   );
 };

@@ -1,23 +1,16 @@
-// react
 import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
-
-// yup
 import * as yup from "yup";
-
-// axios
 import axios from "axios";
 
-// context
+// Context & Config
 import { AuthContext } from "../../context/AuthContext";
-
-// config
 import { API_URL } from "../../config";
 import { PATH } from "../../routes";
 
-// styled components
+// Styled Components
 import {
   Form,
   FormGroup,
@@ -36,12 +29,9 @@ import {
 // Password validation regex
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
-// Validation schema
+// Yup schema
 const schema = yup.object({
-  name: yup
-    .string()
-    .required("الاسم الأول مطلوب")
-    .min(3, "ادخل الاسم كامل"),
+  name: yup.string().required("الاسم الأول مطلوب").min(3, "ادخل الاسم كامل"),
   phone: yup
     .string()
     .required("رقم الهاتف مطلوب")
@@ -64,7 +54,6 @@ const schema = yup.object({
 export const RegisterForm = () => {
   const navigate = useNavigate();
   const { setIsAuth } = useContext(AuthContext);
-
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -82,11 +71,23 @@ export const RegisterForm = () => {
   const passwordValue = watch("password") || "";
 
   const passwordRules = [
-    { label: "يجب أن تحتوي على حرف صغير (a-z)", isValid: /[a-z]/.test(passwordValue) },
-    { label: "يجب أن تحتوي على حرف كبير (A-Z)", isValid: /[A-Z]/.test(passwordValue) },
+    {
+      label: "يجب أن تحتوي على حرف صغير (a-z)",
+      isValid: /[a-z]/.test(passwordValue),
+    },
+    {
+      label: "يجب أن تحتوي على حرف كبير (A-Z)",
+      isValid: /[A-Z]/.test(passwordValue),
+    },
     { label: "يجب أن تحتوي على رقم (0-9)", isValid: /\d/.test(passwordValue) },
-    { label: "يجب أن تحتوي على رمز خاص مثل (@, $, !, %, *, ?, &)", isValid: /[@$!%*?&]/.test(passwordValue) },
-    { label: "يجب أن تكون 8 أحرف على الأقل", isValid: passwordValue.length >= 8 },
+    {
+      label: "يجب أن تحتوي على رمز خاص مثل (@, $, !, %, *, ?, &)",
+      isValid: /[@$!%*?&]/.test(passwordValue),
+    },
+    {
+      label: "يجب أن تكون 8 أحرف على الأقل",
+      isValid: passwordValue.length >= 8,
+    },
   ];
 
   const onSubmit = async (data) => {
@@ -94,20 +95,23 @@ export const RegisterForm = () => {
     setServerError("");
 
     try {
-      const response = await axios.post(`${API_URL}/auth/signup`, data, { withCredentials: true });
+      const response = await axios.post(`${API_URL}/auth/signup`, data, {
+        withCredentials: true,
+      });
 
-      // Optionally store user if returned
       if (response.data.user) {
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        setIsAuth(true);
+        reset();
+        navigate(PATH.Main);
+      } else {
+        throw new Error("حدث خطأ أثناء إنشاء الحساب.");
       }
-
-      // Set auth context and redirect
-      setIsAuth(true);
-      reset();
-      navigate(PATH.Main);
     } catch (error) {
       const message =
-        error.response?.data?.message || "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
+        error.response?.data?.message ||
+        error.message ||
+        "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
       setServerError(message);
     } finally {
       setLoading(false);
@@ -120,25 +124,25 @@ export const RegisterForm = () => {
 
       <FormGroup>
         <Label>الاسم كامل</Label>
-        <Input type="text" {...register("name")} />
+        <Input type="text" {...register("name")} disabled={loading} />
         {errors.name && <ErrorText>{errors.name.message}</ErrorText>}
       </FormGroup>
 
       <FormGroup>
         <Label>البريد الإلكتروني</Label>
-        <Input type="email" {...register("email")} />
+        <Input type="email" {...register("email")} disabled={loading} />
         {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
       </FormGroup>
 
       <FormGroup>
         <Label>رقم الهاتف</Label>
-        <Input type="tel" {...register("phone")} />
+        <Input type="tel" {...register("phone")} disabled={loading} />
         {errors.phone && <ErrorText>{errors.phone.message}</ErrorText>}
       </FormGroup>
 
       <FormGroup>
         <Label>كلمة المرور</Label>
-        <Input type="password" {...register("password")} />
+        <Input type="password" {...register("password")} disabled={loading} />
         {errors.password && (
           <ErrorText>
             {errors.password.message === "invalid-password" ? (
@@ -158,7 +162,11 @@ export const RegisterForm = () => {
 
       <FormGroup>
         <Label>تأكيد كلمة المرور</Label>
-        <Input type="password" {...register("confirmPassword")} />
+        <Input
+          type="password"
+          {...register("confirmPassword")}
+          disabled={loading}
+        />
         {errors.confirmPassword && (
           <ErrorText>{errors.confirmPassword.message}</ErrorText>
         )}
@@ -166,7 +174,7 @@ export const RegisterForm = () => {
 
       <FormGroup>
         <CheckboxContainer>
-          <Checkbox {...register("terms")} id="terms" />
+          <Checkbox {...register("terms")} id="terms" disabled={loading} />
           <CheckboxLabel htmlFor="terms">
             أوافق على الشروط والأحكام
           </CheckboxLabel>
