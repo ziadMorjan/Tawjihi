@@ -59,15 +59,17 @@ export const LoginForm = () => {
 
       if (response.data.user) {
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        setIsAuth(true);
+        reset();
+        navigate(PATH.Main);
+      } else {
+        throw new Error("لم يتم العثور على بيانات المستخدم.");
       }
-
-      setIsAuth(true);
-      reset();
-      navigate(PATH.Main);
     } catch (error) {
       const message =
         error.response?.data?.message ||
-        "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
+        error.message ||
+        "حدث خطأ أثناء محاولة تسجيل الدخول. حاول مرة أخرى.";
       setServerError(message);
     } finally {
       setLoading(false);
@@ -80,19 +82,19 @@ export const LoginForm = () => {
 
       <FormGroup>
         <Label>البريد الإلكتروني</Label>
-        <Input type="email" {...register("email")} />
+        <Input type="email" {...register("email")} disabled={loading} />
         {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
       </FormGroup>
 
       <FormGroup>
         <Label>كلمة المرور </Label>
-        <Input type="password" {...register("password")} />
+        <Input type="password" {...register("password")} disabled={loading} />
         {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
       </FormGroup>
 
       <FormGroup>
         <Label>
-          <Link to={`/${PATH.ForgetPassword}`}>هل نسيت كلمة السر</Link>
+          <Link to={`/${PATH.ForgetPassword}`}>هل نسيت كلمة السر؟</Link>
         </Label>
       </FormGroup>
 

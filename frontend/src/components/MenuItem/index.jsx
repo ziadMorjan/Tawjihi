@@ -1,6 +1,4 @@
 import * as React from "react";
-
-// MUI
 import { styled, alpha } from "@mui/material/styles";
 import { Button, Menu, MenuItem, Divider } from "@mui/material";
 import {
@@ -9,18 +7,14 @@ import {
   PersonOutline as PersonOutlineIcon,
   Logout as LogoutIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
-  Cookie,
 } from "@mui/icons-material";
-import { convertToObj } from "../../utils/convertToObject";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { PATH } from "../../routes";
-
 import axios from "axios";
-
 import { API_URL } from "../../config";
 
-// Styled Menu
+// Styled dropdown menu
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -58,25 +52,37 @@ export default function CustomizedMenus() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { setIsAuth } = React.useContext(AuthContext);
-
   const navigate = useNavigate();
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  let user = localStorage.getItem("user");
-  if (user) {
-    user = convertToObj(user);
-  }
-
-  const handleClose = async () => {
-    localStorage.removeItem("user");
-    await axios.get(`${API_URL}/auth/logout`, {
-      withCredentials: true,
-    });
-    setIsAuth(false);
-    navigate(`${PATH.Main}`);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
+
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem("user");
+      await axios.get(`${API_URL}/auth/logout`, {
+        withCredentials: true,
+      });
+      setIsAuth(false);
+      navigate(PATH.Main);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      handleMenuClose();
+    }
+  };
+
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch {
+    user = null;
+  }
 
   return (
     <div>
@@ -96,39 +102,40 @@ export default function CustomizedMenus() {
           minWidth: "100%",
         }}
       >
-        {user ? user.name : "زائر"}
+        {user?.name || "زائر"}
       </Button>
 
       <StyledMenu
         id="customized-menu"
         anchorEl={anchorEl}
         open={open}
+        onClose={handleMenuClose}
         slotProps={{
           list: {
             "aria-labelledby": "customized-button",
           },
         }}
       >
-        <MenuItem disableRipple>
+        <MenuItem onClick={handleMenuClose} disableRipple>
           <PersonOutlineIcon />
           الصفحة الشخصية
         </MenuItem>
 
         <Divider sx={{ my: 0.5, borderColor: "#eee" }} />
 
-        <MenuItem disableRipple>
+        <MenuItem onClick={handleMenuClose} disableRipple>
           <FavoriteBorderIcon />
           المفضلة
         </MenuItem>
 
-        <MenuItem disableRipple>
+        <MenuItem onClick={handleMenuClose} disableRipple>
           <ShoppingCartOutlinedIcon />
           السلة
         </MenuItem>
 
         <Divider sx={{ my: 0.5, borderColor: "#eee" }} />
 
-        <MenuItem onClick={handleClose} disableRipple>
+        <MenuItem onClick={handleLogout} disableRipple>
           <LogoutIcon />
           تسجيل خروج
         </MenuItem>

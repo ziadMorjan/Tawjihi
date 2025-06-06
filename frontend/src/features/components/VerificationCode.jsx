@@ -2,7 +2,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Components
 import { LogoAndButton } from "../../components/LogoAndButton";
@@ -24,10 +25,8 @@ import { PATH } from "../../routes";
 
 // Config
 import { API_URL } from "../../config";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-// Validation schema for 6-digit verification resetCode
+// Validation schema for 6-digit reset code
 const schema = yup.object({
   resetCode: yup
     .string()
@@ -38,6 +37,8 @@ const schema = yup.object({
 export const VerificationCode = () => {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -51,33 +52,36 @@ export const VerificationCode = () => {
   const inputsRef = useRef([]);
 
   const onSubmit = async (data) => {
+    setLoading(true);
+    setServerError("");
+
     try {
       const resetCode = inputsRef.current.map((input) => input.value).join("");
       const response = await axios.post(`${API_URL}/auth/verifyResetCode`, {
         resetCode,
       });
+
       console.log("Submitted:", response.data);
       navigate(`/${PATH.ResetPassword}`);
       reset();
     } catch (error) {
       const message =
-        error.response?.data?.message ||
-        "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
+        error.response?.data?.message || "حدث خطأ أثناء التحقق. حاول مرة أخرى.";
       setServerError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleChange = (e, index) => {
     const value = e.target.value;
-    if (!/^\d?$/.test(value)) return; // Only allow single digit
+    if (!/^\d?$/.test(value)) return;
 
     inputsRef.current[index].value = value;
 
-    // Set combined value to hidden field
     const combinedCode = inputsRef.current.map((input) => input.value).join("");
     setValue("resetCode", combinedCode);
 
-    // Move to next input
     if (value && index < inputsRef.current.length - 1) {
       inputsRef.current[index + 1].focus();
     }
@@ -105,6 +109,7 @@ export const VerificationCode = () => {
                 maxLength={1}
                 onChange={(e) => handleChange(e, index)}
                 ref={(el) => (inputsRef.current[index] = el)}
+                disabled={loading}
               />
             ))}
           </div>
@@ -115,7 +120,9 @@ export const VerificationCode = () => {
         </FormGroup>
 
         <FormActions>
-          <Button type="submit">ارسل كود التحقق</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? "جاري التحقق..." : "ارسل كود التحقق"}
+          </Button>
         </FormActions>
       </FormForgetPassword>
     </>
