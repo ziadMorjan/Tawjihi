@@ -12,8 +12,6 @@ const createSubjectValidator = [
         .custom(async (value) => {
             let subject = await Subject.findOne({ name: value });
             if (subject) {
-                console.log(subject);
-
                 throw new CustomError('Subject already exists', 400);
             }
             return true;

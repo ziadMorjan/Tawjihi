@@ -5,7 +5,6 @@ import {
   FormGroup,
   Label,
   Input,
-  Textarea,
   Button,
   CancelButton,
   ErrorText,
@@ -59,7 +58,6 @@ const schema = yup.object({
         ].includes(value[0].type)
       );
     }),
-  comment: yup.string(),
 });
 
 export const ModalTeacher = () => {
@@ -105,7 +103,6 @@ export const ModalTeacher = () => {
     formData.append("phone", data.phone);
     formData.append("password", data.password);
     formData.append("confirmPassword", data.confirmPassword);
-    formData.append("comment", data.comment || "");
     formData.append("cv", data.cv[0]);
     formData.append("role", "teacher");
 
@@ -118,6 +115,7 @@ export const ModalTeacher = () => {
       console.log("Form submitted:", response.data);
       setRes(true);
       reset();
+      setIsOpen(false);
       setTimeout(() => setRes(false), 2000);
     } catch (error) {
       console.error("Form error:", error);
@@ -206,12 +204,6 @@ export const ModalTeacher = () => {
             <Label>السيرة الذاتية (PDF أو Word)</Label>
             <Input type="file" accept=".pdf,.doc,.docx" {...register("cv")} />
             {errors.cv && <ErrorText>{errors.cv.message}</ErrorText>}
-          </FormGroup>
-
-          <FormGroup>
-            <Label>تعليق</Label>
-            <Textarea {...register("comment")} />
-            {errors.comment && <ErrorText>{errors.comment.message}</ErrorText>}
           </FormGroup>
 
           <div

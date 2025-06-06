@@ -30,7 +30,7 @@ const uploadUserFiles = uploadMultipleFields([{ name: "coverImage", maxCount: 1 
 
 const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
     if (req.files) {
-        if (req.files.coverImage[0]) {
+        if (req.files.coverImage) {
             let { mimetype } = req.files.coverImage[0];
             if (!mimetype.startsWith("image"))
                 throw new CustomError("invalid file type for cover image");
@@ -52,7 +52,7 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
             fs.writeFileSync(filePath, buffer);
             req.body.coverImage = name;
         }
-        if (req.files.cv[0]) {
+        if (req.files.cv) {
             let { mimetype } = req.files.cv[0];
             if (!mimetype.endsWith("pdf"))
                 throw new CustomError("invalid file type for cv");
