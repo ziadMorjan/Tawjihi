@@ -189,7 +189,20 @@ const acceptTeacherValidator = [
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
-        .withMessage("Invalid User ID"),
+        .withMessage("Invalid User ID")
+        .custom(async (value) => {
+            let user = await User.findById(value);
+            if (!user) {
+                throw new CustomError("No teacher found", 404);
+            }
+            if (user.role !== "teacher") {
+                throw new CustomError("this user is not a teacher", 400);
+            }
+            if (user.isActive === true) {
+                throw new CustomError("this teacher is already active", 400);
+            }
+            return true;
+        }),
 
     validationMiddleware
 ];
@@ -199,7 +212,17 @@ const refuseTeacherValidator = [
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
-        .withMessage("Invalid User ID"),
+        .withMessage("Invalid User ID")
+        .custom(async (value) => {
+            let user = await User.findById(value);
+            if (!user) {
+                throw new CustomError("No teacher found", 404);
+            }
+            if (user.role !== "teacher") {
+                throw new CustomError("this user is not a teacher", 400);
+            }
+            return true;
+        }),
 
     validationMiddleware
 ];
