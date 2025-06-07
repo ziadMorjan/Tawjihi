@@ -124,8 +124,6 @@ router.route("/:id/refuseTeacher")
 
 router.route("/:id")
     .get(
-        protect,
-        allowedTo("admin"),
         getUserValidator,
         getUser
     )

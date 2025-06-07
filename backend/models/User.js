@@ -34,6 +34,10 @@ const UserSchema = new mongoose.Schema(
             enum: ["admin", "teacher", "user"],
             default: "user"
         },
+        wishlist: [{
+            type: mongoose.Types.ObjectId,
+            ref: "Course"
+        }],
         resetPasswordCode: String,
         resetPasswordCodeExpired: Date,
         resetPasswordCodeVerified: Boolean,
@@ -48,6 +52,13 @@ const UserSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+UserSchema.pre(/^find/, function name(next) {
+    this.populate({
+        path: "wishlist"
+    });
+    next()
+});
 
 UserSchema.pre("save", function (next) {
     if (!this.isModified("password")) next();
