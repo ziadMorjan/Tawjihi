@@ -57,7 +57,7 @@ UserSchema.pre(/^find/, function name(next) {
     this.populate({
         path: "wishlist"
     });
-    next()
+    next();
 });
 
 UserSchema.pre("save", function (next) {
