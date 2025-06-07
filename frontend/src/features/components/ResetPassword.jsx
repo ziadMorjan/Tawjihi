@@ -26,8 +26,8 @@ import { API_URL } from "../../config";
 import { AuthContext } from "../../context/AuthContext";
 
 // Password regex
-
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
 
 // Validation schema
 const schema = yup.object({

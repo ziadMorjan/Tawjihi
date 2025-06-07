@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom';
 //Provider Context Modal
 import { ModalProvider } from './context/ModalContext';
 import { AuthProvider } from './context/AuthContext';
+import { LogOutProvider } from './context/LogoutContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,7 +16,10 @@ root.render(
     <BrowserRouter>
       <ModalProvider>
         <AuthProvider>
-          <App />
+          <LogOutProvider>
+
+            <App />
+          </LogOutProvider>
 
 
         </AuthProvider>

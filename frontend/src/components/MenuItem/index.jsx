@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { LogOutContext } from "../../context/LogoutContext";
 import { PATH } from "../../routes";
 import axios from "axios";
 import { API_URL } from "../../config";
@@ -52,6 +53,8 @@ export default function CustomizedMenus() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { setIsAuth } = React.useContext(AuthContext);
+  const  {setIsLogout}  = React.useContext(LogOutContext);
+
   const navigate = useNavigate();
 
   const handleClick = (event) => {
@@ -64,12 +67,14 @@ export default function CustomizedMenus() {
 
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("user");
       await axios.get(`${API_URL}/auth/logout`, {
         withCredentials: true,
       });
       setIsAuth(false);
+      localStorage.removeItem("user");
       navigate(PATH.Main);
+      setIsLogout(true);
+      
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
@@ -95,14 +100,14 @@ export default function CustomizedMenus() {
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
         sx={{
-          color: "var(--color-primary)",
+          color: "var(--color-link)",
           fontSize: "16px",
           textTransform: "none",
           p: 0,
           minWidth: "100%",
         }}
       >
-        {user?.name || "زائر"}
+        {String(user?.name).split(" ")[0]}{" "}
       </Button>
 
       <StyledMenu

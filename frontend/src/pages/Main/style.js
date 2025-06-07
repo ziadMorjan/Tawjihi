@@ -42,11 +42,11 @@ align-items: center;
 justify-content: space-between;
 `
 
-export const WrapperCard = styled.div`
-display: flex;
-align-items: center;
-justify-content: center;
-flex-wrap: wrap;
-gap: 20px;
-margin: 70px 0px;
-`
+export const WrapperCards = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 70px 0px;
+`;
