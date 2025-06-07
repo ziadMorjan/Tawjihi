@@ -20,13 +20,15 @@ import { useContext, useEffect, useState } from "react";
 import { ModalContext } from "../../context/ModalContext";
 // axios
 import axios from "axios";
-
 // API URL
 import { API_URL } from "../../config";
 
+// MUI Components
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 // Password regex
-const fullPasswordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
 // Validation schema
 const schema = yup.object({
@@ -39,7 +41,7 @@ const schema = yup.object({
   password: yup
     .string()
     .required("كلمة المرور مطلوبة")
-    .matches(fullPasswordRegex, "invalid-password"),
+    .matches(passwordRegex, "invalid-password"),
   confirmPassword: yup
     .string()
     .required("تأكيد كلمة المرور مطلوب")
@@ -71,6 +73,10 @@ export const ModalTeacher = () => {
 
   const { isOpen, setIsOpen } = useContext(ModalContext);
   const [res, setRes] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false); // ✅ Added
+
   const passwordValue = watch("password");
 
   const passwordRules = [
@@ -106,32 +112,39 @@ export const ModalTeacher = () => {
     formData.append("cv", data.cv[0]);
     formData.append("role", "teacher");
 
+    setIsLoading(true);
+    setErrorMessage("");
+
     try {
       const response = await axios.post(`${API_URL}/auth/signup`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
+
       console.log("Form submitted:", response.data);
       setRes(true);
+      setShowAlert(true); // ✅ Show alert
       reset();
+
       setIsOpen(false);
-      setTimeout(() => setRes(false), 2000);
+      setTimeout(() => setRes(false), 10000);
     } catch (error) {
       console.error("Form error:", error);
+      setErrorMessage("حدث خطأ أثناء إرسال النموذج. يرجى المحاولة لاحقًا.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const onCancel = () => {
     reset();
     setRes(false);
+    setErrorMessage("");
     setIsOpen(false);
   };
 
   useEffect(() => {
     document.body.style.overflowX = "hidden";
     document.body.style.overflowY = isOpen ? "hidden" : "auto";
-
     return () => {
       document.body.style.overflowY = "auto";
       document.body.style.overflowX = "hidden";
@@ -141,7 +154,32 @@ export const ModalTeacher = () => {
   return (
     <>
       {isOpen && <div className="modal-overlay" onClick={onCancel} />}
+      <Snackbar
+        open={showAlert}
+        autoHideDuration={10000}
+        onClose={() => setShowAlert(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          severity="success"
+          onClose={() => setShowAlert(false)}
+          sx={{
+            width: "400px",
+            height: "80px",
+            display: "flex",
+            alignItems: "center",
+            fontSize: "1.2rem",
+          }}
+        >
+          تم ارسال الطلب بنجاح{" "}
+        </Alert>
+      </Snackbar>
+
       <ModalDiv className={isOpen ? "show bodyModal" : "hide"}>
+        {errorMessage && (
+          <p style={{ color: "red", marginTop: "1rem" }}>{errorMessage}</p>
+        )}
+
         <Form onSubmit={handleSubmit(onSubmit)}>
           <FormGroup>
             <Label>الاسم كامل</Label>
@@ -167,12 +205,7 @@ export const ModalTeacher = () => {
             {errors.password && (
               <ErrorText>
                 {errors.password.message === "invalid-password" ? (
-                  <ul
-                    style={{
-                      paddingRight: "1rem",
-                      margin: "0.5rem 0",
-                    }}
-                  >
+                  <ul style={{ paddingRight: "1rem", margin: "0.5rem 0" }}>
                     {passwordRules.map((rule, index) => (
                       <li
                         key={index}
@@ -214,7 +247,9 @@ export const ModalTeacher = () => {
               alignItems: "center",
             }}
           >
-            <Button type="submit">إرسال</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "جاري الإرسال..." : "إرسال"}
+            </Button>
             <CancelButton
               style={{ background: "red", color: "white" }}
               type="button"
@@ -223,12 +258,6 @@ export const ModalTeacher = () => {
               إلغاء
             </CancelButton>
           </div>
-
-          {res && (
-            <p style={{ color: "green", marginTop: "1rem" }}>
-              ✅ تم إرسال الطلب بنجاح
-            </p>
-          )}
         </Form>
       </ModalDiv>
     </>

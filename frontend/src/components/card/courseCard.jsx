@@ -139,7 +139,7 @@ export const Card = ({
           <TeacherInfoAndCourse>
             {teacherName && (
               <>
-              <span>teacher : </span>
+              <span>المعلم : </span>
               <span>{teacherName}</span>
               </>
             )}

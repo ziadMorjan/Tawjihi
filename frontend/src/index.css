@@ -82,12 +82,7 @@ a:hover {
   background-color: var(--color-primary-hover);
 }
 
-.card {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+
 
 .alert-success {
   background-color: var(--color-success-bg);
