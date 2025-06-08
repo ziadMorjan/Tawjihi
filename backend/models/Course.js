@@ -65,12 +65,14 @@ CourseSchema.pre(/^find/, function (next) {
 
 CourseSchema.post("save", function (doc) {
     if (doc.coverImage)
-        doc.coverImage = `${process.env.BASE_URL}/images/courses/${doc.coverImage}`;
+        if (!doc.coverImage.startsWith("http"))
+            doc.coverImage = `${process.env.BASE_URL}/images/courses/${doc.coverImage}`;
 });
 
 CourseSchema.post("init", function (doc) {
     if (doc.coverImage)
-        doc.coverImage = `${process.env.BASE_URL}/images/courses/${doc.coverImage}`;
+        if (!doc.coverImage.startsWith("http"))
+            doc.coverImage = `${process.env.BASE_URL}/images/courses/${doc.coverImage}`;
 });
 
 module.exports = mongoose.model('Course', CourseSchema);

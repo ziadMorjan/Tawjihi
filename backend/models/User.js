@@ -17,6 +17,11 @@ const UserSchema = new mongoose.Schema(
             unique: [true, "email must be unique"],
             lowercase: true,
         },
+        description: {
+            type: String,
+            minlength: 10,
+            maxlength: 1000,
+        },
         googleId: String,
         facebookId: String,
         password: {
@@ -68,9 +73,11 @@ UserSchema.pre("save", function (next) {
 
 const setFileUrlInRes = doc => {
     if (doc.coverImage)
-        doc.coverImage = `${process.env.BASE_URL}/images/users/${doc.coverImage}`;
+        if (!doc.coverImage.startsWith("http"))
+            doc.coverImage = `${process.env.BASE_URL}/images/users/${doc.coverImage}`;
     if (doc.cv)
-        doc.cv = `${process.env.BASE_URL}/cvs/${doc.cv}`;
+        if (!doc.cv.startsWith("http"))
+            doc.cv = `${process.env.BASE_URL}/cvs/${doc.cv}`;
 }
 
 UserSchema.post("save", doc => setFileUrlInRes(doc));

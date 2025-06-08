@@ -31,6 +31,8 @@ import { LogOutContext } from "../../context/LogoutContext";
 
 // UI MUi
 import { Alert, Button, Snackbar } from "@mui/material";
+import { Link } from "react-router-dom";
+import { PATH } from "../../routes";
 
 const MainPage = () => {
   const { isLogout, setIsLogout } = useContext(LogOutContext);
@@ -137,7 +139,9 @@ const MainPage = () => {
           {dataTeachers.length === 0 ? (
             <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
           ) : (
-            <Button>عرض المزيد</Button>
+            <Button style={{ width: "100%", display: "block" }}>
+              <Link to={`/${PATH.Courses}`}> عرض المزيد</Link>
+            </Button>
           )}
         </WrapperCards>
       </Containers>
@@ -172,7 +176,9 @@ const MainPage = () => {
           {dataTeachers.length === 0 ? (
             <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
           ) : (
-            <Button>عرض المزيد</Button>
+            <Button style={{ width: "100%", display: "block" }}>
+              <Link to={`/${PATH.Teacher}`}> عرض المزيد</Link>
+            </Button>
           )}
         </WrapperCards>
       </Containers>

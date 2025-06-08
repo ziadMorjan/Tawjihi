@@ -13,6 +13,9 @@ import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
 } from "@mui/icons-material";
 
+import MenuBookIcon from '@mui/icons-material/MenuBook'; // Import the course-related icon
+
+
 //context
 import { AuthContext } from "../../context/AuthContext";
 import { LogOutContext } from "../../context/LogoutContext";
@@ -138,7 +141,7 @@ export default function CustomizedMenus() {
         <Divider sx={{ my: 0.5, borderColor: "#eee" }} />
 
         <MenuItem onClick={handleMenuClose} disableRipple>
-          <FavoriteBorderIcon />
+          <MenuBookIcon />
           دوراتي
         </MenuItem>
 
