@@ -7,6 +7,7 @@ import { RegisterForm } from "../features/components/Register";
 import { ForgetPassword } from "../features/components/ForgetPassword";
 import { VerificationCode } from "../features/components/VerificationCode";
 import { ResetPassword } from "../features/components/ResetPassword";
+import Teachers from "../pages/Teachers";
 
 
 // Pages (lazy loaded)
@@ -25,6 +26,7 @@ export const PATH = {
     ForgetPassword: "forget-password",
     VerificationCode: "verification-code",
     ResetPassword: "reset-password",
+    Teachers: "teachers",
 };
 
 export const routers = [
@@ -33,6 +35,7 @@ export const routers = [
     { path: PATH.ForgetPassword, element: <ForgetPassword /> },
     { path: PATH.VerificationCode, element: <VerificationCode /> },
     { path: PATH.ResetPassword, element: <ResetPassword /> },
+    { path: PATH.Teachers, element: <Teachers /> },
 
     {       
         path: PATH.Auth,
