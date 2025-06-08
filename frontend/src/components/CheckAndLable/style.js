@@ -8,6 +8,7 @@ export const Label = styled.label`
   font-size: 16px;
   cursor: pointer;
   user-select: none;
+
 `;
 
 export const CheckAndLabelWrapper = styled.div`
@@ -20,6 +21,7 @@ export const CheckAndLabelWrapper = styled.div`
   &:hover {
     background-color: var(--color-primary);
   }
+
 `;
 
 export const CheckAndLabelContainer = styled.div`

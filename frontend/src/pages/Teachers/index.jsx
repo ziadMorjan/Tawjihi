@@ -7,6 +7,7 @@ import { useApi } from '../../hooks/useApi';
 import { API_URL } from '../../config';
 import { NavBar } from '../../layout/navBar';
 import Footer from '../../layout/footer';
+import { CardSkeleton } from '../../components/Loading/LoadingCard';
 
 function Teachers() {
   const { data = [], isLoading, error } = useApi(`${API_URL}/users/?role=teacher`);
@@ -27,10 +28,13 @@ function Teachers() {
       <section>
         <Containers>
           <div className='teachers'>
-            {isLoading && <p>Loading teachers...</p>}
-            {error && <p>Error: {error.message}</p>}
-
-            {!isLoading && !error && (
+            {isLoading ? (
+              Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+            ) : error ? (
+              <p>Error: {error.message}</p>
+            ) : data.length === 0 ? (
+              <p>.لا يوجد معلمين</p>
+            ) : (
               <>
                 {/* Teachers list */}
                 <div className="teachers-list">
@@ -75,9 +79,7 @@ function Teachers() {
           </div>
         </Containers>
       </section>
-      
-      <Footer/>
-
+      <Footer />
     </StyledTeachersPage>
   );
 }
