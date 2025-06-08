@@ -177,7 +177,7 @@ const MainPage = () => {
             <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
           ) : (
             <Button style={{ width: "100%", display: "block" }}>
-              <Link to={`/${PATH.Teacher}`}> عرض المزيد</Link>
+              <Link to={`/${PATH.Teachers}`}> عرض المزيد</Link>
             </Button>
           )}
         </WrapperCards>
