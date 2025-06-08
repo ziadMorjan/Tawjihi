@@ -1,4 +1,8 @@
+//react
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
+
+//MUI Components
 import { styled, alpha } from "@mui/material/styles";
 import { Button, Menu, MenuItem, Divider } from "@mui/material";
 import {
@@ -8,11 +12,17 @@ import {
   Logout as LogoutIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+
+//context
 import { AuthContext } from "../../context/AuthContext";
 import { LogOutContext } from "../../context/LogoutContext";
+
+//Paths
 import { PATH } from "../../routes";
+//axios
 import axios from "axios";
+
+//URL
 import { API_URL } from "../../config";
 
 // Styled dropdown menu
@@ -53,7 +63,7 @@ export default function CustomizedMenus() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { setIsAuth } = React.useContext(AuthContext);
-  const  {setIsLogout}  = React.useContext(LogOutContext);
+  const { setIsLogout } = React.useContext(LogOutContext);
 
   const navigate = useNavigate();
 
@@ -74,7 +84,6 @@ export default function CustomizedMenus() {
       localStorage.removeItem("user");
       navigate(PATH.Main);
       setIsLogout(true);
-      
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
@@ -127,6 +136,11 @@ export default function CustomizedMenus() {
         </MenuItem>
 
         <Divider sx={{ my: 0.5, borderColor: "#eee" }} />
+
+        <MenuItem onClick={handleMenuClose} disableRipple>
+          <FavoriteBorderIcon />
+          دوراتي
+        </MenuItem>
 
         <MenuItem onClick={handleMenuClose} disableRipple>
           <FavoriteBorderIcon />

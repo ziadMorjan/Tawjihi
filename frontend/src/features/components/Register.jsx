@@ -1,13 +1,22 @@
+//react
 import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
+
+//yup
 import * as yup from "yup";
+
+//axios
 import axios from "axios";
 
-// Context & Config
+// Context 
 import { AuthContext } from "../../context/AuthContext";
+
+//URL
 import { API_URL } from "../../config";
+
+//Paths
 import { PATH } from "../../routes";
 
 // Styled Components

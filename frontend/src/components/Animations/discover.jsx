@@ -16,7 +16,7 @@ const StyledLottie = styled(Lottie)`
   }
 `;
 
-export const DiscoverCoruses = () => {
+export const DiscoverCourses = () => {
   return (
     <StyledLottie
       animationData={discoverAnimation}

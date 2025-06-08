@@ -5,12 +5,12 @@ import { AnimationWrapper, Info } from "./style";
 //component
 import { H1, Pargrahph } from "../typography";
 import { Button } from "../Buttons/button";
-import { DiscoverCoruses } from "../Animations/discover";
+import { DiscoverCourses } from "../Animations/discover";
 
 export const DiscoverSection = () => {
   return (
     <AnimationWrapper>
-      <DiscoverCoruses />
+      <DiscoverCourses />
 
       <Info>
         <H1 color={"var(--color-heading)"}>

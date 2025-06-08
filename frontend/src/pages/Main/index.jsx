@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
+//react
+import { useEffect, useState, useContext } from "react";
 
 // style
 import { Wrapper, WrapperCards, Wrappers, WrapperUl } from "./style";
 
-// layouts
+// layouts Components
 import { NavBar } from "../../layout/navBar";
 import Footer from "../../layout/footer";
 
@@ -22,13 +23,13 @@ import { TeacherCard } from "../../components/card/teacherCard";
 // hooks
 import { useApi } from "../../hooks/useApi";
 
-// api
+// URL
 import { API_URL } from "../../config";
 
 // context
 import { LogOutContext } from "../../context/LogoutContext";
 
-// UI
+// UI MUi
 import { Alert, Button, Snackbar } from "@mui/material";
 
 const MainPage = () => {
@@ -133,7 +134,11 @@ const MainPage = () => {
                 />
               ))
           )}
-          <Button>عرض المزيد</Button>
+          {dataTeachers.length === 0 ? (
+            <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
+          ) : (
+            <Button>عرض المزيد</Button>
+          )}
         </WrapperCards>
       </Containers>
 
@@ -163,7 +168,12 @@ const MainPage = () => {
                 />
               ))
           )}
-          <Button>عرض المزيد</Button>
+
+          {dataTeachers.length === 0 ? (
+            <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
+          ) : (
+            <Button>عرض المزيد</Button>
+          )}
         </WrapperCards>
       </Containers>
 

@@ -5,11 +5,11 @@ import { Link } from "react-router-dom";
 //style
 import { Nav } from "./style";
 
-// components/NavBar.jsx
+// components
 import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
 import Hamburger from "../../components/humborgar";
 
-//Paths of routers
+//Paths 
 import { PATH } from "../../routes";
 
 // context

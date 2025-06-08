@@ -1,4 +1,4 @@
-// components/card/CardSkeleton.jsx
+//style
 import {
   SkeletonWrapper,
   SkeletonAvatar,

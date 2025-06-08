@@ -1,5 +1,9 @@
+//react
 import React from "react";
+//global style
 import { WrapperElementFlexSpace } from "../../styles/style";
+
+//style
 import {
   CardDiv,
   IconStarDiv,
@@ -10,6 +14,8 @@ import {
   PriceBadge,
   RatingStarsContainer,
 } from "./style";
+
+//components
 import { Pargrahph } from "../typography";
 
 // SVG components
@@ -139,8 +145,8 @@ export const Card = ({
           <TeacherInfoAndCourse>
             {teacherName && (
               <>
-              <span>المعلم : </span>
-              <span>{teacherName}</span>
+                <span>المعلم : </span>
+                <span>{teacherName}</span>
               </>
             )}
           </TeacherInfoAndCourse>
