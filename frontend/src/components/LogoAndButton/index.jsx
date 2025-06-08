@@ -6,12 +6,21 @@ import { Logo } from "../logo";
 import { LoginAndRegisterButton } from "../loginButtonAndRegister";
 import { Link } from "react-router-dom";
 import { PATH } from "../../routes";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
-import CustomizedMenus from "../../components/MenuItem";
+import CustomizedMenus from "../MenuItem/MneuItem";
 export const LogoAndButton = () => {
-  const { isAuth } = useContext(AuthContext);
+
+  //check if user is auth
+    const { isAuth ,setIsAuth } = useContext(AuthContext);
+    let user = localStorage.getItem("user");
+    useEffect(() => {
+      if (user) {
+        setIsAuth(true);
+      }
+    }, []);
+
   return (
     <div>
       <WrapperNav>
