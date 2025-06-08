@@ -1,10 +1,11 @@
+//global style
 import { WrapperElementFlexSpace } from "../../styles/style";
+
+//style
 import {
   CardDiv,
   IconStarDiv,
   StarWrapper,
-  TeacherInfo,
-  TeacherInfoAndCourse,
   RatingStarsContainer,
 } from "./style";
 import { Pargrahph } from "../typography";
@@ -53,12 +54,7 @@ const EmptyStar = () => (
   </svg>
 );
 
-export const TeacherCard = ({
-  imgSrc,
-  name,
-  desc,
-  starIcon = 0,
-}) => {
+export const TeacherCard = ({ imgSrc, name, desc, starIcon = 0 }) => {
   const fullStars = Math.floor(starIcon);
   const hasHalfStar = starIcon % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
@@ -69,7 +65,6 @@ export const TeacherCard = ({
 
       <WrapperElementFlexSpace style={{ padding: "16px" }}>
         <Pargrahph size="25px">المعلم : {name} </Pargrahph>
-
       </WrapperElementFlexSpace>
 
       {desc && (

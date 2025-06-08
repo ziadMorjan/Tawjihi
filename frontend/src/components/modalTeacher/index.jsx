@@ -75,7 +75,7 @@ export const ModalTeacher = () => {
   const [res, setRes] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showAlert, setShowAlert] = useState(false); // ✅ Added
+  const [showAlert, setShowAlert] = useState(false); 
 
   const passwordValue = watch("password");
 

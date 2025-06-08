@@ -1,8 +1,15 @@
+//axios
 import axios from "axios";
+//react
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+//Path
 import { PATH } from "../../routes/";
+//URL
 import { API_URL } from "../../config";
+
+//context
 import { AuthContext } from "../../context/AuthContext";
 
 const OAuthSuccess = () => {

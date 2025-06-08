@@ -41,6 +41,15 @@ export const CardDiv = styled.div`
   @media (max-width: 767px) {
     max-width: 100%;
   }
+
+  animation: cardAnim linear forwards;
+  animation-timeline: view() ;
+  animation-range:entry 0% ;
+  
+  @keyframes cardAnim {
+    from {opacity: 0.5; transform: translateY(20px) scale(0.1);}
+    to {opacity: 1; transform: translateY(0px) scale(1);}
+  }
 `;
 
 export const IconStarDiv = styled.div`

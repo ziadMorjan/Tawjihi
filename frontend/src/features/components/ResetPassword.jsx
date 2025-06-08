@@ -1,9 +1,15 @@
+//react
 import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+//yup
+import * as yup from "yup";
+
+//axios
+import axios from "axios";
+
 
 // Components
 import { LogoAndButton } from "../../components/LogoAndButton";

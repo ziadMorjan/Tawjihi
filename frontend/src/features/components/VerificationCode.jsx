@@ -1,9 +1,13 @@
+//react
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import axios from "axios";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+//yup
+import * as yup from "yup";
+//axios
+import axios from "axios";
 
 // Components
 import { LogoAndButton } from "../../components/LogoAndButton";
@@ -23,7 +27,7 @@ import {
 // Paths
 import { PATH } from "../../routes";
 
-// Config
+// URL
 import { API_URL } from "../../config";
 
 // Validation schema for 6-digit reset code

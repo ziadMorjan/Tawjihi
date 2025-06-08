@@ -29,7 +29,7 @@ import {
 // Paths
 import { PATH } from "../../routes";
 
-// Config
+// URL
 import { API_URL } from "../../config";
 
 // Validation Schema

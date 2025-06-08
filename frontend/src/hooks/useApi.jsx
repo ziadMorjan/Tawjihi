@@ -1,7 +1,7 @@
-// src/hooks/useApi.js
-import axios from "axios";
+//react
 import { useEffect, useState } from "react";
-
+//axios
+import axios from "axios";
 export const useApi = (url) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);

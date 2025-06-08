@@ -1,5 +1,7 @@
-// src/features/components/SocialMediaIcon.jsx
+//style
 import { SocialWrapper } from "./style";
+
+//URL
 import { API_URL } from "../../config";
 
 export const SocialMediaIcon = ({ icon }) => {

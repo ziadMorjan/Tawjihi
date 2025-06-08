@@ -1,3 +1,4 @@
+//styled
 import { NotFoundContainer, Title, Description, BackButton } from "./style";
 
 const NotFound = () => {
