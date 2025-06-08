@@ -38,7 +38,7 @@ export const NavBar = () => {
           <Link to={PATH.Main}>الصفحة الرئيسة</Link>
         </li>
         <li>
-          <Link to={PATH.Courses}>الدورات</Link>
+          <Link to={`/${PATH.Courses}`}>الدورات</Link>
         </li>
         <li>
           <Link to={`/${PATH.About}`}>من نحن</Link>

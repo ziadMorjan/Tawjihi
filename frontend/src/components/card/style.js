@@ -1,8 +1,7 @@
 import styled from "styled-components";
 
 export const CardDiv = styled.div`
-  width: 100%;
-  max-width: 380px;
+  width: 350px;
   background: #ffffff;
   border-radius: 24px;
   overflow: hidden;
@@ -42,14 +41,14 @@ export const CardDiv = styled.div`
     max-width: 100%;
   }
 
-  animation: cardAnim linear forwards;
+  /* animation: cardAnim linear forwards;
   animation-timeline: view() ;
   animation-range:entry 0% ;
   
   @keyframes cardAnim {
     from {opacity: 0.5; transform: translateY(20px) scale(0.1);}
     to {opacity: 1; transform: translateY(0px) scale(1);}
-  }
+  } */
 `;
 
 export const IconStarDiv = styled.div`

@@ -16,9 +16,13 @@ const Auth = lazy(() => import("../pages/Auth"));
 const OAuthSuccess = lazy(() => import("../features/components/OAuthSuccess"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
+
+const Courses = lazy(() => import("../pages/Courses"));
+
 export const PATH = {
     Main: "/",
     About: "about",
+    Courses: "courses",
     Auth: "auth",
     Login: "auth/login",
     Register: "auth/register",
@@ -30,6 +34,8 @@ export const PATH = {
 export const routers = [
     { index: true, element: <Main /> },
     { path: PATH.About, element: <About /> },
+    { path: PATH.Courses, element: <Courses /> },
+
     { path: PATH.ForgetPassword, element: <ForgetPassword /> },
     { path: PATH.VerificationCode, element: <VerificationCode /> },
     { path: PATH.ResetPassword, element: <ResetPassword /> },

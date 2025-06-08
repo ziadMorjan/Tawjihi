@@ -48,5 +48,7 @@ export const WrapperCards = styled.div`
   justify-content: center; 
   flex-wrap: wrap;
   gap: 20px;
-  margin: 70px 0px;
+  margin: 20px 0px;
 `;
+
+
