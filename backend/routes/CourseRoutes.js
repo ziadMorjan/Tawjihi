@@ -2,6 +2,8 @@ const express = require('express');
 
 const lessonRouts = require("./LessonRouts");
 
+const reviewsRouts = require("./ReviewRoutes");
+
 const {
     protect,
     allowedTo
@@ -27,6 +29,8 @@ const {
 let router = express.Router();
 
 router.use("/:courseId/lessons", lessonRouts);
+
+router.use("/:courseId/reviews", reviewsRouts);
 
 router.route('/')
     .get(getAllCourses)
