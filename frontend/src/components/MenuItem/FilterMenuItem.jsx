@@ -6,6 +6,7 @@ import { styled, alpha } from "@mui/material/styles";
 import { Button, Menu, MenuItem, } from "@mui/material";
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
+  Padding,
 } from "@mui/icons-material";
 
 import UpdateIcon from '@mui/icons-material/Update';
@@ -47,7 +48,7 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function FilterMenuItem() {
+export default function FilterMenuItem({currentPage, totalPages}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -115,8 +116,10 @@ export default function FilterMenuItem() {
           </MenuItem>
         </StyledMenu>
       </div>
+      
+      
 
-      <Pargraph>عرض الصفحات رقم 1 من 10</Pargraph>
+      <Pargraph>عرض الصفحة رقم <span style={{ padding: "0px 6px" }}>{totalPages}</span> من <span style={{ padding: "0px 6px" }}> {currentPage}</span></Pargraph>
       <H3 color="var(--color-link)">ترتيب باستخدام</H3>
     </div>
   );
