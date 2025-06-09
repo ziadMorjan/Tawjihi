@@ -1,13 +1,27 @@
 import React, { useState } from 'react';
+// style
 import { StyledTeachersPage } from './style';
+
+// Api url
+import { API_URL } from '../../config';
+
+// Layouts
+import { NavBar } from '../../layout/navBar';
+import Footer from '../../layout/footer';
+
+// Hooks
+import { useApi } from '../../hooks/useApi';
+
+// Components
 import { LogoAndButton } from '../../components/LogoAndButton';
 import { Containers } from '../../components/Container';
 import { TeacherCard } from '../../components/card/teacherCard';
-import { useApi } from '../../hooks/useApi';
-import { API_URL } from '../../config';
-import { NavBar } from '../../layout/navBar';
-import Footer from '../../layout/footer';
 import { CardSkeleton } from '../../components/Loading/LoadingCard';
+import FilterMenuItem from '../../components/MenuItem/FilterMenuItem';
+import { Pargrahph } from '../../components/typography';
+import { PriceBadge } from '../../components/card/style';
+import Paginations from '../../components/paginations';
+
 
 function Teachers() {
   const { data = [], isLoading, error } = useApi(`${API_URL}/users/?role=teacher`);
@@ -25,8 +39,12 @@ function Teachers() {
     <StyledTeachersPage>
       <LogoAndButton />
       <NavBar />
+      
       <section>
         <Containers>
+          <div className='num-of-pages'>
+            <Pargrahph>  عرض الصفحة رقم<span>{currentPage}</span>من<span>{totalPages}</span></Pargrahph>
+          </div>
           <div className='teachers'>
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
@@ -49,31 +67,8 @@ function Teachers() {
                 </div>
 
                 {/* Pagination buttons */}
-                <div className="pagination">
-                  <button
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                  >
-                    Prev
-                  </button>
-
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentPage(index + 1)}
-                      disabled={index + 1 === currentPage}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-
-                  <button
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
-                </div>
+                <Paginations currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}/>
+                
               </>
             )}
           </div>
