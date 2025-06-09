@@ -115,6 +115,7 @@ export const Card = ({
   starIcon = 0,
   price,
   priceAfterDiscount,
+  branch
 }) => {
   const [cartActive, setCartActive] = React.useState(false);
   const [heartActive, setHeartActive] = React.useState(false);
@@ -124,7 +125,7 @@ export const Card = ({
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
   return (
-    <CardDiv>
+    <CardDiv className="card-div">
       <ActionIcons>
         <CartIcon
           active={cartActive}
@@ -140,6 +141,8 @@ export const Card = ({
 
       <WrapperElementFlexSpace style={{ padding: "16px" }}>
         <Pargrahph size="25px">الدورة : {name} </Pargrahph>
+                <Pargrahph size="18px">الفرع : {branch} </Pargrahph>
+
         <TeacherInfo>
           {teacherImg && <img src={teacherImg} alt={`صورة ${teacherName}`} />}
           <TeacherInfoAndCourse>
