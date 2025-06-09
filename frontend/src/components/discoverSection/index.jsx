@@ -1,13 +1,15 @@
 //style
 import { AnimationWrapper, Info } from "./style";
 
-
 //component
 import { H1, Pargrahph } from "../typography";
 import { Button } from "../Buttons/button";
 import { DiscoverCourses } from "../Animations/discover";
+import { useNavigate } from "react-router-dom";
+import { PATH } from "../../routes";
 
 export const DiscoverSection = () => {
+  const navigate = useNavigate();
   return (
     <AnimationWrapper>
       <DiscoverCourses />
@@ -27,7 +29,9 @@ export const DiscoverSection = () => {
           ويشجّعهم على الاستمرار في التعلّم مدى الحياة، مما يساهم في بناء مجتمع
           معرفي متقدم.
         </Pargrahph>
-        <Button>اكتشف الدورات</Button>
+        <Button onClick={() => navigate(`/${PATH.Courses}`)}>
+          اكتشف الدورات
+        </Button>
       </Info>
     </AnimationWrapper>
   );

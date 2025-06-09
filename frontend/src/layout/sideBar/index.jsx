@@ -1,49 +1,47 @@
-//style
 import { SidebarContainer, SidebarHeader, CheckSection } from "./style";
-
-//components
 import { CheckAndLabel } from "../../components/CheckAndLable";
 import { Pargraph } from "../../components/typography/style";
 
-const Sidebar = () => {
+const Sidebar = ({ branches, courses, prices, selectedFilters, onFilterChange, onReset }) => {
+  const renderSection = (title, items) => (
+    <>
+      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
+        {title}
+      </Pargraph>
+      <CheckSection>
+        {items.map(({ id, text }) => (
+          <CheckAndLabel
+            key={id}
+            id={id}
+            text={text}
+            checked={selectedFilters.includes(id)}
+            onChange={onFilterChange}
+          />
+        ))}
+      </CheckSection>
+    </>
+  );
+
   return (
     <SidebarContainer>
       <SidebarHeader>التصنيفات</SidebarHeader>
-      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
-        الافرع{" "}
-      </Pargraph>
-      <CheckSection>
-        <CheckAndLabel text="العلمي" id="optA" />
-        <CheckAndLabel text="الأدبي" id="optB" />
-      </CheckSection>
-
-      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
-        الدورات{" "}
-      </Pargraph>
-
-      <CheckSection>
-        <CheckAndLabel text="اللغة العربية" id="optA" />
-        <CheckAndLabel text="اللغة الإنجليزية" id="optB" />
-        <CheckAndLabel text="الرياضيات" id="optC" />
-        <CheckAndLabel text="الفيزياء" id="optD" />
-        <CheckAndLabel text="الكيمياء" id="optE" />
-        <CheckAndLabel text="الأحياء" id="optF" />
-        <CheckAndLabel text="التاريخ" id="optG" />
-        <CheckAndLabel text="الجغرافيا" id="optH" />
-        <CheckAndLabel text="التربية الإسلامية" id="optI" />
-      </CheckSection>
-
-      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
-        السعر{" "}
-      </Pargraph>
-
-      <CheckSection>
-        <CheckAndLabel text="مجاني " id="optA" />
-        <CheckAndLabel text="اقل من 50 " id="optB" />
-        <CheckAndLabel text="اقل من 100 " id="optC" />
-        <CheckAndLabel text="اقل من 200 " id="optD" />
-        <CheckAndLabel text="اقل من 500 " id="optE" />
-      </CheckSection>
+      <button
+        style={{
+          marginBottom: "1rem",
+          background: "#d9534f",
+          color: "#fff",
+          padding: "0.4rem 1rem",
+          borderRadius: "4px",
+          cursor: "pointer",
+          border: "none",
+        }}
+        onClick={onReset}
+      >
+        إعادة تعيين الفلاتر
+      </button>
+      {renderSection("الافرع", branches)}
+      {renderSection("الدورات", courses)}
+      {renderSection("السعر", prices)}
     </SidebarContainer>
   );
 };
