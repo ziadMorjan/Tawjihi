@@ -11,6 +11,7 @@ import { AuthProvider } from './context/AuthContext';
 import { LogOutProvider } from './context/LogoutContext';
 import { DataCoursesProvider } from './context/DataCourses';
 import { NewOldProvider } from './context/NewOldContext';
+import { SearchContextProvider } from './context/SearchContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -21,8 +22,11 @@ root.render(
           <LogOutProvider>
             <DataCoursesProvider>
               <NewOldProvider>
+                <SearchContextProvider>
+                  <App />
 
-                <App />
+                </SearchContextProvider>
+
               </NewOldProvider>
 
             </DataCoursesProvider>

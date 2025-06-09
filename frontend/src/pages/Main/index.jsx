@@ -133,11 +133,16 @@ const MainPage = () => {
                   priceAfterDiscount={item.priceAfterDiscount}
                   teacherName={item.teacher?.name}
                   teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+                  branch = {
+                        item.branches.map((branch) => {
+                    return branch.name
+                  }).join(' | ')
+                      }
                 />
               ))
           )}
           {dataTeachers.length === 0 ? (
-            <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
+            <p style={{ color: "red", display: "block" }}>اتصال انترنت ضعيف يتم التحميل ...</p>
           ) : (
             <>
               <div
@@ -185,7 +190,7 @@ const MainPage = () => {
           )}
 
           {dataTeachers.length === 0 ? (
-            <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
+            <p style={{ color: "red", display: "block" }}>اتصال انترنت ضعيف يتم التحميل ...</p>
           ) : (
             <>
               <div

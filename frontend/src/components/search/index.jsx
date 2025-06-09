@@ -1,11 +1,28 @@
+import { useContext } from "react";
 import { WrapperSearch, InputBar, SvgICon } from "./style";
+import { SearchContext } from "../../context/SearchContext";
+import {useNavigate} from "react-router-dom"
 
+import {PATH} from "../../routes"
 const SearchBar = () => {
+const navigate = useNavigate()
+  const {search , setSearch} = useContext(SearchContext)
+
+  const handleChange =(e)=>{
+setSearch(e.target.value)
+console.log(search)
+  }
+
+  const handleSearch = ()=>{
+    navigate(`/${PATH.Courses}`)
+
+  }
   return (
     <WrapperSearch>
       <InputBar
         type="text"
         placeholder="ابحث عن الدورات ....."
+        onChange={handleChange}
       />
       <SvgICon
         className="iconBar"
@@ -13,6 +30,7 @@ const SearchBar = () => {
         viewBox="0 0 24 24"
         tabIndex="-1"
         title="Search"
+        onClick={handleSearch}
       >
         <path
           fill="var(--color-primary)"

@@ -14,6 +14,7 @@ import { DataCourses } from "../../context/DataCourses";
 import { NewOldContext } from "../../context/NewOldContext";
 import Paginations from "../../components/paginations";
 import { CoursesPageWraper } from "./style";
+import { SearchContext } from "../../context/SearchContext";
 
 const Courses = () => {
   // Fetch course data from API using custom useApi hook
@@ -25,11 +26,14 @@ const Courses = () => {
 
 
 
+
   // Global course data context and state setter
   const { dataCourses, setDataCourses } = useContext(DataCourses);
 
   // Context to determine whether to sort courses as newest or oldest
   const { isNew } = useContext(NewOldContext);
+
+    const { search, setSearch } = useContext(SearchContext);
 
   // When fetchedCourses updates, store them in the global course context
   useEffect(() => {
@@ -86,49 +90,55 @@ const Courses = () => {
   };
 
   // Filter courses based on active filters
-  const filteredCourses = useMemo(() => {
-    return dataCourses.filter((course) => {
-      const name = course.name || "";
-      const branchName = course.branches?.[0]?.name || "";
-      const normalizedBranch = normalizeArabic(branchName);
+const filteredCourses = useMemo(() => {
+  return dataCourses.filter((course) => {
+    const name = course.name || "";
+    const branchName = course.branches?.[0]?.name || "";
+    const normalizedBranch = normalizeArabic(branchName);
 
-      // Course name filter
-      const matchName =
-        filters.names.length === 0 ||
-        filters.names.some((filterName) =>
-          normalizeArabic(name.toLowerCase()).includes(
-            normalizeArabic(filterName.toLowerCase())
-          )
-        );
+    // Course name filter
+    const matchName =
+      filters.names.length === 0 ||
+      filters.names.some((filterName) =>
+        normalizeArabic(name.toLowerCase()).includes(
+          normalizeArabic(filterName.toLowerCase())
+        )
+      );
 
-      // Course branch filter
-      const matchBranch =
-        filters.branches.length === 0 ||
-        filters.branches.some(
-          (filterBranch) => filterBranch === normalizedBranch
-        );
+    // Course branch filter
+    const matchBranch =
+      filters.branches.length === 0 ||
+      filters.branches.some(
+        (filterBranch) => filterBranch === normalizedBranch
+      );
 
-      // Course type filter (matches course name to type keywords)
-      const matchType =
-        filters.types.length === 0 ||
-        filters.types.some((type) =>
-          normalizeArabic(name.toLowerCase()).includes(
-            normalizeArabic(type.toLowerCase())
-          )
-        );
+    // Course type filter
+    const matchType =
+      filters.types.length === 0 ||
+      filters.types.some((type) =>
+        normalizeArabic(name.toLowerCase()).includes(
+          normalizeArabic(type.toLowerCase())
+        )
+      );
 
-      // Course price filter (free or under price limit)
-      const matchPrice =
-        filters.prices.length === 0 ||
-        filters.prices.some((priceFilter) => {
-          if (priceFilter === "free") return course.price === 0;
-          return course.price <= parseInt(priceFilter, 10);
-        });
+    // Course price filter
+    const matchPrice =
+      filters.prices.length === 0 ||
+      filters.prices.some((priceFilter) => {
+        if (priceFilter === "free") return course.price === 0;
+        return course.price <= parseInt(priceFilter, 10);
+      });
 
-      // Only return course if it matches all filter criteria
-      return matchName && matchBranch && matchType && matchPrice;
-    });
-  }, [dataCourses, filters]);
+    // Search filter
+    const matchSearch =
+      !search ||
+      normalizeArabic(name.toLowerCase()).includes(
+        normalizeArabic(search.toLowerCase())
+      );
+
+    return matchName && matchBranch && matchType && matchPrice && matchSearch;
+  });
+}, [dataCourses, filters, search]);
 
   // Final sorting: show newest or oldest based on context
   const finalCourses = useMemo(() => {
