@@ -9,6 +9,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { ModalProvider } from './context/ModalContext';
 import { AuthProvider } from './context/AuthContext';
 import { LogOutProvider } from './context/LogoutContext';
+import { DataCoursesProvider } from './context/DataCourses';
+import { NewOldProvider } from './context/NewOldContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -17,8 +19,14 @@ root.render(
       <ModalProvider>
         <AuthProvider>
           <LogOutProvider>
+            <DataCoursesProvider>
+              <NewOldProvider>
 
-            <App />
+                <App />
+              </NewOldProvider>
+
+            </DataCoursesProvider>
+
           </LogOutProvider>
 
 

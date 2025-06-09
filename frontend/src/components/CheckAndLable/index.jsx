@@ -5,16 +5,11 @@ import {
   Label,
 } from "./style";
 
-export const CheckAndLabel = ({ id, text, checked, onChange }) => {
+export const CheckAndLabel = ({ text, id, onChange }) => {
   return (
-    <CheckAndLabelContainer className={checked ? "active" : ""}>
+    <CheckAndLabelContainer>
       <CheckAndLabelWrapper>
-        <CheckBox
-          type="checkbox"
-          id={id}
-          checked={checked}
-          onChange={() => onChange(id)}
-        />
+        <CheckBox type="checkbox" id={id} onChange={onChange} />
         <Label htmlFor={id}>{text}</Label>
       </CheckAndLabelWrapper>
     </CheckAndLabelContainer>

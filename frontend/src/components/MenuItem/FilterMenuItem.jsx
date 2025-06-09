@@ -1,19 +1,17 @@
-//react
 import * as React from "react";
-
-//MUI Components
 import { styled, alpha } from "@mui/material/styles";
-import { Button, Menu, MenuItem, } from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
-  Padding,
+  Update as UpdateIcon,
+  History as HistoryIcon,
 } from "@mui/icons-material";
-
-import UpdateIcon from '@mui/icons-material/Update';
-import HistoryIcon from '@mui/icons-material/History';
 
 import { H3 } from "../typography";
 import { Pargraph } from "../typography/style";
+import { DataCourses } from "../../context/DataCourses";
+import { NewOldContext } from "../../context/NewOldContext";
+
 // Styled dropdown menu
 const StyledMenu = styled((props) => (
   <Menu
@@ -48,9 +46,13 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function FilterMenuItem({currentPage, totalPages}) {
+export default function FilterMenuItem() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
+  const { dataCourses, setDataCourses } = React.useContext(DataCourses);
+
+  const { isNew, setIsNew } = React.useContext(NewOldContext);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -59,6 +61,22 @@ export default function FilterMenuItem({currentPage, totalPages}) {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  // const handleSortNewest = () => {
+  //   const sorted = [...dataCourses].sort(
+  //     (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // Or use b.id - a.id if no createdAt
+  //   );
+  //   setDataCourses(sorted);
+  //   handleMenuClose();
+  // };
+
+  // const handleSortOldest = () => {
+  //   const sorted = [...dataCourses].sort(
+  //     (a, b) => new Date(a.createdAt) - new Date(b.createdAt) // Or use a.id - b.id
+  //   );
+  //   setDataCourses(sorted);
+  //   handleMenuClose();
+  // };
 
   return (
     <div
@@ -105,21 +123,24 @@ export default function FilterMenuItem({currentPage, totalPages}) {
             },
           }}
         >
-          <MenuItem onClick={handleMenuClose} disableRipple>
-            <UpdateIcon  />
-            الاحدث{" "}
+          <MenuItem
+            onClick={() => {
+              setIsNew("new");
+            }}
+            disableRipple
+          >
+            <UpdateIcon />
+            الأحدث
           </MenuItem>
 
-          <MenuItem onClick={handleMenuClose} disableRipple>
-            <HistoryIcon  />
-            الاقدم{" "}
+          <MenuItem onClick={() => setIsNew("old")} disableRipple>
+            <HistoryIcon />
+            الأقدم
           </MenuItem>
         </StyledMenu>
       </div>
-      
-      
 
-      <Pargraph>عرض الصفحة رقم <span style={{ padding: "0px 6px" }}>{totalPages}</span> من <span style={{ padding: "0px 6px" }}> {currentPage}</span></Pargraph>
+      <Pargraph>عرض الصفحات رقم 1 من 10</Pargraph>
       <H3 color="var(--color-link)">ترتيب باستخدام</H3>
     </div>
   );
