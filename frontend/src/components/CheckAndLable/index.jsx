@@ -1,16 +1,17 @@
+// CheckAndLabel.js
 import {
   CheckAndLabelContainer,
   CheckAndLabelWrapper,
-  CheckBox,
-  Label,
+  HiddenCheckBox,
+  StyledLabel,
 } from "./style";
 
 export const CheckAndLabel = ({ text, id, onChange }) => {
   return (
     <CheckAndLabelContainer>
       <CheckAndLabelWrapper>
-        <CheckBox type="checkbox" id={id} onChange={onChange} />
-        <Label htmlFor={id}>{text}</Label>
+        <HiddenCheckBox type="checkbox" id={id} onChange={onChange} />
+        <StyledLabel htmlFor={id}>{text}</StyledLabel>
       </CheckAndLabelWrapper>
     </CheckAndLabelContainer>
   );
