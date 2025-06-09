@@ -46,7 +46,7 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function FilterMenuItem() {
+export default function FilterMenuItem({totalPages, currentPage}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -141,7 +141,8 @@ export default function FilterMenuItem() {
         </StyledMenu>
       </div>
 
-      <Pargraph>عرض الصفحات رقم 1 من 10</Pargraph>
+
+      <Pargraph>عرض الصفحة رقم<span className="num-page">{currentPage}</span>من<span className="num-page">{totalPages}</span></Pargraph>
       <H3 color="var(--color-link)">ترتيب باستخدام</H3>
     </div>
   );

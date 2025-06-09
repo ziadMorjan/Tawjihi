@@ -13,7 +13,7 @@ const Sidebar = ({ courseNames = [], onFilterChange }) => {
     <SidebarContainer>
       <SidebarHeader>التصنيفات</SidebarHeader>
 
-      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
+      <Pargraph size="16px" style={{ color: "var(--color-link)" , fontSize:"18px" }}>
         الافرع
       </Pargraph>
       <CheckSection>
@@ -30,7 +30,7 @@ const Sidebar = ({ courseNames = [], onFilterChange }) => {
         />
       </CheckSection>
 
-      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
+      <Pargraph size="18px" style={{ color: "var(--color-link)" , fontSize:"18px" }}>
         الدورات
       </Pargraph>
       <CheckSection>
@@ -81,7 +81,7 @@ const Sidebar = ({ courseNames = [], onFilterChange }) => {
         />
       </CheckSection>
 
-      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
+      <Pargraph size="16px" style={{ color: "var(--color-link)" , fontSize:"18px" }}>
         السعر
       </Pargraph>
       <CheckSection>
@@ -112,19 +112,7 @@ const Sidebar = ({ courseNames = [], onFilterChange }) => {
         />
       </CheckSection>
 
-      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
-        اسم الدورة
-      </Pargraph>
-      <CheckSection>
-        {courseNames.map((name, index) => (
-          <CheckAndLabel
-            key={index}
-            text={name}
-            id={`course-${index}`}
-            onChange={handleCheckboxChange}
-          />
-        ))}
-      </CheckSection>
+      
     </SidebarContainer>
   );
 };

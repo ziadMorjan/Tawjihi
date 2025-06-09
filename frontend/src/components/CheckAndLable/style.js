@@ -1,13 +1,36 @@
+// style.js
 import styled from "styled-components";
 
-export const CheckBox = styled.input`
-  margin: 0px 5px;
+// Hide the native checkbox
+export const HiddenCheckBox = styled.input`
+  display: none;
+
+  &:checked + label::before {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
 `;
 
-export const Label = styled.label`
+export const StyledLabel = styled.label`
   font-size: 16px;
   cursor: pointer;
   user-select: none;
+  position: relative;
+  padding-left: 24px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: -25px;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+  }
 
 `;
 
@@ -19,10 +42,8 @@ export const CheckAndLabelWrapper = styled.div`
   transition: background 0.2s ease;
 
   &:hover {
-    background-color: var(--color-primary);
-    color: #fff;
+    color: var(--color-primary);
   }
-
 `;
 
 export const CheckAndLabelContainer = styled.div`
@@ -32,5 +53,4 @@ export const CheckAndLabelContainer = styled.div`
     background-color: #eef6ff;
     color: var(--color-primary);
   }
-  
 `;

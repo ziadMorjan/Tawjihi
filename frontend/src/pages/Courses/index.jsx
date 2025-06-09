@@ -12,6 +12,8 @@ import { WrapperCards } from "../Main/style";
 import { NavBar } from "../../layout/navBar";
 import { DataCourses } from "../../context/DataCourses";
 import { NewOldContext } from "../../context/NewOldContext";
+import Paginations from "../../components/paginations";
+import { CoursesPageWraper } from "./style";
 
 const Courses = () => {
   // Fetch course data from API using custom useApi hook
@@ -20,6 +22,8 @@ const Courses = () => {
     isLoading,
     error,
   } = useApi(`${API_URL}/courses/`);
+
+
 
   // Global course data context and state setter
   const { dataCourses, setDataCourses } = useContext(DataCourses);
@@ -133,68 +137,91 @@ const Courses = () => {
       : [...filteredCourses].reverse();
   }, [filteredCourses, isNew]);
 
+
+
+  //variables for Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = finalCourses.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(finalCourses.length / itemsPerPage);
+
+
+
+
+
   return (
-    <div>
-      {/* Top branding section (logo + button) */}
-      <LogoAndButton />
-      {/* Navigation bar */}
-      <NavBar />
+    <CoursesPageWraper>
+      <div>
+        {/* Top branding section (logo + button) */}
+        <LogoAndButton />
+        {/* Navigation bar */}
+        <NavBar />
 
-      <Containers>
-        {/* Filter menu items (buttons or tags, not checkboxes) */}
-        <FilterMenuItem />
+        <Containers>
+          {/* Filter menu items (buttons or tags, not checkboxes) */}
+          <FilterMenuItem currentPage={currentPage} totalPages={totalPages} />
 
-        <div style={{ display: "flex" }}>
-          {/* Sidebar with filter checkboxes */}
-          <SideBar
-            courseNames={courseNames}
-            onFilterChange={handleFilterChange}
-          />
+          <div style={{ display: "flex" }}>
+            {/* Sidebar with filter checkboxes */}
+            <SideBar
+              courseNames={courseNames}
+              onFilterChange={handleFilterChange}
+            />
 
-          {/* Main content: Course list or loading/error messages */}
-          <div
-            style={{
-              flexGrow: 1,
-              padding: "1rem",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "1rem",
-            }}
-          >
-            {/* Loading state: show skeleton cards */}
-            {isLoading ? (
-              <WrapperCards>
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <CardSkeleton key={i} />
-                ))}
-              </WrapperCards>
-            ) : error ? (
-              // API error state
-              <Typography color="error">فشل تحميل الدورات</Typography>
-            ) : finalCourses.length === 0 ? (
-              // No matching courses after filtering
-              <Typography variant="body1">لا توجد دورات مطابقة.</Typography>
-            ) : (
-              // Render final filtered and sorted courses
-              <WrapperCards>
-                {finalCourses.map((item, index) => (
-                  <Card
-                    key={index}
-                    imgSrc={item.img || "/assets/img/logo.png"}
-                    name={item.name}
-                    starIcon={item.averageRating}
-                    price={item.price}
-                    priceAfterDiscount={item.priceAfterDiscount}
-                    teacherName={item.teacher?.name}
-                    teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                  />
-                ))}
-              </WrapperCards>
-            )}
+            {/* Main content: Course list or loading/error messages */}
+            <div style={{ width: '80%' }}>
+              {/* Loading state: show skeleton cards */}
+              {isLoading ? (
+                <WrapperCards>
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <CardSkeleton key={i} />
+                  ))}
+                </WrapperCards>
+              ) : error ? (
+                // API error state
+                <Typography color="error">فشل تحميل الدورات</Typography>
+              ) : finalCourses.length === 0 ? (
+                // No matching courses after filtering
+                <Typography variant="body1">لا توجد دورات مطابقة.</Typography>
+              ) : (
+                // Render final filtered and sorted courses
+                <WrapperCards>
+                  {currentItems.map((item, index) => (
+                 
+                      < Card
+
+                      
+                      key = { index }
+                      imgSrc = { item.img || "/assets/img/logo.png" }
+                      name = { item.name }
+                      starIcon = { item.averageRating }
+                      price = { item.price }
+                      priceAfterDiscount = { item.priceAfterDiscount }
+                      teacherName = { item.teacher?.name }
+                      teacherImg = { item.teacher?.img || "/assets/img/logo.png" }
+                      branch = {
+                        item.branches.map((branch) => {
+                    return branch.name
+                  }).join(' | ')
+                      }
+                      />
+                  ))}
+
+                </WrapperCards>
+              )}
+
+            </div>
+
           </div>
-        </div>
-      </Containers>
-    </div>
+          {/* Pagination buttons */}
+          {totalPages > 1 && <Paginations currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />}
+
+        </Containers>
+      </div>
+    </CoursesPageWraper>
   );
 };
 
