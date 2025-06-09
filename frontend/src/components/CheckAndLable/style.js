@@ -20,11 +20,17 @@ export const CheckAndLabelWrapper = styled.div`
 
   &:hover {
     background-color: var(--color-primary);
+    color: #fff;
   }
 
 `;
 
 export const CheckAndLabelContainer = styled.div`
   width: 100%;
+
+  &.active {
+    background-color: #eef6ff;
+    color: var(--color-primary);
+  }
   
 `;

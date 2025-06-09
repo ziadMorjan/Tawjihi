@@ -139,9 +139,20 @@ const MainPage = () => {
           {dataTeachers.length === 0 ? (
             <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
           ) : (
-            <Button style={{ width: "100%", display: "block" }}>
-              <Link to={`/${PATH.Courses}`}> عرض المزيد</Link>
-            </Button>
+            <>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Button style={{ width: "fit-content", display: "block" }}>
+                  <Link to={`/${PATH.Courses}`}> عرض المزيد</Link>
+                </Button>
+              </div>
+            </>
           )}
         </WrapperCards>
       </Containers>
@@ -176,9 +187,20 @@ const MainPage = () => {
           {dataTeachers.length === 0 ? (
             <p style={{ color: "red", display: "block" }}>اتصال انترنت خاطئ</p>
           ) : (
-            <Button style={{ width: "100%", display: "block" }}>
-              <Link to={`/${PATH.Teachers}`}> عرض المزيد</Link>
-            </Button>
+            <>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Button style={{ width: "fit-content", display: "block" }}>
+                  <Link to={`/${PATH.Teachers}`}> عرض المزيد</Link>
+                </Button>
+              </div>
+            </>
           )}
         </WrapperCards>
       </Containers>
