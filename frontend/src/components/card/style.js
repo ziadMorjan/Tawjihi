@@ -1,15 +1,17 @@
 import styled from "styled-components";
 
+
 export const CardDiv = styled.div`
-  width: 350px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  max-width: 300px;
   background: #ffffff;
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin: 20px 0;
-  display: flex;
-  flex-direction: column;
+  margin: 20px;
   position: relative;
 
   &:hover {
@@ -37,19 +39,34 @@ export const CardDiv = styled.div`
     color: #374151;
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: 1024px) {
     max-width: 100%;
   }
 
-  /* animation: cardAnim linear forwards;
-  animation-timeline: view() ;
-  animation-range:entry 0% ;
-  
+  @media (max-width: 767px) {
+    width: 100%;
+    margin: 16px 0;
+  }
+
+  /* Optional scroll animation: uncomment to enable */
+  /*
+  animation: cardAnim 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+
   @keyframes cardAnim {
-    from {opacity: 0.5; transform: translateY(20px) scale(0.1);}
-    to {opacity: 1; transform: translateY(0px) scale(1);}
-  } */
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0px) scale(1);
+    }
+  }
+  */
 `;
+
 
 export const IconStarDiv = styled.div`
   display: flex;

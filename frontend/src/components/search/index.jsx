@@ -1,30 +1,53 @@
-//style
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { WrapperSearch, InputBar, SvgICon } from "./style";
+import { PATH } from "../../routes";
 
-export const SearchBar = () => {
+const SearchBar = () => {
+  const navigate = useNavigate();
+  const [value, setValue] = useState("");
+
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    localStorage.setItem("search", newValue);
+  };
+
+  const handleSearch = () => {
+    console.log(localStorage.getItem("search"));
+    navigate(`/${PATH.Courses}`);
+    setTimeout(() => {
+      localStorage.removeItem("search");
+    }, 10000); 
+  };
+
   return (
-    <>
-      <WrapperSearch>
-        <InputBar type="text" placeholder="ابحث عن الدورات ....." />
-        <SvgICon
-          className="iconBar"
-          focusable="false"
-          viewBox="0 0 24 24"
-          tabIndex="-1"
-          title="Search"
-        >
-          <path
-            fill='var(--color-primary)'
-            d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 
-              16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 
-              5.91 16 9.5 16c1.61 0 3.09-.59 
-              4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 
-              5 11.99 5 9.5S7.01 5 9.5 5 
-              14 7.01 14 9.5 11.99 14 9.5 14"
-          />
-        </SvgICon>
-      </WrapperSearch>
-    </>
+    <WrapperSearch>
+      <InputBar
+        type="text"
+        onChange={handleChange}
+        placeholder="ابحث عن الدورات ....."
+        value={value}
+      />
+      <SvgICon
+        className="iconBar"
+        focusable="false"
+        viewBox="0 0 24 24"
+        tabIndex="-1"
+        title="Search"
+        onClick={handleSearch}
+      >
+        <path
+          fill="var(--color-primary)"
+          d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 
+          16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 
+          5.91 16 9.5 16c1.61 0 3.09-.59 
+          4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 
+          5 11.99 5 9.5S7.01 5 9.5 5 
+          14 7.01 14 9.5 11.99 14 9.5 14"
+        />
+      </SvgICon>
+    </WrapperSearch>
   );
 };
 
