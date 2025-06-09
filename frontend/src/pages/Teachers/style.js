@@ -1,64 +1,74 @@
 import styled from "styled-components";
 
 export const StyledTeachersPage = styled.div`
-
-& section > div{
+  & section > div {
     display: flex;
     padding: 20px 0;
-}
+    flex-direction: column;
+  }
 
+  & .teachers {
+    & div.teachers-list {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2%;
+      row-gap: 15px;
 
+      & > div {
+        flex: 1 1 calc(33.333% - 2%);
+        box-sizing: border-box;
+        margin: 0;
+        
 
-& .teachers{
-    
-    & div.teachers-list{
-        /* background-color: aquamarine; */
-        /* padding-top: 15px; */
-        width: 100%;
-        display: flex;
-        gap: 2%;
-        row-gap:15px;
-        flex-wrap: wrap;
-        justify-content:start;
-
-    
-        & > div{
-            margin: 0;
-            & img{
-                width: 100%;
-
-            & div{
-                font-size: 5px;
-                padding: 0px ;
-                width: 100%;
-            }
-            
+        img {
+          width: 100%;
+          height: auto;
+          display: block;
         }
+
+        div {
+          font-size: 14px;
+          padding: 0px 5px 5px 0px;
+          width: 100%;
         }
+      }
     }
 
+  }
 
-        & div.pagination{
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
 
-            & button {
-                padding: 6px 12px;
-                border: none;
-                background-color: #ddd;
-                cursor: pointer;
-            }
 
-            & button:disabled {
-                background-color: #bbb;
-                cursor: not-allowed;
-            }
-        }
-
+& .num-of-pages{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 0px;
     
-
+    & span {
+        padding: 0px 5px;
+    }
 }
 
-`
+
+
+  /* Tablet (≤ 768px) */
+  @media (max-width: 768px) {
+    & .teachers div.teachers-list > div {
+      flex: 1 1 calc(50% - 2%);
+    }
+  }
+
+  /* Mobile (≤ 480px) */
+  @media (max-width: 480px) {
+    & .teachers div.teachers-list > div {
+      flex: 1 1 100%;
+    }
+
+    & .teachers div.pagination button {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+  }
+`;
