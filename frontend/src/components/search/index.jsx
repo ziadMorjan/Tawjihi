@@ -1,33 +1,11 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { WrapperSearch, InputBar, SvgICon } from "./style";
-import { PATH } from "../../routes";
 
 const SearchBar = () => {
-  const navigate = useNavigate();
-  const [value, setValue] = useState("");
-
-  const handleChange = (e) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    localStorage.setItem("search", newValue);
-  };
-
-  const handleSearch = () => {
-    console.log(localStorage.getItem("search"));
-    navigate(`/${PATH.Courses}`);
-    setTimeout(() => {
-      localStorage.removeItem("search");
-    }, 10000); 
-  };
-
   return (
     <WrapperSearch>
       <InputBar
         type="text"
-        onChange={handleChange}
         placeholder="ابحث عن الدورات ....."
-        value={value}
       />
       <SvgICon
         className="iconBar"
@@ -35,7 +13,6 @@ const SearchBar = () => {
         viewBox="0 0 24 24"
         tabIndex="-1"
         title="Search"
-        onClick={handleSearch}
       >
         <path
           fill="var(--color-primary)"

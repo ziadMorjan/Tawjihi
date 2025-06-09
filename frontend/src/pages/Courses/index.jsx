@@ -1,8 +1,5 @@
-//react
-import { useState, useMemo } from "react";
-//components
+import { useState, useMemo, useContext, useEffect } from "react";
 import SideBar from "../../layout/sideBar";
-import { NavBar } from "../../layout/navBar";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { Containers } from "../../components/Container";
 import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
@@ -10,139 +7,151 @@ import { CardSkeleton } from "../../components/Loading/LoadingCard";
 import { Card } from "../../components/card/courseCard";
 import { useApi } from "../../hooks/useApi";
 import { API_URL } from "../../config";
-//styles
-import { WrapperCards } from "../Main/style";
-//mui
 import { Typography } from "@mui/material";
+import { WrapperCards } from "../Main/style";
+import { NavBar } from "../../layout/navBar";
+import { DataCourses } from "../../context/DataCourses";
+import { NewOldContext } from "../../context/NewOldContext";
 
 const Courses = () => {
+  // Fetch course data from API using custom useApi hook
   const {
-    data: allCourses = [],
+    data: fetchedCourses = [],
     isLoading,
     error,
   } = useApi(`${API_URL}/courses/`);
 
-  const [selectedFilters, setSelectedFilters] = useState([]);
+  // Global course data context and state setter
+  const { dataCourses, setDataCourses } = useContext(DataCourses);
 
-  const toggleFilter = (id) => {
-    setSelectedFilters((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
-    );
+  // Context to determine whether to sort courses as newest or oldest
+  const { isNew } = useContext(NewOldContext);
+
+  // When fetchedCourses updates, store them in the global course context
+  useEffect(() => {
+    if (fetchedCourses.length > 0) {
+      setDataCourses(fetchedCourses);
+    }
+  }, [fetchedCourses, setDataCourses]);
+
+  // Local state to keep track of selected filter options
+  const [filters, setFilters] = useState({
+    names: [],
+    branches: [],
+    types: [],
+    prices: [],
+  });
+
+  // Extract unique course names for course name filters
+  const courseNames = useMemo(() => {
+    const names = dataCourses.map((course) => course.name);
+    return [...new Set(names)];
+  }, [dataCourses]);
+
+  // Helper function to normalize Arabic strings by removing "ال" prefix
+  const normalizeArabic = (str) => {
+    if (!str) return "";
+    return str.startsWith("ال") ? str.slice(2) : str;
   };
 
-  const resetFilters = () => {
-    setSelectedFilters([]);
-    localStorage.removeItem("search");
-  };
-
-  const search = (localStorage.getItem("search") || "").toLowerCase();
-
-  const courseNameToFilterId = {
-    العربية: "course-arabic",
-    العربي: "course-arabic",
-    arabic: "course-arabic",
-
-    الإنجليزية: "course-english",
-    الانجليزية: "course-english",
-    انجليزية: "course-english",
-    english: "course-english",
-
-    الرياضيات: "course-math",
-    رياضيات: "course-math",
-    math: "course-math",
-
-    الفيزياء: "course-physics",
-    فيزياء: "course-physics",
-    physics: "course-physics",
-
-    الكيمياء: "course-chemistry",
-    كيمياء: "course-chemistry",
-    chemistry: "course-chemistry",
-
-    الأحياء: "course-biology",
-    الاحياء: "course-biology",
-    biology: "course-biology",
-
-    التاريخ: "course-history",
-    تاريخ: "course-history",
-    history: "course-history",
-
-    الجغرافيا: "course-geography",
-    جغرافيا: "course-geography",
-    geography: "course-geography",
-
-    الإسلامية: "course-islamic",
-    "التربية الاسلامية": "course-islamic",
-    islamic: "course-islamic",
-  };
-
-  const filteredCourses = useMemo(() => {
-    return allCourses.filter((course) => {
-      const courseNameLower = (course.name || "").toLowerCase();
-      const courseBranchId = `branch-${(course.branch || "").toLowerCase()}`;
-
-      // Determine price tag
-      let priceTag = "price-under-500";
-      if (course.price === 0) priceTag = "price-free";
-      else if (course.price <= 50) priceTag = "price-under-50";
-      else if (course.price <= 100) priceTag = "price-under-100";
-      else if (course.price <= 200) priceTag = "price-under-200";
-
-      const courseTags = [courseBranchId, priceTag];
-
-      const matchedCourseFilter = Object.entries(courseNameToFilterId).find(
-        ([keyword]) => courseNameLower.includes(keyword.toLowerCase())
-      );
-
-      if (matchedCourseFilter) {
-        courseTags.push(matchedCourseFilter[1]);
+  // Update filters based on checkbox changes
+  const handleFilterChange = (id, isChecked) => {
+    const [type, value] = id.split("-");
+    setFilters((prev) => {
+      const updated = { ...prev };
+      if (type === "course") {
+        const courseName = courseNames[parseInt(value, 10)];
+        updated.names = isChecked
+          ? [...prev.names, courseName]
+          : prev.names.filter((name) => name !== courseName);
+      } else if (type === "branch") {
+        updated.branches = isChecked
+          ? [...prev.branches, value]
+          : prev.branches.filter((v) => v !== value);
+      } else if (type === "type") {
+        updated.types = isChecked
+          ? [...prev.types, value]
+          : prev.types.filter((v) => v !== value);
+      } else if (type === "price") {
+        updated.prices = isChecked
+          ? [...prev.prices, value]
+          : prev.prices.filter((v) => v !== value);
       }
-
-      const matchesFilters =
-        selectedFilters.length === 0 ||
-        selectedFilters.every((filterId) => courseTags.includes(filterId));
-
-      const matchesSearch = !search || courseNameLower.includes(search);
-
-      return matchesFilters && matchesSearch;
+      return updated;
     });
-  }, [allCourses, courseNameToFilterId, selectedFilters, search]);
+  };
+
+  // Filter courses based on active filters
+  const filteredCourses = useMemo(() => {
+    return dataCourses.filter((course) => {
+      const name = course.name || "";
+      const branchName = course.branches?.[0]?.name || "";
+      const normalizedBranch = normalizeArabic(branchName);
+
+      // Course name filter
+      const matchName =
+        filters.names.length === 0 ||
+        filters.names.some((filterName) =>
+          normalizeArabic(name.toLowerCase()).includes(
+            normalizeArabic(filterName.toLowerCase())
+          )
+        );
+
+      // Course branch filter
+      const matchBranch =
+        filters.branches.length === 0 ||
+        filters.branches.some(
+          (filterBranch) => filterBranch === normalizedBranch
+        );
+
+      // Course type filter (matches course name to type keywords)
+      const matchType =
+        filters.types.length === 0 ||
+        filters.types.some((type) =>
+          normalizeArabic(name.toLowerCase()).includes(
+            normalizeArabic(type.toLowerCase())
+          )
+        );
+
+      // Course price filter (free or under price limit)
+      const matchPrice =
+        filters.prices.length === 0 ||
+        filters.prices.some((priceFilter) => {
+          if (priceFilter === "free") return course.price === 0;
+          return course.price <= parseInt(priceFilter, 10);
+        });
+
+      // Only return course if it matches all filter criteria
+      return matchName && matchBranch && matchType && matchPrice;
+    });
+  }, [dataCourses, filters]);
+
+  // Final sorting: show newest or oldest based on context
+  const finalCourses = useMemo(() => {
+    return isNew === "new"
+      ? [...filteredCourses]
+      : [...filteredCourses].reverse();
+  }, [filteredCourses, isNew]);
 
   return (
     <div>
+      {/* Top branding section (logo + button) */}
       <LogoAndButton />
+      {/* Navigation bar */}
       <NavBar />
+
       <Containers>
+        {/* Filter menu items (buttons or tags, not checkboxes) */}
         <FilterMenuItem />
+
         <div style={{ display: "flex" }}>
+          {/* Sidebar with filter checkboxes */}
           <SideBar
-            branches={[
-              { id: "branch-science", text: "العلمي" },
-              { id: "branch-arts", text: "الأدبي" },
-            ]}
-            courses={[
-              { id: "course-arabic", text: "اللغة العربية" },
-              { id: "course-english", text: "اللغة الإنجليزية" },
-              { id: "course-math", text: "الرياضيات" },
-              { id: "course-physics", text: "الفيزياء" },
-              { id: "course-chemistry", text: "الكيمياء" },
-              { id: "course-biology", text: "الأحياء" },
-              { id: "course-history", text: "التاريخ" },
-              { id: "course-geography", text: "الجغرافيا" },
-              { id: "course-islamic", text: "التربية الإسلامية" },
-            ]}
-            prices={[
-              { id: "price-free", text: "مجاني" },
-              { id: "price-under-50", text: "أقل من 50" },
-              { id: "price-under-100", text: "أقل من 100" },
-              { id: "price-under-200", text: "أقل من 200" },
-              { id: "price-under-500", text: "أقل من 500" },
-            ]}
-            selectedFilters={selectedFilters}
-            onFilterChange={toggleFilter}
-            onReset={resetFilters}
+            courseNames={courseNames}
+            onFilterChange={handleFilterChange}
           />
 
+          {/* Main content: Course list or loading/error messages */}
           <div
             style={{
               flexGrow: 1,
@@ -152,6 +161,7 @@ const Courses = () => {
               gap: "1rem",
             }}
           >
+            {/* Loading state: show skeleton cards */}
             {isLoading ? (
               <WrapperCards>
                 {Array.from({ length: 3 }).map((_, i) => (
@@ -159,12 +169,15 @@ const Courses = () => {
                 ))}
               </WrapperCards>
             ) : error ? (
-              <Typography color="error">فشل في تحميل الدورات.</Typography>
-            ) : filteredCourses.length === 0 ? (
+              // API error state
+              <Typography color="error">فشل تحميل الدورات</Typography>
+            ) : finalCourses.length === 0 ? (
+              // No matching courses after filtering
               <Typography variant="body1">لا توجد دورات مطابقة.</Typography>
             ) : (
+              // Render final filtered and sorted courses
               <WrapperCards>
-                {filteredCourses.map((item, index) => (
+                {finalCourses.map((item, index) => (
                   <Card
                     key={index}
                     imgSrc={item.img || "/assets/img/logo.png"}

@@ -1,47 +1,130 @@
+// Sidebar.jsx
 import { SidebarContainer, SidebarHeader, CheckSection } from "./style";
 import { CheckAndLabel } from "../../components/CheckAndLable";
 import { Pargraph } from "../../components/typography/style";
 
-const Sidebar = ({ branches, courses, prices, selectedFilters, onFilterChange, onReset }) => {
-  const renderSection = (title, items) => (
-    <>
-      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
-        {title}
-      </Pargraph>
-      <CheckSection>
-        {items.map(({ id, text }) => (
-          <CheckAndLabel
-            key={id}
-            id={id}
-            text={text}
-            checked={selectedFilters.includes(id)}
-            onChange={onFilterChange}
-          />
-        ))}
-      </CheckSection>
-    </>
-  );
+const Sidebar = ({ courseNames = [], onFilterChange }) => {
+  const handleCheckboxChange = (e) => {
+    const { id, checked } = e.target;
+    onFilterChange(id, checked);
+  };
 
   return (
     <SidebarContainer>
       <SidebarHeader>التصنيفات</SidebarHeader>
-      <button
-        style={{
-          marginBottom: "1rem",
-          background: "#d9534f",
-          color: "#fff",
-          padding: "0.4rem 1rem",
-          borderRadius: "4px",
-          cursor: "pointer",
-          border: "none",
-        }}
-        onClick={onReset}
-      >
-        إعادة تعيين الفلاتر
-      </button>
-      {renderSection("الافرع", branches)}
-      {renderSection("الدورات", courses)}
-      {renderSection("السعر", prices)}
+
+      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
+        الافرع
+      </Pargraph>
+      <CheckSection>
+        {/* Note: filter values here are without "ال" for consistent normalization */}
+        <CheckAndLabel
+          text="العلمي"
+          id="branch-علمي"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="الادبي"
+          id="branch-ادبي"
+          onChange={handleCheckboxChange}
+        />
+      </CheckSection>
+
+      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
+        الدورات
+      </Pargraph>
+      <CheckSection>
+        <CheckAndLabel
+          text="اللغة العربية"
+          id="type-اللغة العربية"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="اللغة الإنجليزية"
+          id="type-اللغة الإنجليزية"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="الرياضيات"
+          id="type-الرياضيات"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="الفيزياء"
+          id="type-الفيزياء"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="الكيمياء"
+          id="type-الكيمياء"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="الأحياء"
+          id="type-الأحياء"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="التاريخ"
+          id="type-التاريخ"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="الجغرافيا"
+          id="type-الجغرافيا"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="التربية الإسلامية"
+          id="type-التربية الإسلامية"
+          onChange={handleCheckboxChange}
+        />
+      </CheckSection>
+
+      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
+        السعر
+      </Pargraph>
+      <CheckSection>
+        <CheckAndLabel
+          text="مجاني"
+          id="price-free"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="اقل من 50"
+          id="price-50"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="اقل من 100"
+          id="price-100"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="اقل من 200"
+          id="price-200"
+          onChange={handleCheckboxChange}
+        />
+        <CheckAndLabel
+          text="اقل من 500"
+          id="price-500"
+          onChange={handleCheckboxChange}
+        />
+      </CheckSection>
+
+      <Pargraph size="16px" style={{ color: "var(--color-link)" }}>
+        اسم الدورة
+      </Pargraph>
+      <CheckSection>
+        {courseNames.map((name, index) => (
+          <CheckAndLabel
+            key={index}
+            text={name}
+            id={`course-${index}`}
+            onChange={handleCheckboxChange}
+          />
+        ))}
+      </CheckSection>
     </SidebarContainer>
   );
 };
