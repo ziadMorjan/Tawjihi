@@ -1,5 +1,8 @@
+//react
 import { useState, useMemo } from "react";
+//components
 import SideBar from "../../layout/sideBar";
+import { NavBar } from "../../layout/navBar";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { Containers } from "../../components/Container";
 import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
@@ -7,9 +10,10 @@ import { CardSkeleton } from "../../components/Loading/LoadingCard";
 import { Card } from "../../components/card/courseCard";
 import { useApi } from "../../hooks/useApi";
 import { API_URL } from "../../config";
-import { Typography } from "@mui/material";
+//styles
 import { WrapperCards } from "../Main/style";
-import { NavBar } from "../../layout/navBar";
+//mui
+import { Typography } from "@mui/material";
 
 const Courses = () => {
   const {
