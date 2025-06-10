@@ -143,7 +143,7 @@ export default function FilterMenuItem({totalPages, currentPage}) {
 
 
       <Pargraph>عرض الصفحة رقم<span className="num-page">{currentPage}</span>من<span className="num-page">{totalPages}</span></Pargraph>
-      <H3 color="var(--color-link)">ترتيب باستخدام</H3>
+      <H3 color="var(--color-link)"></H3>
     </div>
   );
 }

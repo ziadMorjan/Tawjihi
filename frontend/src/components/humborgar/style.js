@@ -9,10 +9,11 @@ const StyledHamburger = styled.div`
   cursor: pointer;
   z-index: 1001;
 
+
   div {
     width: 100%;
     height: 3px;
-    background-color: #fff; // white bars
+    background-color: var(--color-primary); // white bars
     border-radius: 4px;
     transition: all 0.3s ease-in-out;
     transform-origin: 1px;
