@@ -15,6 +15,7 @@ import { NewOldContext } from "../../context/NewOldContext";
 import Paginations from "../../components/paginations";
 import { CoursesPageWraper } from "./style";
 import { SearchContext } from "../../context/SearchContext";
+import { ModalTeacher } from "../../components/modalTeacher";
 
 const Courses = () => {
   // Fetch course data from API using custom useApi hook
@@ -24,16 +25,13 @@ const Courses = () => {
     error,
   } = useApi(`${API_URL}/courses/`);
 
-
-
-
   // Global course data context and state setter
   const { dataCourses, setDataCourses } = useContext(DataCourses);
 
   // Context to determine whether to sort courses as newest or oldest
   const { isNew } = useContext(NewOldContext);
 
-    const { search, setSearch } = useContext(SearchContext);
+  const { search, setSearch } = useContext(SearchContext);
 
   // When fetchedCourses updates, store them in the global course context
   useEffect(() => {
@@ -90,55 +88,56 @@ const Courses = () => {
   };
 
   // Filter courses based on active filters
-const filteredCourses = useMemo(() => {
-  return dataCourses.filter((course) => {
-    const name = course.name || "";
-    const branchName = course.branches?.[0]?.name || "";
-    const normalizedBranch = normalizeArabic(branchName);
+  const filteredCourses = useMemo(() => {
+    return dataCourses.filter((course) => {
+      const name = course.name || "";
+      const branchName = course.branches?.[0]?.name || "";
+      const normalizedBranch = normalizeArabic(branchName);
 
-    // Course name filter
-    const matchName =
-      filters.names.length === 0 ||
-      filters.names.some((filterName) =>
+      // Course name filter
+      const matchName =
+        filters.names.length === 0 ||
+        filters.names.some((filterName) =>
+          normalizeArabic(name.toLowerCase()).includes(
+            normalizeArabic(filterName.toLowerCase())
+          )
+        );
+
+      // Course branch filter
+      const matchBranch =
+        filters.branches.length === 0 ||
+        filters.branches.some(
+          (filterBranch) => filterBranch === normalizedBranch
+        );
+
+      // Course type filter
+      const matchType =
+        filters.types.length === 0 ||
+        filters.types.some((type) =>
+          normalizeArabic(name.toLowerCase()).includes(
+            normalizeArabic(type.toLowerCase())
+          )
+        );
+
+      // Course price filter
+      const matchPrice =
+        filters.prices.length === 0 ||
+        filters.prices.some((priceFilter) => {
+          if (priceFilter === "free") return course.price === 0;
+          return course.price <= parseInt(priceFilter, 10);
+        });
+
+      // Search filter
+      const matchSearch =
+        !search ||
         normalizeArabic(name.toLowerCase()).includes(
-          normalizeArabic(filterName.toLowerCase())
-        )
-      );
+          normalizeArabic(search.toLowerCase())
+        );
+      setSearch("");
 
-    // Course branch filter
-    const matchBranch =
-      filters.branches.length === 0 ||
-      filters.branches.some(
-        (filterBranch) => filterBranch === normalizedBranch
-      );
-
-    // Course type filter
-    const matchType =
-      filters.types.length === 0 ||
-      filters.types.some((type) =>
-        normalizeArabic(name.toLowerCase()).includes(
-          normalizeArabic(type.toLowerCase())
-        )
-      );
-
-    // Course price filter
-    const matchPrice =
-      filters.prices.length === 0 ||
-      filters.prices.some((priceFilter) => {
-        if (priceFilter === "free") return course.price === 0;
-        return course.price <= parseInt(priceFilter, 10);
-      });
-
-    // Search filter
-    const matchSearch =
-      !search ||
-      normalizeArabic(name.toLowerCase()).includes(
-        normalizeArabic(search.toLowerCase())
-      );
-
-    return matchName && matchBranch && matchType && matchPrice && matchSearch;
-  });
-}, [dataCourses, filters, search]);
+      return matchName && matchBranch && matchType && matchPrice && matchSearch;
+    });
+  }, [dataCourses, filters, search]);
 
   // Final sorting: show newest or oldest based on context
   const finalCourses = useMemo(() => {
@@ -146,8 +145,6 @@ const filteredCourses = useMemo(() => {
       ? [...filteredCourses]
       : [...filteredCourses].reverse();
   }, [filteredCourses, isNew]);
-
-
 
   //variables for Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -158,80 +155,78 @@ const filteredCourses = useMemo(() => {
   const currentItems = finalCourses.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(finalCourses.length / itemsPerPage);
 
-
-
-
-
   return (
-    <CoursesPageWraper>
-      <div>
-        {/* Top branding section (logo + button) */}
-        <LogoAndButton />
-        {/* Navigation bar */}
-        <NavBar />
+    <>
+      <ModalTeacher isopen="true" />
+      <CoursesPageWraper>
+        <div>
+          {/* Top branding section (logo + button) */}
+          <LogoAndButton />
+          {/* Navigation bar */}
+          <NavBar />
 
-        <Containers>
-          {/* Filter menu items (buttons or tags, not checkboxes) */}
-          <FilterMenuItem currentPage={currentPage} totalPages={totalPages} />
+          <Containers>
+            {/* Filter menu items (buttons or tags, not checkboxes) */}
+            <FilterMenuItem currentPage={currentPage} totalPages={totalPages} />
 
-          <div style={{ display: "flex" }}>
-            {/* Sidebar with filter checkboxes */}
-            <SideBar
-              courseNames={courseNames}
-              onFilterChange={handleFilterChange}
-            />
+            <div style={{ display: "flex" }}>
+              {/* Sidebar with filter checkboxes */}
+              <SideBar
+                courseNames={courseNames}
+                onFilterChange={handleFilterChange}
+              />
 
-            {/* Main content: Course list or loading/error messages */}
-            <div style={{ width: '80%' }}>
-              {/* Loading state: show skeleton cards */}
-              {isLoading ? (
-                <WrapperCards>
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <CardSkeleton key={i} />
-                  ))}
-                </WrapperCards>
-              ) : error ? (
-                // API error state
-                <Typography color="error">فشل تحميل الدورات</Typography>
-              ) : finalCourses.length === 0 ? (
-                // No matching courses after filtering
-                <Typography variant="body1">لا توجد دورات مطابقة.</Typography>
-              ) : (
-                // Render final filtered and sorted courses
-                <WrapperCards>
-                  {currentItems.map((item, index) => (
-                 
-                      < Card
-
-                      
-                      key = { index }
-                      imgSrc = { item.img || "/assets/img/logo.png" }
-                      name = { item.name }
-                      starIcon = { item.averageRating }
-                      price = { item.price }
-                      priceAfterDiscount = { item.priceAfterDiscount }
-                      teacherName = { item.teacher?.name }
-                      teacherImg = { item.teacher?.img || "/assets/img/logo.png" }
-                      branch = {
-                        item.branches.map((branch) => {
-                    return branch.name
-                  }).join(' | ')
-                      }
+              {/* Main content: Course list or loading/error messages */}
+              <div style={{ width: "80%" }}>
+                {/* Loading state: show skeleton cards */}
+                {isLoading ? (
+                  <WrapperCards>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <CardSkeleton key={i} />
+                    ))}
+                  </WrapperCards>
+                ) : error ? (
+                  // API error state
+                  <Typography color="error">فشل تحميل الدورات</Typography>
+                ) : finalCourses.length === 0 ? (
+                  // No matching courses after filtering
+                  <Typography variant="body1">لا توجد دورات مطابقة.</Typography>
+                ) : (
+                  // Render final filtered and sorted courses
+                  <WrapperCards>
+                    {currentItems.map((item, index) => (
+                      <Card
+                        key={index}
+                        imgSrc={item.img || "/assets/img/logo.png"}
+                        name={item.name}
+                        starIcon={item.averageRating}
+                        price={item.price}
+                        priceAfterDiscount={item.priceAfterDiscount}
+                        teacherName={item.teacher?.name}
+                        teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+                        branch={item.branches
+                          .map((branch) => {
+                            return branch.name;
+                          })
+                          .join(" | ")}
                       />
-                  ))}
-
-                </WrapperCards>
-              )}
-
+                    ))}
+                  </WrapperCards>
+                )}
+              </div>
             </div>
-
-          </div>
-          {/* Pagination buttons */}
-          {totalPages > 1 && <Paginations currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />}
-
-        </Containers>
-      </div>
-    </CoursesPageWraper>
+            {/* Pagination buttons */}
+            {totalPages > 1 && (
+              <Paginations
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+              />
+            )}
+          </Containers>
+        </div>
+      </CoursesPageWraper>
+    </>
   );
 };
 
