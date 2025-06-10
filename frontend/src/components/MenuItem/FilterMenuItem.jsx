@@ -46,7 +46,7 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function FilterMenuItem({totalPages, currentPage}) {
+export default function FilterMenuItem({ totalPages, currentPage }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -126,23 +126,31 @@ export default function FilterMenuItem({totalPages, currentPage}) {
           <MenuItem
             onClick={() => {
               setIsNew("new");
+              handleMenuClose();
             }}
             disableRipple
           >
             <UpdateIcon />
-            
             الأحدث
           </MenuItem>
 
-          <MenuItem onClick={() => setIsNew("old")} disableRipple>
+          <MenuItem
+            onClick={() => {
+              setIsNew("old");
+              handleMenuClose();
+            }}
+            disableRipple
+          >
             <HistoryIcon />
             الأقدم
           </MenuItem>
         </StyledMenu>
       </div>
 
-
-      <Pargraph>عرض الصفحة رقم<span className="num-page">{currentPage}</span>من<span className="num-page">{totalPages}</span></Pargraph>
+      <Pargraph>
+        عرض الصفحة رقم<span className="num-page">{currentPage}</span>من
+        <span className="num-page">{totalPages}</span>
+      </Pargraph>
       <H3 color="var(--color-link)"></H3>
     </div>
   );

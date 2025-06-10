@@ -17,7 +17,7 @@ export const SidebarContainer = styled.aside`
 
   @media (max-width: 768px) {
     width: 50%;
-    height: auto;
+    height: 100vh;
     padding: 30px;
     position: absolute;
     top: 0;
@@ -27,9 +27,6 @@ export const SidebarContainer = styled.aside`
     transition: right 0.3s ease;
   }
 
-  @media (max-width: 480px) {
-    width: 100%;
-  }
 `;
 
 export const SidebarHeader = styled.h2`
