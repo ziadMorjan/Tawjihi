@@ -8,29 +8,36 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { SideBarContext } from "../../context/SideBarContext";
 import { Box } from "@mui/material";
 
+import { API_URL } from "../../config";
+import { useApi } from "../../hooks/useApi";
+
 const normalizeArabic = (str) => {
   if (!str) return "";
   return str.startsWith("ال") ? str.slice(2) : str;
 };
 
 const Sidebar = ({ onFilterChange }) => {
-  const { search } = useContext(SearchContext);
+  const { search ,setSearch } = useContext(SearchContext);
   const normalizedSearch = normalizeArabic(search?.toLowerCase() || "");
 
+  let { data: subject ,isLoading } = useApi(`${API_URL}/subjects`);
+  subject = subject.map((item) => item.name);
+
+  let { data: branch } = useApi(`${API_URL}/branches`);
+  branch = branch.map((item) => item.name);
+
+  console.log(branch);
+
   const allInputs = [
-    { id: "branch-علمي", label: "علمي" },
-    { id: "branch-ادبي", label: "ادبي" },
-    ...[
-      "اللغة العربية",
-      "اللغة الإنجليزية",
-      "الرياضيات",
-      "الفيزياء",
-      "الكيمياء",
-      "الأحياء",
-      "التاريخ",
-      "الجغرافيا",
-      "التربية الإسلامية",
-    ].map((label) => ({ id: `type-${label}`, label })),
+    // { id: "branch-علمي", label: "علمي" },
+    // { id: "branch-ادبي", label: "ادبي" },
+
+    branch.map((label) => ({
+      id: `branch-${normalizeArabic(label)}`,
+      label: `${label}`,
+    })),
+
+    subject.map((label) => ({ id: `subject-${label}`, label })),
     ...["free", "50", "100", "200", "500"].map((price) => ({
       id: `price-${price}`,
       label: price === "free" ? "مجاني" : price,
@@ -41,16 +48,18 @@ const Sidebar = ({ onFilterChange }) => {
     allInputs.forEach(({ id, label }) => {
       if (
         normalizedSearch &&
-        normalizeArabic(label.toLowerCase()).includes(normalizedSearch)
+        normalizeArabic(label).includes(normalizedSearch)
       ) {
         onFilterChange(id, true);
       }
     });
-  }, [normalizedSearch]);
+    
+  }, [normalizedSearch ]);
 
   const handleCheckboxChange = (e) => {
     const { id, checked } = e.target;
     onFilterChange(id, checked);
+    console.log(id);
   };
 
   const isMatched = (label) =>
@@ -112,42 +121,39 @@ const Sidebar = ({ onFilterChange }) => {
         <Pargraph style={{ color: "var(--color-link)", fontSize: "18px" }}>
           الافرع
         </Pargraph>
-        <CheckSection>
-          {["علمي", "ادبي"].map((label) => (
-            <CheckAndLabel
-              key={label}
-              text={label}
-              id={`branch-${label}`}
-              onChange={handleCheckboxChange}
-              defaultChecked={isMatched(label)}
-            />
-          ))}
-        </CheckSection>
+        {isLoading ? (
+          "loading..."
+        ) : (
+          <CheckSection>
+            {branch.map((label) => (
+              <CheckAndLabel
+                key={label}
+                text={label}
+                id={`branch-${normalizeArabic(label)}`}
+                onChange={handleCheckboxChange}
+                defaultChecked={isMatched(label)}
+              />
+            ))}
+          </CheckSection>
+        )}
 
         <Pargraph style={{ color: "var(--color-link)", fontSize: "18px" }}>
-          الدورات
+          المواد
         </Pargraph>
+        {isLoading ? "loading..." :
+        
         <CheckSection>
-          {[
-            "اللغة العربية",
-            "اللغة الإنجليزية",
-            "الرياضيات",
-            "الفيزياء",
-            "الكيمياء",
-            "الأحياء",
-            "التاريخ",
-            "الجغرافيا",
-            "التربية الإسلامية",
-          ].map((label) => (
+          {subject.map((label) => (
             <CheckAndLabel
-              key={label}
-              text={label}
-              id={`type-${label}`}
-              onChange={handleCheckboxChange}
-              defaultChecked={isMatched(label)}
+            key={label}
+            text={label}
+            id={`subject-${label}`}
+            onChange={handleCheckboxChange}
+            defaultChecked={isMatched(label)}
             />
           ))}
         </CheckSection>
+        }
 
         <Pargraph style={{ color: "var(--color-link)", fontSize: "18px" }}>
           السعر
