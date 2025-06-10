@@ -4,6 +4,7 @@ const User = require('../../models/User');
 const Branch = require('../../models/Branch');
 const CustomError = require('../CustomError');
 const Course = require('../../models/Course');
+const Subject = require('../../models/Subject');
 
 const createCourseValidator = [
     validator.check('name')
@@ -28,6 +29,19 @@ const createCourseValidator = [
                 throw new CustomError("The provided teacher does not exist in the db", 404);
             if (teacher.id !== value)
                 throw new CustomError("You can not create a course for another teacher", 403);
+            return true;
+        }),
+
+        validator.check("subject")
+        .notEmpty()
+        .withMessage("Course must belong to subject")
+        .isMongoId()
+        .withMessage("Invalid subject id format")
+        .custom(async function (value) {
+            let subject = await Subject.findById(value);
+            if (!subject)
+                throw new CustomError("The provided subject does not exist in the db", 404);
+            
             return true;
         }),
 
@@ -101,6 +115,20 @@ const updateCourseValidator = [
             let teacher = await User.findById(value);
             if (!teacher)
                 throw new CustomError("The provided teacher does not exist in the db", 404);
+            return true;
+        }),
+
+        validator.check("subject")
+        .optional()
+        .notEmpty()
+        .withMessage("Course must belong to subject")
+        .isMongoId()
+        .withMessage("Invalid subject id format")
+        .custom(async function (value) {
+            let subject = await Subject.findById(value);
+            if (!subject)
+                throw new CustomError("The provided subject does not exist in the db", 404);
+            
             return true;
         }),
 
