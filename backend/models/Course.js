@@ -21,6 +21,11 @@ const CourseSchema = new mongoose.Schema(
             ref: "User",
             required: true
         },
+        subject: {
+            type: mongoose.Types.ObjectId,
+            ref: "Subject",
+            required: true
+        },
         branches: [{
             type: mongoose.Types.ObjectId,
             ref: "Branch",
@@ -57,6 +62,9 @@ CourseSchema.pre(/^find/, function (next) {
         })
         .populate({
             path: 'branches',
+            select: 'name _id'
+        }).populate({
+            path: 'subject',
             select: 'name _id'
         });
     next();
