@@ -1,22 +1,21 @@
 import { useContext } from "react";
 import { WrapperSearch, InputBar, SvgICon } from "./style";
 import { SearchContext } from "../../context/SearchContext";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
-import {PATH} from "../../routes"
+import { PATH } from "../../routes";
 const SearchBar = () => {
-const navigate = useNavigate()
-  const {search , setSearch} = useContext(SearchContext)
+  const navigate = useNavigate();
+  const { search, setSearch } = useContext(SearchContext);
 
-  const handleChange =(e)=>{
-setSearch(e.target.value)
-console.log(search)
-  }
+  const handleChange = (e) => {
+    setSearch(e.target.value);
+    console.log(search);
+  };
 
-  const handleSearch = ()=>{
-    navigate(`/${PATH.Courses}`)
-
-  }
+  const handleSearch = () => {
+    navigate(`/${PATH.Courses}`);
+  };
   return (
     <WrapperSearch>
       <InputBar

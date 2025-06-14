@@ -1,5 +1,5 @@
 //react
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useMemo } from "react";
 
 // style
 import { Wrapper, WrapperCards, Wrappers, WrapperUl } from "./style";
@@ -42,18 +42,24 @@ const MainPage = () => {
   const menuItems = ["الدورات المجانية", "احدث الدورات", "دورات الخصم"];
 
   const { data: dataCourses, isLoading } = useApi(
-    `${API_URL}/courses/?limit=3`
+    `${API_URL}/courses/`
   );
   const { data: dataTeachers } = useApi(
     `${API_URL}/users/?role=teacher&isActive=true&limit=3`
   );
 
-  const filteredCourses = dataCourses.filter((course) => {
-    if (active === 0) return course.price === 0;
-    if (active === 1) return true;
-    if (active === 2) return course.priceAfterDiscount !== undefined;
-    return true;
-  });
+  console.log('data is ' ,dataCourses)
+
+
+  const filteredCourses = useMemo(() => {
+    return dataCourses.filter((course) => {
+      if (active === 0) return course.price === 0;
+      if (active === 1) return true;
+      if (active === 2) return course.priceAfterDiscount !== undefined;
+      return true;
+    });
+  }, [dataCourses, active]);
+  
 
   useEffect(() => {
     if (isLogout) {
@@ -121,28 +127,29 @@ const MainPage = () => {
           ) : filteredCourses.length === 0 ? (
             <p>لا توجد دورات مطابقة.</p>
           ) : (
-            filteredCourses
-              .slice(0, 3)
-              .map((item, index) => (
-                <Card
-                  key={index}
-                  imgSrc="/assets/img/logo.png"
-                  name={item.name}
-                  starIcon={item.averageRating}
-                  price={item.price}
-                  priceAfterDiscount={item.priceAfterDiscount}
-                  teacherName={item.teacher?.name}
-                  teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                  branch = {
-                        item.branches.map((branch) => {
-                    return branch.name
-                  }).join(' | ')
-                      }
-                />
-              ))
+            filteredCourses.slice(0, 3).map((item, index) => (
+              <Card
+                key={index}
+                imgSrc="/assets/img/logo.png"
+                name={item.name}
+                starIcon={item.averageRating}
+                price={item.price}
+                priceAfterDiscount={item.priceAfterDiscount}
+                teacherName={item.teacher?.name}
+                teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+                branch={item.branches
+                  .map((branch) => {
+                    return branch.name;
+                  })
+                  .join(" | ")}
+                subject={item.subject.name}
+              />
+            ))
           )}
           {dataTeachers.length === 0 ? (
-            <p style={{ color: "red", display: "block" }}>اتصال انترنت ضعيف يتم التحميل ...</p>
+            <p style={{ color: "red", display: "block" }}>
+              اتصال انترنت ضعيف يتم التحميل ...
+            </p>
           ) : (
             <>
               <div
@@ -190,7 +197,9 @@ const MainPage = () => {
           )}
 
           {dataTeachers.length === 0 ? (
-            <p style={{ color: "red", display: "block" }}>اتصال انترنت ضعيف يتم التحميل ...</p>
+            <p style={{ color: "red", display: "block" }}>
+              اتصال انترنت ضعيف يتم التحميل ...
+            </p>
           ) : (
             <>
               <div
