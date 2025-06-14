@@ -17,10 +17,5 @@ const StyledLottie = styled(Lottie)`
 `;
 
 export const DiscoverCourses = () => {
-  return (
-    <StyledLottie
-      animationData={discoverAnimation}
-      loop={true}
-    />
-  );
+  return <StyledLottie animationData={discoverAnimation} loop={true} />;
 };

@@ -1,21 +1,39 @@
+//react
 import { useState, useMemo, useContext, useEffect } from "react";
+
+//style
+import { CoursesPageWraper } from "./style";
+
+//layout components
 import SideBar from "../../layout/sideBar";
+import { NavBar } from "../../layout/navBar";
+
+//components
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { Containers } from "../../components/Container";
 import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
 import { Card } from "../../components/card/courseCard";
+import Paginations from "../../components/paginations";
+import { ModalTeacher } from "../../components/modalTeacher";
+
+//hooks
 import { useApi } from "../../hooks/useApi";
+
+//URL
 import { API_URL } from "../../config";
+
+//MUI Library
 import { Typography } from "@mui/material";
 import { WrapperCards } from "../Main/style";
-import { NavBar } from "../../layout/navBar";
+
+//context
 import { DataCourses } from "../../context/DataCourses";
 import { NewOldContext } from "../../context/NewOldContext";
-import Paginations from "../../components/paginations";
-import { CoursesPageWraper } from "./style";
 import { SearchContext } from "../../context/SearchContext";
-import { ModalTeacher } from "../../components/modalTeacher";
+
+//utils function
+import { normalizeArabic } from "../../utils/normlizeArabic";
 
 const Courses = () => {
   const {
@@ -46,11 +64,6 @@ const Courses = () => {
     return [...new Set(names)];
   }, [dataCourses]);
 
-  const normalizeArabic = (str) => {
-    if (!str) return "";
-    return str.startsWith("ال") ? str.slice(2) : str;
-  };
-
   const handleFilterChange = (id, isChecked) => {
     const [type, value] = id.split("-");
     setFilters((prev) => {
@@ -70,7 +83,7 @@ const Courses = () => {
       }
       return updated;
     });
-    setSearch("")
+    setSearch("");
   };
 
   const filteredCourses = useMemo(() => {
@@ -131,6 +144,7 @@ const Courses = () => {
       : [...filteredCourses].reverse();
   }, [filteredCourses, isNew]);
 
+  //Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const indexOfLastItem = currentPage * itemsPerPage;

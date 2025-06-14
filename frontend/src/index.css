@@ -1,5 +1,4 @@
-
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -82,8 +81,6 @@ a:hover {
   background-color: var(--color-primary-hover);
 }
 
-
-
 .alert-success {
   background-color: var(--color-success-bg);
   color: var(--color-success-text);
@@ -140,9 +137,6 @@ body.dark-mode .button-primary {
   }
 }
 
-
 ul {
   list-style: none;
 }
-
-

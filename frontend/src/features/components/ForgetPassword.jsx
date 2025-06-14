@@ -1,16 +1,16 @@
 // React
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 
 // Yup
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 // Axios
 import axios from "axios";
 
 // Hooks
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 // Components
 import { H3, Pargrahph } from "../../components/typography";
@@ -33,6 +33,7 @@ import { PATH } from "../../routes";
 import { API_URL } from "../../config";
 
 // Validation Schema
+//=======================================================
 const schema = yup
   .object()
   .shape({
@@ -42,6 +43,9 @@ const schema = yup
       .email("ادخل البريد الالكتروني بشكل صحيح"),
   })
   .noUnknown(true);
+//=======================================================
+
+
 
 export const ForgetPassword = () => {
   const navigate = useNavigate();
@@ -56,6 +60,8 @@ export const ForgetPassword = () => {
     resolver: yupResolver(schema),
   });
 
+  //submit data
+  //=======================================================
   const onSubmit = async (data) => {
     setLoading(true);
     setServerError("");
@@ -77,6 +83,7 @@ export const ForgetPassword = () => {
       setLoading(false);
     }
   };
+  //=======================================================
 
   return (
     <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>

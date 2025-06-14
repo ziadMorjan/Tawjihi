@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 
-//MUI Components
+//MUI Library
 import { styled, alpha } from "@mui/material/styles";
 import { Button, Menu, MenuItem, Divider } from "@mui/material";
 import {
@@ -12,9 +12,7 @@ import {
   Logout as LogoutIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
 } from "@mui/icons-material";
-
-import MenuBookIcon from '@mui/icons-material/MenuBook'; // Import the course-related icon
-
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 //context
 import { AuthContext } from "../../context/AuthContext";
@@ -22,6 +20,7 @@ import { LogOutContext } from "../../context/LogoutContext";
 
 //Paths
 import { PATH } from "../../routes";
+
 //axios
 import axios from "axios";
 
@@ -78,11 +77,12 @@ export default function CustomizedMenus() {
     setAnchorEl(null);
   };
 
+  //logout function request
   const handleLogout = async () => {
     try {
       await axios.get(`${API_URL}/auth/logout`, {
         withCredentials: true,
-      });
+      }); //withCredentials to cookies
       setIsAuth(false);
       localStorage.removeItem("user");
       navigate(PATH.Main);
@@ -94,6 +94,7 @@ export default function CustomizedMenus() {
     }
   };
 
+  //check user if exist
   let user = null;
   try {
     user = JSON.parse(localStorage.getItem("user"));

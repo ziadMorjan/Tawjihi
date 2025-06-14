@@ -1,5 +1,6 @@
 //react
 import { useEffect, useState, useContext, useMemo } from "react";
+import { Link } from "react-router-dom";
 
 // style
 import { Wrapper, WrapperCards, Wrappers, WrapperUl } from "./style";
@@ -29,9 +30,10 @@ import { API_URL } from "../../config";
 // context
 import { LogOutContext } from "../../context/LogoutContext";
 
-// UI MUi
+// MUI Library
 import { Alert, Button, Snackbar } from "@mui/material";
-import { Link } from "react-router-dom";
+
+//Path
 import { PATH } from "../../routes";
 
 const MainPage = () => {
@@ -41,16 +43,14 @@ const MainPage = () => {
 
   const menuItems = ["الدورات المجانية", "احدث الدورات", "دورات الخصم"];
 
-  const { data: dataCourses, isLoading } = useApi(
-    `${API_URL}/courses/`
-  );
+  const { data: dataCourses, isLoading } = useApi(`${API_URL}/courses/`);
   const { data: dataTeachers } = useApi(
     `${API_URL}/users/?role=teacher&isActive=true&limit=3`
   );
 
-  console.log('data is ' ,dataCourses)
+  console.log("data is ", dataCourses);
 
-
+  //filteredCourses
   const filteredCourses = useMemo(() => {
     return dataCourses.filter((course) => {
       if (active === 0) return course.price === 0;
@@ -59,7 +59,6 @@ const MainPage = () => {
       return true;
     });
   }, [dataCourses, active]);
-  
 
   useEffect(() => {
     if (isLogout) {
@@ -218,7 +217,6 @@ const MainPage = () => {
           )}
         </WrapperCards>
       </Containers>
-
       <Footer />
     </>
   );

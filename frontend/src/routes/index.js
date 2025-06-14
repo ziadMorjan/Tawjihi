@@ -1,3 +1,4 @@
+//react
 import { Navigate } from "react-router-dom";
 import { lazy } from "react";
 
@@ -16,8 +17,6 @@ const About = lazy(() => import("../pages/About"));
 const Auth = lazy(() => import("../pages/Auth"));
 const OAuthSuccess = lazy(() => import("../features/components/OAuthSuccess"));
 const NotFound = lazy(() => import("../pages/NotFound"));
-
-
 const Courses = lazy(() => import("../pages/Courses"));
 
 export const PATH = {
