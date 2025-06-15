@@ -26,10 +26,10 @@ router.post("/applyCoupon", applyCouponValidator, applyCoupon);
 
 router.route("/")
     .get(getLoggedUserCart)
-    .post(cartValidator, addToCart)
     .delete(clearCart);
 
-router.route("/:course")
+router.route("/:courseId")
+    .post(cartValidator, addToCart)
     .delete(cartValidator, removeFromCart);
 
 module.exports = router;
