@@ -1,11 +1,17 @@
+//react
+import { useNavigate } from "react-router-dom";
+
 //style
 import { AnimationWrapper, Info } from "./style";
 
 //component
 import { H1, Pargrahph } from "../typography";
 import { Button } from "../Buttons/button";
+
+//Animations
 import { DiscoverCourses } from "../Animations/discover";
-import { useNavigate } from "react-router-dom";
+
+//Paths
 import { PATH } from "../../routes";
 
 export const DiscoverSection = () => {

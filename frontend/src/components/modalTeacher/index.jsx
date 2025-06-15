@@ -1,3 +1,5 @@
+//react
+import { useContext, useEffect, useState } from "react";
 // style
 import {
   ModalDiv,
@@ -10,20 +12,23 @@ import {
   ErrorText,
 } from "./style";
 
-// react
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 // yup
 import * as yup from "yup";
-// hooks
-import { useContext, useEffect, useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+//context
 import { ModalContext } from "../../context/ModalContext";
+
+// hooks
+import { useForm } from "react-hook-form";
+
 // axios
 import axios from "axios";
+
 // API URL
 import { API_URL } from "../../config";
 
-// MUI Components
+// MUI Library
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
@@ -31,6 +36,7 @@ import Alert from "@mui/material/Alert";
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
 // Validation schema
+//=========================================================================
 const schema = yup.object({
   name: yup.string().required("الاسم الأول مطلوب").min(3, "ادخل الاسم كامل"),
   phone: yup.string().required("رقم الهاتف مطلوب"),
@@ -61,6 +67,9 @@ const schema = yup.object({
       );
     }),
 });
+//=========================================================================
+
+
 
 export const ModalTeacher = () => {
   const {
@@ -75,10 +84,10 @@ export const ModalTeacher = () => {
   const [res, setRes] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showAlert, setShowAlert] = useState(false); 
+  const [showAlert, setShowAlert] = useState(false);
 
+  //============================================================
   const passwordValue = watch("password");
-
   const passwordRules = [
     {
       label: "يجب أن تحتوي على حرف صغير (a-z)",
@@ -101,8 +110,10 @@ export const ModalTeacher = () => {
       isValid: (passwordValue || "").length >= 8,
     },
   ];
+//=======================================================
 
   const onSubmit = async (data) => {
+    //send data as a formData 'have a file'
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", data.email);
@@ -122,7 +133,7 @@ export const ModalTeacher = () => {
 
       console.log("Form submitted:", response.data);
       setRes(true);
-      setShowAlert(true); // ✅ Show alert
+      setShowAlert(true);
       reset();
 
       setIsOpen(false);
@@ -248,7 +259,7 @@ export const ModalTeacher = () => {
             }}
           >
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "جاري الإرسال..." : "إرسال"}
+              {isLoading ? "جاري الإرسال...": "إرسال"}
             </Button>
             <CancelButton
               style={{ background: "red", color: "white" }}

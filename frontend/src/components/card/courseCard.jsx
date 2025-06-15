@@ -1,9 +1,8 @@
 //react
-import React from "react";
-//global style
-import { WrapperElementFlexSpace } from "../../styles/style";
+import { useState } from "react";
+import axios from "axios";
 
-//style
+// styles
 import {
   CardDiv,
   IconStarDiv,
@@ -15,95 +14,41 @@ import {
   RatingStarsContainer,
 } from "./style";
 
-//components
+//global styles
+import { WrapperElementFlexSpace } from "../../styles/style";
+
+// components
 import { Pargrahph } from "../typography";
+import { EmptyStar, FullStar, HalfStar } from "../Star";
+import { CartIcon, HeartIcon } from "../Icon/cartAndWishIcon";
 
-// SVG components
-const FullStar = () => (
-  <svg
-    width="24"
-    height="24"
-    fill="#facc15"
-    stroke="#fbbf24"
-    strokeWidth="1.5"
-    viewBox="0 0 24 24"
-  >
-    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-  </svg>
-);
+//URL
+import { API_URL } from "../../config";
+// hooks
+import { useCRUD } from "../../hooks/useCRUD";
 
-const HalfStar = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24">
-    <defs>
-      <linearGradient id="halfGrad" x1="100%" y1="0%" x2="0%" y2="0%">
-        <stop offset="50%" stopColor="#facc15" />
-        <stop offset="50%" stopColor="#e5e7eb" />
-      </linearGradient>
-    </defs>
-    <path
-      fill="url(#halfGrad)"
-      stroke="#fbbf24"
-      strokeWidth="1.5"
-      d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-    />
-  </svg>
-);
-
-const EmptyStar = () => (
-  <svg
-    width="24"
-    height="24"
-    fill="none"
-    stroke="#d1d5db"
-    strokeWidth="1.5"
-    viewBox="0 0 24 24"
-  >
-    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-  </svg>
-);
-
-const CartIcon = ({ active, onClick }) => (
-  <svg
-    onClick={onClick}
+const LoadingOverlay = ({ text = "جارٍ التنفيذ..." }) => (
+  <div
     style={{
-      cursor: "pointer",
-      fill: active ? "#1e40af" : "none",
-      stroke: "#2563eb",
-      transition: "fill 0.3s ease, transform 0.2s ease",
-      transform: active ? "scale(1.2)" : "scale(1)",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(255,255,255,0.6)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 999,
+      fontSize: "16px",
     }}
-    width="24"
-    height="24"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    viewBox="0 0 24 24"
   >
-    <circle cx="9" cy="21" r="1" fill={active ? "#1e40af" : "#2563eb"} />
-    <circle cx="20" cy="21" r="1" fill={active ? "#1e40af" : "#2563eb"} />
-    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-  </svg>
-);
-
-const HeartIcon = ({ active, onClick }) => (
-  <svg
-    onClick={onClick}
-    style={{
-      cursor: "pointer",
-      fill: active ? "#dc2626" : "none",
-      stroke: "#ef4444",
-      transition: "fill 0.3s ease, transform 0.2s ease",
-      transform: active ? "scale(1.2)" : "scale(1)",
-    }}
-    width="24"
-    height="24"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    viewBox="0 0 24 24"
-  >
-    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.78 0L12 5.62l-1.02-1.02a5.5 5.5 0 0 0-7.78 7.78l1.02 1.02L12 21.23l7.78-7.78 1.02-1.02a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
+    <div className="loader" />
+    <span style={{ marginTop: "8px", fontWeight: "bold", color: "#333" }}>
+      {text}
+    </span>
+  </div>
 );
 
 export const Card = ({
@@ -117,33 +62,89 @@ export const Card = ({
   priceAfterDiscount,
   branch,
   subject,
+  id,
+  item,
 }) => {
-  const [cartActive, setCartActive] = React.useState(false);
-  const [heartActive, setHeartActive] = React.useState(false);
+  const {
+    addToWishList,
+    removeFromWishList,
+    isInWishList,
+    addToCartList,
+    removeFromCartList,
+    isInCartList,
+  } = useCRUD();
+
+  const [loadingCart, setLoadingCart] = useState(false);
+  const [loadingWish, setLoadingWish] = useState(false);
+
+  const handleClickHeart = async () => {
+    setLoadingWish(true);
+    try {
+      if (isInWishList(id)) {
+        await axios.delete(`${API_URL}/wishlist/${id}`, {
+          withCredentials: true,
+        });
+        removeFromWishList(id);
+      } else {
+        await axios.post(
+          `${API_URL}/wishlist/${id}`,
+          { itemId: id },
+          { withCredentials: true }
+        );
+        addToWishList(item);
+      }
+    } catch (e) {
+      console.error("Wishlist error:", e.message);
+    } finally {
+      setLoadingWish(false);
+    }
+  };
+
+  const handleClickCart = async () => {
+    setLoadingCart(true);
+    try {
+      if (isInCartList(id)) {
+        await axios.delete(`${API_URL}/cart/${id}`, { withCredentials: true });
+        removeFromCartList(id);
+      } else {
+        await axios.post(
+          `${API_URL}/cart/${id}`,
+          { itemId: id },
+          { withCredentials: true }
+        );
+        addToCartList(item);
+      }
+    } catch (e) {
+      console.error("Cart error:", e.message);
+    } finally {
+      setLoadingCart(false);
+    }
+  };
 
   const fullStars = Math.floor(starIcon);
   const hasHalfStar = starIcon % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
   return (
-    <CardDiv className="card-div">
+    <CardDiv style={{ position: "relative" }}>
+      {(loadingCart || loadingWish) && <LoadingOverlay />}
+
       <ActionIcons>
         <CartIcon
-          active={cartActive}
-          onClick={() => setCartActive(!cartActive)}
+          active={loadingCart || isInCartList(id)}
+          onClick={handleClickCart}
         />
         <HeartIcon
-          active={heartActive}
-          onClick={() => setHeartActive(!heartActive)}
+          active={loadingWish || isInWishList(id)}
+          onClick={handleClickHeart}
         />
       </ActionIcons>
 
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "الدورة"}`} />}
-
       <WrapperElementFlexSpace style={{ padding: "16px" }}>
-        <Pargrahph size="25px">الدورة : {name} </Pargrahph>
-        <Pargrahph size="18px">الفرع : {branch} </Pargrahph>
-        <Pargrahph size="14px"> المادة: {subject} </Pargrahph>
+        <Pargrahph size="25px">الدورة : {name}</Pargrahph>
+        <Pargrahph size="18px">الفرع : {branch}</Pargrahph>
+        <Pargrahph size="14px">المادة: {subject}</Pargrahph>
 
         <TeacherInfo>
           {teacherImg && <img src={teacherImg} alt={`صورة ${teacherName}`} />}
@@ -167,12 +168,12 @@ export const Card = ({
       <IconStarDiv>
         <RatingStarsContainer>
           <StarWrapper>
-            {Array.from({ length: fullStars }).map((_, index) => (
-              <FullStar key={`full-${index}`} />
+            {Array.from({ length: fullStars }).map((_, i) => (
+              <FullStar key={`full-${i}`} />
             ))}
-            {hasHalfStar && <HalfStar key="half" />}
-            {Array.from({ length: emptyStars }).map((_, index) => (
-              <EmptyStar key={`empty-${index}`} />
+            {hasHalfStar && <HalfStar />}
+            {Array.from({ length: emptyStars }).map((_, i) => (
+              <EmptyStar key={`empty-${i}`} />
             ))}
           </StarWrapper>
         </RatingStarsContainer>

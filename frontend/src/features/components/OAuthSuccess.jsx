@@ -1,11 +1,13 @@
-//axios
-import axios from "axios";
 //react
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+//axios
+import axios from "axios";
+
 //Path
 import { PATH } from "../../routes/";
+
 //URL
 import { API_URL } from "../../config";
 
@@ -19,7 +21,7 @@ const OAuthSuccess = () => {
 
   useEffect(() => {
     axios
-      .get(`${API_URL}/users/me`, { withCredentials: true })
+      .get(`${API_URL}/users/me`, { withCredentials: true }) //withCredentials to cookies
       .then((response) => {
         console.log("user:", response.data.data.doc);
         if (response.data.data.doc) {

@@ -1,26 +1,36 @@
+//react
+
 import { useContext, useEffect } from "react";
+
+//style
 import { SidebarContainer, SidebarHeader, CheckSection } from "./style";
+
+//components
 import { CheckAndLabel } from "../../components/CheckAndLable";
 import { Pargraph } from "../../components/typography/style";
+
+//context
+import { SideBarContext } from "../../context/SideBarContext";
 import { SearchContext } from "../../context/SearchContext";
+
+//MUI Library
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { SideBarContext } from "../../context/SideBarContext";
 import { Box } from "@mui/material";
 
+//URL
 import { API_URL } from "../../config";
+//hooks
 import { useApi } from "../../hooks/useApi";
 
-const normalizeArabic = (str) => {
-  if (!str) return "";
-  return str.startsWith("ال") ? str.slice(2) : str;
-};
+//utils function
+import { normalizeArabic } from "../../utils/normlizeArabic";
 
 const Sidebar = ({ onFilterChange }) => {
-  const { search ,setSearch } = useContext(SearchContext);
+  const { search, setSearch } = useContext(SearchContext);
   const normalizedSearch = normalizeArabic(search?.toLowerCase() || "");
 
-  let { data: subject ,isLoading } = useApi(`${API_URL}/subjects`);
+  let { data: subject, isLoading } = useApi(`${API_URL}/subjects`);
   subject = subject.map((item) => item.name);
 
   let { data: branch } = useApi(`${API_URL}/branches`);
@@ -53,8 +63,7 @@ const Sidebar = ({ onFilterChange }) => {
         onFilterChange(id, true);
       }
     });
-    
-  }, [normalizedSearch ]);
+  }, [normalizedSearch]);
 
   const handleCheckboxChange = (e) => {
     const { id, checked } = e.target;
@@ -122,7 +131,7 @@ const Sidebar = ({ onFilterChange }) => {
           الافرع
         </Pargraph>
         {isLoading ? (
-          "loading..."
+          "يتم تحميل الافرع..."
         ) : (
           <CheckSection>
             {branch.map((label) => (
@@ -140,20 +149,21 @@ const Sidebar = ({ onFilterChange }) => {
         <Pargraph style={{ color: "var(--color-link)", fontSize: "18px" }}>
           المواد
         </Pargraph>
-        {isLoading ? "loading..." :
-        
-        <CheckSection>
-          {subject.map((label) => (
-            <CheckAndLabel
-            key={label}
-            text={label}
-            id={`subject-${label}`}
-            onChange={handleCheckboxChange}
-            defaultChecked={isMatched(label)}
-            />
-          ))}
-        </CheckSection>
-        }
+        {isLoading ? (
+          "يتم تجميل المواد..."
+        ) : (
+          <CheckSection>
+            {subject.map((label) => (
+              <CheckAndLabel
+                key={label}
+                text={label}
+                id={`subject-${label}`}
+                onChange={handleCheckboxChange}
+                defaultChecked={isMatched(label)}
+              />
+            ))}
+          </CheckSection>
+        )}
 
         <Pargraph style={{ color: "var(--color-link)", fontSize: "18px" }}>
           السعر

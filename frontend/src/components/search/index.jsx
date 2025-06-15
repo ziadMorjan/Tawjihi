@@ -1,9 +1,16 @@
+//react
 import { useContext } from "react";
-import { WrapperSearch, InputBar, SvgICon } from "./style";
-import { SearchContext } from "../../context/SearchContext";
 import { useNavigate } from "react-router-dom";
 
+//style
+import { WrapperSearch, InputBar, SvgICon } from "./style";
+
+//context
+import { SearchContext } from "../../context/SearchContext";
+
+//Path
 import { PATH } from "../../routes";
+
 const SearchBar = () => {
   const navigate = useNavigate();
   const { search, setSearch } = useContext(SearchContext);

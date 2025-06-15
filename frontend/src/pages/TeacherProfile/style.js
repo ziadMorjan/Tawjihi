@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const TeacherProfileWraper = styled.div`
 
-.img-sec{
+.img-sec>div{
      display: flex;
      gap: 3%;
 
@@ -32,6 +32,12 @@ export const TeacherProfileWraper = styled.div`
    padding: 20px 10px;
   
 }
+
+& .about-sec{
+   background-color: var( --color-background-second);
+  
+}
+
 h3{
       color: red;  
    }

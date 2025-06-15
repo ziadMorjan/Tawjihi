@@ -1,10 +1,15 @@
+//react
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
 import { BrowserRouter } from 'react-router-dom';
+
+//style
+import './index.css';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from './global/GlobalStyle';
+
+//start
+import App from './App';
 
 // Context Providers
 import { ThemeContextProvider, ThemeContext } from './context/ThemeContext';
@@ -15,7 +20,10 @@ import { DataCoursesProvider } from './context/DataCourses';
 import { NewOldProvider } from './context/NewOldContext';
 import { SearchContextProvider } from './context/SearchContext';
 import { SideBarContextProvider } from './context/SideBarContext';
+import { AppContext, AppProvider } from './context/WishAndCartListContext';
 
+
+//start point
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
@@ -29,17 +37,19 @@ root.render(
               <ModalProvider>
                 <SideBarContextProvider>
 
-                <AuthProvider>
-                  <LogOutProvider>
-                    <DataCoursesProvider>
-                      <NewOldProvider>
-                        <SearchContextProvider>
-                          <App />
-                        </SearchContextProvider>
-                      </NewOldProvider>
-                    </DataCoursesProvider>
-                  </LogOutProvider>
-                </AuthProvider>
+                  <AuthProvider>
+                    <LogOutProvider>
+                      <DataCoursesProvider>
+                        <NewOldProvider>
+                          <SearchContextProvider>
+                            <AppProvider>
+                              <App />
+                            </AppProvider>
+                          </SearchContextProvider>
+                        </NewOldProvider>
+                      </DataCoursesProvider>
+                    </LogOutProvider>
+                  </AuthProvider>
                 </SideBarContextProvider>
               </ModalProvider>
             </ThemeProvider>

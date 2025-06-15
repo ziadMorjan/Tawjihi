@@ -29,6 +29,6 @@ export const Parg = ({ children, color = "#fff" }) => {
   return <PargType color={color}>{children}</PargType>;
 };
 
-export const Pargrahph = ({ children , size }) => {
+export const Pargrahph = ({ children, size }) => {
   return <Pargraph size={size}>{children}</Pargraph>;
 };

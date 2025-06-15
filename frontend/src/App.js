@@ -1,11 +1,12 @@
+//react
 import { useRoutes } from "react-router-dom";
 import { Suspense } from "react";
 
-// paths
-import { routers } from "./routes";
-
 // components
 import Loading from "./components/Loading";
+
+// paths
+import { routers } from "./routes";
 
 function App() {
   const Router = useRoutes(routers);

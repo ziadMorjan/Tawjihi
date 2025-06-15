@@ -1,4 +1,4 @@
-// src/global/Theme.js
+//Theme.js
 export const lightTheme = {
   mode: 'light',
   background: '#ffffff',

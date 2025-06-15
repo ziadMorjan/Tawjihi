@@ -5,7 +5,7 @@ const Course = require('../../models/Course');
 const Coupon = require('../../models/Coupon');
 
 const cartValidator = [
-    validator.check("course")
+    validator.check("courseId")
         .notEmpty()
         .withMessage("course is required")
         .isMongoId()

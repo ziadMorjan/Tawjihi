@@ -1,5 +1,5 @@
 //style
-import StyledHamburger from "./style"; 
+import StyledHamburger from "./style";
 
 const Hamburger = ({ isOpen, toggleMenu }) => {
   return (

@@ -1,10 +1,11 @@
 // src/context/ThemeContext.js
-import React, { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import { lightTheme, darkTheme } from "../global/Theme";
 
 export const ThemeContext = createContext();
 
 export const ThemeContextProvider = ({ children }) => {
+
   // Check localStorage for saved theme, else default to light
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("app-theme");

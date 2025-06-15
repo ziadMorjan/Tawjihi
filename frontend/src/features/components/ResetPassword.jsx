@@ -1,15 +1,16 @@
 //react
 import { useState, useContext } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 
 //yup
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 //axios
 import axios from "axios";
 
+//hooks
+import { useForm } from "react-hook-form";
 
 // Components
 import { LogoAndButton } from "../../components/LogoAndButton";
@@ -26,14 +27,17 @@ import {
   FormForgetPassword,
 } from "./style";
 
-// Paths & Config
+//Paths
 import { PATH } from "../../routes";
+
+//URL
 import { API_URL } from "../../config";
+
+//context
 import { AuthContext } from "../../context/AuthContext";
 
 // Password regex
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
 
 // Validation schema
 const schema = yup.object({
@@ -62,8 +66,9 @@ export const ResetPassword = () => {
     reset,
   } = useForm({ resolver: yupResolver(schema) });
 
+  //check password
+  //=======================================================
   const passwordValue = watch("newPassword") || "";
-
   const passwordRules = [
     {
       label: "يجب أن تحتوي على حرف صغير (a-z)",
@@ -83,7 +88,12 @@ export const ResetPassword = () => {
       isValid: passwordValue.length >= 8,
     },
   ];
+  //=======================================================
 
+
+
+  //submit data
+  //=======================================================
   const onSubmit = async (data) => {
     setLoading(true);
     setServerError("");
@@ -96,7 +106,7 @@ export const ResetPassword = () => {
           newConfirmPassword: data.newConfirmPassword,
           email: localStorage.getItem("email"),
         },
-        { withCredentials: true }
+        { withCredentials: true } //withCredentials to cookies
       );
 
       if (response.data.user) {
@@ -118,6 +128,7 @@ export const ResetPassword = () => {
       setLoading(false);
     }
   };
+  //=======================================================
 
   return (
     <>
