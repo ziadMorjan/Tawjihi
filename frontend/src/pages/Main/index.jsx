@@ -192,6 +192,7 @@ const MainPage = () => {
                   imgSrc={item.img || "/assets/img/logo.png"}
                   name={item.name}
                   starIcon={item.averageRating}
+                  id={item._id}
                 />
               ))
           )}

@@ -8,6 +8,7 @@ import { ForgetPassword } from "../features/components/ForgetPassword";
 import { VerificationCode } from "../features/components/VerificationCode";
 import { ResetPassword } from "../features/components/ResetPassword";
 import Teachers from "../pages/Teachers";
+import TeacherProfile from "../pages/TeacherProfile";
 
 
 // Pages (lazy loaded)
@@ -31,6 +32,7 @@ export const PATH = {
     VerificationCode: "verification-code",
     ResetPassword: "reset-password",
     Teachers: "teachers",
+    TeacherProfile: "teachers/:id",
 };
 
 export const routers = [
@@ -42,6 +44,7 @@ export const routers = [
     { path: PATH.VerificationCode, element: <VerificationCode /> },
     { path: PATH.ResetPassword, element: <ResetPassword /> },
     { path: PATH.Teachers, element: <Teachers /> },
+    { path: PATH.TeacherProfile, element: <TeacherProfile /> },
 
     {       
         path: PATH.Auth,

@@ -13,7 +13,7 @@ export const useApi = (url) => {
       try {
         setIsLoading(true);
         const res = await axios.get(url);
-        console.log(res.data.data.docs);
+        console.log(res.data.data.docs, 'form Api');
         setData(res.data.data.docs);
       } catch (e) {
         setError(e.message);

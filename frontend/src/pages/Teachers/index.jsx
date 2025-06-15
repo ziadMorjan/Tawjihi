@@ -39,7 +39,7 @@ function Teachers() {
     <StyledTeachersPage>
       <LogoAndButton />
       <NavBar />
-      
+
       <section>
         <Containers>
           <div className='num-of-pages'>
@@ -62,13 +62,15 @@ function Teachers() {
                       imgSrc={teacher.img || '/assets/img/logo.png'}
                       name={teacher.name}
                       starIcon={teacher.averageRating}
+                      id={teacher._id}
                     />
+                        
                   ))}
                 </div>
 
                 {/* Pagination buttons */}
-                <Paginations currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}/>
-                
+                <Paginations currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+
               </>
             )}
           </div>
