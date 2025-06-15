@@ -8,6 +8,7 @@ import { RegisterForm } from "../features/components/Register";
 import { ForgetPassword } from "../features/components/ForgetPassword";
 import { VerificationCode } from "../features/components/VerificationCode";
 import { ResetPassword } from "../features/components/ResetPassword";
+import TeacherProfile from "../pages/TeacherProfile";
 
 
 // Pages (lazy loaded)
@@ -19,7 +20,7 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 const Courses = lazy(() => import("../pages/Courses"));
 const Teachers = lazy(() => import("../pages/Teachers"))
 const WishList = lazy(() => import("../pages/Wishlist"))
-const CartList = lazy(() => import("../pages/CartList"));   
+const CartList = lazy(() => import("../pages/CartList"));
 
 
 export const PATH = {
@@ -33,10 +34,7 @@ export const PATH = {
     VerificationCode: "verification-code",
     ResetPassword: "reset-password",
     Teachers: "teachers",
-    User: "user",
-    Wishlist: "user/wishlist",
-    CartList: "user/cartlist"
-
+    TeacherProfile: "teachers/:id",
 };
 
 export const routers = [
@@ -48,6 +46,7 @@ export const routers = [
     { path: PATH.VerificationCode, element: <VerificationCode /> },
     { path: PATH.ResetPassword, element: <ResetPassword /> },
     { path: PATH.Teachers, element: <Teachers /> },
+    { path: PATH.TeacherProfile, element: <TeacherProfile /> },
 
     {
         path: PATH.Auth,
