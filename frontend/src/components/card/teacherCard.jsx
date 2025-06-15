@@ -12,15 +12,17 @@ import {
 //components
 import { EmptyStar, FullStar, HalfStar } from "../Star";
 import { Pargrahph } from "../typography";
+import { useNavigate } from "react-router-dom";
 
-export const TeacherCard = ({ imgSrc, name, desc, starIcon = 0 }) => {
+export const TeacherCard = ({ imgSrc, name, desc, starIcon = 0 , id}) => {
   //calc the star empty and full and half
   const fullStars = Math.floor(starIcon);
   const hasHalfStar = starIcon % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+  const navigate = useNavigate();
 
   return (
-    <CardDiv>
+    <CardDiv onClick={()=>navigate(`/teachers/${id}`)} style={{ cursor: "pointer" }}>
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "المعلم"}`} />}
 
       <WrapperElementFlexSpace style={{ padding: "16px" }}>
