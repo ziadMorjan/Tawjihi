@@ -1,4 +1,7 @@
+//react
 import * as React from "react";
+
+//MUI Library
 import { styled, alpha } from "@mui/material/styles";
 import { Button, Menu, MenuItem } from "@mui/material";
 import {
@@ -7,8 +10,11 @@ import {
   History as HistoryIcon,
 } from "@mui/icons-material";
 
+//components
 import { H3 } from "../typography";
 import { Pargraph } from "../typography/style";
+
+//context
 import { DataCourses } from "../../context/DataCourses";
 import { NewOldContext } from "../../context/NewOldContext";
 

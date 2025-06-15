@@ -1,4 +1,4 @@
-// CheckAndLabel.js
+// style
 import {
   CheckAndLabelContainer,
   CheckAndLabelWrapper,
@@ -6,7 +6,12 @@ import {
   StyledLabel,
 } from "./style";
 
-export const CheckAndLabel = ({ text, id, onChange, defaultChecked = false }) => {
+export const CheckAndLabel = ({
+  text,
+  id,
+  onChange,
+  defaultChecked = false,
+}) => {
   return (
     <CheckAndLabelContainer>
       <CheckAndLabelWrapper>
@@ -21,4 +26,3 @@ export const CheckAndLabel = ({ text, id, onChange, defaultChecked = false }) =>
     </CheckAndLabelContainer>
   );
 };
-

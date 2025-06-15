@@ -1,15 +1,16 @@
 //react
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 
 //yup
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 //axios
 import axios from "axios";
 
+//hooks
+import { useForm } from "react-hook-form";
 
 // URL
 import { API_URL } from "../../config";
@@ -36,6 +37,7 @@ import { MiddleLineLetter } from "../../components/MiddleLineLetter";
 import { WrapperElementFlexCenter } from "../../styles/style";
 
 // Validation schema
+//=======================================================
 const schema = yup.object({
   email: yup
     .string()
@@ -43,6 +45,8 @@ const schema = yup.object({
     .email("ادخل البريد الالكتروني بشكل صحيح"),
   password: yup.string().required("كلمة المرور مطلوبة"),
 });
+//=======================================================
+
 
 export const LoginForm = () => {
   const navigate = useNavigate();
@@ -58,6 +62,8 @@ export const LoginForm = () => {
     reset,
   } = useForm({ resolver: yupResolver(schema) });
 
+  //submit data
+  //=======================================================
   const onSubmit = async (data) => {
     setLoading(true);
     setServerError("");
@@ -65,7 +71,9 @@ export const LoginForm = () => {
     try {
       const response = await axios.post(`${API_URL}/auth/login`, data, {
         withCredentials: true,
-      });
+      }); //withCredentials to cookies
+
+      console.log(response)
 
       if (response.data.user) {
         localStorage.setItem("user", JSON.stringify(response.data.user));
@@ -85,6 +93,7 @@ export const LoginForm = () => {
       setLoading(false);
     }
   };
+  //=======================================================
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>

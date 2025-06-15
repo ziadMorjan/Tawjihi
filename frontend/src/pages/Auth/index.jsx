@@ -1,5 +1,6 @@
 //react
 import { Outlet, useLocation } from "react-router-dom";
+
 // styled
 import { StyledNavLink, UlWrapper, Wrapper } from "./style";
 

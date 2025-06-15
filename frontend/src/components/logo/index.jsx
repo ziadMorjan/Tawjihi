@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 //style
 import { ImgLogo } from "./style";
 
-//path of links
+//Path
 import { PATH } from "../../routes";
 
 export const Logo = () => {

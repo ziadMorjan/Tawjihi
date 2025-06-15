@@ -1,3 +1,4 @@
+//react
 import { Navigate } from "react-router-dom";
 import { lazy } from "react";
 
@@ -7,7 +8,6 @@ import { RegisterForm } from "../features/components/Register";
 import { ForgetPassword } from "../features/components/ForgetPassword";
 import { VerificationCode } from "../features/components/VerificationCode";
 import { ResetPassword } from "../features/components/ResetPassword";
-import Teachers from "../pages/Teachers";
 
 
 // Pages (lazy loaded)
@@ -16,9 +16,10 @@ const About = lazy(() => import("../pages/About"));
 const Auth = lazy(() => import("../pages/Auth"));
 const OAuthSuccess = lazy(() => import("../features/components/OAuthSuccess"));
 const NotFound = lazy(() => import("../pages/NotFound"));
-
-
 const Courses = lazy(() => import("../pages/Courses"));
+const Teachers = lazy(() => import("../pages/Teachers"))
+const WishList = lazy(() => import("../pages/Wishlist"))
+
 
 export const PATH = {
     Main: "/",
@@ -31,6 +32,8 @@ export const PATH = {
     VerificationCode: "verification-code",
     ResetPassword: "reset-password",
     Teachers: "teachers",
+    User: "user",
+    Wishlist: "user/wishlist"
 };
 
 export const routers = [
@@ -43,13 +46,20 @@ export const routers = [
     { path: PATH.ResetPassword, element: <ResetPassword /> },
     { path: PATH.Teachers, element: <Teachers /> },
 
-    {       
+    {
         path: PATH.Auth,
         element: <Auth />,
         children: [
             { index: true, element: <Navigate to="login" /> },
             { path: "login", element: <LoginForm /> },
             { path: "register", element: <RegisterForm /> },
+        ],
+    },
+
+    {
+        path: PATH.User,
+        children: [
+            { path: "wishlist", element: <WishList /> },
         ],
     },
 

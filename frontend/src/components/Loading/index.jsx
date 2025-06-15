@@ -1,10 +1,5 @@
 //style
-import {
-  LoadingWrapper,
-  Spinner,
-  LoadingText,
-  BounceDot
-} from "./style";
+import { LoadingWrapper, Spinner, LoadingText, BounceDot } from "./style";
 
 const Loading = () => {
   return (

@@ -1,16 +1,18 @@
 //react
 import { useState, useContext } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 
 //yup
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 //axios
 import axios from "axios";
 
-// Context 
+//hooks
+import { useForm } from "react-hook-form";
+
+// Context
 import { AuthContext } from "../../context/AuthContext";
 
 //URL
@@ -39,6 +41,7 @@ import {
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
 // Yup schema
+//=======================================================
 const schema = yup.object({
   name: yup.string().required("الاسم الأول مطلوب").min(3, "ادخل الاسم كامل"),
   phone: yup
@@ -59,6 +62,7 @@ const schema = yup.object({
     .oneOf([yup.ref("password")], "كلمتا المرور غير متطابقتين"),
   terms: yup.boolean().oneOf([true], "يجب الموافقة على الشروط والأحكام"),
 });
+//=======================================================
 
 export const RegisterForm = () => {
   const navigate = useNavigate();
@@ -77,8 +81,9 @@ export const RegisterForm = () => {
     mode: "onChange",
   });
 
+  //check password
+  //=======================================================
   const passwordValue = watch("password") || "";
-
   const passwordRules = [
     {
       label: "يجب أن تحتوي على حرف صغير (a-z)",
@@ -98,7 +103,10 @@ export const RegisterForm = () => {
       isValid: passwordValue.length >= 8,
     },
   ];
+  //=======================================================
 
+  //submit data
+  //=======================================================
   const onSubmit = async (data) => {
     setLoading(true);
     setServerError("");
@@ -106,7 +114,7 @@ export const RegisterForm = () => {
     try {
       const response = await axios.post(`${API_URL}/auth/signup`, data, {
         withCredentials: true,
-      });
+      }); //withCredentials to cookies
 
       if (response.data.user) {
         localStorage.setItem("user", JSON.stringify(response.data.user));
@@ -126,6 +134,8 @@ export const RegisterForm = () => {
       setLoading(false);
     }
   };
+  //=======================================================
+
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>

@@ -9,7 +9,7 @@ import { Nav } from "./style";
 import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
 import Hamburger from "../../components/humborgar";
 
-//Paths 
+//Paths
 import { PATH } from "../../routes";
 
 // context

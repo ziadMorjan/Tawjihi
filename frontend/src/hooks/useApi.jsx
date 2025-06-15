@@ -1,11 +1,12 @@
 //react
 import { useEffect, useState } from "react";
+
 //axios
 import axios from "axios";
 export const useApi = (url) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // GET request
   useEffect(() => {
@@ -40,5 +41,5 @@ export const useApi = (url) => {
     }
   };
 
-  return { data, isLoading, error, postData , };
+  return { data, isLoading, error, postData };
 };
