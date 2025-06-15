@@ -143,15 +143,12 @@ export default function CustomizedMenus() {
 
         <MenuItem onClick={handleMenuClose} disableRipple>
           <MenuBookIcon />
-          دوراتي
+          <Link to={`/${PATH.CartList}`}>دوراتي</Link>
         </MenuItem>
 
         <MenuItem onClick={handleMenuClose} disableRipple>
           <FavoriteBorderIcon />
-          <Link to={`/${PATH.Wishlist}`}>
-          
-          المفضلة
-          </Link>
+          <Link to={`/${PATH.Wishlist}`}>المفضلة</Link>
         </MenuItem>
 
         <MenuItem onClick={handleMenuClose} disableRipple>

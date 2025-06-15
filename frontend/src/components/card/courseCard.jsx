@@ -1,5 +1,8 @@
-import React, { useContext, useState } from "react";
+//react
+import { useState } from "react";
 import axios from "axios";
+
+// styles
 import {
   CardDiv,
   IconStarDiv,
@@ -11,13 +14,42 @@ import {
   RatingStarsContainer,
 } from "./style";
 
+//global styles
 import { WrapperElementFlexSpace } from "../../styles/style";
+
+// components
 import { Pargrahph } from "../typography";
 import { EmptyStar, FullStar, HalfStar } from "../Star";
 import { CartIcon, HeartIcon } from "../Icon/cartAndWishIcon";
+
+//URL
 import { API_URL } from "../../config";
+// hooks
 import { useCRUD } from "../../hooks/useCRUD";
-import { WishListContext } from "../../context/WishListContext";
+
+const LoadingOverlay = ({ text = "جارٍ التنفيذ..." }) => (
+  <div
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(255,255,255,0.6)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 999,
+      fontSize: "16px",
+    }}
+  >
+    <div className="loader" />
+    <span style={{ marginTop: "8px", fontWeight: "bold", color: "#333" }}>
+      {text}
+    </span>
+  </div>
+);
 
 export const Card = ({
   imgSrc,
@@ -33,37 +65,59 @@ export const Card = ({
   id,
   item,
 }) => {
-  const [cartActive, setCartActive] = useState(false);
+  const {
+    addToWishList,
+    removeFromWishList,
+    isInWishList,
+    addToCartList,
+    removeFromCartList,
+    isInCartList,
+  } = useCRUD();
 
-  const { setShowAlertWishList } = useContext(WishListContext);
-  const { addToWishList, removeFromWishList, isInWishList, setWishList } =
-    useCRUD();
-
-  const [heartActive, setHeartActive] = useState(() => isInWishList(id));
+  const [loadingCart, setLoadingCart] = useState(false);
+  const [loadingWish, setLoadingWish] = useState(false);
 
   const handleClickHeart = async () => {
-    const currentlyInWishlist = isInWishList(id);
-    setHeartActive(!currentlyInWishlist);
-
+    setLoadingWish(true);
     try {
-      if (currentlyInWishlist) {
-        const res = await axios.delete(`${API_URL}/wishlist/${id}`, {
+      if (isInWishList(id)) {
+        await axios.delete(`${API_URL}/wishlist/${id}`, {
           withCredentials: true,
         });
-        setWishList(res.data.wishlist);
-        removeFromWishList(item._id);
+        removeFromWishList(id);
       } else {
-        const res = await axios.post(
+        await axios.post(
           `${API_URL}/wishlist/${id}`,
           { itemId: id },
           { withCredentials: true }
         );
-        setWishList(res.data.wishlist);
         addToWishList(item);
       }
-      setShowAlertWishList(true);
     } catch (e) {
-      console.error("Error toggling wishlist:", e.message);
+      console.error("Wishlist error:", e.message);
+    } finally {
+      setLoadingWish(false);
+    }
+  };
+
+  const handleClickCart = async () => {
+    setLoadingCart(true);
+    try {
+      if (isInCartList(id)) {
+        await axios.delete(`${API_URL}/cart/${id}`, { withCredentials: true });
+        removeFromCartList(id);
+      } else {
+        await axios.post(
+          `${API_URL}/cart/${id}`,
+          { itemId: id },
+          { withCredentials: true }
+        );
+        addToCartList(item);
+      }
+    } catch (e) {
+      console.error("Cart error:", e.message);
+    } finally {
+      setLoadingCart(false);
     }
   };
 
@@ -72,17 +126,21 @@ export const Card = ({
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
   return (
-    <CardDiv className="card-div">
+    <CardDiv style={{ position: "relative" }}>
+      {(loadingCart || loadingWish) && <LoadingOverlay />}
+
       <ActionIcons>
         <CartIcon
-          active={cartActive}
-          onClick={() => setCartActive(!cartActive)}
+          active={loadingCart || isInCartList(id)}
+          onClick={handleClickCart}
         />
-        <HeartIcon active={heartActive} onClick={handleClickHeart} />
+        <HeartIcon
+          active={loadingWish || isInWishList(id)}
+          onClick={handleClickHeart}
+        />
       </ActionIcons>
 
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "الدورة"}`} />}
-
       <WrapperElementFlexSpace style={{ padding: "16px" }}>
         <Pargrahph size="25px">الدورة : {name}</Pargrahph>
         <Pargrahph size="18px">الفرع : {branch}</Pargrahph>
@@ -113,7 +171,7 @@ export const Card = ({
             {Array.from({ length: fullStars }).map((_, i) => (
               <FullStar key={`full-${i}`} />
             ))}
-            {hasHalfStar && <HalfStar key="half" />}
+            {hasHalfStar && <HalfStar />}
             {Array.from({ length: emptyStars }).map((_, i) => (
               <EmptyStar key={`empty-${i}`} />
             ))}

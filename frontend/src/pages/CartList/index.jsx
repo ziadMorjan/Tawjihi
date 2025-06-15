@@ -1,5 +1,5 @@
 //react
-import { useEffect } from "react";
+import {useEffect } from "react";
 
 //hooks
 import { useCRUD } from "../../hooks/useCRUD";
@@ -11,36 +11,36 @@ import { Card } from "../../components/card/courseCard";
 import axios from "axios";
 //URL
 import { API_URL } from "../../config";
-//MUI library
 
-const WishList = () => {
-  const { wishlist, setWishList } = useCRUD(); // ✅ استخدم wishList الصحيح
+const CartList = () => {
+  const { cart, setCartList } = useCRUD(); // ✅ هنا setCartList مش setCart
 
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await axios.get(`${API_URL}/wishlist`, {
+        const res = await axios.get(`${API_URL}/cart`, {
           withCredentials: true,
         });
-        setWishList(res.data.wishlist); // ✅ تأكد أنك تضبط قائمة المفضلة
+        console.log("Cart data:", res.data.cart); // ✅ التأكد من بيانات السلة
+        setCartList(res.data.cart.courses); // ✅ التأكد من وضع بيانات السلة
       } catch (e) {
         console.log(e);
       }
     };
     getData();
-  }, [setWishList]);
+  }, [setCartList]);
 
   return (
     <div>
-      <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة المفضلة</h2>
-      {wishlist.length === 0 ? (
+      <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
+      {cart.length === 0 ? (
         <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
       ) : (
         <div
-          className="wishlist-grid"
+          className="cart-grid"
           style={{ display: "flex", flexWrap: "wrap" }}
         >
-          {wishlist.map((item) => (
+          {cart.map((item) => (
             <Card
               key={item._id}
               item={item}
@@ -62,4 +62,4 @@ const WishList = () => {
   );
 };
 
-export default WishList;
+export default CartList;
