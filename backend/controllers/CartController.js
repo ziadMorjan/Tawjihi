@@ -21,43 +21,46 @@ const getLoggedUserCart = asyncErrorHandler(async function (req, res) {
 
 const addToCart = asyncErrorHandler(async function (req, res) {
     let cart = await Cart.findOne({ user: req.user.id });
-    const course = await Course.findById(req.body.course);
+    const course = await Course.findById(req.params.courseId);
 
-    // 1- user have no cart
-    if (!cart) {
-        cart = await Cart.create({
-            user: req.user.id,
-            cartItems: [{
-                course: course.id,
-                price: course.price
-            }],
-            totalPrice: course.price
-        });
-    }
-    // 2- user have cart
+    // user have no cart
+    if (!cart)
+        cart = await Cart.create({ user: req.user.id });
     else {
-        let index = cart.cartItems.findIndex(item => item.course.toString() === course.id);
+        // user have cart
+        let index = cart.courses.findIndex(item => item.id === course.id);
         if (index === -1) {
-            cart.cartItems.push({ course: course.id, price: course.price });
-            cart.totalPrice += course.price;
-            await cart.save();
+            cart = await Cart.findOneAndUpdate(
+                { user: req.user.id },
+                {
+                    $push: { courses: course.id },
+                    $inc: { totalPrice: course.price }
+                },
+                { new: true }
+            );
         }
     }
+
     sendRes(res, cart);
 });
 
 const removeFromCart = asyncErrorHandler(async function (req, res) {
     let cart = await Cart.findOne({ user: req.user.id });
+    const course = await Course.findById(req.params.courseId);
 
     if (!cart)
         cart = await Cart.create({ user: req.user.id });
     else {
-        let index = cart.cartItems.findIndex(item => item.course.toString() === req.params.course);
+        let index = cart.courses.findIndex(item => (item.id === course.id));
         if (index !== -1) {
-            let item = cart.cartItems[index]
-            cart.cartItems.pull(item);
-            cart.totalPrice -= item.price;
-            await cart.save();
+            cart = await Cart.findOneAndUpdate(
+                { user: req.user.id },
+                {
+                    $pull: { courses: course.id },
+                    $inc: { totalPrice: -course.price }
+                },
+                { new: true }
+            );
         }
     }
 
@@ -68,7 +71,7 @@ const clearCart = asyncErrorHandler(async function (req, res) {
     const cart = await Cart.findOneAndUpdate(
         { user: req.user.id },
         {
-            cartItems: [],
+            courses: [],
             totalPrice: 0,
             totalPriceAfterDiscount: undefined
         },
@@ -82,10 +85,10 @@ const applyCoupon = asyncErrorHandler(async function (req, res) {
     let cart = await Cart.findOne({ user: req.user.id });
     let coupon = await Coupon.findOne({ name: req.body.coupon });
 
-    if (cart.cartItems.length !== 0) {
+    if (cart.courses.length !== 0) {
         const index = cart.appliedCoupons.findIndex(item => item.toString() === coupon.id);
         if (index !== -1)
-            throw new CustomError(`you have applied this coupon '${coupon.name}' before`);
+            throw new CustomError(`you have applied this coupon '${coupon.name}' before`, 400);
 
         cart.totalPriceAfterDiscount = parseFloat(((cart.totalPrice - (coupon.discount / 100) * cart.totalPrice)).toFixed(2));
         cart.appliedCoupons.push(coupon.id);
