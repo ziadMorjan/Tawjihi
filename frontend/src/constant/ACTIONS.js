@@ -1,11 +1,9 @@
 export const Actions = {
-    //wish list
+    //Wish List Actions
     SetWishList: "setWishList",
     AddToWishList: "addToWishList",
     RemoveFromWishList: "removeFromWishList",
-
-
-    //cart list
+    // Cart Actions
     SetCartList: "setCartList",
     AddToCartList: "addToCartList",
     RemoveFromCartList: "removeFromCartList",

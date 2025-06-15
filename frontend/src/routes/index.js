@@ -19,6 +19,7 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 const Courses = lazy(() => import("../pages/Courses"));
 const Teachers = lazy(() => import("../pages/Teachers"))
 const WishList = lazy(() => import("../pages/Wishlist"))
+const CartList = lazy(() => import("../pages/CartList"));   
 
 
 export const PATH = {
@@ -33,7 +34,9 @@ export const PATH = {
     ResetPassword: "reset-password",
     Teachers: "teachers",
     User: "user",
-    Wishlist: "user/wishlist"
+    Wishlist: "user/wishlist",
+    CartList: "user/cartlist"
+
 };
 
 export const routers = [
@@ -60,6 +63,7 @@ export const routers = [
         path: PATH.User,
         children: [
             { path: "wishlist", element: <WishList /> },
+            { path: "cartlist", element: <CartList /> },
         ],
     },
 
