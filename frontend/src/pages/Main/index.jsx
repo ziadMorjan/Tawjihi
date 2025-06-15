@@ -75,7 +75,7 @@ const MainPage = () => {
 
   return (
     <>
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer />
 
       <ModalTeacher isOpen="true" />
       <LogoAndButton />

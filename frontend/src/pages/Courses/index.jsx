@@ -159,7 +159,7 @@ const Courses = () => {
 
   return (
     <>
-          <ToastContainer position="top-center" autoClose={3000} />
+          <ToastContainer  />
     
       <ModalTeacher isopen="true" />
       <CoursesPageWraper>
