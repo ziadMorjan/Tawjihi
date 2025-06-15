@@ -2,12 +2,9 @@ const mongoose = require("mongoose");
 
 const cartSchema = new mongoose.Schema(
     {
-        cartItems: [{
-            course: {
-                type: mongoose.Types.ObjectId,
-                ref: "Course"
-            },
-            price: Number
+        courses: [{
+            type: mongoose.Types.ObjectId,
+            ref: "Course"
         }],
         totalPrice: {
             type: Number,
@@ -28,5 +25,12 @@ const cartSchema = new mongoose.Schema(
         timestamps: true
     }
 );
+
+cartSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: "courses",
+    });
+    next();
+});
 
 module.exports = mongoose.model("Cart", cartSchema);
