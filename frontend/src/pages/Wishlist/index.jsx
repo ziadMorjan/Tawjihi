@@ -11,7 +11,13 @@ import { Card } from "../../components/card/courseCard";
 import axios from "axios";
 //URL
 import { API_URL } from "../../config";
+import { LogoAndButton } from "../../components/LogoAndButton";
+import { NavBar } from "../../layout/navBar";
 //MUI library
+
+//toast
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const WishList = () => {
   const { wishlist, setWishList } = useCRUD(); // ✅ استخدم wishList الصحيح
@@ -22,7 +28,7 @@ const WishList = () => {
         const res = await axios.get(`${API_URL}/wishlist`, {
           withCredentials: true,
         });
-        setWishList(res.data.wishlist); // ✅ تأكد أنك تضبط قائمة المفضلة
+        setWishList(res.data.wishlist);
       } catch (e) {
         console.log(e);
       }
@@ -32,6 +38,10 @@ const WishList = () => {
 
   return (
     <div>
+      <ToastContainer position="top-center" autoClose={3000} />
+
+      <LogoAndButton />
+      <NavBar />
       <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة المفضلة</h2>
       {wishlist.length === 0 ? (
         <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>

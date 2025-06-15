@@ -27,6 +27,10 @@ import { API_URL } from "../../config";
 // hooks
 import { useCRUD } from "../../hooks/useCRUD";
 
+// Toastify
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const LoadingOverlay = ({ text = "جارٍ التنفيذ..." }) => (
   <div
     style={{
@@ -85,6 +89,7 @@ export const Card = ({
           withCredentials: true,
         });
         removeFromWishList(id);
+        toast.info("تمت إزالة الدورة من قائمة الرغبات");
       } else {
         await axios.post(
           `${API_URL}/wishlist/${id}`,
@@ -92,9 +97,11 @@ export const Card = ({
           { withCredentials: true }
         );
         addToWishList(item);
+        toast.success("تمت إضافة الدورة إلى قائمة الرغبات");
       }
     } catch (e) {
       console.error("Wishlist error:", e.message);
+      toast.error("حدث خطأ أثناء تحديث قائمة الرغبات");
     } finally {
       setLoadingWish(false);
     }
@@ -106,6 +113,7 @@ export const Card = ({
       if (isInCartList(id)) {
         await axios.delete(`${API_URL}/cart/${id}`, { withCredentials: true });
         removeFromCartList(id);
+        toast.info("تمت إزالة الدورة من السلة");
       } else {
         await axios.post(
           `${API_URL}/cart/${id}`,
@@ -113,9 +121,11 @@ export const Card = ({
           { withCredentials: true }
         );
         addToCartList(item);
+        toast.success("تمت إضافة الدورة إلى السلة");
       }
     } catch (e) {
       console.error("Cart error:", e.message);
+      toast.error("حدث خطأ أثناء تحديث السلة");
     } finally {
       setLoadingCart(false);
     }

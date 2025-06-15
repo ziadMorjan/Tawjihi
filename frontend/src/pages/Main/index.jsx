@@ -31,15 +31,19 @@ import { API_URL } from "../../config";
 import { LogOutContext } from "../../context/LogoutContext";
 
 // MUI Library
-import { Alert, Button, Snackbar } from "@mui/material";
+import { Button } from "@mui/material";
 
 //Path
 import { PATH } from "../../routes";
 
+//toast
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 const MainPage = () => {
   const { isLogout, setIsLogout } = useContext(LogOutContext);
   const [active, setActive] = useState(1); // 0: Free, 1: Newest, 2: Discounted
-  const [showAlert, setShowAlert] = useState(false);
 
   const menuItems = ["الدورات المجانية", "احدث الدورات", "دورات الخصم"];
 
@@ -62,38 +66,20 @@ const MainPage = () => {
 
   useEffect(() => {
     if (isLogout) {
-      setShowAlert(true);
       setIsLogout(false);
     }
   }, [isLogout, setIsLogout]);
 
+
+  
+
   return (
     <>
+      <ToastContainer position="top-center" autoClose={3000} />
+
       <ModalTeacher isOpen="true" />
       <LogoAndButton />
       <NavBar />
-
-      {/* Logout success alert */}
-      <Snackbar
-        open={showAlert}
-        autoHideDuration={3000}
-        onClose={() => setShowAlert(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          severity="success"
-          onClose={() => setShowAlert(false)}
-          sx={{
-            width: "400px",
-            height: "80px",
-            display: "flex",
-            alignItems: "center",
-            fontSize: "1.2rem",
-          }}
-        >
-          تم تسجيل الخروج بنجاح
-        </Alert>
-      </Snackbar>
 
       <Wrappers>
         <Containers>

@@ -7,7 +7,6 @@ import { styled, alpha } from "@mui/material/styles";
 import { Button, Menu, MenuItem, Divider } from "@mui/material";
 import {
   FavoriteBorder as FavoriteBorderIcon,
-  ShoppingCartOutlined as ShoppingCartOutlinedIcon,
   PersonOutline as PersonOutlineIcon,
   Logout as LogoutIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
@@ -26,6 +25,10 @@ import axios from "axios";
 
 //URL
 import { API_URL } from "../../config";
+
+// Toastify
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Styled dropdown menu
 const StyledMenu = styled((props) => (
@@ -77,24 +80,25 @@ export default function CustomizedMenus() {
     setAnchorEl(null);
   };
 
-  //logout function request
   const handleLogout = async () => {
     try {
       await axios.get(`${API_URL}/auth/logout`, {
         withCredentials: true,
-      }); //withCredentials to cookies
+      });
       setIsAuth(false);
       localStorage.removeItem("user");
-      navigate(PATH.Main);
       setIsLogout(true);
+      toast.success("تم تسجيل الخروج بنجاح");
+      navigate(PATH.Main);
     } catch (error) {
       console.error("Logout failed:", error);
+      toast.error("فشل تسجيل الخروج، حاول مرة أخرى");
     } finally {
       handleMenuClose();
     }
   };
 
-  //check user if exist
+  // Check user from localStorage
   let user = null;
   try {
     user = JSON.parse(localStorage.getItem("user"));
@@ -120,7 +124,7 @@ export default function CustomizedMenus() {
           minWidth: "100%",
         }}
       >
-        {String(user?.name).split(" ")[0]}{" "}
+        {user?.name?.split(" ")[0] || "المستخدم"}
       </Button>
 
       <StyledMenu
@@ -143,16 +147,26 @@ export default function CustomizedMenus() {
 
         <MenuItem onClick={handleMenuClose} disableRipple>
           <MenuBookIcon />
-          <Link to={`/${PATH.CartList}`}>دوراتي</Link>
+          دوراتي
         </MenuItem>
 
-        <MenuItem onClick={handleMenuClose} disableRipple>
+        <MenuItem
+          component={Link}
+          to={`/${PATH.Wishlist}`}
+          onClick={handleMenuClose}
+          disableRipple
+        >
           <FavoriteBorderIcon />
-          <Link to={`/${PATH.Wishlist}`}>المفضلة</Link>
+          المفضلة
         </MenuItem>
 
-        <MenuItem onClick={handleMenuClose} disableRipple>
-          <ShoppingCartOutlinedIcon />
+        <MenuItem
+          component={Link}
+          to={`/${PATH.CartList}`}
+          onClick={handleMenuClose}
+          disableRipple
+        >
+          <MenuBookIcon />
           السلة
         </MenuItem>
 

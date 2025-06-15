@@ -1,5 +1,5 @@
 //react
-import {useEffect } from "react";
+import { useEffect } from "react";
 
 //hooks
 import { useCRUD } from "../../hooks/useCRUD";
@@ -11,9 +11,16 @@ import { Card } from "../../components/card/courseCard";
 import axios from "axios";
 //URL
 import { API_URL } from "../../config";
+import { LogoAndButton } from "../../components/LogoAndButton";
+import { NavBar } from "../../layout/navBar";
+import { ModalTeacher } from "../../components/modalTeacher";
+
+//toast
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CartList = () => {
-  const { cart, setCartList } = useCRUD(); // ✅ هنا setCartList مش setCart
+  const { cart, setCartList } = useCRUD();
 
   useEffect(() => {
     const getData = async () => {
@@ -21,8 +28,7 @@ const CartList = () => {
         const res = await axios.get(`${API_URL}/cart`, {
           withCredentials: true,
         });
-        console.log("Cart data:", res.data.cart); // ✅ التأكد من بيانات السلة
-        setCartList(res.data.cart.courses); // ✅ التأكد من وضع بيانات السلة
+        setCartList(res.data.cart.courses);
       } catch (e) {
         console.log(e);
       }
@@ -32,6 +38,11 @@ const CartList = () => {
 
   return (
     <div>
+      <ToastContainer position="top-center" autoClose={3000} />
+
+      <LogoAndButton />
+      <NavBar />
+      <ModalTeacher />
       <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
       {cart.length === 0 ? (
         <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>

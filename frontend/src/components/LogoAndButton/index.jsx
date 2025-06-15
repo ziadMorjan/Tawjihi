@@ -51,7 +51,11 @@ export const LogoAndButton = () => {
             onClick={toggleTheme}
             aria-label="toggle theme"
           >
-            {theme.mode === "dark" ? <WbSunnyIcon /> : <NightsStayIcon />}
+            {theme.mode === "dark" ? (
+              <WbSunnyIcon style={{ color: "var(--color-dark-text)" }} />
+            ) : (
+              <NightsStayIcon />
+            )}
           </IconButton>
           {isAuth ? (
             <LoginAndRegisterButton>
