@@ -20,6 +20,7 @@ import { DataCoursesProvider } from './context/DataCourses';
 import { NewOldProvider } from './context/NewOldContext';
 import { SearchContextProvider } from './context/SearchContext';
 import { SideBarContextProvider } from './context/SideBarContext';
+import { WishListProvider } from './context/WishListContext';
 
 
 //start point
@@ -41,7 +42,9 @@ root.render(
                       <DataCoursesProvider>
                         <NewOldProvider>
                           <SearchContextProvider>
-                            <App />
+                            <WishListProvider>
+                              <App />
+                            </WishListProvider>
                           </SearchContextProvider>
                         </NewOldProvider>
                       </DataCoursesProvider>

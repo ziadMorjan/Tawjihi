@@ -73,6 +73,8 @@ export const LoginForm = () => {
         withCredentials: true,
       }); //withCredentials to cookies
 
+      console.log(response)
+
       if (response.data.user) {
         localStorage.setItem("user", JSON.stringify(response.data.user));
         setIsAuth(true);

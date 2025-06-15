@@ -126,24 +126,24 @@ const MainPage = () => {
           ) : filteredCourses.length === 0 ? (
             <p>لا توجد دورات مطابقة.</p>
           ) : (
-            filteredCourses.slice(0, 3).map((item, index) => (
-              <Card
-                key={index}
-                imgSrc="/assets/img/logo.png"
-                name={item.name}
-                starIcon={item.averageRating}
-                price={item.price}
-                priceAfterDiscount={item.priceAfterDiscount}
-                teacherName={item.teacher?.name}
-                teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                branch={item.branches
-                  .map((branch) => {
-                    return branch.name;
-                  })
-                  .join(" | ")}
-                subject={item.subject.name}
-              />
-            ))
+            filteredCourses
+              .slice(0, 3)
+              .map((item, index) => (
+                <Card
+                  key={item._id}
+                  item={item}
+                  id={item._id}
+                  imgSrc={item.img || "/assets/img/logo.png"}
+                  name={item.name}
+                  starIcon={item.averageRating}
+                  price={item.price}
+                  priceAfterDiscount={item.priceAfterDiscount}
+                  teacherName={item.teacher?.name}
+                  teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+                  branch={item.branches.map((b) => b.name).join(" | ")}
+                  subject={item.subject?.name}
+                />
+              ))
           )}
           {dataTeachers.length === 0 ? (
             <p style={{ color: "red", display: "block" }}>

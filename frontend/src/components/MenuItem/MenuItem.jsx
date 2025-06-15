@@ -1,6 +1,6 @@
 //react
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 //MUI Library
 import { styled, alpha } from "@mui/material/styles";
@@ -148,7 +148,10 @@ export default function CustomizedMenus() {
 
         <MenuItem onClick={handleMenuClose} disableRipple>
           <FavoriteBorderIcon />
+          <Link to={`/${PATH.Wishlist}`}>
+          
           المفضلة
+          </Link>
         </MenuItem>
 
         <MenuItem onClick={handleMenuClose} disableRipple>

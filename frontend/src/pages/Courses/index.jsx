@@ -172,7 +172,7 @@ const Courses = () => {
               <div style={{ width: "80%" }}>
                 {isLoading ? (
                   <WrapperCards>
-                    {Array.from({ length: 3 }).map((_, i) => (
+                    {Array.from({ length: 4 }).map((_, i) => (
                       <CardSkeleton key={i} />
                     ))}
                   </WrapperCards>
@@ -184,7 +184,9 @@ const Courses = () => {
                   <WrapperCards>
                     {currentItems.map((item, index) => (
                       <Card
-                        key={index}
+                        key={item._id}
+                        item={item}
+                        id={item._id}
                         imgSrc={item.img || "/assets/img/logo.png"}
                         name={item.name}
                         starIcon={item.averageRating}
@@ -192,10 +194,8 @@ const Courses = () => {
                         priceAfterDiscount={item.priceAfterDiscount}
                         teacherName={item.teacher?.name}
                         teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                        branch={item.branches
-                          .map((branch) => branch.name)
-                          .join(" | ")}
-                        subject={item.subject.name}
+                        branch={item.branches.map((b) => b.name).join(" | ")}
+                        subject={item.subject?.name}
                       />
                     ))}
                   </WrapperCards>

@@ -1,10 +1,5 @@
-//react
-import React from "react";
-
-//global style
-import { WrapperElementFlexSpace } from "../../styles/style";
-
-//style
+import React, { useContext, useState } from "react";
+import axios from "axios";
 import {
   CardDiv,
   IconStarDiv,
@@ -16,10 +11,13 @@ import {
   RatingStarsContainer,
 } from "./style";
 
-//components
+import { WrapperElementFlexSpace } from "../../styles/style";
 import { Pargrahph } from "../typography";
 import { EmptyStar, FullStar, HalfStar } from "../Star";
 import { CartIcon, HeartIcon } from "../Icon/cartAndWishIcon";
+import { API_URL } from "../../config";
+import { useCRUD } from "../../hooks/useCRUD";
+import { WishListContext } from "../../context/WishListContext";
 
 export const Card = ({
   imgSrc,
@@ -32,11 +30,43 @@ export const Card = ({
   priceAfterDiscount,
   branch,
   subject,
+  id,
+  item,
 }) => {
-  const [cartActive, setCartActive] = React.useState(false);
-  const [heartActive, setHeartActive] = React.useState(false);
+  const [cartActive, setCartActive] = useState(false);
 
-  //calc the star empty and full and half
+  const { setShowAlertWishList } = useContext(WishListContext);
+  const { addToWishList, removeFromWishList, isInWishList, setWishList } =
+    useCRUD();
+
+  const [heartActive, setHeartActive] = useState(() => isInWishList(id));
+
+  const handleClickHeart = async () => {
+    const currentlyInWishlist = isInWishList(id);
+    setHeartActive(!currentlyInWishlist);
+
+    try {
+      if (currentlyInWishlist) {
+        const res = await axios.delete(`${API_URL}/wishlist/${id}`, {
+          withCredentials: true,
+        });
+        setWishList(res.data.wishlist);
+        removeFromWishList(item._id);
+      } else {
+        const res = await axios.post(
+          `${API_URL}/wishlist/${id}`,
+          { itemId: id },
+          { withCredentials: true }
+        );
+        setWishList(res.data.wishlist);
+        addToWishList(item);
+      }
+      setShowAlertWishList(true);
+    } catch (e) {
+      console.error("Error toggling wishlist:", e.message);
+    }
+  };
+
   const fullStars = Math.floor(starIcon);
   const hasHalfStar = starIcon % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
@@ -48,18 +78,15 @@ export const Card = ({
           active={cartActive}
           onClick={() => setCartActive(!cartActive)}
         />
-        <HeartIcon
-          active={heartActive}
-          onClick={() => setHeartActive(!heartActive)}
-        />
+        <HeartIcon active={heartActive} onClick={handleClickHeart} />
       </ActionIcons>
 
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "الدورة"}`} />}
 
       <WrapperElementFlexSpace style={{ padding: "16px" }}>
-        <Pargrahph size="25px">الدورة : {name} </Pargrahph>
-        <Pargrahph size="18px">الفرع : {branch} </Pargrahph>
-        <Pargrahph size="14px"> المادة: {subject} </Pargrahph>
+        <Pargrahph size="25px">الدورة : {name}</Pargrahph>
+        <Pargrahph size="18px">الفرع : {branch}</Pargrahph>
+        <Pargrahph size="14px">المادة: {subject}</Pargrahph>
 
         <TeacherInfo>
           {teacherImg && <img src={teacherImg} alt={`صورة ${teacherName}`} />}
@@ -83,12 +110,12 @@ export const Card = ({
       <IconStarDiv>
         <RatingStarsContainer>
           <StarWrapper>
-            {Array.from({ length: fullStars }).map((_, index) => (
-              <FullStar key={`full-${index}`} />
+            {Array.from({ length: fullStars }).map((_, i) => (
+              <FullStar key={`full-${i}`} />
             ))}
             {hasHalfStar && <HalfStar key="half" />}
-            {Array.from({ length: emptyStars }).map((_, index) => (
-              <EmptyStar key={`empty-${index}`} />
+            {Array.from({ length: emptyStars }).map((_, i) => (
+              <EmptyStar key={`empty-${i}`} />
             ))}
           </StarWrapper>
         </RatingStarsContainer>
