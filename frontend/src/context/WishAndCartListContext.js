@@ -1,5 +1,5 @@
 //react
-import { createContext, useReducer, useState, useEffect } from "react";
+import { createContext, useReducer, useEffect } from "react";
 //axios
 import axios from "axios";
 //URL
@@ -68,8 +68,6 @@ export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [showAlertWishList, setShowAlertWishList] = useState(false);
-    const [showAlertCart, setShowAlertCart] = useState(false);
 
     // Fetch wishlist and cart data from the server when the component mounts
     // This ensures that the wishlist and cart are populated with data from the server
@@ -101,10 +99,6 @@ export const AppProvider = ({ children }) => {
             value={{
                 state,
                 dispatch,
-                showAlertWishList,
-                setShowAlertWishList,
-                showAlertCart,
-                setShowAlertCart,
             }}
         >
             {children}

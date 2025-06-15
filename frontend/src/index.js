@@ -8,6 +8,10 @@ import './index.css';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from './global/GlobalStyle';
 
+//toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 //start
 import App from './App';
 
@@ -43,6 +47,7 @@ root.render(
                         <NewOldProvider>
                           <SearchContextProvider>
                             <AppProvider>
+                              <ToastContainer position="top-right" autoClose={3000} />
                               <App />
                             </AppProvider>
                           </SearchContextProvider>

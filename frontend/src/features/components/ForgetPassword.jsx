@@ -66,6 +66,7 @@ export const ForgetPassword = () => {
     setLoading(true);
     setServerError("");
 
+
     try {
       const response = await axios.post(`${API_URL}/auth/forgetPassword`, data);
       console.log("Submitted:", response.data);

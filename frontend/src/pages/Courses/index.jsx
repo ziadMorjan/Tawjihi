@@ -35,6 +35,11 @@ import { SearchContext } from "../../context/SearchContext";
 //utils function
 import { normalizeArabic } from "../../utils/normlizeArabic";
 
+
+//toast
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const Courses = () => {
   const {
     data: fetchedCourses = [],
@@ -154,6 +159,8 @@ const Courses = () => {
 
   return (
     <>
+          <ToastContainer position="top-center" autoClose={3000} />
+    
       <ModalTeacher isopen="true" />
       <CoursesPageWraper>
         <div>
