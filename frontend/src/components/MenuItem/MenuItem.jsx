@@ -88,8 +88,8 @@ export default function CustomizedMenus() {
       setIsAuth(false);
       localStorage.removeItem("user");
       setIsLogout(true);
-      toast.success("تم تسجيل الخروج بنجاح");
       navigate(PATH.Main);
+      toast.success("تم تسجيل الخروج بنجاح");
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error("فشل تسجيل الخروج، حاول مرة أخرى");
@@ -152,7 +152,7 @@ export default function CustomizedMenus() {
 
         <MenuItem
           component={Link}
-          to={`/${PATH.Wishlist}`}
+          to={`/${PATH.WishList}`}
           onClick={handleMenuClose}
           disableRipple
         >
