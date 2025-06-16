@@ -47,7 +47,17 @@ root.render(
                         <NewOldProvider>
                           <SearchContextProvider>
                             <AppProvider>
-                              <ToastContainer position="top-right" autoClose={3000} />
+                              <ToastContainer
+                                position="center"
+                                autoClose={3000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={true} // since you use Arabic text
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                              />                    
                               <App />
                             </AppProvider>
                           </SearchContextProvider>

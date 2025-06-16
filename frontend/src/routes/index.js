@@ -35,6 +35,10 @@ export const PATH = {
     ResetPassword: "reset-password",
     Teachers: "teachers",
     TeacherProfile: "teachers/:id",
+    WishList: "wishlist",
+    CartList: "cartlist",
+    OAuthSuccess: "oauth-success",
+
 };
 
 export const routers = [
@@ -61,8 +65,8 @@ export const routers = [
     {
         path: PATH.User,
         children: [
-            { path: "wishlist", element: <WishList /> },
-            { path: "cartlist", element: <CartList /> },
+            { path:PATH.WishList, element: <WishList /> },
+            { path: PATH.CartList, element: <CartList /> },
         ],
     },
 

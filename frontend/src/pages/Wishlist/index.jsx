@@ -38,7 +38,7 @@ const WishList = () => {
 
   return (
     <div>
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer />
 
       <LogoAndButton />
       <NavBar />
