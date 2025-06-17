@@ -1,11 +1,12 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 import { H2, H3, Pargrahph } from "../../components/typography";
 import { Progress } from "../../components/progress";
 import { CourseIcon } from "../../components/Icon/courseIcon";
 import Button from "@mui/material/Button";
 import { useForm } from "react-hook-form";
-
 import { StarRating } from "../../components/Star/starRating";
+
 import {
   AboutCourseDiv,
   AvatarCircle,
@@ -33,6 +34,7 @@ import {
   TextArea,
   WatchText,
 } from "./style";
+
 import { Containers } from "../../components/Container";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { NavBar } from "../../layout/navBar";
@@ -42,6 +44,18 @@ import { ModalTeacher } from "../../components/modalTeacher";
 
 const CourseOne = () => {
   const { name } = useParams();
+  const navigate = useNavigate();
+
+  const [currentIndex, setCurrentIndex] = useState(-1);
+
+  const handleVideoClick = (item, index) => {
+    navigate(`/courses/${name}/123/video/${index}`, { state: { items } });
+  };
+
+  const handleVideoSelect = (item, index) => {
+    setCurrentIndex(index);
+    handleVideoClick(item, index);
+  };
 
   const {
     register,
@@ -52,21 +66,20 @@ const CourseOne = () => {
 
   const onSubmit = (data) => {
     console.log("تم إرسال التعليق:", data);
-    // send to backend here
     reset(); // reset form after submission
   };
 
   const items = [
-    { title: "مقدمة عن React", time: "05:30" },
-    { title: "المكونات (Components)", time: "12:45" },
-    { title: "مقدمة عن React", time: "05:30" },
-    { title: "المكونات (Components)", time: "12:45" },
-    { title: "مقدمة عن React", time: "05:30" },
-    { title: "المكونات (Components)", time: "12:45" },
-    { title: "مقدمة عن React", time: "05:30" },
-    { title: "المكونات (Components)", time: "12:45" },
-    { title: "مقدمة عن React", time: "05:30" },
-    { title: "المكونات (Components)", time: "12:45" },
+    {
+      title: "الكيمياء",
+      time: "05:30",
+      url: "https://www.w3schools.com/html/mov_bbb.mp4",
+    },
+    {
+      title: "الفيزياء",
+      time: "12:45",
+      url: "https://www.w3schools.com/html/mov_bbb.mp4",
+    },
   ];
 
   return (
@@ -111,13 +124,14 @@ const CourseOne = () => {
           </DetailsWrapper>
         </StyledCourseWrapper>
 
-        <H2>الدروس </H2>
+        <H2>الدروس</H2>
 
         <Container>
           <LeftWrapper>
             <AnimatedList
               items={items}
-              onItemSelect={(item, index) => console.log(item, index)}
+              onItemSelect={handleVideoSelect}
+              selectedIndex={currentIndex}
               showGradients={true}
               enableArrowNavigation={true}
               displayScrollbar={true}
@@ -141,12 +155,6 @@ const CourseOne = () => {
           <H3>اسم الدورة</H3>
           <Pargrahph>
             هذه الدورة مصممة لتزويدك بالمعرفة والمهارات الأساسية في مجال
-            الجغرافيا. ستتعلم من خلال مجموعة من الدروس التفاعلية والتمارين
-            العملية التي ستساعدك على فهم المفاهيم الرئيسية وتطبيقها في سياقات
-            حقيقية.هذه الدورة مصممة لتزويدك بالمعرفة والمهارات الأساسية في مجال
-            الجغرافيا. ستتعلم من خلال مجموعة من الدروس التفاعلية والتمارين
-            العملية التي ستساعدك على فهم المفاهيم الرئيسية وتطبيقها في سياقات
-            حقيقية.هذه الدورة مصممة لتزويدك بالمعرفة والمهارات الأساسية في مجال
             الجغرافيا. ستتعلم من خلال مجموعة من الدروس التفاعلية والتمارين
             العملية التي ستساعدك على فهم المفاهيم الرئيسية وتطبيقها في سياقات
             حقيقية.
@@ -199,7 +207,9 @@ const CourseOne = () => {
               </FieldRow>
               <SubmitButton type="submit">إرسال التعليق</SubmitButton>
               {errors.comment && (
-                <span style={{ color: "red", fontSize: "13px" ,margin:"0px 10px" }}>
+                <span
+                  style={{ color: "red", fontSize: "13px", margin: "0px 10px" }}
+                >
                   {errors.comment.message}
                 </span>
               )}

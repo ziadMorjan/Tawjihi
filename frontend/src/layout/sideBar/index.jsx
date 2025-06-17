@@ -150,7 +150,7 @@ const Sidebar = ({ onFilterChange }) => {
           المواد
         </Pargraph>
         {isLoading ? (
-          "يتم تجميل المواد..."
+          "يتم تحميل المواد..."
         ) : (
           <CheckSection>
             {subject.map((label) => (

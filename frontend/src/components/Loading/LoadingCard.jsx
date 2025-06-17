@@ -1,18 +1,33 @@
-//style
-import {
-  SkeletonWrapper,
-  SkeletonAvatar,
-  SkeletonLine,
-  SkeletonLineShort,
-} from "./style";
+// CardSkeleton.jsx
+import React from "react";
+import { SkeletonAvatar, SkeletonLineShort, SkeletonPrice, SkeletonStars, SkeletonStarsPrice, SkeletonTeacherImg, SkeletonTeacherName, SkeletonWrapper, TeacherInfoWrapper } from "./style";
+
 
 export const CardSkeleton = () => {
   return (
     <SkeletonWrapper>
+      {/* Image skeleton */}
       <SkeletonAvatar />
+
+      {/* Course name */}
       <SkeletonLineShort />
-      <SkeletonLine />
-      <SkeletonLine />
+
+
+      {/* Subject */}
+      <SkeletonLineShort />
+
+      {/* Teacher info */}
+      <TeacherInfoWrapper>
+        <SkeletonTeacherImg />
+        <SkeletonTeacherName />
+      </TeacherInfoWrapper>
+
+
+      {/* Stars and Price */}
+      <SkeletonStarsPrice>
+        <SkeletonStars />
+        <SkeletonPrice />
+      </SkeletonStarsPrice>
     </SkeletonWrapper>
   );
 };

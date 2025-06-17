@@ -15,4 +15,8 @@ export const ButtonLogin = styled("button")`
       color:var(--color-primary);
       border: 1px solid var(--color-primary);
     }
+
+    @media (max-width: 767px) {
+      width: 100px;
+    }
   `;
