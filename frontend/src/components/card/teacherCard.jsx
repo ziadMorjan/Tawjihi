@@ -1,43 +1,59 @@
-//global style
-import { WrapperElementFlexSpace } from "../../styles/style";
+import { useNavigate } from "react-router-dom";
+import { EmptyStar, FullStar, HalfStar } from "../Star";
 
-//style
 import {
-  CardDiv,
-  IconStarDiv,
-  StarWrapper,
-  RatingStarsContainer,
+  Card,
+  Badge,
+  Description,
+  ImageWrapper,
+  Img,
+  NameWrapper,
+  StyledIconStarDiv,
+  StyledPargrahph,
+  StyledRatingStarsContainer,
+  UnderlineBar,
 } from "./style";
 
-//components
-import { EmptyStar, FullStar, HalfStar } from "../Star";
-import { Pargrahph } from "../typography";
-import { useNavigate } from "react-router-dom";
-
-export const TeacherCard = ({ imgSrc, name, desc, starIcon = 0 , id}) => {
-  //calc the star empty and full and half
+export const TeacherCard = ({
+  imgSrc,
+  name,
+  desc,
+  starIcon = 0,
+  id,
+  badge,
+}) => {
   const fullStars = Math.floor(starIcon);
   const hasHalfStar = starIcon % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
   const navigate = useNavigate();
 
   return (
-    <CardDiv onClick={()=>navigate(`/teachers/${id}`)} style={{ cursor: "pointer" }}>
-      {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "المعلم"}`} />}
+    <Card
+      onClick={() => navigate(`/teachers/${id}`)}
+      role="button"
+      tabIndex={0}
+    >
+      {badge && <Badge>{badge}</Badge>}
 
-      <WrapperElementFlexSpace style={{ padding: "16px" }}>
-        <Pargrahph size="25px">المعلم : {name} </Pargrahph>
-      </WrapperElementFlexSpace>
-
-      {desc && (
-        <span style={{ padding: "0 20px", marginTop: "4px" }}>
-          <strong>{desc}</strong>
-        </span>
+      {imgSrc && (
+        <ImageWrapper>
+          <Img src={imgSrc} alt={`صورة تخص ${name || "المعلم"}`} />
+        </ImageWrapper>
       )}
 
-      <IconStarDiv>
-        <RatingStarsContainer>
-          <StarWrapper>
+      <NameWrapper>
+        <StyledPargrahph size="22px" title={name}>
+          {name}
+        </StyledPargrahph>
+        <UnderlineBar />
+      </NameWrapper>
+
+      {desc && <Description title={desc}>{desc}</Description>}
+
+      <StyledIconStarDiv>
+        <StyledRatingStarsContainer>
+          <div style={{ display: "flex", gap: "3px" }}>
             {Array.from({ length: fullStars }).map((_, index) => (
               <FullStar key={`full-${index}`} />
             ))}
@@ -45,9 +61,9 @@ export const TeacherCard = ({ imgSrc, name, desc, starIcon = 0 , id}) => {
             {Array.from({ length: emptyStars }).map((_, index) => (
               <EmptyStar key={`empty-${index}`} />
             ))}
-          </StarWrapper>
-        </RatingStarsContainer>
-      </IconStarDiv>
-    </CardDiv>
+          </div>
+        </StyledRatingStarsContainer>
+      </StyledIconStarDiv>
+    </Card>
   );
 };

@@ -9,6 +9,7 @@ export const CartIcon = ({ active, onClick }) => (
       stroke: "#2563eb",
       transition: "fill 0.3s ease, transform 0.2s ease",
       transform: active ? "scale(1.2)" : "scale(1)",
+
     }}
     width="24"
     height="24"
@@ -32,6 +33,7 @@ export const HeartIcon = ({ active, onClick }) => (
       stroke: "#ca4e4e",
       transition: "fill 0.3s ease, transform 0.2s ease",
       transform: active ? "scale(1.2)" : "scale(1)",
+
     }}
     width="24"
     height="24"

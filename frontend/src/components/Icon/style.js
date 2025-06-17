@@ -21,3 +21,14 @@ export const SocialWrapper = styled.div`
     }
   }
 `;
+
+export const CourseIconWrapper = styled.div`
+  display: flex; 
+  align-items: center;
+
+  & img {
+    width: 20px;
+    height: 20px;
+
+  }
+  `

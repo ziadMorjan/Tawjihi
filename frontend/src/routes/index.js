@@ -9,7 +9,7 @@ import { ForgetPassword } from "../features/components/ForgetPassword";
 import { VerificationCode } from "../features/components/VerificationCode";
 import { ResetPassword } from "../features/components/ResetPassword";
 import TeacherProfile from "../pages/TeacherProfile";
-
+import OneCourse from "../pages/CourseOne";
 
 // Pages (lazy loaded)
 const Main = lazy(() => import("../pages/Main"));
@@ -27,6 +27,8 @@ export const PATH = {
     Main: "/",
     About: "about",
     Courses: "courses",
+    CoursesOne: "courses/:name/:id",
+
     Auth: "auth",
     Login: "auth/login",
     Register: "auth/register",
@@ -45,6 +47,8 @@ export const routers = [
     { index: true, element: <Main /> },
     { path: PATH.About, element: <About /> },
     { path: PATH.Courses, element: <Courses /> },
+    { path: PATH.CoursesOne, element: <OneCourse /> },
+
 
     { path: PATH.ForgetPassword, element: <ForgetPassword /> },
     { path: PATH.VerificationCode, element: <VerificationCode /> },
@@ -65,7 +69,7 @@ export const routers = [
     {
         path: PATH.User,
         children: [
-            { path:PATH.WishList, element: <WishList /> },
+            { path: PATH.WishList, element: <WishList /> },
             { path: PATH.CartList, element: <CartList /> },
         ],
     },

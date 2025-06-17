@@ -30,6 +30,8 @@ import { useCRUD } from "../../hooks/useCRUD";
 // Toastify
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import { PATH } from "../../routes";
 
 const LoadingOverlay = ({ text = "جارٍ التنفيذ..." }) => (
   <div
@@ -89,7 +91,7 @@ export const Card = ({
           withCredentials: true,
         });
         removeFromWishList(id);
-        toast.info("تمت إزالة الدورة من قائمة الرغبات");
+        toast.info(" تمت إزالة الدورة من قائمة المفضلة");
       } else {
         await axios.post(
           `${API_URL}/wishlist/${id}`,
@@ -97,11 +99,11 @@ export const Card = ({
           { withCredentials: true }
         );
         addToWishList(item);
-        toast.success("تمت إضافة الدورة إلى قائمة الرغبات");
+        toast.success("تمت إضافة الدورة إلى قائمة المفضلة");
       }
     } catch (e) {
       console.error("Wishlist error:", e.message);
-      toast.error("حدث خطأ أثناء تحديث قائمة الرغبات");
+      toast.error("حدث خطأ أثناء تحديث قائمة المفضلة");
     } finally {
       setLoadingWish(false);
     }
@@ -135,6 +137,8 @@ export const Card = ({
   const hasHalfStar = starIcon % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
+  const navigate = useNavigate();
+
   return (
     <CardDiv style={{ position: "relative" }}>
       {(loadingCart || loadingWish) && <LoadingOverlay />}
@@ -151,7 +155,12 @@ export const Card = ({
       </ActionIcons>
 
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "الدورة"}`} />}
-      <WrapperElementFlexSpace style={{ padding: "16px" }}>
+      <WrapperElementFlexSpace
+        style={{ padding: "16px" ,cursor: "pointer" }}
+        onClick={() => {
+          navigate(`/${PATH.Courses}/${name}/${id}`, { replace: true });
+        }}
+      >
         <Pargrahph size="25px">الدورة : {name}</Pargrahph>
         <Pargrahph size="18px">الفرع : {branch}</Pargrahph>
         <Pargrahph size="14px">المادة: {subject}</Pargrahph>

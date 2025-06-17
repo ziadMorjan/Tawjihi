@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { Pargrahph } from "../typography";
+import { WrapperElementFlexSpace } from "../../styles/style";
 
 
 export const CardDiv = styled.div`
@@ -114,7 +116,7 @@ export const ActionIcons = styled.div`
   left: 16px;
   display: flex;
   gap: 10px;
-  z-index: 2;
+  z-index: 100000;
 `;
 
 export const PriceBadge = styled.div`
@@ -137,4 +139,108 @@ export const RatingStarsContainer = styled.div`
     font-size: 14px;
     color: #6b7280;
   }
+`;
+
+
+export const Card = styled.div`
+  position: relative;
+  cursor: pointer;
+  padding: 24px 16px 28px;
+  max-width: 340px;
+  margin: auto;
+  border-radius: 24px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  margin-top: 20px ;
+
+`;
+
+export const Badge = styled.div`
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background-color: var(--color-link, #007bff);
+  color: white;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+`;
+
+export const ImageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+`;
+
+export const Img = styled.img`
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-primary, #007bff);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+  }
+`;
+
+export const NameWrapper = styled(WrapperElementFlexSpace)`
+  justify-content: center;
+  padding-bottom: 10px;
+  position: relative;
+`;
+
+export const StyledPargrahph = styled(Pargrahph)`
+  font-weight: 800;
+  color: var(--color-primary-dark, #004085);
+  text-align: center;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: var(--color-primary, #007bff);
+  }
+`;
+
+export const UnderlineBar = styled.div`
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  width: 40px;
+  background-color: var(--color-primary, #007bff);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  left: 50%;
+  transform: translateX(-50%);
+
+  ${NameWrapper}:hover & {
+    opacity: 1;
+  }
+`;
+
+export const Description = styled.p`
+  color: #444;
+  font-size: 0.95rem;
+  text-align: center;
+  margin-bottom: 18px;
+  padding: 0 16px;
+  line-height: 1.5;
+  min-height: 60px;
+`;
+
+export const StyledIconStarDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+`;
+
+export const StyledRatingStarsContainer = styled.div`
+  font-size: 20px;
 `;

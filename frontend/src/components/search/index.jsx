@@ -1,9 +1,14 @@
-//react
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 //style
-import { WrapperSearch, InputBar, SvgICon } from "./style";
+import {
+  WrapperSearch,
+  InputBar,
+  SvgICon,
+  SuggestionBox,
+  SuggestionItem,
+} from "./style";
 
 //context
 import { SearchContext } from "../../context/SearchContext";
@@ -11,24 +16,59 @@ import { SearchContext } from "../../context/SearchContext";
 //Path
 import { PATH } from "../../routes";
 
+// sample static data (you can replace it with dynamic data from API)
+const allCourses = [
+  "الكيمياء",
+  "الفيزياء",
+  "الرياضيات",
+  "اللغة العربية",
+  "اللغة الإنجليزية",
+  "العلوم الحياتية",
+  "العلوم العامة",
+  "التاريخ",
+  "البرمجة الأساسية",
+];
+
 const SearchBar = () => {
   const navigate = useNavigate();
   const { search, setSearch } = useContext(SearchContext);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleChange = (e) => {
-    setSearch(e.target.value);
-    console.log(search);
+    const value = e.target.value;
+    setSearch(value);
+    if (value.length > 1) {
+      const filtered = allCourses.filter((course) =>
+        course.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
   };
 
   const handleSearch = () => {
     navigate(`/${PATH.Courses}`);
+    setShowSuggestions(false);
   };
+
+  const handleSelectSuggestion = (value) => {
+    setSearch(value);
+    setShowSuggestions(false);
+    navigate(`/${PATH.Courses}`);
+  };
+
   return (
-    <WrapperSearch>
+    <WrapperSearch style={{ position: "relative" }}>
       <InputBar
         type="text"
+        value={search}
         placeholder="ابحث عن الدورات ....."
         onChange={handleChange}
+        onFocus={() => search && setShowSuggestions(true)}
+        onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
       />
       <SvgICon
         className="iconBar"
@@ -48,6 +88,19 @@ const SearchBar = () => {
           14 7.01 14 9.5 11.99 14 9.5 14"
         />
       </SvgICon>
+
+      {showSuggestions && suggestions.length > 0 && (
+        <SuggestionBox>
+          {suggestions.map((s, index) => (
+            <SuggestionItem
+              key={index}
+              onClick={() => handleSelectSuggestion(s)}
+            >
+              {s}
+            </SuggestionItem>
+          ))}
+        </SuggestionBox>
+      )}
     </WrapperSearch>
   );
 };

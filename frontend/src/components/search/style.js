@@ -46,3 +46,29 @@ export const InputBar = styled.input`
     width: 80%;    
   }
 `;
+
+export const SuggestionBox = styled.ul`
+  position: absolute;
+  top: 100%; /* places it just below the input */
+  right: 20%; /* aligns to the right of the input */
+  width: 50%; /* or use a fixed width like 300px */
+  background: white;
+  color: var(--color-primary);
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 99;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+export const SuggestionItem = styled.li`
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+`;

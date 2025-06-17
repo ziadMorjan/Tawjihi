@@ -40,7 +40,6 @@ import { PATH } from "../../routes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const MainPage = () => {
   const { isLogout, setIsLogout } = useContext(LogOutContext);
   const [active, setActive] = useState(1); // 0: Free, 1: Newest, 2: Discounted
@@ -49,7 +48,7 @@ const MainPage = () => {
 
   const { data: dataCourses, isLoading } = useApi(`${API_URL}/courses/`);
   const { data: dataTeachers } = useApi(
-    `${API_URL}/users/?role=teacher&isActive=true&limit=3`
+    `    ${API_URL}/users/?role=teacher&isActive=true&limit=3`
   );
 
   console.log("data is ", dataCourses);
@@ -69,9 +68,6 @@ const MainPage = () => {
       setIsLogout(false);
     }
   }, [isLogout, setIsLogout]);
-
-
-  
 
   return (
     <>
@@ -173,11 +169,12 @@ const MainPage = () => {
               .slice(0, 3)
               .map((item, index) => (
                 <TeacherCard
-                  key={index}
-                  imgSrc={item.img || "/assets/img/logo.png"}
-                  name={item.name}
-                  starIcon={item.averageRating}
-                  id={item._id}
+                  id="123"
+                  name="أ. محمد النجار"
+                  desc="مدرس محترف لمواد الفيزياء والرياضيات"
+                  imgSrc="/images/mohammed.jpg"
+                  starIcon={4.5}
+                  badge="معلم"
                 />
               ))
           )}
