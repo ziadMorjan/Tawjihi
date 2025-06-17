@@ -36,3 +36,16 @@ export const ButtonStyled = styled.button`
     font-size: 1rem;
   }
 `;
+
+export const StyledDownloadButton = styled(ButtonStyled).attrs({ as: 'a' })`
+text-decoration: none;
+display: inline-block;
+&:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 86, 179, 0.3);
+    color: #fff;
+    text-decoration: none;
+
+  }
+`

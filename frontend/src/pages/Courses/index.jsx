@@ -168,7 +168,7 @@ const Courses = () => {
           <NavBar />
 
           <Containers>
-            <FilterMenuItem currentPage={currentPage} totalPages={totalPages} />
+            <FilterMenuItem currentPage={currentPage} totalPages={totalPages} order={true}/>
 
             <div style={{ display: "flex" }}>
               <SideBar

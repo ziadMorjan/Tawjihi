@@ -35,6 +35,7 @@ export const TeacherProfileWraper = styled.div`
 
 & .about-sec{
    background-color: var( --color-background-second);
+   padding: 20px 10px;
   
 }
 
