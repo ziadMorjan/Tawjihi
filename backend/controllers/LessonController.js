@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { getVideoDurationInSeconds } = require("get-video-duration");
 const Lesson = require('../models/Lesson');
 const { uploadSingleField } = require("../middlewares/uploadsMiddleware");
 
@@ -32,6 +33,10 @@ const handVideo = asyncErrorHandler(async function (req, res, next) {
         }
         const filePath = path.join(uploadDir, name);
         fs.writeFileSync(filePath, req.file.buffer);
+
+        const duration = await getVideoDurationInSeconds(filePath);
+
+        req.body.duration = duration;
         req.body.video = name;
     }
     next();
