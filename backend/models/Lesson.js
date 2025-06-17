@@ -18,6 +18,11 @@ const lessonSchema = new mongoose.Schema(
             required: true,
             trim: true
         },
+        duration: {
+            type: Number,
+            required: true,
+            min: 0
+        },
         course: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Course',
