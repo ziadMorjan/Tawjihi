@@ -50,8 +50,13 @@ const UserSchema = new mongoose.Schema(
         isActive: {
             type: Boolean,
             default: true,
-        }
-
+        },
+        reviewsQuantity: Number,
+        averageRating: {
+            type: Number,
+            min: 0,
+            max: 5
+        },
     },
     {
         timestamps: true,

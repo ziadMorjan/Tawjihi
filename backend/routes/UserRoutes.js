@@ -36,7 +36,11 @@ const {
     refuseTeacher
 } = require("../controllers/UserController");
 
+const teacherReviewRoutes = require("./TeacherReviewRoutes");
+
 const router = express.Router();
+
+router.use("/:teacherId/teacherReviews", teacherReviewRoutes);
 
 router.route("/deleteMe")
     .delete(

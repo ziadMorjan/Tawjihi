@@ -16,6 +16,7 @@ const wishlistRouts = require('./routes/wishlistRoute');
 const ReviewRoutes = require('./routes/ReviewRoutes');
 const couponRouts = require('./routes/CouponRouts');
 const cartRouts = require('./routes/CartRouts');
+const TeacherReviewRoutes = require('./routes/TeacherReviewRoutes');
 const defaultRoutes = require('./routes/DefaultRoute');
 
 const { googleStrategy, facebookStrategy } = require("./config/passport");
@@ -51,6 +52,7 @@ app.use('/api/v1/wishlist', wishlistRouts);
 app.use('/api/v1/reviews', ReviewRoutes);
 app.use('/api/v1/coupons', couponRouts);
 app.use('/api/v1/cart', cartRouts);
+app.use('/api/v1/teacherReviews', TeacherReviewRoutes);
 app.use(defaultRoutes);
 
 // Global error handler
