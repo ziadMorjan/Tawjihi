@@ -49,7 +49,7 @@ export const InputBar = styled.input`
 
 export const SuggestionBox = styled.ul`
   position: absolute;
-  top: 100%; /* places it just below the input */
+  top: 110%; /* places it just below the input */
   right: 20%; /* aligns to the right of the input */
   width: 50%; /* or use a fixed width like 300px */
   background: white;
@@ -65,8 +65,10 @@ export const SuggestionBox = styled.ul`
 
 export const SuggestionItem = styled.li`
   padding: 10px 16px;
+  width: 100%;
   cursor: pointer;
   transition: background 0.2s;
+  text-align: start;
 
   &:hover {
     background-color: #f1f5f9;

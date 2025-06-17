@@ -58,7 +58,9 @@ export const BounceDot = styled.span`
 
 
 
-const shimmer = keyframes`
+
+// reuse shimmer keyframe and styles
+export const shimmer = keyframes`
   0% {
     background-position: 200% 0;
   }
@@ -79,18 +81,12 @@ export const SkeletonWrapper = styled.div`
 
   @media (max-width: 768px) {
     width: 350px;
-    
   }
 `;
 
 export const SkeletonElement = styled.div`
-  background: linear-gradient(
-    90deg,
-    #eee 25%,
-    #f5f5f5 37%,
-    #eee 63%
-  );
-  
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+
   background-size: 200% 100%;
   animation: ${shimmer} 1.5s infinite;
   border-radius: 4px;
@@ -109,4 +105,40 @@ export const SkeletonLine = styled(SkeletonElement)`
 
 export const SkeletonLineShort = styled(SkeletonLine)`
   width: 60%;
+`;
+
+export const TeacherInfoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+`;
+
+// Circle for teacher image skeleton
+export const SkeletonTeacherImg = styled(SkeletonElement)`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+`;
+
+export const SkeletonTeacherName = styled(SkeletonLineShort)`
+  width: 120px;
+  height: 16px;
+`;
+
+export const SkeletonStarsPrice = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+`;
+
+export const SkeletonStars = styled(SkeletonLineShort)`
+  width: 100px;
+  height: 16px;
+`;
+
+export const SkeletonPrice = styled(SkeletonLineShort)`
+  width: 60px;
+  height: 16px;
 `;

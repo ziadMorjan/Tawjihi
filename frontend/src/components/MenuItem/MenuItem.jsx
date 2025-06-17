@@ -118,10 +118,13 @@ export default function CustomizedMenus() {
         endIcon={<KeyboardArrowDownIcon />}
         sx={{
           color: "var(--color-link)",
-          fontSize: "16px",
+          fontSize: "14px",
           textTransform: "none",
-          p: 0,
-          minWidth: "100%",
+          paddingRight: 5,
+          paddingLeft: 3,
+          paddingTop: 0,
+          paddingBottom: 0,
+          maxWidth: 100,
         }}
       >
         {user?.name?.split(" ")[0] || "المستخدم"}

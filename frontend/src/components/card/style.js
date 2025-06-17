@@ -116,7 +116,7 @@ export const ActionIcons = styled.div`
   left: 16px;
   display: flex;
   gap: 10px;
-  z-index: 100000;
+  z-index: 100;
 `;
 
 export const PriceBadge = styled.div`

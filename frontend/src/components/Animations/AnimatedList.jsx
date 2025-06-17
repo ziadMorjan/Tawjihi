@@ -37,9 +37,13 @@ const AnimatedList = ({
   itemClassName = "",
   displayScrollbar = true,
   initialSelectedIndex = -1,
+  selectedIndex: controlledIndex, // <- receive selectedIndex from parent
 }) => {
   const listRef = useRef(null);
-  const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
+  const [internalIndex, setInternalIndex] = useState(initialSelectedIndex);
+  const selectedIndex =
+    typeof controlledIndex === "number" ? controlledIndex : internalIndex;
+
   const [keyboardNav, setKeyboardNav] = useState(false);
   const [topGradientOpacity, setTopGradientOpacity] = useState(0);
   const [bottomGradientOpacity, setBottomGradientOpacity] = useState(1);
@@ -62,11 +66,11 @@ const AnimatedList = ({
       if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
         e.preventDefault();
         setKeyboardNav(true);
-        setSelectedIndex((prev) => Math.min(prev + 1, items.length - 1));
+        setInternalIndex((prev) => Math.min(prev + 1, items.length - 1));
       } else if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
         e.preventDefault();
         setKeyboardNav(true);
-        setSelectedIndex((prev) => Math.max(prev - 1, 0));
+        setInternalIndex((prev) => Math.max(prev - 1, 0));
       } else if (
         e.key === "Enter" &&
         selectedIndex >= 0 &&
@@ -117,7 +121,6 @@ const AnimatedList = ({
         color: "#222",
         minHeight: "350px",
         border: "1px solid #e2e8f0",
-
       }}
     >
       <div
@@ -141,52 +144,53 @@ const AnimatedList = ({
         }}
         onScroll={handleScroll}
       >
-        {items.map((item, index) => (
-          <AnimatedItem
-            key={index}
-            delay={index * 0.05}
-            index={index}
-            onMouseEnter={() => setSelectedIndex(index)}
-            onClick={() => {
-              setSelectedIndex(index);
-              onItemSelect?.(item, index);
-            }}
-          >
-            <div
-              className={`p-4 min-h-[60px] rounded-lg transition-transform duration-300 ease-in-out cursor-pointer text-base select-none
-    ${
-      selectedIndex === index
-        ? "scale-[1.03] shadow-lg bg-indigo-600 text-white font-semibold"
-        : "hover:bg-gray-100 text-gray-800"
-    } ${itemClassName}`}
-              style={{
-                border: "1px solid #e2e8f0",
-                userSelect: "none",
-                width: "100%", // Make sure it uses full available width
+        {items.map((item, index) => {
+          const isActive = selectedIndex === index;
+          return (
+            <AnimatedItem
+              key={index}
+              delay={index * 0.05}
+              index={index}
+              onMouseEnter={() => setInternalIndex(index)}
+              onClick={() => {
+                setInternalIndex(index);
+                onItemSelect?.(item, index);
               }}
             >
-              <div className="flex justify-between items-center w-full gap-3">
-                <p className="m-0 truncate text-base flex-grow min-w-0">
-                  {item.title}
-                </p>
-                <div className="flex items-center gap-1 text-sm flex-shrink-0 whitespace-nowrap">
-                  <AiOutlineClockCircle
-                    className={
-                      selectedIndex === index ? "text-white" : "text-gray-500"
-                    }
-                  />
-                  <span
-                    className={
-                      selectedIndex === index ? "text-white" : "text-gray-500"
-                    }
-                  >
-                    {item.time}
-                  </span>
+              <div
+                className={`p-4 min-h-[60px] rounded-lg transition-transform duration-300 ease-in-out cursor-pointer text-base select-none
+                  ${
+                    isActive
+                      ? "scale-[1.03] shadow-lg font-semibold"
+                      : "hover:bg-gray-100 text-gray-800"
+                  } ${itemClassName}`}
+                style={{
+                  border: "1px solid #e2e8f0",
+                  userSelect: "none",
+                  width: "100%",
+                  backgroundColor: isActive
+                    ? "var(--color-primary)"
+                    : "transparent",
+                  color: isActive ? "#fff" : "#1a202c",
+                }}
+              >
+                <div className="flex justify-between items-center w-full gap-3">
+                  <p className="m-0 truncate text-base flex-grow min-w-0">
+                    {item.title}
+                  </p>
+                  <div className="flex items-center gap-1 text-sm flex-shrink-0 whitespace-nowrap">
+                    <AiOutlineClockCircle
+                      className={isActive ? "text-white" : "text-gray-500"}
+                    />
+                    <span className={isActive ? "text-white" : "text-gray-500"}>
+                      {item.time}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </AnimatedItem>
-        ))}
+            </AnimatedItem>
+          );
+        })}
       </div>
 
       {showGradients && items.length > maxVisibleItems && (

@@ -211,3 +211,36 @@ export const SubmitButton = styled('button')`
     cursor: not-allowed;
   }
 `;
+
+
+
+export const VideoWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+export const PlayerContainer = styled.div`
+  flex: 2;
+  min-width: 300px;
+
+  iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    border-radius: 10px;
+  }
+`;
+
+export const ListContainer = styled.div`
+  flex: 1;
+  min-width: 250px;
+`;

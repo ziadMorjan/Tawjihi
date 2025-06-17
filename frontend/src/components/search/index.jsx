@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-//style
+// Style
 import {
   WrapperSearch,
   InputBar,
@@ -10,13 +10,13 @@ import {
   SuggestionItem,
 } from "./style";
 
-//context
+// Context
 import { SearchContext } from "../../context/SearchContext";
 
-//Path
+// Routes
 import { PATH } from "../../routes";
 
-// sample static data (you can replace it with dynamic data from API)
+// Sample static data (replace with API if needed)
 const allCourses = [
   "الكيمياء",
   "الفيزياء",
@@ -38,6 +38,7 @@ const SearchBar = () => {
   const handleChange = (e) => {
     const value = e.target.value;
     setSearch(value);
+
     if (value.length > 1) {
       const filtered = allCourses.filter((course) =>
         course.toLowerCase().includes(value.toLowerCase())
@@ -46,12 +47,15 @@ const SearchBar = () => {
       setShowSuggestions(true);
     } else {
       setShowSuggestions(false);
+      setSuggestions([]);
     }
   };
 
   const handleSearch = () => {
-    navigate(`/${PATH.Courses}`);
-    setShowSuggestions(false);
+    if (search.trim() !== "") {
+      navigate(`/${PATH.Courses}`);
+      setShowSuggestions(false);
+    }
   };
 
   const handleSelectSuggestion = (value) => {
@@ -70,6 +74,7 @@ const SearchBar = () => {
         onFocus={() => search && setShowSuggestions(true)}
         onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
       />
+
       <SvgICon
         className="iconBar"
         focusable="false"
@@ -80,11 +85,13 @@ const SearchBar = () => {
       >
         <path
           fill="var(--color-primary)"
-          d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 
-          16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 
-          5.91 16 9.5 16c1.61 0 3.09-.59 
-          4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 
-          5 11.99 5 9.5S7.01 5 9.5 5 
+          d="M15.5 14h-.79l-.28-.27C15.41 12.59 
+          16 11.11 16 9.5 16 5.91 13.09 3 
+          9.5 3S3 5.91 3 9.5 5.91 16 
+          9.5 16c1.61 0 3.09-.59 
+          4.23-1.57l.27.28v.79l5 4.99L20.49 
+          19zm-6 0C7.01 14 5 11.99 
+          5 9.5S7.01 5 9.5 5 
           14 7.01 14 9.5 11.99 14 9.5 14"
         />
       </SvgICon>

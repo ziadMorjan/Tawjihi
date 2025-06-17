@@ -21,6 +21,7 @@ const Courses = lazy(() => import("../pages/Courses"));
 const Teachers = lazy(() => import("../pages/Teachers"))
 const WishList = lazy(() => import("../pages/Wishlist"))
 const CartList = lazy(() => import("../pages/CartList"));
+const VideoPage = lazy(() => import("../pages/CourseOne/VideoPage"));
 
 
 export const PATH = {
@@ -28,6 +29,8 @@ export const PATH = {
     About: "about",
     Courses: "courses",
     CoursesOne: "courses/:name/:id",
+    VideoLesson: "courses/:name/:id/video/:videoIndex",
+
 
     Auth: "auth",
     Login: "auth/login",
@@ -48,6 +51,7 @@ export const routers = [
     { path: PATH.About, element: <About /> },
     { path: PATH.Courses, element: <Courses /> },
     { path: PATH.CoursesOne, element: <OneCourse /> },
+    { path: PATH.VideoLesson, element: <VideoPage /> },
 
 
     { path: PATH.ForgetPassword, element: <ForgetPassword /> },
