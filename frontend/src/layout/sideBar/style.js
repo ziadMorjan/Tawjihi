@@ -9,7 +9,6 @@ export const SidebarContainer = styled.aside`
   transition: right 0.3s ease, width 0.3s ease;
   position: relative;
   z-index: 1;
-  height: auto;
 
   @media (max-width: 1024px) {
     width: 25%;

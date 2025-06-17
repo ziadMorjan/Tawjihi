@@ -21,6 +21,7 @@ import { AuthContext } from "../../context/AuthContext";
 import IconButton from "@mui/material/IconButton";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import NightsStayIcon from "@mui/icons-material/NightsStay";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 export const LogoAndButton = () => {
   //check if user is auth
@@ -30,7 +31,7 @@ export const LogoAndButton = () => {
     if (user) {
       setIsAuth(true);
     }
-  }, []);
+  }, [setIsAuth, user]);
 
   const { toggleTheme, theme } = useContext(ThemeContext);
 
@@ -46,6 +47,8 @@ export const LogoAndButton = () => {
             justifyContent: "center",
           }}
         >
+          <NotificationsIcon />
+
           <IconButton
             sx={{ color: "var(--color-dark-bg)" }}
             onClick={toggleTheme}
