@@ -19,6 +19,7 @@ import { TeacherCard } from "../../components/card/teacherCard";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
 import { Pargrahph } from "../../components/typography";
 import Paginations from "../../components/paginations";
+import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
 
 function Teachers() {
   const {
@@ -46,11 +47,9 @@ function Teachers() {
       <section>
         <Containers>
           <div className="num-of-pages">
-            <Pargrahph>
-              {" "}
-              عرض الصفحة رقم<span>{currentPage}</span>من
-              <span>{totalPages}</span>
-            </Pargrahph>
+
+            <FilterMenuItem currentPage={currentPage} totalPages={totalPages} order={false}/>
+            
           </div>
           <div className="teachers">
             {isLoading ? (

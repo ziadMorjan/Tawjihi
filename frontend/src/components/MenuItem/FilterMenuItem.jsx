@@ -52,7 +52,7 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function FilterMenuItem({ totalPages, currentPage }) {
+export default function FilterMenuItem({ totalPages, currentPage, order }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -96,7 +96,8 @@ export default function FilterMenuItem({ totalPages, currentPage }) {
       }}
     >
       <div>
-        <Button
+
+        {order && (<Button
           id="customized-button"
           aria-controls={open ? "customized-menu" : undefined}
           aria-haspopup="true"
@@ -116,7 +117,7 @@ export default function FilterMenuItem({ totalPages, currentPage }) {
           }}
         >
           ترتيب باستخدام
-        </Button>
+        </Button>)}
 
         <StyledMenu
           id="customized-menu"
