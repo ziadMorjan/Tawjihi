@@ -1,11 +1,28 @@
-import { useEffect, useRef } from "react";
+//react
+import { useEffect } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
+
+//component
 import { H2 } from "../../components/typography";
-import AnimatedList from "../../components/Animations/AnimatedList";
-import { ListContainer, PlayerContainer, VideoWrapper } from "./style";
-import { NavBar } from "../../layout/navBar";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { ModalTeacher } from "../../components/modalTeacher";
+import AnimatedList from "../../components/Animations/AnimatedList";
+import VideoPlayerWithControls from "../../components/VideoPlayerWithControls";
+import ReviewListSection from "../../components/ReviewListSection";
+import CommentForm from "../../components/CommentForm";
+import { Containers } from "../../components/Container";
+import VideoResources from "../../components/VideoResources";
+
+//component layout
+import { NavBar } from "../../layout/navBar";
+
+//style
+import {
+  ListContainer,
+  PlayerContainer,
+  VideoWrapper,
+  ReviewSection,
+} from "./style";
 
 const VideoPage = () => {
   const { name, id, videoIndex } = useParams();
@@ -17,34 +34,11 @@ const VideoPage = () => {
     !isNaN(videoIndex) && items[videoIndex] ? parseInt(videoIndex, 10) : 0;
 
   const selectedVideo = items[currentIndex] || {};
-  const videoRef = useRef();
 
-  // Load saved progress
-  useEffect(() => {
-    const savedTime = localStorage.getItem(
-      `video-progress-${selectedVideo.url}`
-    );
-    if (videoRef.current && savedTime) {
-      videoRef.current.currentTime = parseFloat(savedTime);
-    }
-  }, [selectedVideo]);
-
-  // Save progress
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      localStorage.setItem(
-        `video-progress-${selectedVideo.url}`,
-        videoRef.current.currentTime
-      );
-    }
-  };
-
-  // Navigate to selected video
   const handleVideoSelect = (item, index) => {
     navigate(`/courses/${name}/${id}/video/${index}`, { state: { items } });
   };
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKey = (e) => {
       if (!items.length) return;
@@ -62,7 +56,6 @@ const VideoPage = () => {
     return () => window.removeEventListener("keydown", handleKey);
   }, [currentIndex, items]);
 
-  // Handle empty list
   if (!items.length) {
     return (
       <>
@@ -83,62 +76,36 @@ const VideoPage = () => {
       <LogoAndButton />
       <NavBar />
       <ModalTeacher />
-      <VideoWrapper>
-        <PlayerContainer>
-          <H2>تشغيل الفيديو: {selectedVideo.title || "لا يوجد عنوان"}</H2>
 
-          {selectedVideo.url ? (
-            <video
-              ref={videoRef}
-              src={selectedVideo.url}
-              controls
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={() => {
-                setTimeout(() => {
-                  const next = (currentIndex + 1) % items.length;
-                  if (next !== 0 && next > currentIndex) {
-                    handleVideoSelect(items[next], next);
-                  }
-                }, 3000);
-              }}
-              style={{ width: "100%", borderRadius: "10px" }}
+      <Containers>
+        <VideoWrapper>
+          <PlayerContainer>
+            <VideoPlayerWithControls
+              video={selectedVideo}
+              currentIndex={currentIndex}
+              items={items}
+              onVideoSelect={handleVideoSelect}
             />
-          ) : (
-            <p>لا يوجد رابط للفيديو.</p>
-          )}
+            <VideoResources resources={selectedVideo.resources} />
+          </PlayerContainer>
 
-          {selectedVideo.time && (
-            <p style={{ marginTop: "0.5rem" }}>المدة: {selectedVideo.time}</p>
-          )}
+          <ListContainer>
+            <AnimatedList
+              items={items}
+              onItemSelect={handleVideoSelect}
+              selectedIndex={currentIndex}
+              showGradients={true}
+              enableArrowNavigation={true}
+              displayScrollbar={true}
+            />
+          </ListContainer>
+        </VideoWrapper>
 
-          {selectedVideo.url && (
-            <a
-              href={selectedVideo.url}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                marginTop: "0.5rem",
-                display: "inline-block",
-                color: "#007bff",
-              }}
-            >
-              تحميل الفيديو
-            </a>
-          )}
-        </PlayerContainer>
-
-        <ListContainer>
-          <AnimatedList
-            items={items}
-            onItemSelect={handleVideoSelect}
-            selectedIndex={currentIndex}
-            showGradients={true}
-            enableArrowNavigation={true}
-            displayScrollbar={true}
-          />
-        </ListContainer>
-      </VideoWrapper>
+        <ReviewSection>
+          <ReviewListSection />
+          <CommentForm />
+        </ReviewSection>
+      </Containers>
     </>
   );
 };

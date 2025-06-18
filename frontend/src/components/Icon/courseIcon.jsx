@@ -1,4 +1,7 @@
+//style
 import { CourseIconWrapper } from "./style";
+
+//MUI Library
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import StarIcon from "@mui/icons-material/Star";
 

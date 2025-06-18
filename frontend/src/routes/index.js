@@ -40,8 +40,8 @@ export const PATH = {
     ResetPassword: "reset-password",
     Teachers: "teachers",
     TeacherProfile: "teachers/:id",
-    WishList: "wishlist",
-    CartList: "cartlist",
+    WishList: "user/wishlist",
+    CartList: "user/cartlist",
     OAuthSuccess: "oauth-success",
 
 };

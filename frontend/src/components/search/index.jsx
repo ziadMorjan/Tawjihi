@@ -1,3 +1,4 @@
+//react
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -69,7 +70,7 @@ const SearchBar = () => {
       <InputBar
         type="text"
         value={search}
-        placeholder="ابحث عن الدورات ....."
+        placeholder="ابحث عن الدورة"
         onChange={handleChange}
         onFocus={() => search && setShowSuggestions(true)}
         onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}

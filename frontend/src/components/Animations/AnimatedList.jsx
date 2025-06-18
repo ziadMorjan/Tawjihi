@@ -1,4 +1,7 @@
+//react
 import { useRef, useState, useEffect } from "react";
+
+//Library
 import { motion, useInView } from "framer-motion";
 import { AiOutlineClockCircle } from "react-icons/ai";
 

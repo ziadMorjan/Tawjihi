@@ -1,14 +1,14 @@
-//react
+// react
 import { useState, useMemo, useContext, useEffect } from "react";
 
-//style
+// style
 import { CoursesPageWraper } from "./style";
 
-//layout components
+// layout components
 import SideBar from "../../layout/sideBar";
 import { NavBar } from "../../layout/navBar";
 
-//components
+// components
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { Containers } from "../../components/Container";
 import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
@@ -17,26 +17,27 @@ import { Card } from "../../components/card/courseCard";
 import Paginations from "../../components/paginations";
 import { ModalTeacher } from "../../components/modalTeacher";
 
-//hooks
+// hooks
 import { useApi } from "../../hooks/useApi";
 
-//URL
+// URL
 import { API_URL } from "../../config";
 
-//MUI Library
+// MUI Library
 import { Typography } from "@mui/material";
 import { WrapperCards } from "../Main/style";
 
-//context
+// context
 import { DataCourses } from "../../context/DataCourses";
 import { NewOldContext } from "../../context/NewOldContext";
 import { SearchContext } from "../../context/SearchContext";
 
-//utils function
-import { normalizeArabic } from "../../utils/normlizeArabic";
+// utils function
+import { filterCourses } from "../../utils/filterCourses";
+import { paginate } from "../../utils/pagination";
+import { updateFilters } from "../../utils/handleFilterChange";
 
-
-//toast
+// toast
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -70,77 +71,12 @@ const Courses = () => {
   }, [dataCourses]);
 
   const handleFilterChange = (id, isChecked) => {
-    const [type, value] = id.split("-");
-    setFilters((prev) => {
-      const updated = { ...prev };
-      if (type === "branch") {
-        updated.branches = isChecked
-          ? [...prev.branches, value]
-          : prev.branches.filter((v) => v !== value);
-      } else if (type === "subject") {
-        updated.subjects = isChecked
-          ? [...prev.subjects, value]
-          : prev.subjects.filter((v) => v !== value);
-      } else if (type === "price") {
-        updated.prices = isChecked
-          ? [...prev.prices, value]
-          : prev.prices.filter((v) => v !== value);
-      }
-      return updated;
-    });
+    setFilters((prev) => updateFilters(prev, id, isChecked));
     setSearch("");
   };
 
   const filteredCourses = useMemo(() => {
-    return dataCourses.filter((course) => {
-      const name = course.name || "";
-      const normalizedName = normalizeArabic(name.toLowerCase());
-
-      const normalizedBranches = (course.branches || []).map((b) =>
-        normalizeArabic(b.name.toLowerCase())
-      );
-
-      const normalizedSubject = normalizeArabic(
-        course.subject?.name?.toLowerCase() || ""
-      );
-
-      const matchName =
-        filters.names.length === 0 ||
-        filters.names.some((filterName) =>
-          normalizedName.includes(normalizeArabic(filterName.toLowerCase()))
-        );
-
-      const matchBranch =
-        filters.branches.length === 0 ||
-        filters.branches.some((filterBranch) =>
-          normalizedBranches.includes(
-            normalizeArabic(filterBranch.toLowerCase())
-          )
-        );
-
-      const matchSubject =
-        filters.subjects.length === 0 ||
-        filters.subjects.some((subjectFilter) =>
-          normalizedSubject.includes(
-            normalizeArabic(subjectFilter.toLowerCase())
-          )
-        );
-
-      const matchPrice =
-        filters.prices.length === 0 ||
-        filters.prices.some((priceFilter) => {
-          if (priceFilter === "free") return course.price === 0;
-          return course.price <= parseInt(priceFilter, 10);
-        });
-
-      const matchSearch =
-        !search ||
-        normalizedName.includes(normalizeArabic(search.toLowerCase()));
-
-      return (
-        matchName && matchBranch && matchSubject && matchPrice && matchSearch
-      );
-    });
+    return filterCourses(dataCourses, filters, search);
   }, [dataCourses, filters, search]);
 
   const finalCourses = useMemo(() => {
@@ -149,18 +85,19 @@ const Courses = () => {
       : [...filteredCourses].reverse();
   }, [filteredCourses, isNew]);
 
-  //Pagination
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = finalCourses.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(finalCourses.length / itemsPerPage);
+
+  const { currentItems, totalPages } = paginate(
+    finalCourses,
+    currentPage,
+    itemsPerPage
+  );
 
   return (
     <>
-          <ToastContainer  />
-    
+      <ToastContainer />
       <ModalTeacher isopen="true" />
       <CoursesPageWraper>
         <div>
@@ -168,7 +105,11 @@ const Courses = () => {
           <NavBar />
 
           <Containers>
-            <FilterMenuItem currentPage={currentPage} totalPages={totalPages} order={true}/>
+            <FilterMenuItem
+              currentPage={currentPage}
+              totalPages={totalPages}
+              order={true}
+            />
 
             <div style={{ display: "flex" }}>
               <SideBar
@@ -189,7 +130,7 @@ const Courses = () => {
                   <Typography variant="body1">لا توجد دورات مطابقة.</Typography>
                 ) : (
                   <WrapperCards>
-                    {currentItems.map((item, index) => (
+                    {currentItems.map((item) => (
                       <Card
                         key={item._id}
                         item={item}

@@ -26,7 +26,7 @@ import axios from "axios";
 //URL
 import { API_URL } from "../../config";
 
-// Toastify
+// toastify
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

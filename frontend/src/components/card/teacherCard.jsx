@@ -1,6 +1,8 @@
+//components
 import { useNavigate } from "react-router-dom";
 import { EmptyStar, FullStar, HalfStar } from "../Star";
 
+//style
 import {
   Card,
   Badge,

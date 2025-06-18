@@ -112,105 +112,7 @@ export const ReviewSection = styled.div`
   gap: 24px;
 `;
 
-export const ReviewList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
 
-export const ReviewCard = styled.div`
-  display: flex;
-  gap: 16px;
-  background-color: #f1f5f9;
-  padding: 16px;
-  border-radius: 10px;
-`;
-
-export const AvatarCircle = styled.div`
-  background-color: #3f51b5;
-  color: white;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 18px;
-`;
-
-export const ReviewContent = styled.div`
-  flex: 1;
-`;
-
-export const ReviewHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-`;
-
-export const ReviewerName = styled.span`
-  font-weight: 600;
-  font-size: 16px;
-  color: #222;
-`;
-
-export const ReviewText = styled.p`
-  font-size: 14px;
-  color: #444;
-  margin: 0;
-  line-height: 1.6;
-`;
-
-export const LeaveCommentWrapper = styled.div`
-  padding-top: 1rem;
-  border-top: 1px solid #e0e0e0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-export const FieldRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-export const TextArea = styled.textarea`
-  width: 100%;
-  min-height: 120px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
-  resize: vertical;
-`;
-
-
-export const SubmitButton = styled('button')`
-  align-self: flex-end;
-  padding: 10px 24px;
-  font-size: 15px;
-  border-radius: 8px;
-  text-transform: none;
-  box-shadow: none;
-  border: none;
-  color: #fff;
-  background-color: #1976d2;
-  transition: background-color 0.3s ease;
-  margin-top: 15px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #155fa0;
-  }
-
-  &:disabled {
-    background-color: #b0b0b0;
-    cursor: not-allowed;
-  }
-`;
 
 
 
@@ -242,5 +144,5 @@ export const PlayerContainer = styled.div`
 
 export const ListContainer = styled.div`
   flex: 1;
-  min-width: 250px;
+  min-width: 400px;
 `;

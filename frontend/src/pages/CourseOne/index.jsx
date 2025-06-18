@@ -1,52 +1,78 @@
+// CourseOne.jsx (refactored with subcomponents)
+
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+
+// Layout & Components
+import { LogoAndButton } from "../../components/LogoAndButton";
+import { NavBar } from "../../layout/navBar";
+import { ModalTeacher } from "../../components/modalTeacher";
+import { Containers } from "../../components/Container";
 import { H2, H3, Pargrahph } from "../../components/typography";
 import { Progress } from "../../components/progress";
 import { CourseIcon } from "../../components/Icon/courseIcon";
-import Button from "@mui/material/Button";
-import { useForm } from "react-hook-form";
 import { StarRating } from "../../components/Star/starRating";
+import AnimatedList from "../../components/Animations/AnimatedList";
+import { TeacherCard } from "../../components/card/teacherCard";
+import Button from "@mui/material/Button";
 
+// Subcomponents
+import ReviewListSection from "../../components/ReviewListSection";
+import CommentForm from "../../components/CommentForm";
+
+// Style
 import {
   AboutCourseDiv,
-  AvatarCircle,
   Container,
   CourseImage,
   DetailsWrapper,
-  FieldRow,
   Label,
-  LeaveCommentWrapper,
   LeftWrapper,
   MetaInfo,
   PageWrapper,
   ProgressRow,
-  ReviewCard,
-  ReviewContent,
-  ReviewerName,
-  ReviewHeader,
-  ReviewList,
-  ReviewSection,
-  ReviewText,
   RightWrapper,
   StartButtonWrapper,
   StyledCourseWrapper,
-  SubmitButton,
-  TextArea,
   WatchText,
+  ReviewSection,
 } from "./style";
-
-import { Containers } from "../../components/Container";
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { NavBar } from "../../layout/navBar";
-import AnimatedList from "../../components/Animations/AnimatedList";
-import { TeacherCard } from "../../components/card/teacherCard";
-import { ModalTeacher } from "../../components/modalTeacher";
 
 const CourseOne = () => {
   const { name } = useParams();
   const navigate = useNavigate();
-
   const [currentIndex, setCurrentIndex] = useState(-1);
+
+  const items = [
+    {
+      title: "الكيمياء",
+      time: "05:30",
+      url: "https://www.w3schools.com/html/mov_bbb.mp4",
+      resources: [
+        {
+          name: "ملف الكيمياء - PDF",
+          url: "https://example.com/chemistry.pdf",
+        },
+        {
+          name: "أمثلة كيمياء",
+          url: "https://example.com/chemistry-examples.zip",
+        },
+      ],
+    },
+    {
+      title: "الفيزياء",
+      time: "12:45",
+      url: "https://www.w3schools.com/html/mov_bbb.mp4",
+      resources: [
+        {
+          name: "ملف الفيزياء - PDF",
+          url: "https://example.com/physics.pdf",
+        },
+      ],
+    },
+  ];
+  
 
   const handleVideoClick = (item, index) => {
     navigate(`/courses/${name}/123/video/${index}`, { state: { items } });
@@ -66,21 +92,8 @@ const CourseOne = () => {
 
   const onSubmit = (data) => {
     console.log("تم إرسال التعليق:", data);
-    reset(); // reset form after submission
+    reset();
   };
-
-  const items = [
-    {
-      title: "الكيمياء",
-      time: "05:30",
-      url: "https://www.w3schools.com/html/mov_bbb.mp4",
-    },
-    {
-      title: "الفيزياء",
-      time: "12:45",
-      url: "https://www.w3schools.com/html/mov_bbb.mp4",
-    },
-  ];
 
   return (
     <>
@@ -105,9 +118,7 @@ const CourseOne = () => {
               <H2>دورة {name}</H2>
               <Pargrahph>
                 هذه الدورة مصممة لتزويدك بالمعرفة والمهارات الأساسية في مجال{" "}
-                {name}. ستتعلم من خلال مجموعة من الدروس التفاعلية والتمارين
-                العملية التي ستساعدك على فهم المفاهيم الرئيسية وتطبيقها في
-                سياقات حقيقية.
+                {name}.
               </Pargrahph>
 
               <MetaInfo>
@@ -125,7 +136,6 @@ const CourseOne = () => {
         </StyledCourseWrapper>
 
         <H2>الدروس</H2>
-
         <Container>
           <LeftWrapper>
             <AnimatedList
@@ -155,66 +165,23 @@ const CourseOne = () => {
           <H3>اسم الدورة</H3>
           <Pargrahph>
             هذه الدورة مصممة لتزويدك بالمعرفة والمهارات الأساسية في مجال
-            الجغرافيا. ستتعلم من خلال مجموعة من الدروس التفاعلية والتمارين
-            العملية التي ستساعدك على فهم المفاهيم الرئيسية وتطبيقها في سياقات
-            حقيقية.
+            الجغرافيا.
           </Pargrahph>
         </AboutCourseDiv>
 
         <H3>مراجعات الطلاب</H3>
         <ReviewSection>
-          <ReviewList>
-            <ReviewCard>
-              <AvatarCircle>أ</AvatarCircle>
-              <ReviewContent>
-                <ReviewHeader>
-                  <ReviewerName>أحمد خالد</ReviewerName>
-                  <StarRating />
-                </ReviewHeader>
-                <ReviewText>
-                  دورة ممتازة جدًا، استفدت منها كثيرًا والمحتوى كان واضح ومنظم.
-                </ReviewText>
-              </ReviewContent>
-            </ReviewCard>
+          <ReviewListSection />
 
-            <ReviewCard>
-              <AvatarCircle>ل</AvatarCircle>
-              <ReviewContent>
-                <ReviewHeader>
-                  <ReviewerName>ليلى محمد</ReviewerName>
-                  <StarRating />
-                </ReviewHeader>
-                <ReviewText>
-                  شرح رائع وأسلوب سهل، أنصح بها للمبتدئين.
-                </ReviewText>
-              </ReviewContent>
-            </ReviewCard>
-          </ReviewList>
+          <H3>اضف تقيمك </H3>
+          <StarRating />
 
-          <LeaveCommentWrapper>
-            <H3>أضف تعليقك</H3>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <FieldRow>
-                <Label>تقييمك:</Label>
-                <StarRating />
-              </FieldRow>
-              <FieldRow>
-                <Label>تعليقك:</Label>
-                <TextArea
-                  placeholder="اكتب تعليقك هنا..."
-                  {...register("comment", { required: "يرجى كتابة تعليقك" })}
-                />
-              </FieldRow>
-              <SubmitButton type="submit">إرسال التعليق</SubmitButton>
-              {errors.comment && (
-                <span
-                  style={{ color: "red", fontSize: "13px", margin: "0px 10px" }}
-                >
-                  {errors.comment.message}
-                </span>
-              )}
-            </form>
-          </LeaveCommentWrapper>
+          <CommentForm
+            register={register}
+            handleSubmit={handleSubmit}
+            onSubmit={onSubmit}
+            errors={errors}
+          />
         </ReviewSection>
       </Containers>
     </>

@@ -17,9 +17,11 @@ import { LogoAndButton } from "../../components/LogoAndButton";
 import { Containers } from "../../components/Container";
 import { TeacherCard } from "../../components/card/teacherCard";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
-import { Pargrahph } from "../../components/typography";
 import Paginations from "../../components/paginations";
 import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
+
+//utils
+import { paginate } from "../../utils/pagination";
 
 function Teachers() {
   const {
@@ -28,17 +30,17 @@ function Teachers() {
     error,
   } = useApi(`${API_URL}/users/?role=teacher`);
 
-  // Pagination
-  //=======================================================
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  //=======================================================
 
-  
+  // Use paginate util
+  const { currentItems, totalPages } = paginate(
+    data,
+    currentPage,
+    itemsPerPage
+  );
+
   return (
     <StyledTeachersPage>
       <LogoAndButton />
@@ -47,9 +49,11 @@ function Teachers() {
       <section>
         <Containers>
           <div className="num-of-pages">
-
-            <FilterMenuItem currentPage={currentPage} totalPages={totalPages} order={false}/>
-            
+            <FilterMenuItem
+              currentPage={currentPage}
+              totalPages={totalPages}
+              order={false}
+            />
           </div>
           <div className="teachers">
             {isLoading ? (
@@ -64,19 +68,23 @@ function Teachers() {
                 <div className="teachers-list">
                   {currentItems.map((teacher, index) => (
                     <TeacherCard
-                      key={index}
+                      key={teacher._id || index}
                       imgSrc={teacher.img || "/assets/img/logo.png"}
                       name={teacher.name}
                       starIcon={teacher.averageRating}
                       id={teacher._id}
                     />
-                        
                   ))}
                 </div>
 
                 {/* Pagination buttons */}
-                <Paginations currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}/>
-                
+                {totalPages > 1 && (
+                  <Paginations
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    setCurrentPage={setCurrentPage}
+                  />
+                )}
               </>
             )}
           </div>

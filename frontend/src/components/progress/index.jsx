@@ -1,10 +1,6 @@
-import React from 'react'
-import { ProgressWrapper } from './style'
+//react
+import { ProgressWrapper } from "./style";
 
 export const Progress = () => {
-  return (
-    <ProgressWrapper>
-
-    </ProgressWrapper>
-  )
-}
+  return <ProgressWrapper></ProgressWrapper>;
+};

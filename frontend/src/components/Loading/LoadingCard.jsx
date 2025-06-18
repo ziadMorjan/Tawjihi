@@ -1,7 +1,15 @@
-// CardSkeleton.jsx
-import React from "react";
-import { SkeletonAvatar, SkeletonLineShort, SkeletonPrice, SkeletonStars, SkeletonStarsPrice, SkeletonTeacherImg, SkeletonTeacherName, SkeletonWrapper, TeacherInfoWrapper } from "./style";
-
+// style
+import {
+  SkeletonAvatar,
+  SkeletonLineShort,
+  SkeletonPrice,
+  SkeletonStars,
+  SkeletonStarsPrice,
+  SkeletonTeacherImg,
+  SkeletonTeacherName,
+  SkeletonWrapper,
+  TeacherInfoWrapper,
+} from "./style";
 
 export const CardSkeleton = () => {
   return (
@@ -12,7 +20,6 @@ export const CardSkeleton = () => {
       {/* Course name */}
       <SkeletonLineShort />
 
-
       {/* Subject */}
       <SkeletonLineShort />
 
@@ -21,7 +28,6 @@ export const CardSkeleton = () => {
         <SkeletonTeacherImg />
         <SkeletonTeacherName />
       </TeacherInfoWrapper>
-
 
       {/* Stars and Price */}
       <SkeletonStarsPrice>
