@@ -169,10 +169,11 @@ const MainPage = () => {
               .slice(0, 3)
               .map((item, index) => (
                 <TeacherCard
-                  id="123"
-                  name="أ. محمد النجار"
+                  id={item._id}
+                  name={item.name}
                   desc="مدرس محترف لمواد الفيزياء والرياضيات"
-                  imgSrc="/images/mohammed.jpg"
+                  imgSrc={item.img || "/assets/img/logo.png"}
+                  key={index}
                   starIcon={4.5}
                   badge="معلم"
                 />

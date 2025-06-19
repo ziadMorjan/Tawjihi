@@ -22,6 +22,7 @@ import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
 
 //utils
 import { paginate } from "../../utils/pagination";
+import { WrapperCards } from "../Main/style";
 
 function Teachers() {
   const {
@@ -48,6 +49,7 @@ function Teachers() {
 
       <section>
         <Containers>
+          <WrapperCards>
           <div className="num-of-pages">
             <FilterMenuItem
               currentPage={currentPage}
@@ -88,6 +90,7 @@ function Teachers() {
               </>
             )}
           </div>
+          </WrapperCards>
         </Containers>
       </section>
       <Footer />
