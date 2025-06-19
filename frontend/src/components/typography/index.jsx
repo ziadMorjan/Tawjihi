@@ -10,7 +10,7 @@ export const H2 = ({ children, color }) => {
 };
 
 export const H3 = ({ children, color }) => {
-  return <h2 style={{ color: color }}>{children}</h2>;
+  return <h3 style={{ color: color }}>{children}</h3>;
 };
 
 export const H4 = ({ children }) => {

@@ -20,19 +20,6 @@ export const StyledTeachersPage = styled.div`
         flex: 1 1 calc(33.333% - 2%);
         box-sizing: border-box;
         margin: 0;
-        
-
-        img {
-          width: 100%;
-          height: auto;
-          display: block;
-        }
-
-        div {
-          font-size: 14px;
-          padding: 0px 5px 5px 0px;
-          width: 100%;
-        }
       }
     }
 

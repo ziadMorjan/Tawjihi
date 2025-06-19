@@ -177,8 +177,8 @@ export const ImageWrapper = styled.div`
 `;
 
 export const Img = styled.img`
-  width: 120px;
-  height: 120px;
+  width: 170px;
+  height: 170px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--color-primary, #007bff);
@@ -194,12 +194,16 @@ export const NameWrapper = styled(WrapperElementFlexSpace)`
   justify-content: center;
   padding-bottom: 10px;
   position: relative;
+  display: flex;
+  align-items: center;
 `;
 
 export const StyledPargrahph = styled(Pargrahph)`
+  display: inline-block;
   font-weight: 800;
   color: var(--color-primary-dark, #004085);
   text-align: center;
+  width: 100%;
   cursor: pointer;
   transition: color 0.3s ease;
 
@@ -228,11 +232,13 @@ export const UnderlineBar = styled.div`
 export const Description = styled.p`
   color: #444;
   font-size: 0.95rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 18px;
   padding: 0 16px;
   line-height: 1.5;
-  min-height: 60px;
+  /* min-height: 30px; */
 `;
 
 export const StyledIconStarDiv = styled.div`
