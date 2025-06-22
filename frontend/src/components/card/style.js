@@ -8,17 +8,17 @@ export const CardDiv = styled.div`
   grid-template-rows: auto 1fr auto;
   width: 100%;
   max-width: 300px;
-  background: #ffffff;
+  background: ${({ theme }) => theme.background};
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px ${({ theme }) => theme.box_shadow};
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin: 20px;
   position: relative;
 
   &:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 32px ${({ theme }) => theme.box_shadow_hover};
   }
 
   & img {
@@ -149,9 +149,9 @@ export const Card = styled.div`
   max-width: 340px;
   margin: auto;
   border-radius: 24px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  background-color: ${({ theme }) => theme.background};
+  border: 1px solid ${({ theme }) => theme.border};
+  box-shadow: 0 4px 18px ${({ theme }) => theme.box_shadow};
   transition: transform 0.35s ease, box-shadow 0.35s ease;
   margin-top: 20px ;
 

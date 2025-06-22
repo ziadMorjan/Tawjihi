@@ -14,10 +14,13 @@ import { API_URL } from "../../config";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { NavBar } from "../../layout/navBar";
 import { ModalTeacher } from "../../components/modalTeacher";
+import { CartHeader } from "../../components/cartHeader";
 
 //toast
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Button } from "../../components/Buttons/button";
+import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
 
 const CartList = () => {
   const { cart, setCartList } = useCRUD();
@@ -43,7 +46,14 @@ const CartList = () => {
       <LogoAndButton />
       <NavBar />
       <ModalTeacher />
-      <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
+      
+      <CartHeader>
+          <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
+        <LoginAndRegisterButton fontSize={18}>شراء الكل</LoginAndRegisterButton>
+      </CartHeader>
+        
+      
+
       {cart.length === 0 ? (
         <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
       ) : (
