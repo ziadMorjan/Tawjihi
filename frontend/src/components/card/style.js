@@ -6,18 +6,24 @@ import { WrapperElementFlexSpace } from "../../styles/style";
 export const CardDiv = styled.div`
   display: grid;
   grid-template-rows: auto 1fr auto;
+<<<<<<< HEAD
   width: 380px;
   background: #ffffff;
+=======
+  width: 100%;
+  max-width: 300px;
+  background: ${({ theme }) => theme.background};
+>>>>>>> 71b473789d2b302af1ea71c0a602a704694a6175
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px ${({ theme }) => theme.box_shadow};
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   margin: 30px 0px;
 
   &:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 32px ${({ theme }) => theme.box_shadow_hover};
   }
 
   & img {
@@ -152,9 +158,9 @@ export const Card = styled.div`
   width: 340px;
   margin: auto;
   border-radius: 24px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  background-color: ${({ theme }) => theme.background};
+  border: 1px solid ${({ theme }) => theme.border};
+  box-shadow: 0 4px 18px ${({ theme }) => theme.box_shadow};
   transition: transform 0.35s ease, box-shadow 0.35s ease;
   margin-top: 20px ;
 

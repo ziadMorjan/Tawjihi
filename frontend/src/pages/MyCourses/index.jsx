@@ -1,0 +1,84 @@
+//react
+import { useEffect, useState } from "react";
+
+//components
+import { Card } from "../../components/card/courseCard";
+
+//axios
+import axios from "axios";
+//URL
+import { API_URL } from "../../config";
+import { LogoAndButton } from "../../components/LogoAndButton";
+import { NavBar } from "../../layout/navBar";
+//MUI library
+
+//toast
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Button } from "../../components/Buttons/button";
+
+const MyCourses = () => {
+
+    // Get user data from localStorage
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const userId = userData?._id;
+
+    const [myCourses, setMyCourses] = useState([]);
+
+    useEffect(() => {
+        const getData = async () => {
+            try {
+                const res = await axios.get(`${API_URL}/enrollments?user=${userId}`, {
+                    withCredentials: true,
+                });
+
+                if (res) {
+                    setMyCourses(res.data.data.docs);
+                }
+
+            }
+            catch (e) {
+                console.log(e)
+            }
+        };
+        getData();
+    }, []);
+
+    return (
+        <div>
+            <ToastContainer />
+
+            <LogoAndButton />
+            <NavBar />
+            <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة دوراتي</h2>
+
+            {myCourses.length === 0 ? (
+                <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
+            ) : (
+                <div
+                    className="myCourses-grid"
+                    style={{ display: "flex", flexWrap: "wrap" }}
+                >
+                    {myCourses.map((item) => (
+                        <Card
+                            key={item._id}
+                            item={item}
+                            id={item._id}
+                            imgSrc={item.img || "/assets/img/logo.png"}
+                            name={item.name}
+                            starIcon={item.averageRating}
+                            price={item.price}
+                            priceAfterDiscount={item.priceAfterDiscount}
+                            teacherName={item.teacher?.name}
+                            teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+                            branch={item.branches.map((b) => b.name).join(" | ")}
+                            subject={item.subject?.name}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default MyCourses;

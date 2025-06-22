@@ -10,6 +10,7 @@ import { VerificationCode } from "../features/components/VerificationCode";
 import { ResetPassword } from "../features/components/ResetPassword";
 import TeacherProfile from "../pages/TeacherProfile";
 import OneCourse from "../pages/CourseOne";
+import MyCourses from "../pages/MyCourses";
 
 // Pages (lazy loaded)
 const Main = lazy(() => import("../pages/Main"));
@@ -32,6 +33,7 @@ export const PATH = {
     VideoLesson: "courses/:name/:id/video/:videoIndex",
 
 
+    User: "user",
     Auth: "auth",
     Login: "auth/login",
     Register: "auth/register",
@@ -40,8 +42,9 @@ export const PATH = {
     ResetPassword: "reset-password",
     Teachers: "teachers",
     TeacherProfile: "teachers/:id",
-    WishList: "user/wishlist",
-    CartList: "user/cartlist",
+    WishList: "wishlist",
+    CartList: "cartlist",
+    MyCourses: "my-courses",
     OAuthSuccess: "oauth-success",
 
 };
@@ -75,6 +78,7 @@ export const routers = [
         children: [
             { path: PATH.WishList, element: <WishList /> },
             { path: PATH.CartList, element: <CartList /> },
+            { path: PATH.MyCourses, element: <MyCourses /> },
         ],
     },
 

@@ -4,7 +4,7 @@ export const Nav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color:var(--color-heading);
+  background-color:${({ theme }) => theme.heading};
   padding: 15px;
   position: relative;
   flex-wrap: wrap;
