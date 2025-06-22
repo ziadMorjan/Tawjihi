@@ -148,14 +148,19 @@ export default function CustomizedMenus() {
 
         <Divider sx={{ my: 0.5, borderColor: "#eee" }} />
 
-        <MenuItem onClick={handleMenuClose} disableRipple>
+        <MenuItem
+          component={Link}
+          to={`/${PATH.User}/${PATH.MyCourses}`}
+          onClick={handleMenuClose} 
+          disableRipple>
+
           <MenuBookIcon />
           دوراتي
         </MenuItem>
 
         <MenuItem
           component={Link}
-          to={`/${PATH.WishList}`}
+          to={`/${PATH.User}/${PATH.WishList}`}
           onClick={handleMenuClose}
           disableRipple
         >
@@ -165,7 +170,7 @@ export default function CustomizedMenus() {
 
         <MenuItem
           component={Link}
-          to={`/${PATH.CartList}`}
+          to={`/${PATH.User}/${PATH.CartList}`}
           onClick={handleMenuClose}
           disableRipple
         >

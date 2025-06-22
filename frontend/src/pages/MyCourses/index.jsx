@@ -15,6 +15,7 @@ import { NavBar } from "../../layout/navBar";
 //toast
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Button } from "../../components/Buttons/button";
 
 const MyCourses = () => {
 
@@ -50,6 +51,7 @@ const MyCourses = () => {
             <LogoAndButton />
             <NavBar />
             <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة دوراتي</h2>
+
             {myCourses.length === 0 ? (
                 <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
             ) : (

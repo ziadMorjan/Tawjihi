@@ -14,7 +14,7 @@ export const ButtonStyled = styled.button`
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: ${({ theme }) => theme.linkHover};
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 86, 179, 0.3);
   }
