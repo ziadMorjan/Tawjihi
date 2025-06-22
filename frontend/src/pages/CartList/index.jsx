@@ -6,6 +6,7 @@ import { useCRUD } from "../../hooks/useCRUD";
 
 //components
 import { Card } from "../../components/card/courseCard";
+import { Containers } from "../../components/Container";
 
 //axios
 import axios from "axios";
@@ -43,18 +44,20 @@ const CartList = () => {
       <LogoAndButton />
       <NavBar />
       <ModalTeacher />
+      <Containers>
+
       <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
       {cart.length === 0 ? (
         <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
       ) : (
         <div
-          className="cart-grid"
-          style={{ display: "flex", flexWrap: "wrap" }}
+        className="cart-grid"
+        style={{ display: "flex", flexWrap: "wrap" }}
         >
           {cart.map((item) => (
             <Card
-              key={item._id}
-              item={item}
+            key={item._id}
+            item={item}
               id={item._id}
               imgSrc={item.img || "/assets/img/logo.png"}
               name={item.name}
@@ -69,6 +72,7 @@ const CartList = () => {
           ))}
         </div>
       )}
+            </Containers>
     </div>
   );
 };

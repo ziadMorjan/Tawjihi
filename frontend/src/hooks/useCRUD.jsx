@@ -6,7 +6,7 @@ import { Actions } from "../constant/ACTIONS";
 import { AppContext } from "../context/WishAndCartListContext";
 
 export const useCRUD = () => {
-  const { state, dispatch } = useContext(AppContext);
+  const {state, dispatch } = useContext(AppContext);
 
   // Ensure wishlist is an array
   // This prevents errors if wishlist is not initialized properly

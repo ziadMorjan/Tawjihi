@@ -1,10 +1,15 @@
-//react
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-//MUI Library
+// MUI
 import { styled, alpha } from "@mui/material/styles";
-import { Button, Menu, MenuItem, Divider } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Divider,
+  CircularProgress,
+} from "@mui/material";
 import {
   FavoriteBorder as FavoriteBorderIcon,
   PersonOutline as PersonOutlineIcon,
@@ -13,24 +18,26 @@ import {
 } from "@mui/icons-material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 
-//context
+// Context
 import { AuthContext } from "../../context/AuthContext";
 import { LogOutContext } from "../../context/LogoutContext";
+import { AppContext } from "../../context/WishAndCartListContext";
+import { Actions } from "../../constant/ACTIONS";
 
-//Paths
+// Paths
 import { PATH } from "../../routes";
 
-//axios
+// Axios
 import axios from "axios";
 
-//URL
+// Config
 import { API_URL } from "../../config";
 
-// toastify
+// Toast
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Styled dropdown menu
+// Styled menu
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -66,9 +73,12 @@ const StyledMenu = styled((props) => (
 
 export default function CustomizedMenus() {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [loading, setLoading] = React.useState(false); // 🔴 Loading state
   const open = Boolean(anchorEl);
+
   const { setIsAuth } = React.useContext(AuthContext);
   const { setIsLogout } = React.useContext(LogOutContext);
+  const { dispatch } = React.useContext(AppContext);
 
   const navigate = useNavigate();
 
@@ -81,24 +91,28 @@ export default function CustomizedMenus() {
   };
 
   const handleLogout = async () => {
+    setLoading(true); // Start loading
     try {
-      await axios.get(`${API_URL}/auth/logout`, {
-        withCredentials: true,
-      });
+      await axios.get(`${API_URL}/auth/logout`, { withCredentials: true });
+
       setIsAuth(false);
       localStorage.removeItem("user");
+
+      dispatch({ type: Actions.SetWishList, payload: [] });
+      dispatch({ type: Actions.SetCartList, payload: [] });
+
       setIsLogout(true);
-      navigate(PATH.Main);
       toast.success("تم تسجيل الخروج بنجاح");
+      navigate(PATH.Main);
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error("فشل تسجيل الخروج، حاول مرة أخرى");
     } finally {
+      setLoading(false); // Stop loading
       handleMenuClose();
     }
   };
 
-  // Check user from localStorage
   let user = null;
   try {
     user = JSON.parse(localStorage.getItem("user"));
@@ -175,9 +189,17 @@ export default function CustomizedMenus() {
 
         <Divider sx={{ my: 0.5, borderColor: "#eee" }} />
 
-        <MenuItem onClick={handleLogout} disableRipple>
-          <LogoutIcon />
-          تسجيل خروج
+        <MenuItem
+          onClick={!loading ? handleLogout : undefined}
+          disableRipple
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
+          {loading ? (
+            <CircularProgress size={20} thickness={5} color="error" />
+          ) : (
+            <LogoutIcon />
+          )}
+          {loading ? "جاري تسجيل الخروج..." : "تسجيل خروج"}
         </MenuItem>
       </StyledMenu>
     </div>

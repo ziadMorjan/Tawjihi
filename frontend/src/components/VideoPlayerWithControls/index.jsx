@@ -10,7 +10,7 @@ const VideoPlayerWithControls = ({
   const videoRef = useRef();
 
   useEffect(() => {
-    const savedTime = localStorage.getItem(`video-progress-${video.url}`);
+    const savedTime = localStorage.getItem(`video-progress-${video.video}`);
     if (videoRef.current && savedTime) {
       videoRef.current.currentTime = parseFloat(savedTime);
     }
@@ -19,7 +19,7 @@ const VideoPlayerWithControls = ({
   const handleTimeUpdate = () => {
     if (videoRef.current) {
       localStorage.setItem(
-        `video-progress-${video.url}`,
+        `video-progress-${video.video}`,
         videoRef.current.currentTime
       );
     }
@@ -27,12 +27,12 @@ const VideoPlayerWithControls = ({
 
   return (
     <>
-      <h2>تشغيل الفيديو: {video.title || "لا يوجد عنوان"}</h2>
-      {video.url ? (
+      <h2>تشغيل الفيديو: {video.name || "لا يوجد عنوان"}</h2>
+      {video.video ? (
         <>
           <video
             ref={videoRef}
-            src={video.url}
+            src={video.video}
             controls
             onTimeUpdate={handleTimeUpdate}
             onEnded={() => {
@@ -47,7 +47,7 @@ const VideoPlayerWithControls = ({
           />
           <p style={{ marginTop: "0.5rem" }}>المدة: {video.time}</p>
           <a
-            href={video.url}
+            href={video.video}
             download
             target="_blank"
             rel="noopener noreferrer"

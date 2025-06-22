@@ -73,7 +73,7 @@ const SearchBar = () => {
         placeholder="ابحث عن الدورة"
         onChange={handleChange}
         onFocus={() => search && setShowSuggestions(true)}
-        onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+        onClick={() => setTimeout(() => setShowSuggestions(false), 150)}
       />
 
       <SvgICon

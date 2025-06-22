@@ -23,6 +23,7 @@ import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
 //utils
 import { paginate } from "../../utils/pagination";
 import { WrapperCards } from "../Main/style";
+import { SkeletonTeacherCard } from "../../components/Loading/SkeletonTeacherCard";
 
 function Teachers() {
   const {
@@ -59,7 +60,7 @@ function Teachers() {
           </div>
           <div className="teachers">
             {isLoading ? (
-              Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+              Array.from({ length: 3 }).map((_, i) => <SkeletonTeacherCard key={i} />)
             ) : error ? (
               <p>Error: {error.message}</p>
             ) : data.length === 0 ? (

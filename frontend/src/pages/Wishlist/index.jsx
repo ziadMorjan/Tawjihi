@@ -6,6 +6,7 @@ import { useCRUD } from "../../hooks/useCRUD";
 
 //components
 import { Card } from "../../components/card/courseCard";
+import { Containers } from "../../components/Container";
 
 //axios
 import axios from "axios";
@@ -42,32 +43,35 @@ const WishList = () => {
 
       <LogoAndButton />
       <NavBar />
+      <Containers>
+
       <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة المفضلة</h2>
       {wishlist.length === 0 ? (
         <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
       ) : (
         <div
-          className="wishlist-grid"
-          style={{ display: "flex", flexWrap: "wrap" }}
+        className="wishlist-grid"
+        style={{ display: "flex", flexWrap: "wrap" }}
         >
           {wishlist.map((item) => (
             <Card
-              key={item._id}
-              item={item}
-              id={item._id}
-              imgSrc={item.img || "/assets/img/logo.png"}
-              name={item.name}
-              starIcon={item.averageRating}
-              price={item.price}
-              priceAfterDiscount={item.priceAfterDiscount}
-              teacherName={item.teacher?.name}
-              teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-              branch={item.branches.map((b) => b.name).join(" | ")}
-              subject={item.subject?.name}
+            key={item._id}
+            item={item}
+            id={item._id}
+            imgSrc={item.img || "/assets/img/logo.png"}
+            name={item.name}
+            starIcon={item.averageRating}
+            price={item.price}
+            priceAfterDiscount={item.priceAfterDiscount}
+            teacherName={item.teacher?.name}
+            teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+            branch={item.branches.map((b) => b.name).join(" | ")}
+            subject={item.subject?.name}
             />
           ))}
         </div>
       )}
+      </Containers>
     </div>
   );
 };
