@@ -36,7 +36,7 @@ app.use(cors({
     credentials: true               // allow sending cookies cross-origin
 }));
 
-app.use('/api/v1/payment/webhook', require('./routes/webhook'));
+app.use('/api/v1/webhook', require('./routes/webhook'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static('uploads'));
