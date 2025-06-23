@@ -39,6 +39,24 @@ const CartList = () => {
     getData();
   }, [setCartList]);
 
+  const handlePayment = async () => {
+    if (cart.length !== 0) {
+      try {
+        const course_ids = cart.map((item) => item._id);
+        const res = await axios.post(
+          `${API_URL}/payment/create-checkout-session`,
+          { ids: course_ids },
+          {
+            withCredentials: true,
+          }
+        );
+        window.location.href = res.data.sessionUrl;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -46,13 +64,13 @@ const CartList = () => {
       <LogoAndButton />
       <NavBar />
       <ModalTeacher />
-      
+
       <CartHeader>
-          <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
-        <LoginAndRegisterButton fontSize={18}>شراء الكل</LoginAndRegisterButton>
+        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
+        <LoginAndRegisterButton fontSize={18} onClick={handlePayment}>
+          شراء الكل
+        </LoginAndRegisterButton>
       </CartHeader>
-        
-      
 
       {cart.length === 0 ? (
         <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
