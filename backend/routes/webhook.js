@@ -22,7 +22,7 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
 
         const ids = metadata.courses.split(" ");
 
-        const promises = ids.map(id => Enrollment.Create({ user: session.client_reference_id, course: id }));
+        const promises = ids.map(id => Enrollment.create({ user: session.client_reference_id, course: id }));
         await Promise.all(promises);
     }
 
