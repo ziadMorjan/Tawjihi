@@ -17,6 +17,7 @@ const ReviewRoutes = require('./routes/ReviewRoutes');
 const couponRouts = require('./routes/CouponRouts');
 const cartRouts = require('./routes/CartRouts');
 const TeacherReviewRoutes = require('./routes/TeacherReviewRoutes');
+const stripeRoutes = require('./routes/StripeRoutes');
 const defaultRoutes = require('./routes/DefaultRoute');
 
 const { googleStrategy, facebookStrategy } = require("./config/passport");
@@ -34,6 +35,8 @@ app.use(cors({
     origin: 'http://localhost:3000', // your local frontend URL
     credentials: true               // allow sending cookies cross-origin
 }));
+
+app.use('/api/v1/payment/webhook', require('./routes/webhook'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static('uploads'));
@@ -53,6 +56,7 @@ app.use('/api/v1/reviews', ReviewRoutes);
 app.use('/api/v1/coupons', couponRouts);
 app.use('/api/v1/cart', cartRouts);
 app.use('/api/v1/teacherReviews', TeacherReviewRoutes);
+app.use('/api/v1/payment', stripeRoutes);
 app.use(defaultRoutes);
 
 // Global error handler
