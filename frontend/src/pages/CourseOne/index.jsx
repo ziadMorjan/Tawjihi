@@ -1,7 +1,7 @@
 // CourseOne.jsx (refactored with subcomponents)
 
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 // Layout & Components
@@ -38,11 +38,65 @@ import {
   WatchText,
   ReviewSection,
 } from "./style";
+import { API_URL } from "../../config";
+import axios from "axios";
 
 const CourseOne = () => {
-  const { name } = useParams();
+  // const [thisCourse, setThisCourse] = useState({})
+  // const [enrollmentCourses, setEnrollmentCourses] = useState([])
+
+  //  // Get user data from localStorage
+  // const userData = JSON.parse(localStorage.getItem("user"));
+  // const userId = userData?._id;
+
+  const { name, id: courseId } = useParams();
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(-1);
+
+
+//   const isEnrolled = enrollmentCourses.some(
+//   (enrolled) => enrolled?._id === courseId
+// );
+
+//  console.log(enrollmentCourses, "enrollmentCourses");
+// //  console.log(isEnrolled, "isEnrolled");
+//  console.log(isEnrolled, "isEnrolled");
+
+
+
+  // useEffect(() => {
+  //   const getCourse = async () => {
+  //     try {
+  //       // get this course data 
+  //       const res = await axios.get(`${API_URL}/courses/${courseId}`, {
+  //         withCredentials: true,
+  //       })
+
+  //       if (res) {
+  //         setThisCourse(res.data.data.doc)
+  //       }
+
+  //       // get the enrollment courses 
+  //       const enrollmentsRes = await axios.get(`${API_URL}/enrollments?user=${userId}`, {
+  //         withCredentials: true,
+  //       });
+
+  //       if (enrollmentsRes) {
+  //         setEnrollmentCourses(enrollmentsRes.data.data.docs)
+  //       }
+
+  //     } catch (e) {
+  //       console.log(e)
+  //     } finally {
+
+  //     }
+  //   }
+  //   getCourse()
+  // }, [])
+
+
+
+  // console.log(fetchedCourses, 'current course')
 
   const items = [
     {
@@ -72,7 +126,7 @@ const CourseOne = () => {
       ],
     },
   ];
-  
+
 
   const handleVideoClick = (item, index) => {
     navigate(`/courses/${name}/123/video/${index}`, { state: { items } });

@@ -6,10 +6,11 @@ export const LoginAndRegisterButton = ({
   color,
   children,
   onClick,
+  isDisabled
 }) => {
   return (
     <div>
-      <ButtonLogin onClick={onClick} style={{ color, fontSize }}>
+      <ButtonLogin onClick={onClick} style={{ color, fontSize }} disabled={isDisabled}>
         {children}
       </ButtonLogin>
     </div>

@@ -1,5 +1,5 @@
 //react
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 //hooks
 import { useCRUD } from "../../hooks/useCRUD";
@@ -25,6 +25,8 @@ import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister"
 const CartList = () => {
   const { cart, setCartList } = useCRUD();
 
+  const [paymentLoading, setPaymentLoading] = useState(false);
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -42,6 +44,8 @@ const CartList = () => {
   const handlePayment = async () => {
     if (cart.length !== 0) {
       try {
+        setPaymentLoading(true)
+
         const course_ids = cart.map((item) => item._id);
         const res = await axios.post(
           `${API_URL}/payment/create-checkout-session`,
@@ -51,9 +55,14 @@ const CartList = () => {
           }
         );
         window.location.href = res.data.sessionUrl;
+
       } catch (e) {
         console.log(e);
+
+      } finally {
+        setPaymentLoading(false);
       }
+
     }
   };
 
@@ -67,9 +76,21 @@ const CartList = () => {
 
       <CartHeader>
         <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
-        <LoginAndRegisterButton fontSize={18} onClick={handlePayment}>
-          شراء الكل
+
+        <LoginAndRegisterButton
+          fontSize={18}
+          onClick={handlePayment}
+          isDisabled={paymentLoading || cart.length === 0}>
+
+          {paymentLoading ? (
+            <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span className="spinner" /> جاري المعالجة...
+            </span>
+          ) : (
+            "شراء الكل"
+          )}
         </LoginAndRegisterButton>
+
       </CartHeader>
 
       {cart.length === 0 ? (
@@ -79,6 +100,7 @@ const CartList = () => {
           className="cart-grid"
           style={{ display: "flex", flexWrap: "wrap" }}
         >
+          {console.log(cart, "cart items")}
           {cart.map((item) => (
             <Card
               key={item._id}
