@@ -26,7 +26,7 @@ export const darkTheme = {
   box_shadow: "rgba(255, 255, 255, 0.3)",
   box_shadow_hover: "rgba(255, 255, 255, 0.5)",
   color: "#e0e0e0",
-  heading: "#ffffff",
+  heading: "#000000",
   link: "#66b2ff",
   linkHover: "#3399ff",
   primary: "#4fc3f7",
