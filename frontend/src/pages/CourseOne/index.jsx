@@ -40,59 +40,62 @@ import {
 } from "./style";
 import { API_URL } from "../../config";
 import axios from "axios";
+import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
 
 const CourseOne = () => {
-  // const [thisCourse, setThisCourse] = useState({})
-  // const [enrollmentCourses, setEnrollmentCourses] = useState([])
+  const [thisCourse, setThisCourse] = useState({})
+  const [enrollmentCourses, setEnrollmentCourses] = useState([])
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
 
-  //  // Get user data from localStorage
-  // const userData = JSON.parse(localStorage.getItem("user"));
-  // const userId = userData?._id;
+
+  // Get user data from localStorage
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData?._id;
 
   const { name, id: courseId } = useParams();
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(-1);
 
 
-//   const isEnrolled = enrollmentCourses.some(
-//   (enrolled) => enrolled?._id === courseId
-// );
-
-//  console.log(enrollmentCourses, "enrollmentCourses");
-// //  console.log(isEnrolled, "isEnrolled");
-//  console.log(isEnrolled, "isEnrolled");
+  // check if this course is enrolled or not 
+  const isEnrolled = enrollmentCourses.some(
+    (enrolled) => enrolled?.course._id === courseId
+  );
 
 
 
-  // useEffect(() => {
-  //   const getCourse = async () => {
-  //     try {
-  //       // get this course data 
-  //       const res = await axios.get(`${API_URL}/courses/${courseId}`, {
-  //         withCredentials: true,
-  //       })
 
-  //       if (res) {
-  //         setThisCourse(res.data.data.doc)
-  //       }
+  useEffect(() => {
+    const getCourse = async () => {
+      try {
+        setDataLoading(true)
+        // get this course data 
+        const res = await axios.get(`${API_URL}/courses/${courseId}`, {
+          withCredentials: true,
+        })
 
-  //       // get the enrollment courses 
-  //       const enrollmentsRes = await axios.get(`${API_URL}/enrollments?user=${userId}`, {
-  //         withCredentials: true,
-  //       });
+        if (res) {
+          setThisCourse(res.data.data.doc)
+        }
 
-  //       if (enrollmentsRes) {
-  //         setEnrollmentCourses(enrollmentsRes.data.data.docs)
-  //       }
+        // get the enrollment courses 
+        const enrollmentsRes = await axios.get(`${API_URL}/enrollments?user=${userId}`, {
+          withCredentials: true,
+        });
 
-  //     } catch (e) {
-  //       console.log(e)
-  //     } finally {
+        if (enrollmentsRes) {
+          setEnrollmentCourses(enrollmentsRes.data.data.docs)
+        }
 
-  //     }
-  //   }
-  //   getCourse()
-  // }, [])
+      } catch (e) {
+        console.log(e)
+      } finally {
+        setDataLoading(false)
+      }
+    }
+    getCourse()
+  }, [])
 
 
 
@@ -149,6 +152,37 @@ const CourseOne = () => {
     reset();
   };
 
+
+
+  const handlePayment = async () => {
+      try {
+        setPaymentLoading(true)
+
+        const course_ids = [courseId];
+        const res = await axios.post(
+          `${API_URL}/payment/create-checkout-session`,
+          { ids: course_ids },
+          {
+            withCredentials: true,
+          }
+        );
+        window.location.href = res.data.sessionUrl;
+
+      } catch (e) {
+        console.log(e);
+
+      } finally {
+        setPaymentLoading(false);
+      }
+
+  };
+
+
+
+
+
+
+
   return (
     <>
       <LogoAndButton />
@@ -182,9 +216,26 @@ const CourseOne = () => {
             </div>
 
             <StartButtonWrapper>
-              <Button variant="contained" color="primary">
-                ابدأ الدورة الآن
-              </Button>
+
+              {isEnrolled ? (
+                <Button variant="contained" color="primary">
+                  ابدأ الدورة الآن
+                </Button>) : (
+                <LoginAndRegisterButton
+                  fontSize={18}
+                  onClick={handlePayment}
+                  isDisabled={paymentLoading}>
+
+                  {paymentLoading ? (
+                    <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span className="spinner" /> جاري المعالجة...
+                    </span>
+                  ) : (
+                    "شراء "
+                  )}
+                </LoginAndRegisterButton>
+              )}
+
             </StartButtonWrapper>
           </DetailsWrapper>
         </StyledCourseWrapper>

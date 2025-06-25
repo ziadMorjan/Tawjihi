@@ -21,7 +21,7 @@ export const DiscoverSection = () => {
       <DiscoverCourses />
 
       <Info>
-        <H1 color={"var(--color-heading)"}>
+        <H1>
           تعلّم كل موضوع في الوقت المحدد في كل مرة
         </H1>
         <Pargrahph>

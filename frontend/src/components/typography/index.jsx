@@ -1,8 +1,8 @@
 //style
 import { Pargraph, PargType } from "./style";
 
-export const H1 = ({ children, size = "35px", color = "#fff" }) => {
-  return <h1 style={{ fontSize: size, color }}>{children}</h1>;
+export const H1 = ({ children, size = "35px", color }) => {
+  return <h1 style={{ fontSize: size, color: color || `${({ theme }) => theme.color}` }}>{children}</h1>;
 };
 
 export const H2 = ({ children, color }) => {

@@ -7,7 +7,7 @@ export const AnimationWrapper = styled.div`
   align-items: center;
   padding: 20px;
   margin: 100px  0px;
-  background-color: var( --color-background-second);
+  background-color: ${({ theme }) => theme.background_secondary};
 
 
   @media (max-width: 767px) {

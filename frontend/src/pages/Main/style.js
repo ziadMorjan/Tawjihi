@@ -5,7 +5,7 @@ export const ImgLogo = styled.img`
 `;
 
 export const Wrappers = styled.div`
-  background-color: var(--color-primary);
+  background-color: ${({ theme }) => theme.primary};
   color: #fff;
   text-align: center;
   padding: 12px 0;
