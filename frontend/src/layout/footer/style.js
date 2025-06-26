@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const FooterWrapper = styled.footer`
-  background-color:var(--color-heading);
+  background-color:${({ theme }) => theme.heading};
   color: #fff;
   padding: 20px 20px;
   direction: rtl;

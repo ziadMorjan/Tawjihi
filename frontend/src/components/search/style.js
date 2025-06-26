@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const WrapperSearch = styled.div`
-  background-color: var(--color-primary);
+  background-color: ${({ theme }) => theme.primary};
   color: #fff;
   display: flex;
   align-items: center;

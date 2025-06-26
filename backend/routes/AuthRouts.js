@@ -36,7 +36,7 @@ const oauthCallbackHandler = function (req, res) {
 
     res.cookie('token', token, options);
 
-    res.redirect(process.env.OAUTH_REDIRECT_URL);
+    res.redirect(`${process.env.FRONTEND_URL}/oauth-success`);
 };
 
 

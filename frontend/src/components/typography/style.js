@@ -41,3 +41,4 @@ display: flex;
   font-size: ${(props) => props.size || "14px"};
 
 `
+

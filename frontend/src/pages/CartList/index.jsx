@@ -1,5 +1,5 @@
 //react
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 //hooks
 import { useCRUD } from "../../hooks/useCRUD";
@@ -26,6 +26,8 @@ import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister"
 const CartList = () => {
   const { cart, setCartList } = useCRUD();
 
+  const [paymentLoading, setPaymentLoading] = useState(false);
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -40,6 +42,31 @@ const CartList = () => {
     getData();
   }, [setCartList]);
 
+  const handlePayment = async () => {
+    if (cart.length !== 0) {
+      try {
+        setPaymentLoading(true)
+
+        const course_ids = cart.map((item) => item._id);
+        const res = await axios.post(
+          `${API_URL}/payment/create-checkout-session`,
+          { ids: course_ids },
+          {
+            withCredentials: true,
+          }
+        );
+        window.location.href = res.data.sessionUrl;
+
+      } catch (e) {
+        console.log(e);
+
+      } finally {
+        setPaymentLoading(false);
+      }
+
+    }
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -48,17 +75,33 @@ const CartList = () => {
       <NavBar />
       <ModalTeacher />
 <<<<<<< HEAD
+<<<<<<< HEAD
       <Containers>
 
       <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
 =======
       
+=======
+
+>>>>>>> 1f40ec33d89cc02dfc8fd95e3f170f2e2602c558
       <CartHeader>
-          <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
-        <LoginAndRegisterButton fontSize={18}>شراء الكل</LoginAndRegisterButton>
+        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
+
+        <LoginAndRegisterButton
+          fontSize={18}
+          onClick={handlePayment}
+          isDisabled={paymentLoading || cart.length === 0}>
+
+          {paymentLoading ? (
+            <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span className="spinner" /> جاري المعالجة...
+            </span>
+          ) : (
+            "شراء الكل"
+          )}
+        </LoginAndRegisterButton>
+
       </CartHeader>
-        
-      
 
 >>>>>>> 71b473789d2b302af1ea71c0a602a704694a6175
       {cart.length === 0 ? (
@@ -68,6 +111,7 @@ const CartList = () => {
         className="cart-grid"
         style={{ display: "flex", flexWrap: "wrap" }}
         >
+          {console.log(cart, "cart items")}
           {cart.map((item) => (
             <Card
             key={item._id}

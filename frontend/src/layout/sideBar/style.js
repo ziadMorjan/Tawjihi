@@ -3,9 +3,9 @@ import styled from "styled-components";
 export const SidebarContainer = styled.aside`
   width: 20%;
   padding: 20px;
-  box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 4px 6px 2px ${({ theme }) => theme.box_shadow};
   overflow-y: auto;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.background};
   transition: right 0.3s ease, width 0.3s ease;
   position: relative;
   z-index: 1;

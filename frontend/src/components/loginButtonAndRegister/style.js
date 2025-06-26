@@ -11,6 +11,14 @@ export const ButtonLogin = styled("button")`
     cursor: pointer;
     font-family : 'Amiri';
 
+    &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: #999;
+    border-color: #ccc;
+    pointer-events: none; /* prevent hover effect */ 
+    }
+
     &:hover {
       color:var(--color-primary);
       border: 1px solid var(--color-primary);
@@ -19,4 +27,24 @@ export const ButtonLogin = styled("button")`
     @media (max-width: 767px) {
       width: 100px;
     }
+
+    & .spinner {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    border: 3px solid #fff;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+
+
+   
   `;
