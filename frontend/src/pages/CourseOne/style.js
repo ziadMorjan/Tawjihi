@@ -8,7 +8,7 @@ export const PageWrapper = styled.section`
 export const StyledCourseWrapper = styled.section`
   width: 100%;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: ${({theme}) => theme.background_secondary};
   border-radius: 12px;
   display: flex;
   flex-wrap: wrap;
@@ -63,13 +63,14 @@ export const Label = styled.span`
 
 export const WatchText = styled.span`
   font-size: 14px;
-  color: #333;
+  color: ${({theme}) => theme.color};
 `;
 
 export const LeftWrapper = styled.div`
   flex: 1 1 60%;
   min-width: 300px;
   max-width: 800px;
+  background-color: ${({theme}) => theme.background};
 `;
 
 // Right side wrapper for TeacherCard
@@ -102,11 +103,11 @@ export const AboutCourseDiv = styled(StyledCourseWrapper)`
 `
 
 export const ReviewSection = styled.div`
-  background-color: #fff;
+  background-color: ${({theme}) => theme.background_secondary};
   border-radius: 12px;
   padding: 24px;
   margin-top: 2rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px ${({theme}) => theme.box_shadow};
   display: flex;
   flex-direction: column;
   gap: 24px;
