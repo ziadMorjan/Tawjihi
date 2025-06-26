@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 // Components
 import { LogoAndButton } from "../../components/LogoAndButton";
@@ -14,6 +15,7 @@ import CommentForm from "../../components/CommentForm";
 import { StarRating } from "../../components/Star/starRating";
 import { TeacherCard } from "../../components/card/teacherCard";
 import Button from "@mui/material/Button";
+import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
 
 // Style
 import {
@@ -29,68 +31,77 @@ import {
   MetaInfo,
   StartButtonWrapper,
 } from "./style";
+
 import { API_URL } from "../../config";
-import axios from "axios";
-import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
-import { Label } from "@mui/icons-material";
+import Loading from "../../components/Loading";
 
 const CourseOne = () => {
   const [thisCourse, setThisCourse] = useState({});
+  const [lessons, setLessons] = useState([]);
   const [enrollmentCourses, setEnrollmentCourses] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
 
-  // Get user data from localStorage
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData?._id;
 
   const { name, id: courseId } = useParams();
   const navigate = useNavigate();
-  const [lessons, setLessons] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  // check if this course is enrolled or not
   const isEnrolled = enrollmentCourses.some(
     (enrolled) => enrolled?.course._id === courseId
   );
 
   useEffect(() => {
+    if (!userId) return;
+
     const getCourse = async () => {
       try {
         setDataLoading(true);
-        // get this course data
+
+        // Get course data
         const res = await axios.get(`${API_URL}/courses/${courseId}`, {
           withCredentials: true,
         });
-
         if (res) {
           setThisCourse(res.data.data.doc);
-          console.log(res.data.data.doc, "current course data");
         }
 
-        // get the enrollment courses
+        // Get lessons
+        const lessonsRes = await axios.get(
+          `${API_URL}/lessons?course=${courseId}`,
+          {
+            withCredentials: true,
+          }
+        );
+        if (lessonsRes) {
+          setLessons(lessonsRes.data.data.docs);
+        }
+
+        // Get enrollments
         const enrollmentsRes = await axios.get(
           `${API_URL}/enrollments?user=${userId}`,
           {
             withCredentials: true,
           }
         );
-
         if (enrollmentsRes) {
           setEnrollmentCourses(enrollmentsRes.data.data.docs);
         }
       } catch (e) {
-        console.log(e);
+        console.error("Error fetching course or enrollment data:", e);
       } finally {
         setDataLoading(false);
       }
     };
+
     getCourse();
-  }, []);
+  }, [courseId, userId]);
 
   const handleSelect = (item, index) => {
     setSelectedIndex(index);
-    navigate(`/courses/${name}/video/${index}`, {
+    navigate(`/courses/${name}/${courseId}/video/${index}`, {
       state: { items: lessons },
     });
   };
@@ -110,8 +121,8 @@ const CourseOne = () => {
   const handlePayment = async () => {
     try {
       setPaymentLoading(true);
-
       const course_ids = [courseId];
+
       const res = await axios.post(
         `${API_URL}/payment/create-checkout-session`,
         { ids: course_ids },
@@ -119,13 +130,23 @@ const CourseOne = () => {
           withCredentials: true,
         }
       );
+
       window.location.href = res.data.sessionUrl;
     } catch (e) {
-      console.log(e);
+      console.error("خطأ أثناء عملية الدفع:", e);
+      alert("حدث خطأ أثناء معالجة الدفع. حاول مرة أخرى.");
     } finally {
       setPaymentLoading(false);
     }
   };
+
+  if (dataLoading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -145,10 +166,10 @@ const CourseOne = () => {
             </ProgressRow>
 
             <div>
-              <Label>البداية مع</Label>
-              <H2>دورة {thisCourse.name}</H2>
+              <Pargrahph>البداية مع</Pargrahph>
+              <H2>دورة {thisCourse?.name || "..."}</H2>
               <Pargrahph>
-                {thisCourse.description || "وصف الدورة غير متوفر."}
+                {thisCourse?.description || "وصف الدورة غير متوفر."}
               </Pargrahph>
 
               <MetaInfo>
@@ -202,7 +223,7 @@ const CourseOne = () => {
               id={thisCourse.teacher?._id}
               name={thisCourse.teacher?.name || "معلم غير معروف"}
               desc="مدرس محترف لمواد الفيزياء والرياضيات"
-              imgSrc="/images/mohammed.jpg" // Replace with teacher image if available
+              imgSrc="/images/mohammed.jpg"
               starIcon={thisCourse.averageRating || 0}
               badge="معلم"
             />
