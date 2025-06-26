@@ -19,7 +19,6 @@ const ReviewListSection = () => (
       <ReviewContent>
         <ReviewHeader>
           <ReviewerName>أحمد خالد</ReviewerName>
-          <StarRating />
         </ReviewHeader>
         <ReviewText>
           دورة ممتازة جدًا، استفدت منها كثيرًا والمحتوى كان واضح ومنظم.
@@ -32,7 +31,6 @@ const ReviewListSection = () => (
       <ReviewContent>
         <ReviewHeader>
           <ReviewerName>ليلى محمد</ReviewerName>
-          <StarRating />
         </ReviewHeader>
         <ReviewText>شرح رائع وأسلوب سهل، أنصح بها للمبتدئين.</ReviewText>
       </ReviewContent>

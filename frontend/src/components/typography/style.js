@@ -34,7 +34,7 @@ export const Pargraph = styled.p`
 opacity: 0.7;
 font-size: 18px;
 word-wrap: 20px;
-margin: 10px 0;
+margin: 0px 0 3px 0;
 display: flex;
 
 

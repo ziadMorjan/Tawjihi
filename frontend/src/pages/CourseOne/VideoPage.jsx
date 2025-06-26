@@ -1,8 +1,6 @@
-//react
 import { useEffect } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
-//component
 import { H2 } from "../../components/typography";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { ModalTeacher } from "../../components/modalTeacher";
@@ -13,10 +11,8 @@ import CommentForm from "../../components/CommentForm";
 import { Containers } from "../../components/Container";
 import VideoResources from "../../components/VideoResources";
 
-//component layout
 import { NavBar } from "../../layout/navBar";
 
-//style
 import {
   ListContainer,
   PlayerContainer,
@@ -28,25 +24,25 @@ const VideoPage = () => {
   const { name, id, videoIndex } = useParams();
   const navigate = useNavigate();
   const { state } = useLocation();
+
   const items = Array.isArray(state?.items) ? state.items : [];
-
   const currentIndex =
-    !isNaN(videoIndex) && items[videoIndex] ? parseInt(videoIndex, 10) : 0;
-
+    Number(videoIndex) >= 0 && items[videoIndex] ? Number(videoIndex) : 0;
   const selectedVideo = items[currentIndex] || {};
 
+  console.log(selectedVideo.resources);
   const handleVideoSelect = (item, index) => {
     navigate(`/courses/${name}/${id}/video/${index}`, { state: { items } });
   };
 
   useEffect(() => {
+    if (!items.length) return;
+
     const handleKey = (e) => {
-      if (!items.length) return;
       if (e.key === "ArrowRight") {
         const next = (currentIndex + 1) % items.length;
         handleVideoSelect(items[next], next);
-      }
-      if (e.key === "ArrowLeft") {
+      } else if (e.key === "ArrowLeft") {
         const prev = (currentIndex - 1 + items.length) % items.length;
         handleVideoSelect(items[prev], prev);
       }
@@ -94,9 +90,9 @@ const VideoPage = () => {
               items={items}
               onItemSelect={handleVideoSelect}
               selectedIndex={currentIndex}
-              showGradients={true}
-              enableArrowNavigation={true}
-              displayScrollbar={true}
+              showGradients
+              enableArrowNavigation
+              displayScrollbar
             />
           </ListContainer>
         </VideoWrapper>

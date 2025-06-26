@@ -19,6 +19,7 @@ import { Card } from "../../components/card/courseCard";
 import { ModalTeacher } from "../../components/modalTeacher";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
+import {SkeletonTeacherCard} from "../../components/Loading/SkeletonTeacherCard"
 import { TeacherCard } from "../../components/card/teacherCard";
 
 // hooks
@@ -39,6 +40,7 @@ import { PATH } from "../../routes";
 //toast
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCRUD } from "../../hooks/useCRUD";
 
 const MainPage = () => {
   const { isLogout, setIsLogout } = useContext(LogOutContext);
@@ -65,10 +67,9 @@ const MainPage = () => {
 
   useEffect(() => {
     if (isLogout) {
-      setIsLogout(false);
+      setIsLogout(false); // إعادة الحالة الافتراضية بعد التحديث
     }
   }, [isLogout, setIsLogout]);
-
   return (
     <>
       <ToastContainer />
@@ -161,7 +162,9 @@ const MainPage = () => {
       <Containers>
         <WrapperCards>
           {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+            Array.from({ length: 3 }).map((_, i) => (
+              <SkeletonTeacherCard key={i} />
+            ))
           ) : dataTeachers.length === 0 ? (
             <p>.لا يوجد معلمين</p>
           ) : (

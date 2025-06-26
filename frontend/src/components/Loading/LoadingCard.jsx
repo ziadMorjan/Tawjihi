@@ -16,12 +16,24 @@ export const CardSkeleton = () => {
     <SkeletonWrapper>
       {/* Image skeleton */}
       <SkeletonAvatar />
-
       {/* Course name */}
-      <SkeletonLineShort />
 
-      {/* Subject */}
       <SkeletonLineShort />
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {/* subjet */}
+
+        <SkeletonLineShort />
+
+        {/* branch */}
+        <SkeletonLineShort />
+      </div>
 
       {/* Teacher info */}
       <TeacherInfoWrapper>

@@ -104,7 +104,7 @@ export const SkeletonLine = styled(SkeletonElement)`
 `;
 
 export const SkeletonLineShort = styled(SkeletonLine)`
-  width: 60%;
+  width: 30%;
 `;
 
 export const TeacherInfoWrapper = styled.div`

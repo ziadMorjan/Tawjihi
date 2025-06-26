@@ -33,30 +33,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../routes";
 
-const LoadingOverlay = ({ text = "جارٍ التنفيذ..." }) => (
-  <div
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(255,255,255,0.6)",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 999,
-      fontSize: "16px",
-    }}
-  >
-    <div className="loader" />
-    <span style={{ marginTop: "8px", fontWeight: "bold", color: "#333" }}>
-      {text}
-    </span>
-  </div>
-);
-
 export const Card = ({
   imgSrc,
   teacherName,
@@ -141,30 +117,33 @@ export const Card = ({
 
   return (
     <CardDiv style={{ position: "relative" }}>
-      {(loadingCart || loadingWish) && <LoadingOverlay />}
-
       <ActionIcons>
         <CartIcon
-          active={loadingCart || isInCartList(id)}
+          active={isInCartList(id)}
           onClick={handleClickCart}
+          className={loadingCart ? "loading-icon-cart" : ""}
         />
         <HeartIcon
-          active={loadingWish || isInWishList(id)}
+          active={isInWishList(id)}
           onClick={handleClickHeart}
+          className={loadingWish ? "loading-icon-heart" : ""}
         />
       </ActionIcons>
-
       {imgSrc && <img src={imgSrc} alt={`صورة تخص ${name || "الدورة"}`} />}
       <WrapperElementFlexSpace
-        style={{ padding: "16px" ,cursor: "pointer" }}
+        style={{ padding: "16px", cursor: "pointer" }}
         onClick={() => {
           navigate(`/${PATH.Courses}/${name}/${id}`, { replace: true });
         }}
       >
-        <Pargrahph size="25px">الدورة : {name}</Pargrahph>
-        <Pargrahph size="18px">الفرع : {branch}</Pargrahph>
-        <Pargrahph size="14px">المادة: {subject}</Pargrahph>
+        <Pargrahph size="22px">الدورة : {name}</Pargrahph>
 
+        <div style={{width:"100%",display:"flex" , alignItems:"center",justifyContent:"space-between"}}>
+
+        <Pargrahph size="16px">المادة: {subject}</Pargrahph>
+        <Pargrahph size="16px">{branch}</Pargrahph>
+
+        </div>
         <TeacherInfo>
           {teacherImg && <img src={teacherImg} alt={`صورة ${teacherName}`} />}
           <TeacherInfoAndCourse>

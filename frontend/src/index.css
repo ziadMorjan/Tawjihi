@@ -140,3 +140,34 @@ body.dark-mode .button-primary {
 ul {
   list-style: none;
 }
+
+/* الحركات البصرية للأيقونات */
+@keyframes fillPulseCart {
+  0% {
+    fill: #2563eb;
+    opacity: 0.6;
+  }
+  100% {
+    fill: #2563eb;
+    opacity: 1;
+  }
+}
+
+@keyframes fillPulseHeart {
+  0% {
+    fill: #ca4e4e;
+    opacity: 0.6;
+  }
+  100% {
+    fill: #ca4e4e;
+    opacity: 1;
+  }
+}
+
+.loading-icon-cart {
+  animation: fillPulseCart 0.8s infinite ease-in-out;
+}
+
+.loading-icon-heart {
+  animation: fillPulseHeart 0.8s infinite ease-in-out;
+}

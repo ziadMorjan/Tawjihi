@@ -1,15 +1,13 @@
-//svg icon
-
-export const CartIcon = ({ active, onClick }) => (
+export const CartIcon = ({ active, onClick, className }) => (
   <svg
     onClick={onClick}
+    className={className}
     style={{
       cursor: "pointer",
       fill: active ? "#2563eb" : "none",
       stroke: "#2563eb",
       transition: "fill 0.3s ease, transform 0.2s ease",
       transform: active ? "scale(1.2)" : "scale(1)",
-
     }}
     width="24"
     height="24"
@@ -18,22 +16,22 @@ export const CartIcon = ({ active, onClick }) => (
     strokeLinejoin="round"
     viewBox="0 0 24 24"
   >
-    <circle cx="9" cy="21" r="1" fill={active ? "#2563eb" : "#2563eb"} />
-    <circle cx="20" cy="21" r="1" fill={active ? "#2563eb" : "#2563eb"} />
+    <circle cx="9" cy="21" r="1" fill="#2563eb" />
+    <circle cx="20" cy="21" r="1" fill="#2563eb" />
     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
   </svg>
 );
 
-export const HeartIcon = ({ active, onClick }) => (
+export const HeartIcon = ({ active, onClick, className }) => (
   <svg
     onClick={onClick}
+    className={className}
     style={{
       cursor: "pointer",
       fill: active ? "#ca4e4e" : "none",
       stroke: "#ca4e4e",
       transition: "fill 0.3s ease, transform 0.2s ease",
       transform: active ? "scale(1.2)" : "scale(1)",
-
     }}
     width="24"
     height="24"

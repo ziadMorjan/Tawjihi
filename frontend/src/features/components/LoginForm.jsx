@@ -1,27 +1,20 @@
-//react
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
-
-//yup
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-//axios
 import axios from "axios";
-
-//hooks
 import { useForm } from "react-hook-form";
 
-// URL
+// config
 import { API_URL } from "../../config";
-
-//Path
 import { PATH } from "../../routes";
 
-//context
+// contexts
 import { AuthContext } from "../../context/AuthContext";
+import { AppContext } from "../../context/WishAndCartListContext";
+import { Actions } from "../../constant/ACTIONS";
 
-// Styled components
+// components & styles
 import {
   Form,
   FormGroup,
@@ -36,8 +29,7 @@ import { Pargrahph } from "../../components/typography";
 import { MiddleLineLetter } from "../../components/MiddleLineLetter";
 import { WrapperElementFlexCenter } from "../../styles/style";
 
-// Validation schema
-//=======================================================
+// validation schema
 const schema = yup.object({
   email: yup
     .string()
@@ -45,12 +37,11 @@ const schema = yup.object({
     .email("ادخل البريد الالكتروني بشكل صحيح"),
   password: yup.string().required("كلمة المرور مطلوبة"),
 });
-//=======================================================
-
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const { setIsAuth } = useContext(AuthContext);
+  const { dispatch } = useContext(AppContext);
 
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -62,8 +53,6 @@ export const LoginForm = () => {
     reset,
   } = useForm({ resolver: yupResolver(schema) });
 
-  //submit data
-  //=======================================================
   const onSubmit = async (data) => {
     setLoading(true);
     setServerError("");
@@ -71,13 +60,37 @@ export const LoginForm = () => {
     try {
       const response = await axios.post(`${API_URL}/auth/login`, data, {
         withCredentials: true,
-      }); //withCredentials to cookies
-
-      console.log(response)
+      });
 
       if (response.data.user) {
+        // Save full user object with wishlist and cart to localStorage
         localStorage.setItem("user", JSON.stringify(response.data.user));
         setIsAuth(true);
+
+        const storedUser = response.data.user;
+
+        // Extract wishlist from user data or empty array
+        const wishlistFromStorage = Array.isArray(storedUser.wishlist)
+          ? storedUser.wishlist
+          : [];
+
+        // Extract cart from user data or empty array
+        const cartFromStorage = Array.isArray(storedUser.cart)
+          ? storedUser.cart
+          : [];
+
+        // Dispatch wishlist
+        dispatch({
+          type: Actions.SetWishList,
+          payload: wishlistFromStorage,
+        });
+
+        // Dispatch cart
+        dispatch({
+          type: Actions.SetCartList,
+          payload: cartFromStorage,
+        });
+
         reset();
         navigate(PATH.Main);
       } else {
@@ -93,7 +106,6 @@ export const LoginForm = () => {
       setLoading(false);
     }
   };
-  //=======================================================
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>

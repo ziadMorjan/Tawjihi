@@ -179,14 +179,14 @@ const AnimatedList = ({
               >
                 <div className="flex justify-between items-center w-full gap-3">
                   <p className="m-0 truncate text-base flex-grow min-w-0">
-                    {item.title}
+                    {item.name}
                   </p>
                   <div className="flex items-center gap-1 text-sm flex-shrink-0 whitespace-nowrap">
                     <AiOutlineClockCircle
                       className={isActive ? "text-white" : "text-gray-500"}
                     />
                     <span className={isActive ? "text-white" : "text-gray-500"}>
-                      {item.time}
+                      {item.duration}
                     </span>
                   </div>
                 </div>
