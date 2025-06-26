@@ -16,6 +16,7 @@ import { NavBar } from "../../layout/navBar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "../../components/Buttons/button";
+import { Containers } from "../../components/Container";
 
 const MyCourses = () => {
   // Get user data from localStorage
@@ -57,22 +58,26 @@ const MyCourses = () => {
           className="myCourses-grid"
           style={{ display: "flex", flexWrap: "wrap" }}
         >
+
+          <Containers>
+
           {myCourses?.map((item) => (
             <Card
-              key={item.course._id}
-              item={item.course}
-              id={item.course._id}
-              imgSrc={item.course.img || "/assets/img/logo.png"}
-              name={item.course.name}
-              starIcon={item.course.averageRating}
-              price={item.course.price}
-              priceAfterDiscount={item.course.priceAfterDiscount}
-              teacherName={item.course.teacher?.name}
-              teacherImg={item.course.teacher?.img || "/assets/img/logo.png"}
-              branch={item.course.branches.map((b) => b.name).join(" | ")}
-              subject={item.course.subject?.name}
+            key={item.course._id}
+            item={item.course}
+            id={item.course._id}
+            imgSrc={item.course.img || "/assets/img/logo.png"}
+            name={item.course.name}
+            starIcon={item.course.averageRating}
+            price={item.course.price}
+            priceAfterDiscount={item.course.priceAfterDiscount}
+            teacherName={item.course.teacher?.name}
+            teacherImg={item.course.teacher?.img || "/assets/img/logo.png"}
+            branch={item.course.branches.map((b) => b.name).join(" | ")}
+            subject={item.course.subject?.name}
             />
           ))}
+          </Containers>
         </div>
       )}
     </div>
