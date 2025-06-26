@@ -77,6 +77,7 @@ const CourseOne = () => {
 
         if (res) {
           setThisCourse(res.data.data.doc)
+          console.log(res.data.data.doc, 'current course data')
         }
 
         // get the enrollment courses 
@@ -203,10 +204,9 @@ const CourseOne = () => {
 
             <div>
               <Label>البداية مع</Label>
-              <H2>دورة {name}</H2>
+              <H2>دورة {thisCourse.name}</H2>
               <Pargrahph>
-                هذه الدورة مصممة لتزويدك بالمعرفة والمهارات الأساسية في مجال{" "}
-                {name}.
+                {thisCourse.description || "وصف الدورة غير متوفر."}
               </Pargrahph>
 
               <MetaInfo>
