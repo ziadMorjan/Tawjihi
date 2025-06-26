@@ -45,7 +45,7 @@ const CartList = () => {
   const handlePayment = async () => {
     if (cart.length !== 0) {
       try {
-        setPaymentLoading(true)
+        setPaymentLoading(true);
 
         const course_ids = cart.map((item) => item._id);
         const res = await axios.post(
@@ -56,14 +56,11 @@ const CartList = () => {
           }
         );
         window.location.href = res.data.sessionUrl;
-
       } catch (e) {
         console.log(e);
-
       } finally {
         setPaymentLoading(false);
       }
-
     }
   };
 
@@ -74,63 +71,54 @@ const CartList = () => {
       <LogoAndButton />
       <NavBar />
       <ModalTeacher />
-<<<<<<< HEAD
-<<<<<<< HEAD
+
       <Containers>
+        <CartHeader>
+          <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
 
-      <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
-=======
-      
-=======
-
->>>>>>> 1f40ec33d89cc02dfc8fd95e3f170f2e2602c558
-      <CartHeader>
-        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
-
-        <LoginAndRegisterButton
-          fontSize={18}
-          onClick={handlePayment}
-          isDisabled={paymentLoading || cart.length === 0}>
-
-          {paymentLoading ? (
-            <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span className="spinner" /> جاري المعالجة...
-            </span>
-          ) : (
-            "شراء الكل"
-          )}
-        </LoginAndRegisterButton>
-
-      </CartHeader>
-
->>>>>>> 71b473789d2b302af1ea71c0a602a704694a6175
-      {cart.length === 0 ? (
-        <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
-      ) : (
-        <div
-        className="cart-grid"
-        style={{ display: "flex", flexWrap: "wrap" }}
-        >
-          {console.log(cart, "cart items")}
-          {cart.map((item) => (
-            <Card
-            key={item._id}
-            item={item}
-              id={item._id}
-              imgSrc={item.img || "/assets/img/logo.png"}
-              name={item.name}
-              starIcon={item.averageRating}
-              price={item.price}
-              priceAfterDiscount={item.priceAfterDiscount}
-              teacherName={item.teacher?.name}
-              teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-              branch={item.branches.map((b) => b.name).join(" | ")}
-              subject={item.subject?.name}
-            />
-          ))}
-        </div>
-      )}
-            </Containers>
+          <LoginAndRegisterButton
+            fontSize={18}
+            onClick={handlePayment}
+            isDisabled={paymentLoading || cart.length === 0}
+          >
+            {paymentLoading ? (
+              <span
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <span className="spinner" /> جاري المعالجة...
+              </span>
+            ) : (
+              "شراء الكل"
+            )}
+          </LoginAndRegisterButton>
+        </CartHeader>
+        {cart.length === 0 ? (
+          <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
+        ) : (
+          <div
+            className="cart-grid"
+            style={{ display: "flex", flexWrap: "wrap" }}
+          >
+            {console.log(cart, "cart items")}
+            {cart.map((item) => (
+              <Card
+                key={item._id}
+                item={item}
+                id={item._id}
+                imgSrc={item.img || "/assets/img/logo.png"}
+                name={item.name}
+                starIcon={item.averageRating}
+                price={item.price}
+                priceAfterDiscount={item.priceAfterDiscount}
+                teacherName={item.teacher?.name}
+                teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+                branch={item.branches.map((b) => b.name).join(" | ")}
+                subject={item.subject?.name}
+              />
+            ))}
+          </div>
+        )}
+      </Containers>
     </div>
   );
 };
