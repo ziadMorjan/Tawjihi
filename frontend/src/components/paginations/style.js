@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const PaginationsWraper = styled.div`
   display: block;
-  margin: auto;
+  margin: 20px auto;
 
   & div.pagination {
     display: flex;

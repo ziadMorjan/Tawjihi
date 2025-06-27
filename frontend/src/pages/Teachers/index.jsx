@@ -16,7 +16,6 @@ import { useApi } from "../../hooks/useApi";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { Containers } from "../../components/Container";
 import { TeacherCard } from "../../components/card/teacherCard";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
 import Paginations from "../../components/paginations";
 import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
 

@@ -13,6 +13,7 @@ function Paginations({ setCurrentPage, currentPage, totalPages }) {
           disabled={currentPage === 1}
         >
           <ArrowForwardIosIcon fontSize="small" />
+          السابق
         </button>
 
         {Array.from({ length: totalPages }, (_, index) => (
@@ -30,6 +31,7 @@ function Paginations({ setCurrentPage, currentPage, totalPages }) {
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
         >
+          التالي
           <ArrowBackIosNewIcon fontSize="small" />
         </button>
       </div>

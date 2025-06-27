@@ -27,8 +27,6 @@ function TeacherProfile() {
 
   const {
     data: fetchedCourses = [],
-    coursesIsLoading,
-    coursesError,
   } = useApi(`${API_URL}/courses/`);
 
   const teacherCourses = fetchedCourses.filter(
@@ -37,7 +35,7 @@ function TeacherProfile() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 4;
 
   // Use paginate util
   const { currentItems, totalPages } = paginate(
@@ -100,7 +98,7 @@ function TeacherProfile() {
 
           {isLoading ? (
             <WrapperCards>
-              {Array.from({ length: 4 }).map((_, i) => (
+              {Array.from({ length: 3 }).map((_, i) => (
                 <CardSkeleton key={i} />
               ))}
             </WrapperCards>

@@ -140,8 +140,8 @@ export const Card = ({
 
         <div style={{width:"100%",display:"flex" , alignItems:"center",justifyContent:"space-between"}}>
 
-        <Pargrahph size="16px">المادة: {subject}</Pargrahph>
-        <Pargrahph size="16px">{branch}</Pargrahph>
+        <Pargrahph size="14px">المادة: {subject}</Pargrahph>
+        <Pargrahph size="12px">{branch}</Pargrahph>
 
         </div>
         <TeacherInfo>

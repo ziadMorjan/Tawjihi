@@ -114,7 +114,7 @@ export const TeacherInfoAndCourse = styled.div`
   gap: 4px;
 
   & span {
-    font-size: 14px;
+    font-size: 13px;
     opacity: 0.7;
   }
 `;
