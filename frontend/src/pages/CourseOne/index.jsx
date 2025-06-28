@@ -34,6 +34,8 @@ import {
 
 import { API_URL } from "../../config";
 import Loading from "../../components/Loading";
+import { PriceBadge } from "../../components/card/style";
+import { StyledBuyButtonAndPriceBadge } from "../../components/buyButtonAndPriceBadge/style";
 
 const CourseOne = () => {
   const [thisCourse, setThisCourse] = useState({});
@@ -150,6 +152,7 @@ const CourseOne = () => {
 
   return (
     <>
+      {console.log("thisCourse:", thisCourse)}
       <LogoAndButton />
       <NavBar />
       <ModalTeacher />
@@ -184,25 +187,38 @@ const CourseOne = () => {
                   ابدأ الدورة الآن
                 </Button>
               ) : (
-                <LoginAndRegisterButton
-                  fontSize={18}
-                  onClick={handlePayment}
-                  isDisabled={paymentLoading}
-                >
-                  {paymentLoading ? (
-                    <span
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      <span className="spinner" /> جاري المعالجة...
-                    </span>
-                  ) : (
-                    "شراء "
-                  )}
-                </LoginAndRegisterButton>
+                <StyledBuyButtonAndPriceBadge>
+                  <LoginAndRegisterButton
+                    fontSize={18}
+                    onClick={handlePayment}
+                    isDisabled={paymentLoading}
+                  >
+                    {paymentLoading ? (
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <span className="spinner" /> جاري المعالجة...
+                      </span>
+                    ) : (
+                      "شراء "
+                    )}
+                  </LoginAndRegisterButton>
+                  <PriceBadge>
+                    {thisCourse?.price === 0 ? (
+                      <>مجاني</>
+                    ) : (
+                      <>
+
+                        {thisCourse?.price} ₪{" "}
+                      </>
+                    )}
+                  </PriceBadge>
+
+                </StyledBuyButtonAndPriceBadge>
               )}
             </StartButtonWrapper>
           </DetailsWrapper>
