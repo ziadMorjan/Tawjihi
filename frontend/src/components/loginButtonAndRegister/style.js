@@ -4,7 +4,7 @@ export const ButtonLogin = styled("button")`
     width: 10rem;
     background-color: transparent;
     border: 1px solid var(--color-border);
-    color:#333;
+    color:${({theme}) => theme.color};
     padding:5px 0px;
     border-radius: 3px;
     transition: all 0.5s;
@@ -20,8 +20,8 @@ export const ButtonLogin = styled("button")`
     }
 
     &:hover {
-      color:var(--color-primary);
-      border: 1px solid var(--color-primary);
+      color:${({theme}) => theme.primary};
+      border: 1px solid ${({theme}) => theme.primary};
     }
 
     @media (max-width: 767px) {
@@ -33,7 +33,7 @@ export const ButtonLogin = styled("button")`
     height: 16px;
     margin-right: 5px;
     border: 3px solid #fff;
-    border-top: 3px solid #007bff;
+    border-top: 3px solid ${({theme}) => theme.link};
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
