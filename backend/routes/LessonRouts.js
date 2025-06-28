@@ -25,10 +25,12 @@ const {
     handVideo
 } = require('../controllers/LessonController');
 const resourceRouts = require('./ResourceRouts');
+const commentsRouts = require('./CommentRoutes');
 
 let router = express.Router({ mergeParams: true });
 
 router.use("/:lessonId/resources", resourceRouts);
+router.use("/:lessonId/comments", commentsRouts);
 
 router.route('/')
     .get(getAllLessons)
