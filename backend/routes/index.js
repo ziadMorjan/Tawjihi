@@ -12,6 +12,7 @@ const couponRouts = require('./CouponRouts');
 const cartRouts = require('./CartRouts');
 const TeacherReviewRoutes = require('./TeacherReviewRoutes');
 const PaymentRoutes = require('./PaymentRoutes');
+const CommentRoutes = require('./CommentRoutes');
 const defaultRoutes = require('./DefaultRoute');
 
 
@@ -30,6 +31,7 @@ const routes = app => {
     app.use('/api/v1/cart', cartRouts);
     app.use('/api/v1/teacherReviews', TeacherReviewRoutes);
     app.use('/api/v1/payment', PaymentRoutes);
+    app.use('/api/v1/comments', CommentRoutes);
     app.use(defaultRoutes);
 }
 

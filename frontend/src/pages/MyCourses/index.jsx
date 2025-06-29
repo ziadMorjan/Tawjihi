@@ -49,6 +49,7 @@ const MyCourses = () => {
 
       <LogoAndButton />
       <NavBar />
+      <Containers>
       <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة دوراتي</h2>
 
       {myCourses.length === 0 ? (
@@ -59,7 +60,7 @@ const MyCourses = () => {
           style={{ display: "flex", flexWrap: "wrap" }}
         >
 
-          <Containers>
+          
 
           {myCourses?.map((item) => (
             <Card
@@ -77,9 +78,10 @@ const MyCourses = () => {
             subject={item.course.subject?.name}
             />
           ))}
-          </Containers>
+          
         </div>
       )}
+      </Containers>
     </div>
   );
 };
