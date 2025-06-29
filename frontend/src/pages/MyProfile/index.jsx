@@ -10,10 +10,10 @@ function UserProfile() {
   const navigate = useNavigate();
 
   const dataUser = JSON.parse(localStorage.getItem("user")) || {
-    name: "John Doe",
+    name: "جون دو",
     email: "johndoe@example.com",
-    bio: "No bio yet.",
-    role: "Student",
+    bio: "لا يوجد نبذة حتى الآن.",
+    role: "طالب",
     profileImage:
       "https://th.bing.com/th/id/OIP.x2wDWv8Y8uPFo00LXaOGxAHaHa?w=199&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
     joinedAt: "2024",
@@ -22,17 +22,17 @@ function UserProfile() {
   const { name, email, bio, role, profileImage, joinedAt } = dataUser;
 
   const accountDetails = [
-    { label: "Name", value: name },
-    { label: "Email", value: email },
-    { label: "Role", value: role || "Student" },
-    { label: "Member Since", value: joinedAt || "2024" },
+    { label: "الاسم", value: name },
+    { label: "البريد الإلكتروني", value: email },
+    { label: "الدور", value: role || "طالب" },
+    { label: "عضو منذ", value: joinedAt || "2024" },
   ];
 
   const coursesStats = [
-    { label: "Enrolled", value: "4 Courses" },
-    { label: "Completed", value: "2 Courses" },
-    { label: "Wishlist", value: "3 Courses" },
-    { label: "Reviews Given", value: "5 Reviews" },
+    { label: "الدورات المسجَّل بها", value: "٤ دورات" },
+    { label: "الدورات المكتملة", value: "٢ دورة" },
+    { label: "المفضلة", value: "٣ دورات" },
+    { label: "المراجعات المُضافة", value: "٥ مراجعات" },
   ];
 
   return (
@@ -40,19 +40,19 @@ function UserProfile() {
       <LogoAndButton />
       <NavBar />
 
-      {/* Profile Header */}
+      {/* رأس الملف الشخصي */}
       <section className="img-sec">
         <Containers>
-          <img src={profileImage} alt={`${name} profile`} />
+          <img src={profileImage} alt={`صورة ${name}`} />
           <div>
             <H2>{name}</H2>
             <Pargrahph>{email}</Pargrahph>
             <Pargrahph>{role}</Pargrahph>
             <EditButton
               onClick={() => navigate(`/${PATH.User}/${PATH.EditProfile}`)}
-              aria-label="Edit Profile"
+              aria-label="تعديل الملف الشخصي"
             >
-              Edit Profile
+              تعديل الملف الشخصي
             </EditButton>
           </div>
         </Containers>
@@ -60,23 +60,23 @@ function UserProfile() {
 
       <hr />
 
-      {/* About Section */}
+      {/* نبذة عن المستخدم */}
       <section className="about-sec">
         <Containers>
-          <H3>About</H3>
+          <H3>نبذة</H3>
           <Pargrahph>
             {bio ||
-              "This user hasn’t added a bio yet. You can describe your interests, profession or learning goals here."}
+              "لم يقم هذا المستخدم بإضافة نبذة حتى الآن. يمكنك هنا كتابة اهتماماتك أو أهدافك التعليمية أو مهنتك."}
           </Pargrahph>
         </Containers>
       </section>
 
       <hr />
 
-      {/* Account Details Section */}
+      {/* تفاصيل الحساب */}
       <section>
         <Containers>
-          <H3>Account Details</H3>
+          <H3>تفاصيل الحساب</H3>
           <StatsGrid>
             {accountDetails.map(({ label, value }) => (
               <div key={label}>
@@ -90,10 +90,10 @@ function UserProfile() {
 
       <hr />
 
-      {/* My Courses Section */}
+      {/* دوراتي */}
       <section>
         <Containers>
-          <H3>My Courses</H3>
+          <H3>دوراتي</H3>
           <StatsGrid>
             {coursesStats.map(({ label, value }) => (
               <div key={label}>

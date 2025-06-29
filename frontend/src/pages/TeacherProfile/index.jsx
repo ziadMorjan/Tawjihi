@@ -25,19 +25,15 @@ function TeacherProfile() {
   const { data, isLoading, error } = useProfileApi(`${API_URL}/users/${id}`);
   const profileData = data.doc;
 
-  const {
-    data: fetchedCourses = [],
-  } = useApi(`${API_URL}/courses/`);
+  const { data: fetchedCourses = [] } = useApi(`${API_URL}/courses/`);
 
   const teacherCourses = fetchedCourses.filter(
     (course) => course?.teacher._id === id
   );
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
-  // Use paginate util
   const { currentItems, totalPages } = paginate(
     teacherCourses,
     currentPage,
@@ -49,42 +45,48 @@ function TeacherProfile() {
       <LogoAndButton />
       <NavBar />
 
+      {/* القسم العلوي: معلومات المعلم */}
       <section className="img-sec">
         <Containers>
           <img
             src={
               "https://th.bing.com/th/id/OIP.x2wDWv8Y8uPFo00LXaOGxAHaHa?w=199&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
             }
-            alt=""
+            alt="صورة المعلم"
           />
           <div>
             <H2>{profileData?.name}</H2>
             <Pargrahph>{profileData?.email}</Pargrahph>
             <Pargrahph>{profileData?.phone}</Pargrahph>
-            {/* <Pargrahph>{`عدد الدورات : ${teacherCourses.length}`}</Pargrahph> */}
           </div>
         </Containers>
       </section>
+
       <hr />
+
+      {/* قسم النبذة */}
       <section>
         <div className="about-sec">
           <Containers>
-            <H3>About</H3>
+            <H3>نبذة عن المعلم</H3>
             <Pargrahph>{profileData?.description}</Pargrahph>
 
             <DownloadButton
               href={profileData?.cv}
               download={`${profileData?.name}_CV.pdf`}
             >
-              Download CV
+              تحميل السيرة الذاتية
             </DownloadButton>
           </Containers>
         </div>
       </section>
+
       <hr />
+
+      {/* قسم الدورات */}
       <section>
         <Containers>
-          <H3>{`Courses (${teacherCourses.length})`}</H3>
+          <H3>{`الدورات (${teacherCourses.length})`}</H3>
 
           {teacherCourses.length ? (
             <FilterMenuItem
@@ -92,9 +94,7 @@ function TeacherProfile() {
               totalPages={totalPages}
               order={false}
             />
-          ) : (
-            ""
-          )}
+          ) : null}
 
           {isLoading ? (
             <WrapperCards>
@@ -103,9 +103,9 @@ function TeacherProfile() {
               ))}
             </WrapperCards>
           ) : error ? (
-            <Typography color="error">فشل المو الدورات</Typography>
+            <Typography color="error">فشل تحميل الدورات</Typography>
           ) : teacherCourses.length === 0 ? (
-            <Typography variant="body1">لا توجد دورات .</Typography>
+            <Typography variant="body1">لا توجد دورات حتى الآن.</Typography>
           ) : (
             <WrapperCards>
               {currentItems.map((item) => (

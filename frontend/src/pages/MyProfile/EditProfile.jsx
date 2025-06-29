@@ -37,7 +37,7 @@ function EditProfile() {
       reset({
         name: user.name,
         email: user.email,
-        role: user.role || "Student",
+        role: user.role || "طالب",
         bio: user.bio || "",
       });
       setImagePreview(user.profileImage || "");
@@ -51,14 +51,14 @@ function EditProfile() {
       if (!file.type.startsWith("image/")) {
         setError("profileImage", {
           type: "manual",
-          message: "Only image files are allowed",
+          message: "الملف يجب أن يكون صورة فقط",
         });
         return;
       }
       if (file.size > MAX_FILE_SIZE) {
         setError("profileImage", {
           type: "manual",
-          message: "Image size must be less than 2MB",
+          message: "يجب أن يكون حجم الصورة أقل من 2 ميجابايت",
         });
         return;
       }
@@ -77,15 +77,12 @@ function EditProfile() {
       formData.append("bio", data.bio);
       if (imageFile) formData.append("profileImage", imageFile);
 
-      // Simulated API call - replace URL with your API endpoint
       const response = await fetch("https://api.example.com/user/update", {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Failed to update profile");
-
-      // const result = await response.json(); // Uncomment for real API response
+      if (!response.ok) throw new Error("فشل في تحديث الملف الشخصي");
 
       const updatedUser = {
         ...data,
@@ -94,11 +91,11 @@ function EditProfile() {
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
-      toast.success("Profile updated successfully!");
+      toast.success("تم تحديث الملف الشخصي بنجاح!");
       navigate("/user-profile");
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong. Please try again.");
+      toast.error("حدث خطأ ما. يرجى المحاولة مرة أخرى.");
     } finally {
       setIsSubmitting(false);
     }
@@ -107,8 +104,8 @@ function EditProfile() {
   return (
     <EditProfileWrapper>
       <Containers>
-        <H2>Edit Profile</H2>
-        <Pargrahph>Update your account details below</Pargrahph>
+        <H2>تعديل الملف الشخصي</H2>
+        <Pargrahph>قم بتحديث بيانات حسابك أدناه</Pargrahph>
 
         <EditForm
           onSubmit={handleSubmit(onSubmit)}
@@ -117,13 +114,13 @@ function EditProfile() {
         >
           <UploadImg
             src={imagePreview || "https://via.placeholder.com/150"}
-            alt="Profile"
+            alt="الصورة الشخصية"
             onClick={() => fileInputRef.current.click()}
             tabIndex={0}
             onKeyDown={(e) => e.key === "Enter" && fileInputRef.current.click()}
             role="button"
-            aria-label="Upload profile image"
-            title="Click or press Enter to change profile image"
+            aria-label="رفع صورة الملف الشخصي"
+            title="اضغط أو اضغط Enter لتغيير الصورة"
           />
           <input
             type="file"
@@ -140,11 +137,11 @@ function EditProfile() {
           )}
 
           <label htmlFor="name">
-            Name:
+            الاسم:
             <input
               id="name"
               type="text"
-              {...register("name", { required: "Name is required" })}
+              {...register("name", { required: "الاسم مطلوب" })}
               aria-invalid={errors.name ? "true" : "false"}
               aria-describedby="nameError"
             />
@@ -154,15 +151,15 @@ function EditProfile() {
           </label>
 
           <label htmlFor="email">
-            Email:
+            البريد الإلكتروني:
             <input
               id="email"
               type="email"
               {...register("email", {
-                required: "Email is required",
+                required: "البريد الإلكتروني مطلوب",
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Invalid email format",
+                  message: "تنسيق البريد غير صالح",
                 },
               })}
               aria-invalid={errors.email ? "true" : "false"}
@@ -174,12 +171,12 @@ function EditProfile() {
           </label>
 
           <label htmlFor="role">
-            Role:
+            الدور:
             <input id="role" type="text" {...register("role")} />
           </label>
 
           <label htmlFor="bio">
-            Bio:
+            النبذة:
             <textarea id="bio" {...register("bio")} rows={4} />
           </label>
 
@@ -188,7 +185,7 @@ function EditProfile() {
             disabled={isSubmitting}
             aria-busy={isSubmitting}
           >
-            {isSubmitting ? "Saving..." : "Save Changes"}
+            {isSubmitting ? "جارٍ الحفظ..." : "حفظ التغييرات"}
           </SaveButton>
         </EditForm>
       </Containers>
