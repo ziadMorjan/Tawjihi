@@ -16,8 +16,6 @@ import { StarRating } from "../../components/Star/starRating";
 import { TeacherCard } from "../../components/card/teacherCard";
 import Button from "@mui/material/Button";
 import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
-import { Progress } from "../../components/progress";
-import {CourseIcon} from "../../components/Icon/courseIcon"
 
 // Style
 import {
@@ -163,7 +161,7 @@ const CourseOne = () => {
           <CourseImage src="/assets/img/learn.png" alt="صورة الدورة" />
           <DetailsWrapper>
             <ProgressRow>
-              <Progress />
+              {/* <Progress /> */}
               <WatchText>نسبة المشاهدة 60%</WatchText>
             </ProgressRow>
 
@@ -175,8 +173,8 @@ const CourseOne = () => {
               </Pargrahph>
 
               <MetaInfo>
-                <CourseIcon icon="clock" text="13H" />
-                <CourseIcon icon="star" text="4.5" />
+                {/* <CourseIcon icon="clock" text="13H" />
+                <CourseIcon icon="star" text="4.5" /> */}
               </MetaInfo>
             </div>
 
