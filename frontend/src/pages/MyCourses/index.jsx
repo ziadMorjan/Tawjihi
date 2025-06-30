@@ -17,6 +17,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "../../components/Buttons/button";
 import { Containers } from "../../components/Container";
+import { CardSkeleton } from "../../components/Loading/LoadingCard";
 
 const MyCourses = () => {
   // Get user data from localStorage
@@ -24,21 +25,26 @@ const MyCourses = () => {
   const userId = userData?._id;
 
   const [myCourses, setMyCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
       try {
+        setIsLoading(true);
         const res = await axios.get(`${API_URL}/enrollments?user=${userId}`, {
           withCredentials: true,
         });
 
         if (res) {
-          console.log(res.data.data.docs, "res");
           setMyCourses(res.data.data.docs);
         }
+
       } catch (e) {
         console.log(e);
+      } finally {
+        setIsLoading(false);
       }
+
     };
     getData();
   }, []);
@@ -50,37 +56,41 @@ const MyCourses = () => {
       <LogoAndButton />
       <NavBar />
       <Containers>
-      <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة دوراتي</h2>
+        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة دوراتي</h2>
 
-      {myCourses.length === 0 ? (
-        <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
-      ) : (
         <div
           className="myCourses-grid"
           style={{ display: "flex", flexWrap: "wrap" }}
         >
 
-          
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
 
-          {myCourses?.map((item) => (
-            <Card
-            key={item.course._id}
-            item={item.course}
-            id={item.course._id}
-            imgSrc={item.course.img || "/assets/img/logo.png"}
-            name={item.course.name}
-            starIcon={item.course.averageRating}
-            price={item.course.price}
-            priceAfterDiscount={item.course.priceAfterDiscount}
-            teacherName={item.course.teacher?.name}
-            teacherImg={item.course.teacher?.img || "/assets/img/logo.png"}
-            branch={item.course.branches.map((b) => b.name).join(" | ")}
-            subject={item.course.subject?.name}
-            />
-          ))}
-          
+          ) : myCourses.length === 0 ? (
+            <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
+            
+          ) : (
+            myCourses?.map((item) => (
+              <Card
+                key={item.course._id}
+                item={item.course}
+                id={item.course._id}
+                imgSrc={item.course.img || "/assets/img/logo.png"}
+                name={item.course.name}
+                starIcon={item.course.averageRating}
+                price={item.course.price}
+                priceAfterDiscount={item.course.priceAfterDiscount}
+                teacherName={item.course.teacher?.name}
+                teacherImg={item.course.teacher?.img || "/assets/img/logo.png"}
+                branch={item.course.branches.map((b) => b.name).join(" | ")}
+                subject={item.course.subject?.name}
+              />
+            ))
+          )
+          }
+
         </div>
-      )}
+        
       </Containers>
     </div>
   );

@@ -22,25 +22,30 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "../../components/Buttons/button";
 import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
+import { CardSkeleton } from "../../components/Loading/LoadingCard";
 
 const CartList = () => {
   const { cart, setCartList } = useCRUD();
 
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
       try {
+        setIsLoading(true)
         const res = await axios.get(`${API_URL}/cart`, {
           withCredentials: true,
         });
         setCartList(res.data.cart.courses);
       } catch (e) {
         console.log(e);
+      } finally {
+        setIsLoading(false)
       }
     };
     getData();
-  }, [setCartList]);
+  }, []);
 
   const handlePayment = async () => {
     if (cart.length !== 0) {
@@ -92,15 +97,20 @@ const CartList = () => {
             )}
           </LoginAndRegisterButton>
         </CartHeader>
-        {cart.length === 0 ? (
-          <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
-        ) : (
-          <div
-            className="cart-grid"
-            style={{ display: "flex", flexWrap: "wrap" }}
-          >
-            {console.log(cart, "cart items")}
-            {cart.map((item) => (
+
+        <div
+          className="cart-grid"
+          style={{ display: "flex", flexWrap: "wrap" }}
+        >
+
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+
+          ) : cart.length === 0 ? (
+            <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
+
+          ) : (
+            cart.map((item) => (
               <Card
                 key={item._id}
                 item={item}
@@ -115,9 +125,9 @@ const CartList = () => {
                 branch={item.branches.map((b) => b.name).join(" | ")}
                 subject={item.subject?.name}
               />
-            ))}
-          </div>
-        )}
+            )))}
+        </div>
+
       </Containers>
     </div>
   );
