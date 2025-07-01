@@ -4,7 +4,6 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const Course = require('../models/Course');
 const Enrollment = require("../models/Enrollment");
 const Payment = require("../models/Payment");
-const Cart = require("../models/Cart");
 const { getAll, getOne } = require("./controller");
 const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 
@@ -66,14 +65,6 @@ const webhook = asyncErrorHandler(async (req, res) => {
         // 2- create enrollments
         const promises = ids.map(id => Enrollment.create({ user: metadata.user, course: id }));
         await Promise.all(promises);
-
-        // 3- remove courses from cart
-        const cart = await Cart.findOne({ user: metadata.user });
-        if (cart) {
-            cart.courses = cart.courses.filter(course => !ids.includes(course.id));
-            cart.totalPrice = cart.courses.reduce((total, course) => total + course.price, 0);
-            await cart.save();
-        }
     }
 
     res.status(200).json({ status: "Received" });
