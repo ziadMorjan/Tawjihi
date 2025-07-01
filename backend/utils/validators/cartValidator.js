@@ -2,6 +2,7 @@ const validator = require('express-validator');
 const { validationMiddleware } = require('../../middlewares/validationMiddleware');
 const CustomError = require('../CustomError');
 const Course = require('../../models/Course');
+const Enrollment = require('../../models/Enrollment');
 const Coupon = require('../../models/Coupon');
 
 const cartValidator = [
@@ -10,10 +11,16 @@ const cartValidator = [
         .withMessage("course is required")
         .isMongoId()
         .withMessage("invalid course id")
-        .custom(async (value) => {
+        .custom(async (value, { req }) => {
             const course = await Course.findById(value);
             if (!course)
                 throw new CustomError("no course found", 404);
+            let enrollment = await Enrollment.findOne({
+                course: value,
+                user: req.user.id
+            });
+            if (enrollment)
+                throw new CustomError("You are already enrolled in this course", 400);
             return true;
         }),
 

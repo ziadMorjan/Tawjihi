@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Cart = require("./Cart");
 
 const enrollmentSchema = new mongoose.Schema(
     {
@@ -31,5 +32,18 @@ enrollmentSchema.pre(/^find/, function (next) {
 
     next();
 });
+
+enrollmentSchema.post("save", async function (doc, next) {
+    let cart = await Cart.findOne({ user: doc.user });
+    if (cart) {
+        const index = cart.courses.findIndex(course => course.id === doc.course.toString());
+        if (index != -1) {
+            cart.totalPrice -= cart.courses[index].price;
+            cart.courses = cart.courses.filter(course => course.id !== doc.course.toString());
+            await cart.save();
+        }
+    }
+    next();
+})
 
 module.exports = mongoose.model("Enrollment", enrollmentSchema);
