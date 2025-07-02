@@ -67,7 +67,7 @@ const MyCourses = () => {
             Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
 
           ) : myCourses.length === 0 ? (
-            <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
+            <p style={{ textAlign: "center", width: "100%" }}>لا توجد عناصر.</p>
             
           ) : (
             myCourses?.map((item) => (

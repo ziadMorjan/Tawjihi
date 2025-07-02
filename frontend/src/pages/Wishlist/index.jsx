@@ -61,7 +61,7 @@ const WishList = () => {
             Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
 
           ) : wishlist.length === 0 ? (
-            <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
+            <p style={{ textAlign: "center" , width: "100%" }}>لا توجد عناصر.</p>
 
           ) : (
             wishlist.map((item) => (

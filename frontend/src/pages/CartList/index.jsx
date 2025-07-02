@@ -25,7 +25,8 @@ import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister"
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
 
 const CartList = () => {
-  const { cart, setCartList } = useCRUD();
+  // const { cart, setCartList } = useCRUD();
+  const [ cart, setCartList ] = useState([]);
 
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -107,7 +108,7 @@ const CartList = () => {
             Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
 
           ) : cart.length === 0 ? (
-            <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
+            <p style={{ textAlign: "center" , width: "100%"}}>لا توجد عناصر.</p>
 
           ) : (
             cart.map((item) => (
