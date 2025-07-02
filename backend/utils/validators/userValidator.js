@@ -66,10 +66,12 @@ const updateUserValidator = [
         .optional()
         .notEmpty()
         .withMessage('email is required')
-        .custom(async (value) => {
-            let user = await User.findOne({ email: value });
-            if (user) {
-                throw new CustomError('User already exists', 400);
+        .custom(async (value, { req }) => {
+            if (value !== req.user.email) {
+                let user = await User.findOne({ email: value });
+                if (user) {
+                    throw new CustomError('User already exists', 400);
+                }
             }
             return true;
         }),
