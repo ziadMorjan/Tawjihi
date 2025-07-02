@@ -155,8 +155,13 @@ export default function CustomizedMenus() {
           },
         }}
       >
-        <MenuItem onClick={handleMenuClose} disableRipple>
-          <PersonOutlineIcon />
+        <MenuItem
+          component={Link}
+          to={`${PATH.User}/${PATH.UserProfile}`}
+          onClick={handleMenuClose}
+          disableRipple
+        >
+          <MenuBookIcon />
           الصفحة الشخصية
         </MenuItem>
 
@@ -165,9 +170,9 @@ export default function CustomizedMenus() {
         <MenuItem
           component={Link}
           to={`/${PATH.User}/${PATH.MyCourses}`}
-          onClick={handleMenuClose} 
-          disableRipple>
-
+          onClick={handleMenuClose}
+          disableRipple
+        >
           <MenuBookIcon />
           دوراتي
         </MenuItem>
