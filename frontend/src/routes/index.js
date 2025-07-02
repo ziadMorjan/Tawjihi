@@ -11,6 +11,8 @@ import { ResetPassword } from "../features/components/ResetPassword";
 import TeacherProfile from "../pages/TeacherProfile";
 import OneCourse from "../pages/CourseOne";
 import MyCourses from "../pages/MyCourses";
+import UserProfile from "../pages/MyProfile";
+import EditProfile from "../pages/MyProfile/EditProfile";
 
 // Pages (lazy loaded)
 const Main = lazy(() => import("../pages/Main"));
@@ -47,6 +49,9 @@ export const PATH = {
     MyCourses: "my-courses",
     OAuthSuccess: "oauth-success",
 
+    UserProfile:"user-profile",
+    EditProfile:"edit-profile"
+
 };
 
 export const routers = [
@@ -79,6 +84,9 @@ export const routers = [
             { path: PATH.WishList, element: <WishList /> },
             { path: PATH.CartList, element: <CartList /> },
             { path: PATH.MyCourses, element: <MyCourses /> },
+
+            { path: PATH.UserProfile, element: <UserProfile /> },
+            { path: PATH.EditProfile, element: <EditProfile /> },
         ],
     },
 
