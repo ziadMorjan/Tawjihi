@@ -157,7 +157,7 @@ export default function CustomizedMenus() {
       >
         <MenuItem
           component={Link}
-          to={`${PATH.User}/${PATH.UserProfile}`}
+          to={`/${PATH.User}/${PATH.UserProfile}`}
           onClick={handleMenuClose}
           disableRipple
         >
