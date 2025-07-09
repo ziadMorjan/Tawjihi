@@ -13,6 +13,7 @@ import OneCourse from "../pages/CourseOne";
 import MyCourses from "../pages/MyCourses";
 import UserProfile from "../pages/MyProfile";
 import EditProfile from "../pages/MyProfile/EditProfile";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 // Pages (lazy loaded)
 const Main = lazy(() => import("../pages/Main"));
@@ -49,8 +50,8 @@ export const PATH = {
     MyCourses: "my-courses",
     OAuthSuccess: "oauth-success",
 
-    UserProfile:"user-profile",
-    EditProfile:"edit-profile"
+    UserProfile: "user-profile",
+    EditProfile: "edit-profile"
 
 };
 
@@ -60,14 +61,13 @@ export const routers = [
     { path: PATH.Courses, element: <Courses /> },
     { path: PATH.CoursesOne, element: <OneCourse /> },
     { path: PATH.VideoLesson, element: <VideoPage /> },
-
-
     { path: PATH.ForgetPassword, element: <ForgetPassword /> },
     { path: PATH.VerificationCode, element: <VerificationCode /> },
     { path: PATH.ResetPassword, element: <ResetPassword /> },
     { path: PATH.Teachers, element: <Teachers /> },
     { path: PATH.TeacherProfile, element: <TeacherProfile /> },
 
+    // Auth Routes
     {
         path: PATH.Auth,
         element: <Auth />,
@@ -78,19 +78,19 @@ export const routers = [
         ],
     },
 
+    // Protected Routes
     {
         path: PATH.User,
+        element: <ProtectedRoute />, // Wrapper
         children: [
             { path: PATH.WishList, element: <WishList /> },
             { path: PATH.CartList, element: <CartList /> },
             { path: PATH.MyCourses, element: <MyCourses /> },
-
             { path: PATH.UserProfile, element: <UserProfile /> },
             { path: PATH.EditProfile, element: <EditProfile /> },
         ],
     },
 
-    { path: "oauth-success", element: <OAuthSuccess /> },
-
+    { path: PATH.OAuthSuccess, element: <OAuthSuccess /> },
     { path: "*", element: <NotFound /> },
 ];
