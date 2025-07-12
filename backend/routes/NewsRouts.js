@@ -19,7 +19,7 @@ const {
     updateNew,
     deleteNew,
     uploadNewCoverImage,
-    resizeNewCoverImage
+    handleNewCoverImage
 } = require("../controllers/NewController");
 
 let router = express.Router();
@@ -30,7 +30,7 @@ router.route("/")
         protect,
         allowedTo("admin"),
         uploadNewCoverImage,
-        resizeNewCoverImage,
+        handleNewCoverImage,
         createNewValidator,
         createNew,
     );
@@ -41,7 +41,7 @@ router.route("/:id")
         protect,
         allowedTo("admin"),
         uploadNewCoverImage,
-        resizeNewCoverImage,
+        handleNewCoverImage,
         updateNewValidator,
         updateNew,
     )

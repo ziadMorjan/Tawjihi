@@ -70,11 +70,7 @@ const updateTeacherReviewsQuantityAndAverageRating = async function (doc) {
         teacher.reviewsQuantity = 0;
         teacher.averageRating = 0;
     }
-    if (teacher.coverImage) {
-        if (teacher.coverImage.startsWith(process.env.BASE_URL)) {
-            teacher.coverImage = teacher.coverImage.split("/").pop();
-        }
-    }
+
     await teacher.save();
 }
 

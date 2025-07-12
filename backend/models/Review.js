@@ -70,11 +70,6 @@ const updateCourseReviewsQuantityAndAverageRating = async function (doc) {
         course.reviewsQuantity = 0;
         course.averageRating = 0;
     }
-    if (course.coverImage) {
-        if (course.coverImage.startsWith(process.env.BASE_URL)) {
-            course.coverImage = course.coverImage.split("/").pop();
-        }
-    }
     await course.save();
 }
 

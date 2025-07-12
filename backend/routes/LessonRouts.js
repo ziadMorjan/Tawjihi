@@ -22,7 +22,7 @@ const {
     updateLesson,
     deleteLesson,
     uploadLessonVideo,
-    handVideo
+    handleVideo
 } = require('../controllers/LessonController');
 const resourceRouts = require('./ResourceRouts');
 const commentsRouts = require('./CommentRoutes');
@@ -38,7 +38,7 @@ router.route('/')
         protect,
         allowedTo("teacher"),
         uploadLessonVideo,
-        handVideo,
+        handleVideo,
         addCourseIdToReqBody,
         createLessonValidator,
         checkCourseBelongToTeacherInCreate,
@@ -52,7 +52,7 @@ router.route('/:id')
         allowedTo("teacher"),
         checkCourseBelongToTeacher,
         uploadLessonVideo,
-        handVideo,
+        handleVideo,
         addCourseIdToReqBody,
         updateLessonValidator,
         updateLesson
