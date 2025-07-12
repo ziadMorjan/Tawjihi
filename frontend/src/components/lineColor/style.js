@@ -12,7 +12,7 @@ position: relative;
     content:  '';
     position: absolute;
 width: 30%;
-background-color: var(--color-primary);
+background-image: ${({ theme }) => theme.linearGradient };
 height: inherit;
 top: 50%;
 left: 50%;

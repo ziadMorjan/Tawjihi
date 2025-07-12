@@ -10,9 +10,13 @@ const Card = styled.div`
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  max-width: 400px;
   margin: 20px auto;
   cursor: pointer;
+  min-width: 30%;
+
+  @media (max-width: 767px) {
+    max-width: 100%;
+  }
 
   &:hover {
     transform: translateY(-8px);
@@ -206,7 +210,13 @@ const HoverOverlay = styled.div`
 const StarIcon = ({ filled, half, className }) => {
   if (half) {
     return (
-      <StarSvg className={`${className} star-half`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <StarSvg
+        className={`${className} star-half`}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
         <defs>
           <linearGradient id="half-fill-teacher">
             <stop offset="50%" stopColor="currentColor" />
@@ -236,7 +246,14 @@ const StarIcon = ({ filled, half, className }) => {
 
 // ---------------- Main Component ----------------
 
-export const TeacherCard = ({ imgSrc, name, desc, starIcon = 0, id, badge }) => {
+export const TeacherCard = ({
+  imgSrc,
+  name,
+  desc,
+  starIcon = 0,
+  id,
+  badge,
+}) => {
   const navigate = useNavigate();
   const fullStars = Math.floor(starIcon);
   const hasHalfStar = starIcon % 1 >= 0.5;
@@ -261,13 +278,24 @@ export const TeacherCard = ({ imgSrc, name, desc, starIcon = 0, id, badge }) => 
   };
 
   const handleClick = () => navigate(`/teachers/${id}`);
-  const handleKeyDown = (e) => (e.key === "Enter" || e.key === " ") && handleClick();
+  const handleKeyDown = (e) =>
+    (e.key === "Enter" || e.key === " ") && handleClick();
 
   return (
-    <Card onClick={handleClick} tabIndex={0} role="button" onKeyDown={handleKeyDown}>
+    <Card
+      onClick={handleClick}
+      tabIndex={0}
+      role="button"
+      onKeyDown={handleKeyDown}
+    >
       {badge && (
         <Badge>
-          <BadgeIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <BadgeIcon
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <circle cx="12" cy="8" r="7" />
             <polyline points="8.21,13.89 7,23 12,20 17,23 15.79,13.88" />
           </BadgeIcon>
@@ -281,9 +309,17 @@ export const TeacherCard = ({ imgSrc, name, desc, starIcon = 0, id, badge }) => 
             <GlowEffect />
             <Avatar>
               {imgSrc ? (
-                <AvatarImage src={imgSrc} alt={`صورة تخص ${name || "المعلم"}`} />
+                <AvatarImage
+                  src={imgSrc}
+                  alt={`صورة تخص ${name || "المعلم"}`}
+                />
               ) : (
-                <AvatarPlaceholder viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <AvatarPlaceholder
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </AvatarPlaceholder>

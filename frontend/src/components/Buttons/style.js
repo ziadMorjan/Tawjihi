@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
 export const ButtonStyled = styled.button`
-  background-color: var(--color-primary, #007bff);
-  color: red;
+background-image: ${({ theme }) => theme.linearGradient};
+  color: #fff;
   padding: 0.8rem 1.6rem;
   margin: 20px 0;
   font-size: 1.1rem;

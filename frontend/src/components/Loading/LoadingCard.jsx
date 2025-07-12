@@ -37,7 +37,7 @@ export const CardSkeleton = () => {
 
       {/* Teacher info */}
       <TeacherInfoWrapper>
-        <SkeletonTeacherImg />
+        {/* <SkeletonTeacherImg /> */}
         <SkeletonTeacherName />
       </TeacherInfoWrapper>
 

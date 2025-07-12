@@ -9,11 +9,10 @@ const StyledHamburger = styled.div`
   cursor: pointer;
   z-index: 1001;
 
-
   div {
     width: 100%;
-    height: 3px;
-    background-color: var(--color-primary); // white bars
+    height: 4px;
+background-image: ${({ theme }) => theme.linearGradient};
     border-radius: 4px;
     transition: all 0.3s ease-in-out;
     transform-origin: 1px;
@@ -32,8 +31,10 @@ const StyledHamburger = styled.div`
   }
 
   @media (min-width: 768px) {
-    display: none; 
+    display: none;
   }
 `;
 
 export default StyledHamburger;
+
+
