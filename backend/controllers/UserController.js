@@ -15,6 +15,7 @@ const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 const { createToken } = require("../utils/JWTs");
 const CustomError = require("../utils/CustomError");
 const { sendEmail } = require("../utils/emails");
+const Cart = require("../models/Cart");
 
 const getAllUsers = getAll(User);
 
@@ -77,6 +78,20 @@ const deleteMe = asyncErrorHandler(async function (req, res) {
     await User.findByIdAndUpdate(req.params.id, { isActive: false });
 
     res.status(204).send();
+});
+
+const getMe = asyncErrorHandler(async function (req, res) {
+    const user = await User.findById(req.user.id).select("-password -PasswordChangedAt");
+
+    const cart = await Cart.findOne({ user: user.id });
+
+    const userToRes = { ...user._doc, ...{ cart: cart.courses } };
+
+
+    res.status(200).json({
+        status: "success",
+        user: userToRes
+    });
 });
 
 const changePassword = asyncErrorHandler(async function (req, res) {
@@ -150,6 +165,7 @@ module.exports = {
     deleteUser,
     changePassword,
     deleteMe,
+    getMe,
     acceptTeacher,
     refuseTeacher
 };
