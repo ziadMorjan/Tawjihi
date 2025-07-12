@@ -23,7 +23,9 @@ const {
     createCourse,
     getCourse,
     updateCourse,
-    deleteCourse
+    deleteCourse,
+    uploadCourseImage,
+    handleCourseImage
 } = require('../controllers/CourseController');
 
 let router = express.Router();
@@ -37,6 +39,8 @@ router.route('/')
     .post(
         protect,
         allowedTo('teacher'),
+        uploadCourseImage,
+        handleCourseImage,
         createCourseValidator,
         createCourse,
     );
@@ -46,6 +50,8 @@ router.route('/:id')
     .patch(
         protect,
         allowedTo('teacher'),
+        uploadCourseImage,
+        handleCourseImage,
         updateCourseValidator,
         checkCourseBelongToTeacher,
         updateCourse,

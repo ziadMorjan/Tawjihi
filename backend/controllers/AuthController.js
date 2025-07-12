@@ -17,7 +17,10 @@ const sendAuthRes = async function (res, user, statusCode) {
         maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
-    const cart = await Cart.findOne({ user: user.id });
+    let cart = await Cart.findOne({ user: user.id });
+    if (!cart) {
+        cart = await Cart.create({ user: user.id });
+    }
 
     const userToRes = { ...user._doc, ...{ cart: cart.courses } };
     delete userToRes.password;

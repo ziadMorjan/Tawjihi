@@ -17,17 +17,4 @@ const newSchema = new mongoose.Schema(
     }
 );
 
-
-newSchema.post("save", function (doc) {
-    if (doc.coverImage)
-        if (!doc.coverImage.startsWith("http"))
-            doc.coverImage = `${process.env.BASE_URL}/images/news/${doc.coverImage}`;
-});
-
-newSchema.post("init", function (doc) {
-    if (doc.coverImage)
-        if (!doc.coverImage.startsWith("http"))
-            doc.coverImage = `${process.env.BASE_URL}/images/news/${doc.coverImage}`;
-});
-
 module.exports = mongoose.model("New", newSchema);

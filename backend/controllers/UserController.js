@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const sharp = require("sharp");
+const cloudinary = require("../config/cloudinary");
 const User = require("../models/User");
 const { uploadMultipleFields } = require("../middlewares/uploadsMiddleware");
 const {
@@ -51,7 +52,19 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
                 .toBuffer();
 
             fs.writeFileSync(filePath, buffer);
-            req.body.coverImage = name;
+            const result = await cloudinary.uploader.upload(filePath, {
+                folder: "images/users",
+                resource_type: "image",
+                type: "upload"
+            });
+
+            if (!result.secure_url) {
+                fs.unlinkSync(filePath);
+                throw new CustomError("Failed to upload cover image to cloud", 500);
+            }
+
+            fs.unlinkSync(filePath);
+            req.body.coverImage = result.secure_url;
         }
         if (req.files.cv) {
             let { mimetype } = req.files.cv[0];
@@ -67,7 +80,19 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
             }
             const filePath = path.join(uploadDir, name);
             fs.writeFileSync(filePath, req.files.cv[0].buffer);
-            req.body.cv = name;
+            const result = await cloudinary.uploader.upload(filePath, {
+                folder: "files/cvs",
+                resource_type: "raw",
+                format: "pdf",
+                type: "upload"
+            });
+            if (!result.secure_url) {
+                fs.unlinkSync(filePath);
+                throw new CustomError("Failed to upload cv to cloud", 500);
+            }
+            fs.unlinkSync(filePath);
+
+            req.body.cv = result.secure_url;
         }
     }
     next();

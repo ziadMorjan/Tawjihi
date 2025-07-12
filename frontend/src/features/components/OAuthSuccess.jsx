@@ -23,9 +23,9 @@ const OAuthSuccess = () => {
     axios
       .get(`${API_URL}/users/me`, { withCredentials: true }) //withCredentials to cookies
       .then((response) => {
-        console.log("user:", response.data.data.user);
-        if (response.data.data.user) {
-          localStorage.setItem("user", JSON.stringify(response.data.data.user));
+        console.log("user:", response.data.user);
+        if (response.data.user) {
+          localStorage.setItem("user", JSON.stringify(response.data.user));
           // setIsAuth(true);
         }
         navigate(PATH.Main);

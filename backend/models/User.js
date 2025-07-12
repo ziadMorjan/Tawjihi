@@ -74,19 +74,6 @@ UserSchema.pre("save", function (next) {
     if (!this.isModified("password")) next();
     this.password = bcryptjs.hashSync(this.password, 10);
     next();
-})
-
-const setFileUrlInRes = doc => {
-    if (doc.coverImage)
-        if (!doc.coverImage.startsWith("http"))
-            doc.coverImage = `${process.env.BASE_URL}/images/users/${doc.coverImage}`;
-    if (doc.cv)
-        if (!doc.cv.startsWith("http"))
-            doc.cv = `${process.env.BASE_URL}/cvs/${doc.cv}`;
-}
-
-UserSchema.post("save", doc => setFileUrlInRes(doc));
-
-UserSchema.post("init", doc => setFileUrlInRes(doc));
+});
 
 module.exports = mongoose.model('User', UserSchema);
