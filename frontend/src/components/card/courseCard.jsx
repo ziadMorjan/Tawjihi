@@ -286,31 +286,6 @@ export const CourseCard = ({
         </ActionBtn>
       </ActionIcons>
 
-<<<<<<< HEAD
-        <div style={{width:"100%",display:"flex" , alignItems:"center",justifyContent:"space-between"}}>
-
-        <Pargrahph size="14px">المادة: {subject}</Pargrahph>
-        <Pargrahph size="12px">{branch}</Pargrahph>
-
-        </div>
-        <TeacherInfo>
-          {teacherImg && <img src={teacherImg} alt={`صورة ${teacherName}`} />}
-          <TeacherInfoAndCourse>
-            {teacherName && (
-              <>
-                <span>المعلم : </span>
-                <span>{teacherName}</span>
-              </>
-            )}
-          </TeacherInfoAndCourse>
-        </TeacherInfo>
-      </WrapperElementFlexSpace>
-
-      {desc && (
-        <span style={{ padding: "0 20px", marginTop: "4px" }}>
-          <strong>{desc}</strong>
-        </span>
-=======
       {/* Course Image */}
       {imgSrc && (
         <ImageContainer>
@@ -320,7 +295,6 @@ export const CourseCard = ({
           />
           <ImageOverlay />
         </ImageContainer>
->>>>>>> frontend
       )}
 
       <CardContent>

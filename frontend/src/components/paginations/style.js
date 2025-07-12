@@ -3,12 +3,8 @@ import styled from "styled-components"
 // Styled Components
 export const PaginationWrapper = styled.div`
   display: block;
-<<<<<<< HEAD
-  margin: 20px auto;
-=======
   margin: auto;
 `
->>>>>>> frontend
 
 export const PaginationContainer = styled.div`
   display: flex;

@@ -21,23 +21,7 @@ const CourseCardContainer = styled.div`
   }
 `;
 
-<<<<<<< HEAD
-export const TeacherInfoAndCourse = styled.div`
-  display: flex;
-  align-items:center;
-  justify-content: center;
-  gap: 4px;
-
-  & span {
-    font-size: 13px;
-    opacity: 0.7;
-  }
-`;
-
-export const ActionIcons = styled.div`
-=======
 const ActionIcons = styled.div`
->>>>>>> frontend
   position: absolute;
   top: 16px;
   left: 16px;
