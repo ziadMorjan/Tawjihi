@@ -13,10 +13,7 @@ import OneCourse from "../pages/CourseOne";
 import MyCourses from "../pages/MyCourses";
 import UserProfile from "../pages/MyProfile";
 import EditProfile from "../pages/MyProfile/EditProfile";
-<<<<<<< HEAD
-=======
 import ProtectedRoute from "../components/ProtectedRoute";
->>>>>>> 4e33fc47a612efd65af7d38a321da48f07af7923
 
 // Pages (lazy loaded)
 const Main = lazy(() => import("../pages/Main"));
@@ -32,48 +29,6 @@ const CartList = lazy(() => import("../pages/CartList"));
 const VideoPage = lazy(() => import("../pages/CourseOne/VideoPage"));
 
 export const PATH = {
-<<<<<<< HEAD
-    Main: "/",
-    About: "about",
-    Courses: "courses",
-    CoursesOne: "courses/:name/:id",
-    VideoLesson: "courses/:name/:id/video/:videoIndex",
-
-
-    User: "user",
-    Auth: "auth",
-    Login: "auth/login",
-    Register: "auth/register",
-    ForgetPassword: "forget-password",
-    VerificationCode: "verification-code",
-    ResetPassword: "reset-password",
-    Teachers: "teachers",
-    TeacherProfile: "teachers/:id",
-    WishList: "wishlist",
-    CartList: "cartlist",
-    MyCourses: "my-courses",
-    OAuthSuccess: "oauth-success",
-    UserProfile:"user-profile",
-    EditProfile: "edit-profile"
-
-    UserProfile: "user-profile",
-    EditProfile: "edit-profile"
-
-};
-
-export const routers = [
-    { index: true, element: <Main /> },
-    { path: PATH.About, element: <About /> },
-    { path: PATH.Courses, element: <Courses /> },
-    { path: PATH.CoursesOne, element: <OneCourse /> },
-    { path: PATH.VideoLesson, element: <VideoPage /> },
-    { path: PATH.ForgetPassword, element: <ForgetPassword /> },
-    { path: PATH.VerificationCode, element: <VerificationCode /> },
-    { path: PATH.ResetPassword, element: <ResetPassword /> },
-    { path: PATH.Teachers, element: <Teachers /> },
-    { path: PATH.TeacherProfile, element: <TeacherProfile /> },
-    { path: PATH.User, element: <TeacherProfile /> },
-=======
   Main: "/",
   About: "about",
   Courses: "courses",
@@ -109,7 +64,6 @@ export const routers = [
   { path: PATH.Teachers, element: <Teachers /> },
   { path: PATH.TeacherProfile, element: <TeacherProfile /> },
   { path: PATH.NotAuth, element: <NotAuth /> },
->>>>>>> frontend
 
   // Auth Routes
   {
@@ -122,7 +76,6 @@ export const routers = [
     ],
   },
 
-<<<<<<< HEAD
     // Protected Routes
     {
         path: PATH.User,
@@ -133,13 +86,8 @@ export const routers = [
             { path: PATH.MyCourses, element: <MyCourses /> },
             { path: PATH.UserProfile, element: <UserProfile /> },
             { path: PATH.EditProfile, element: <EditProfile /> },
-<<<<<<< HEAD
-
-=======
->>>>>>> 4e33fc47a612efd65af7d38a321da48f07af7923
         ],
     },
-=======
   // Protected Routes
   {
     path: PATH.User,
@@ -152,8 +100,6 @@ export const routers = [
       { path: PATH.EditProfile, element: <EditProfile /> },
     ],
   },
->>>>>>> frontend
-
   { path: PATH.OAuthSuccess, element: <OAuthSuccess /> },
   { path: "*", element: <NotFound /> },
 ];
