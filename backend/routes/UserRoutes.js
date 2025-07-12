@@ -31,6 +31,7 @@ const {
     uploadUserFiles,
     handleUserFiles,
     deleteMe,
+    getMe,
     changePassword,
     acceptTeacher,
     refuseTeacher
@@ -77,7 +78,7 @@ router.route("/me")
         allowedTo("admin", "user", "teacher"),
         addUserIdToReqParams,
         getUserValidator,
-        getUser
+        getMe
     );
 
 router.route("/")
