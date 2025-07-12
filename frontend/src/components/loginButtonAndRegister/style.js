@@ -2,14 +2,22 @@ import styled from "styled-components";
 
 export const ButtonLogin = styled("button")`
     width: 10rem;
-    background-color: transparent;
+
     border: 1px solid var(--color-border);
-    color:${({theme}) => theme.color};
-    padding:5px 0px;
+    
+    background: ${(props) => props.theme.linearGradient}; /* You can customize colors and direction */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    /* For Firefox */
+    background-clip: text;
+    color: transparent;    padding:5px 0px;
+
     border-radius: 3px;
     transition: all 0.5s;
     cursor: pointer;
     font-family : 'Amiri';
+
 
     &:disabled {
     opacity: 0.5;
@@ -20,8 +28,8 @@ export const ButtonLogin = styled("button")`
     }
 
     &:hover {
-      color:${({theme}) => theme.primary};
-      border: 1px solid ${({theme}) => theme.primary};
+      color:${({ theme }) => theme.primary};
+      border: 1px solid ${({ theme }) => theme.primary};
     }
 
     @media (max-width: 767px) {
@@ -33,7 +41,7 @@ export const ButtonLogin = styled("button")`
     height: 16px;
     margin-right: 5px;
     border: 3px solid #fff;
-    border-top: 3px solid ${({theme}) => theme.link};
+    border-top: 3px solid ${({ theme }) => theme.link};
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
