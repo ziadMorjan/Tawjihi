@@ -16,14 +16,17 @@ const sendAuthRes = async function (res, user, statusCode) {
         secure: !isDev,
         maxAge: 7 * 24 * 60 * 60 * 1000,
     };
-    const cart = await Cart.findOne({ user: user.id });
-    res.cookie('token', token, options);
 
+    const cart = await Cart.findOne({ user: user.id });
+
+    const userToRes = { ...user._doc, ...{ cart: cart.courses } };
+    delete userToRes.password;
+
+    res.cookie('token', token, options);
 
     res.status(statusCode).json({
         status: "success",
-        user,
-        cart
+        user: userToRes
     });
 }
 
