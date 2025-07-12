@@ -13,7 +13,7 @@ import { LogoAndButton } from "../../components/LogoAndButton";
 import { Containers } from "../../components/Container";
 import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
-import { Card } from "../../components/card/courseCard";
+import { Card, CourseCard } from "../../components/card/courseCard";
 import Paginations from "../../components/paginations";
 import { ModalTeacher } from "../../components/modalTeacher";
 
@@ -131,7 +131,7 @@ const Courses = () => {
                 ) : (
                   <WrapperCards>
                     {currentItems.map((item) => (
-                      <Card
+                      <CourseCard
                         key={item._id}
                         item={item}
                         id={item._id}

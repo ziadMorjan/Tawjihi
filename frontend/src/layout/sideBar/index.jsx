@@ -1,29 +1,28 @@
-//react
-
 import { useContext, useEffect } from "react";
-
-//style
-import { SidebarContainer, SidebarHeader, CheckSection } from "./style";
-
-//components
+import {
+  SidebarContainer,
+  SidebarHeader,
+  CheckSection,
+  FilterCard,
+  FilterTitle,
+  LoadingText,
+  ToggleButton,
+  ToggleButtonWrapper,
+  ModalOverlay,
+  SidebarContent,
+  HeaderBadge,
+  FilterIcon,
+  SidebarFooter,
+  CloseButton,
+  HeaderContent,
+} from "./style";
 import { CheckAndLabel } from "../../components/CheckAndLable";
-import { Pargraph } from "../../components/typography/style";
-
-//context
 import { SideBarContext } from "../../context/SideBarContext";
 import { SearchContext } from "../../context/SearchContext";
-
-//MUI Library
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Box } from "@mui/material";
-
-//URL
+import FilterListIcon from "@mui/icons-material/FilterList";
+import CloseIcon from "@mui/icons-material/Close";
 import { API_URL } from "../../config";
-//hooks
 import { useApi } from "../../hooks/useApi";
-
-//utils function
 import { normalizeArabic } from "../../utils/normlizeArabic";
 
 const Sidebar = ({ onFilterChange }) => {
@@ -36,17 +35,11 @@ const Sidebar = ({ onFilterChange }) => {
   let { data: branch } = useApi(`${API_URL}/branches`);
   branch = branch.map((item) => item.name);
 
-  console.log(branch);
-
   const allInputs = [
-    // { id: "branch-علمي", label: "علمي" },
-    // { id: "branch-ادبي", label: "ادبي" },
-
     branch.map((label) => ({
       id: `branch-${normalizeArabic(label)}`,
       label: `${label}`,
     })),
-
     subject.map((label) => ({ id: `subject-${label}`, label })),
     ...["free", "50", "100", "200", "500"].map((price) => ({
       id: `price-${price}`,
@@ -68,7 +61,6 @@ const Sidebar = ({ onFilterChange }) => {
   const handleCheckboxChange = (e) => {
     const { id, checked } = e.target;
     onFilterChange(id, checked);
-    console.log(id);
   };
 
   const isMatched = (label) =>
@@ -76,115 +68,121 @@ const Sidebar = ({ onFilterChange }) => {
     normalizeArabic(label.toLowerCase()).includes(normalizedSearch);
 
   const { isOpen, setIsOpen } = useContext(SideBarContext);
-
   const onCancel = () => setIsOpen(false);
 
   return (
     <>
-      {/* Toggle Button Wrapper with Smooth Transition */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: "220px",
-          right: isOpen ? "220px" : "-10px",
-          zIndex: 10001,
-          transition: "right 0.4s ease",
-          display: { xs: "block", sm: "none" },
-        }}
-      >
-        {isOpen ? (
-          <ChevronRightIcon
-            onClick={() => setIsOpen(false)}
-            sx={{
-              cursor: "pointer",
-              border: "1px solid var(--color-primary)",
-              color: "var(--color-primary)",
-              borderRadius: "50%",
-              width: "40px",
-              height: "40px",
-              backgroundColor: "#fff",
-              padding: "4px",
-            }}
-          />
-        ) : (
-          <ChevronLeftIcon
-            onClick={() => setIsOpen(true)}
-            sx={{
-              cursor: "pointer",
-              border: "1px solid var(--color-primary)",
-              color: "var(--color-primary)",
-              borderRadius: "50%",
-              width: "40px",
-              height: "40px",
-              backgroundColor: "#fff",
-              padding: "4px",
-            }}
-          />
-        )}
-      </Box>
+      <ToggleButtonWrapper isOpen={isOpen}>
+        <ToggleButton onClick={() => setIsOpen(!isOpen)} isOpen={isOpen}>
+          <FilterListIcon />
+        </ToggleButton>
+      </ToggleButtonWrapper>
 
-      {isOpen && <div className="modal-overlay" onClick={onCancel} />}
+      {isOpen && <ModalOverlay onClick={onCancel} />}
+
       <SidebarContainer isOpen={isOpen}>
-        <SidebarHeader>التصنيفات</SidebarHeader>
+        <SidebarContent>
+          <SidebarHeader>
+            <HeaderContent>
+              <FilterIcon>
+                <FilterListIcon />
+              </FilterIcon>
+              <div>
+                <h2>المرشحات</h2>
+                <HeaderBadge>تصفية النتائج</HeaderBadge>
+              </div>
+            </HeaderContent>
+            <CloseButton onClick={onCancel}>
+              <CloseIcon />
+            </CloseButton>
+          </SidebarHeader>
 
-        <Pargraph style={{ color: "var(--color-link)", fontSize: "18px" }}>
-          الافرع
-        </Pargraph>
-        {isLoading ? (
-          "يتم تحميل الافرع..."
-        ) : (
-          <CheckSection>
-            {branch.map((label) => (
-              <CheckAndLabel
-                key={label}
-                text={label}
-                id={`branch-${normalizeArabic(label)}`}
-                onChange={handleCheckboxChange}
-                defaultChecked={isMatched(label)}
-              />
-            ))}
-          </CheckSection>
-        )}
+          <FilterCard>
+            <FilterTitle>
+              <span className="title-text">الأفرع الدراسية</span>
+              <span className="title-count">{branch.length}</span>
+            </FilterTitle>
+            {isLoading ? (
+              <LoadingText>
+                <div className="loading-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                جاري التحميل...
+              </LoadingText>
+            ) : (
+              <CheckSection>
+                {branch.map((label) => (
+                  <CheckAndLabel
+                    key={label}
+                    text={label}
+                    id={`branch-${normalizeArabic(label)}`}
+                    onChange={handleCheckboxChange}
+                    defaultChecked={isMatched(label)}
+                  />
+                ))}
+              </CheckSection>
+            )}
+          </FilterCard>
 
-        <Pargraph style={{ color: "var(--color-link)", fontSize: "18px" }}>
-          المواد
-        </Pargraph>
-        {isLoading ? (
-          "يتم تحميل المواد..."
-        ) : (
-          <CheckSection>
-            {subject.map((label) => (
-              <CheckAndLabel
-                key={label}
-                text={label}
-                id={`subject-${label}`}
-                onChange={handleCheckboxChange}
-                defaultChecked={isMatched(label)}
-              />
-            ))}
-          </CheckSection>
-        )}
+          <FilterCard>
+            <FilterTitle>
+              <span className="title-text">المواد الدراسية</span>
+              <span className="title-count">{subject.length}</span>
+            </FilterTitle>
+            {isLoading ? (
+              <LoadingText>
+                <div className="loading-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                جاري التحميل...
+              </LoadingText>
+            ) : (
+              <CheckSection>
+                {subject.map((label) => (
+                  <CheckAndLabel
+                    key={label}
+                    text={label}
+                    id={`subject-${label}`}
+                    onChange={handleCheckboxChange}
+                    defaultChecked={isMatched(label)}
+                  />
+                ))}
+              </CheckSection>
+            )}
+          </FilterCard>
 
-        <Pargraph style={{ color: "var(--color-link)", fontSize: "18px" }}>
-          السعر
-        </Pargraph>
-        <CheckSection>
-          {[
-            { id: "price-free", label: "مجاني" },
-            { id: "price-50", label: "اقل من 50" },
-            { id: "price-100", label: "اقل من 100" },
-            { id: "price-200", label: "اقل من 200" },
-            { id: "price-500", label: "اقل من 500" },
-          ].map(({ id, label }) => (
-            <CheckAndLabel
-              key={id}
-              text={label}
-              id={id}
-              onChange={handleCheckboxChange}
-              defaultChecked={isMatched(label)}
-            />
-          ))}
-        </CheckSection>
+          <FilterCard>
+            <FilterTitle>
+              <span className="title-text">نطاق الأسعار</span>
+              <span className="title-count">5</span>
+            </FilterTitle>
+            <CheckSection>
+              {[
+                { id: "price-free", label: "مجاني" },
+                { id: "price-50", label: "أقل من 50" },
+                { id: "price-100", label: "أقل من 100" },
+                { id: "price-200", label: "أقل من 200" },
+                { id: "price-500", label: "أقل من 500" },
+              ].map(({ id, label }) => (
+                <CheckAndLabel
+                  key={id}
+                  text={label}
+                  id={id}
+                  onChange={handleCheckboxChange}
+                  defaultChecked={isMatched(label)}
+                />
+              ))}
+            </CheckSection>
+          </FilterCard>
+
+          <SidebarFooter>
+            <p>تم العثور على النتائج المطابقة لمعايير البحث</p>
+          </SidebarFooter>
+        </SidebarContent>
       </SidebarContainer>
     </>
   );

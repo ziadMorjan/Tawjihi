@@ -9,7 +9,7 @@ import { LogoAndButton } from "../../components/LogoAndButton";
 import { NavBar } from "../../layout/navBar";
 import { Containers } from "../../components/Container";
 import { useApi } from "../../hooks/useApi";
-import { Card } from "../../components/card/courseCard";
+import { Card, CourseCard } from "../../components/card/courseCard";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
 import { Typography } from "@mui/material";
 import Paginations from "../../components/paginations";
@@ -662,7 +662,7 @@ function TeacherProfile() {
                     <CoursesGrid>
                       {currentItems.map((item) => (
                         <CourseCardWrapper key={item._id}>
-                          <Card
+                          <CourseCard
                             item={item}
                             id={item._id}
                             imgSrc={item.img || "/assets/img/logo.png"}

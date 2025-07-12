@@ -34,8 +34,8 @@ import {
 
 import { API_URL } from "../../config";
 import Loading from "../../components/Loading";
-import { PriceBadge } from "../../components/card/style";
 import { StyledBuyButtonAndPriceBadge } from "../../components/buyButtonAndPriceBadge/style";
+import { CurrentPrice } from "../../components/card/style";
 
 const CourseOne = () => {
   const [thisCourse, setThisCourse] = useState({});
@@ -209,17 +209,13 @@ const CourseOne = () => {
                       "شراء "
                     )}
                   </LoginAndRegisterButton>
-                  <PriceBadge>
+                  <CurrentPrice>
                     {thisCourse?.price === 0 ? (
                       <>مجاني</>
                     ) : (
-                      <>
-
-                        {thisCourse?.price} ₪{" "}
-                      </>
+                      <>{thisCourse?.price} ₪ </>
                     )}
-                  </PriceBadge>
-
+                  </CurrentPrice>
                 </StyledBuyButtonAndPriceBadge>
               )}
             </StartButtonWrapper>
