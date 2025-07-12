@@ -1,42 +1,55 @@
-//style
-import { PaginationsWraper } from "./style";
-//MUI Library
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { PaginationButton, PaginationContainer, PaginationWrapper } from "./style"
 
-function Paginations({ setCurrentPage, currentPage, totalPages }) {
+function Pagination({ setCurrentPage, currentPage, totalPages }) {
   return (
-    <PaginationsWraper>
-      <div className="pagination">
-        <button
+    <PaginationWrapper>
+      <PaginationContainer>
+        <PaginationButton
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
+<<<<<<< HEAD
           <ArrowForwardIosIcon fontSize="small" />
           السابق
         </button>
+=======
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15,18 9,12 15,6" />
+          </svg>
+        </PaginationButton>
+>>>>>>> frontend
 
         {Array.from({ length: totalPages }, (_, index) => (
-          <button
+          <PaginationButton
             key={index}
             onClick={() => setCurrentPage(index + 1)}
-            className={index + 1 === currentPage ? "active-page" : ""}
+            $active={index + 1 === currentPage}
           >
             {index + 1}
-          </button>
+          </PaginationButton>
         ))}
 
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
+        <PaginationButton
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
         >
+<<<<<<< HEAD
           التالي
           <ArrowBackIosNewIcon fontSize="small" />
         </button>
       </div>
     </PaginationsWraper>
   );
+=======
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="9,18 15,12 9,6" />
+          </svg>
+        </PaginationButton>
+      </PaginationContainer>
+    </PaginationWrapper>
+  )
+>>>>>>> frontend
 }
 
-export default Paginations;
+export default Pagination
+

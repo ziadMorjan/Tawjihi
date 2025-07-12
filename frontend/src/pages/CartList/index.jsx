@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useCRUD } from "../../hooks/useCRUD";
 
 //components
-import { Card } from "../../components/card/courseCard";
+import { Card, CourseCard } from "../../components/card/courseCard";
 import { Containers } from "../../components/Container";
 
 //axios
@@ -112,7 +112,7 @@ const CartList = () => {
 
           ) : (
             cart.map((item) => (
-              <Card
+              <CourseCard
                 key={item._id}
                 item={item}
                 id={item._id}

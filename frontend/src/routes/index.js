@@ -1,4 +1,4 @@
-//react
+// react
 import { Navigate } from "react-router-dom";
 import { lazy } from "react";
 
@@ -24,14 +24,15 @@ const About = lazy(() => import("../pages/About"));
 const Auth = lazy(() => import("../pages/Auth"));
 const OAuthSuccess = lazy(() => import("../features/components/OAuthSuccess"));
 const NotFound = lazy(() => import("../pages/NotFound"));
+const NotAuth = lazy(() => import("../pages/NotAuth"));
 const Courses = lazy(() => import("../pages/Courses"));
-const Teachers = lazy(() => import("../pages/Teachers"))
-const WishList = lazy(() => import("../pages/Wishlist"))
+const Teachers = lazy(() => import("../pages/Teachers"));
+const WishList = lazy(() => import("../pages/Wishlist"));
 const CartList = lazy(() => import("../pages/CartList"));
 const VideoPage = lazy(() => import("../pages/CourseOne/VideoPage"));
 
-
 export const PATH = {
+<<<<<<< HEAD
     Main: "/",
     About: "about",
     Courses: "courses",
@@ -72,18 +73,56 @@ export const routers = [
     { path: PATH.Teachers, element: <Teachers /> },
     { path: PATH.TeacherProfile, element: <TeacherProfile /> },
     { path: PATH.User, element: <TeacherProfile /> },
+=======
+  Main: "/",
+  About: "about",
+  Courses: "courses",
+  CoursesOne: "courses/:name/:id",
+  VideoLesson: "courses/:name/:id/video/:videoIndex",
+  Auth: "auth",
+  Login: "auth/login",
+  Register: "auth/register",
+  ForgetPassword: "forget-password",
+  VerificationCode: "verification-code",
+  ResetPassword: "reset-password",
+  Teachers: "teachers",
+  TeacherProfile: "teachers/:id",
+  User:"user",
+  WishList: "wishlist",
+  CartList: "cartlist",
+  MyCourses: "my-courses",
+  OAuthSuccess: "oauth-success",
+  UserProfile: "user-profile",
+  EditProfile: "edit-profile",
+  NotAuth: "not-auth"
+};
 
-    // Auth Routes
-    {
-        path: PATH.Auth,
-        element: <Auth />,
-        children: [
-            { index: true, element: <Navigate to="login" /> },
-            { path: "login", element: <LoginForm /> },
-            { path: "register", element: <RegisterForm /> },
-        ],
-    },
+export const routers = [
+  { index: true, element: <Main /> },
+  { path: PATH.About, element: <About /> },
+  { path: PATH.Courses, element: <Courses /> },
+  { path: PATH.CoursesOne, element: <OneCourse /> },
+  { path: PATH.VideoLesson, element: <VideoPage /> },
+  { path: PATH.ForgetPassword, element: <ForgetPassword /> },
+  { path: PATH.VerificationCode, element: <VerificationCode /> },
+  { path: PATH.ResetPassword, element: <ResetPassword /> },
+  { path: PATH.Teachers, element: <Teachers /> },
+  { path: PATH.TeacherProfile, element: <TeacherProfile /> },
+  { path: PATH.NotAuth, element: <NotAuth /> },
+>>>>>>> frontend
 
+  // Auth Routes
+  {
+    path: PATH.Auth,
+    element: <Auth />,
+    children: [
+      { index: true, element: <Navigate to="login" /> },
+      { path: "login", element: <LoginForm /> },
+      { path: "register", element: <RegisterForm /> },
+    ],
+  },
+
+<<<<<<< HEAD
     // Protected Routes
     {
         path: PATH.User,
@@ -100,7 +139,21 @@ export const routers = [
 >>>>>>> 4e33fc47a612efd65af7d38a321da48f07af7923
         ],
     },
+=======
+  // Protected Routes
+  {
+    path: PATH.User,
+    element: <ProtectedRoute />,
+    children: [
+      { path: PATH.WishList, element: <WishList /> },
+      { path: PATH.CartList, element: <CartList /> },
+      { path: PATH.MyCourses, element: <MyCourses /> },
+      { path: PATH.UserProfile, element: <UserProfile /> },
+      { path: PATH.EditProfile, element: <EditProfile /> },
+    ],
+  },
+>>>>>>> frontend
 
-    { path: PATH.OAuthSuccess, element: <OAuthSuccess /> },
-    { path: "*", element: <NotFound /> },
+  { path: PATH.OAuthSuccess, element: <OAuthSuccess /> },
+  { path: "*", element: <NotFound /> },
 ];

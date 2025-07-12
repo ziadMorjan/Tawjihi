@@ -15,7 +15,7 @@ import { Containers } from "../../components/Container";
 import SearchBar from "../../components/search";
 import { LineColor } from "../../components/lineColor";
 import { DiscoverSection } from "../../components/discoverSection";
-import { Card } from "../../components/card/courseCard";
+import { Card, CourseCard } from "../../components/card/courseCard";
 import { ModalTeacher } from "../../components/modalTeacher";
 import { LogoAndButton } from "../../components/LogoAndButton";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
@@ -112,7 +112,7 @@ const MainPage = () => {
             filteredCourses
               .slice(0, 3)
               .map((item, index) => (
-                <Card
+                <CourseCard
                   key={item._id}
                   item={item}
                   id={item._id}

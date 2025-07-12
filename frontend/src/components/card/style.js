@@ -1,112 +1,27 @@
-import styled from "styled-components";
-import { Pargrahph } from "../typography";
-import { WrapperElementFlexSpace } from "../../styles/style";
+import styled, { keyframes } from "styled-components";
 
-
-export const CardDiv = styled.div`
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-<<<<<<< HEAD
-  width: 380px;
-  background: #ffffff;
-=======
-  width: 100%;
-  max-width: 300px;
-  background: ${({ theme }) => theme.background};
->>>>>>> 71b473789d2b302af1ea71c0a602a704694a6175
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px ${({ theme }) => theme.box_shadow};
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+// Styled Components
+const CourseCardContainer = styled.div`
   position: relative;
-  margin: 30px 0px;
-
-  &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 32px ${({ theme }) => theme.box_shadow_hover};
+  min-width: 300px;
+  overflow: hidden;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  max-width: 400px;
+  margin: 20px 0;
+    &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   }
 
-  & img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 24px 24px 0 0;
-    transition: transform 0.3s ease;
-  }
-
-  &:hover img {
-    transform: scale(1.05);
-  }
-
-  & > span {
-    padding: 0 20px;
-    margin-top: 12px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #374151;
-  }
-
-  @media (max-width: 1024px) {
-    max-width: 100%;
-  }
-
-  @media (max-width: 767px) {
-    width: 100%;
-    margin: 16px 0;
-  }
-
-  /* Optional scroll animation: uncomment to enable */
-  /*
-  animation: cardAnim 0.6s ease-out forwards;
-  opacity: 0;
-  transform: translateY(20px);
-
-  @keyframes cardAnim {
-    from {
-      opacity: 0;
-      transform: translateY(20px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0px) scale(1);
-    }
-  }
-  */
-`;
-
-
-export const IconStarDiv = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px 16px;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: -20px;
-  margin-bottom: 5px;
-
-
-`;
-
-export const StarWrapper = styled.div`
-  display: flex;
-  gap: 4px;
-`;
-
-export const TeacherInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  & img {
-    width: 35px;
-    height: 35px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid #d1d5db;
+  @media (max-width: 768px) {
+    max-width: 220px;
   }
 `;
 
+<<<<<<< HEAD
 export const TeacherInfoAndCourse = styled.div`
   display: flex;
   align-items:center;
@@ -120,142 +35,327 @@ export const TeacherInfoAndCourse = styled.div`
 `;
 
 export const ActionIcons = styled.div`
+=======
+const ActionIcons = styled.div`
+>>>>>>> frontend
   position: absolute;
   top: 16px;
   left: 16px;
+  z-index: 10;
   display: flex;
-  gap: 10px;
-  z-index: 100;
-`;
-
-export const PriceBadge = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  color: #1e3a8a;
-  background-color: #e0f2fe;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  display: inline-block;
-  margin-right: auto;
-`;
-
-export const RatingStarsContainer = styled.div`
-  display: flex;
-  align-items: center;
   gap: 8px;
-
-  & span {
-    font-size: 14px;
-    color: #6b7280;
-  }
 `;
 
 
-export const Card = styled.div`
-  position: relative;
-  cursor: pointer;
-  padding: 24px 16px 28px;
-  width: 340px;
-  margin: auto;
-  border-radius: 24px;
-  background-color: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border};
-  box-shadow: 0 4px 18px ${({ theme }) => theme.box_shadow};
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-  margin-top: 20px ;
-
+// Keyframes
+const pulse = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 `;
 
-export const Badge = styled.div`
-  position: absolute;
-  top: -12px;
-  right: -12px;
-  background-color: var(--color-link, #007bff);
-  color: white;
-  font-size: 0.75rem;
-  padding: 6px 12px;
-  border-radius: 50px;
-  font-weight: bold;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-`;
 
-export const ImageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-`;
 
-export const Img = styled.img`
-  width: 170px;
-  height: 170px;
+const ActionBtn = styled.button`
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--color-primary, #007bff);
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
-  transition: box-shadow 0.3s ease;
-
-  &:hover {
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
-  }
-`;
-
-export const NameWrapper = styled(WrapperElementFlexSpace)`
-  justify-content: center;
-  padding-bottom: 10px;
-  position: relative;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
-`;
-
-export const StyledPargrahph = styled(Pargrahph)`
-  display: inline-block;
-  font-weight: 800;
-  color: var(--color-primary-dark, #004085);
-  text-align: center;
-  width: 100%;
-  cursor: pointer;
-  transition: color 0.3s ease;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    color: var(--color-primary, #007bff);
+    background: white;
+    transform: scale(1.1);
+  }
+
+  &.active {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+
+  &.wishlist-active {
+    background: #fecaca;
+    color: #dc2626;
+  }
+
+  
+  &.loading {
+    animation: ${pulse} 1.5s infinite;
   }
 `;
 
-export const UnderlineBar = styled.div`
+const ActionIcon = styled.svg`
+  width: 16px;
+  height: 16px;
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
+  overflow: hidden;
+`;
+
+const CourseImage = styled.img`
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+
+  ${CourseCardContainer}:hover & {
+    transform: scale(1.05);
+  }
+`;
+
+const ImageOverlay = styled.div`
   position: absolute;
-  bottom: 0;
-  height: 2px;
-  width: 40px;
-  background-color: var(--color-primary, #007bff);
-  border-radius: 2px;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.2), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
-  left: 50%;
-  transform: translateX(-50%);
 
-  ${NameWrapper}:hover & {
+  ${CourseCardContainer}:hover & {
     opacity: 1;
   }
 `;
 
-export const Description = styled.p`
-  color: #444;
-  font-size: 0.95rem;
+const CardContent = styled.div`
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+`;
+
+const CourseHeader = styled.div`
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const CourseInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const CourseTitle = styled.h3`
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+  margin: 0;
+  transition: color 0.2s ease;
+
+  ${CourseHeader}:hover & {
+    color: #2563eb;
+  }
+`;
+
+const CourseMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 8px;
+  }
+`;
+
+const MetaItem = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #6b7280;
+`;
+
+const MetaIcon = styled.svg`
+  width: 16px;
+  height: 16px;
+`;
+
+const TeacherInfo = styled.div`
+  display: flex;
+  align-items: center;
+  background: #f9fafb;
+  border-radius: 12px;
+`;
+
+const TeacherAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e5e7eb;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 18px;
-  padding: 0 16px;
-  line-height: 1.5;
-  /* min-height: 30px; */
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
-export const StyledIconStarDiv = styled.div`
+const AvatarImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const AvatarPlaceholder = styled.svg`
+  width: 20px;
+  height: 20px;
+  color: #6b7280;
+`;
+
+const TeacherDetails = styled.div`
   display: flex;
-  justify-content: center;
-  margin-top: 4px;
+  align-items: center;
+  justify-content: start;
+  gap: 0 5px;
 `;
 
-export const StyledRatingStarsContainer = styled.div`
-  font-size: 20px;
+const TeacherLabel = styled.p`
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 2px 0;
 `;
+
+const TeacherName = styled.p`
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const CourseDescription = styled.p`
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+const CardFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+`;
+
+const RatingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const StarsContainer = styled.div`
+  display: flex;
+  gap: 2px;
+`;
+
+const StarIcon = styled.svg`
+  width: 16px;
+  height: 16px;
+
+  &.star-filled {
+    color: #fbbf24;
+    fill: currentColor;
+  }
+
+  &.star-half {
+    color: #fbbf24;
+  }
+
+  &.star-empty {
+    color: #d1d5db;
+  }
+`;
+
+const RatingText = styled.span`
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+`;
+
+const PriceContainer = styled.div`
+  text-align: right;
+`;
+
+const FreeBadge = styled.span`
+  background: #dcfce7;
+  color: #166534;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+const PriceInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const OldPrice = styled.span`
+  font-size: 14px;
+  color: #9ca3af;
+  text-decoration: line-through;
+`;
+
+const CurrentPrice = styled.span`
+  font-size: 18px;
+  font-weight: 700;
+  color: #2563eb;
+`;
+
+
+
+export {
+  CourseCardContainer,
+  ActionIcons,
+  ActionBtn,
+  ActionIcon,
+  ImageContainer,
+  CourseImage,
+  ImageOverlay,
+  CardContent,
+  CourseHeader,
+  CourseInfo,
+  CourseTitle,
+  CourseMeta,
+  MetaItem,
+  MetaIcon,
+  TeacherInfo,
+  TeacherAvatar,
+  AvatarImage,
+  AvatarPlaceholder,
+  TeacherDetails,
+  TeacherLabel,
+  TeacherName,
+  CourseDescription,
+  CardFooter,
+  RatingContainer,
+  StarsContainer,
+  StarIcon,
+  RatingText,
+  PriceContainer,
+  FreeBadge,
+  PriceInfo,
+  OldPrice,
+  CurrentPrice,
+};

@@ -1,13 +1,10 @@
-// src/components/ProtectedRoute.jsx
-import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import { PATH } from "../../routes";
 
 const ProtectedRoute = () => {
-  const { isAuth } = useContext(AuthContext);
+  const user = localStorage.getItem("user");
 
-  // If not authenticated, redirect to login
-  return isAuth ? <Outlet /> : <Navigate to="/auth/login" replace />;
+  return user ? <Outlet /> : <Navigate to={`/${PATH.NotAuth}`} replace />;
 };
 
 export default ProtectedRoute;

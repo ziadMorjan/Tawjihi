@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 //components
-import { Card } from "../../components/card/courseCard";
+import { Card, CourseCard } from "../../components/card/courseCard";
 
 //axios
 import axios from "axios";
@@ -71,7 +71,7 @@ const MyCourses = () => {
             
           ) : (
             myCourses?.map((item) => (
-              <Card
+              <CourseCard
                 key={item.course._id}
                 item={item.course}
                 id={item.course._id}
