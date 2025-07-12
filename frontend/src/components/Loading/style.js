@@ -70,7 +70,7 @@ export const shimmer = keyframes`
 `;
 
 export const SkeletonWrapper = styled.div`
-  width: 380px;
+  min-width: 30%;
   padding: 16px;
   border-radius: 8px;
   background: transparent;
@@ -80,7 +80,7 @@ export const SkeletonWrapper = styled.div`
   gap: 12px;
 
   @media (max-width: 768px) {
-    width: 350px;
+    width: 100%;
   }
 `;
 

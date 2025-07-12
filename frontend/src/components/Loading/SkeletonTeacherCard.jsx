@@ -6,8 +6,7 @@ import {
   SkeletonTeacherName,
   SkeletonTeacherUnderline,
   SkeletonTeacherDesc,
-  SkeletonTeacherStars,
-  SkeletonTeacherStar,
+
 } from "./SkeletonTeacherStyle";
 
 export const SkeletonTeacherCard = () => {
@@ -18,11 +17,8 @@ export const SkeletonTeacherCard = () => {
       <SkeletonTeacherName />
       <SkeletonTeacherUnderline />
       <SkeletonTeacherDesc />
-      <SkeletonTeacherStars>
-        {Array.from({ length: 5 }).map((_, index) => (
-          <SkeletonTeacherStar key={index} />
-        ))}
-      </SkeletonTeacherStars>
+        <SkeletonTeacherName />
+
     </SkeletonTeacherWrapper>
   );
 };

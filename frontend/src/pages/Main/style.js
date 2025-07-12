@@ -215,7 +215,6 @@ export const CardsGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
   margin: 40px 0;
-
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 20px;

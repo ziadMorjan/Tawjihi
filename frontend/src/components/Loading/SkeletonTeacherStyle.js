@@ -21,7 +21,7 @@ const skeletonEffect = css`
 `;
 
 export const SkeletonTeacherWrapper = styled.div`
-  width: 340px;
+  min-width: 30%;
   padding: 24px 16px 28px;
   border-radius: 24px;
   background-color: #ffffff;
@@ -31,6 +31,10 @@ export const SkeletonTeacherWrapper = styled.div`
   align-items: center;
   position: relative;
   margin: 20px auto;
+
+  @media (max-width: 767) {
+    max-width: 100%;
+  }
 `;
 
 export const SkeletonTeacherBadge = styled.div`

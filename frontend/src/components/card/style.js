@@ -3,13 +3,12 @@ import styled, { keyframes } from "styled-components";
 // Styled Components
 const CourseCardContainer = styled.div`
   position: relative;
-  min-width: 300px;
+  min-width: 30%;
   overflow: hidden;
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  max-width: 400px;
   margin: 20px 0;
     &:hover {
     transform: translateY(-8px);
@@ -17,7 +16,7 @@ const CourseCardContainer = styled.div`
   }
 
   @media (max-width: 768px) {
-    max-width: 220px;
+    max-width: 100%;
   }
 `;
 
