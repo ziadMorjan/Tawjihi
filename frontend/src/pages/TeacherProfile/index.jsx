@@ -529,89 +529,6 @@ function TeacherProfile() {
         <LogoAndButton />
         <NavBar />
 
-<<<<<<< HEAD
-      {/* القسم العلوي: معلومات المعلم */}
-      <section className="img-sec">
-        <Containers>
-          <img
-            src={
-              "https://th.bing.com/th/id/OIP.x2wDWv8Y8uPFo00LXaOGxAHaHa?w=199&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
-            }
-            alt="صورة المعلم"
-          />
-          <div>
-            <H2>{profileData?.name}</H2>
-            <Pargrahph>{profileData?.email}</Pargrahph>
-            <Pargrahph>{profileData?.phone}</Pargrahph>
-          </div>
-        </Containers>
-      </section>
-
-      <hr />
-
-      {/* قسم النبذة */}
-      <section>
-        <div className="about-sec">
-          <Containers>
-            <H3>نبذة عن المعلم</H3>
-            <Pargrahph>{profileData?.description}</Pargrahph>
-
-            <DownloadButton
-              href={profileData?.cv}
-              download={`${profileData?.name}_CV.pdf`}
-            >
-              تحميل السيرة الذاتية
-            </DownloadButton>
-          </Containers>
-        </div>
-      </section>
-
-      <hr />
-
-      {/* قسم الدورات */}
-      <section>
-        <Containers>
-          <H3>{`الدورات (${teacherCourses.length})`}</H3>
-
-          {teacherCourses.length ? (
-            <FilterMenuItem
-              currentPage={currentPage}
-              totalPages={totalPages}
-              order={false}
-            />
-          ) : null}
-
-          {isLoading ? (
-            <WrapperCards>
-              {Array.from({ length: 3 }).map((_, i) => (
-                <CardSkeleton key={i} />
-              ))}
-            </WrapperCards>
-          ) : error ? (
-            <Typography color="error">فشل تحميل الدورات</Typography>
-          ) : teacherCourses.length === 0 ? (
-            <Typography variant="body1">لا توجد دورات حتى الآن.</Typography>
-          ) : (
-            <WrapperCards>
-              {currentItems.map((item) => (
-                <Card
-                  key={item._id}
-                  item={item}
-                  id={item._id}
-                  imgSrc={item.img || "/assets/img/logo.png"}
-                  name={item.name}
-                  starIcon={item.averageRating}
-                  price={item.price}
-                  priceAfterDiscount={item.priceAfterDiscount}
-                  teacherName={item.teacher?.name}
-                  teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                  branch={item.branches.map((b) => b.name).join(" | ")}
-                  subject={item.subject?.name}
-                />
-              ))}
-            </WrapperCards>
-          )}
-=======
         {/* Hero Section */}
         <HeroSection className="img-sec">
           <Containers>
@@ -688,7 +605,6 @@ function TeacherProfile() {
             </SectionCard>
           </Containers>
         </SectionContainer>
->>>>>>> 4e33fc47a612efd65af7d38a321da48f07af7923
 
         <Divider />
 
