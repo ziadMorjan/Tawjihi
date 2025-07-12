@@ -1,4 +1,5 @@
 export const lightTheme = {
+  linearGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
   mode: "light",
   background: "#ffffff",
   background_secondary: "#f1f0f0",

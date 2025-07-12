@@ -15,8 +15,9 @@ import {
   PersonOutline as PersonOutlineIcon,
   Logout as LogoutIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
+  MenuBook as MenuBookIcon,
+  ShoppingCart as ShoppingCartIcon,
 } from "@mui/icons-material";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 // Context
 import { AuthContext } from "../../context/AuthContext";
@@ -73,7 +74,7 @@ const StyledMenu = styled((props) => (
 
 export default function CustomizedMenus() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [loading, setLoading] = React.useState(false); // 🔴 Loading state
+  const [loading, setLoading] = React.useState(false);
   const open = Boolean(anchorEl);
 
   const { setIsAuth } = React.useContext(AuthContext);
@@ -82,16 +83,11 @@ export default function CustomizedMenus() {
 
   const navigate = useNavigate();
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const handleLogout = async () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     try {
       await axios.get(`${API_URL}/auth/logout`, { withCredentials: true });
 
@@ -108,7 +104,7 @@ export default function CustomizedMenus() {
       console.error("Logout failed:", error);
       toast.error("فشل تسجيل الخروج، حاول مرة أخرى");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
       handleMenuClose();
     }
   };
@@ -150,9 +146,7 @@ export default function CustomizedMenus() {
         open={open}
         onClose={handleMenuClose}
         slotProps={{
-          list: {
-            "aria-labelledby": "customized-button",
-          },
+          list: { "aria-labelledby": "customized-button" },
         }}
       >
         <MenuItem
@@ -161,7 +155,7 @@ export default function CustomizedMenus() {
           onClick={handleMenuClose}
           disableRipple
         >
-          <MenuBookIcon />
+          <PersonOutlineIcon />
           الصفحة الشخصية
         </MenuItem>
 
@@ -193,7 +187,7 @@ export default function CustomizedMenus() {
           onClick={handleMenuClose}
           disableRipple
         >
-          <MenuBookIcon />
+          <ShoppingCartIcon />
           السلة
         </MenuItem>
 

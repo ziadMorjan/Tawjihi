@@ -15,8 +15,11 @@ import { PATH } from "../../routes";
 // context
 import { ModalContext } from "../../context/ModalContext";
 import { AuthContext } from "../../context/AuthContext";
+import { lightTheme } from "../../global/Theme";
+import { ThemeContext } from "../../context/ThemeContext";
 
 export const NavBar = () => {
+  const {theme} = useContext(ThemeContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const { setIsOpen } = useContext(ModalContext);
 
@@ -53,7 +56,7 @@ export const NavBar = () => {
 
       <LoginAndRegisterButton
         onClick={() => setIsOpen(true)}
-        color="var(--color-primary)"
+        color={`${theme.linearGradient}`}
         fontSize="18px"
       >
         الانضمام ك معلم
