@@ -102,10 +102,12 @@ const CourseOne = () => {
   }, [courseId, userId]);
 
   const handleSelect = (item, index) => {
-    setSelectedIndex(index);
-    navigate(`/courses/${name}/${courseId}/video/${index}`, {
-      state: { items: lessons },
-    });
+    if (isEnrolled) {
+      setSelectedIndex(index);
+      navigate(`/courses/${name}/${courseId}/video/${index}`, {
+        state: { items: lessons },
+      });
+    }
   };
 
   const {

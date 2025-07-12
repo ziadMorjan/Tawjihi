@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 4e33fc47a612efd65af7d38a321da48f07af7923
 import styled from "styled-components";
 
 export const TeacherProfileWrapper = styled.div`
@@ -209,3 +214,13 @@ export const ErrorText = styled.span`
   margin-top: 5px;
   display: block;
 `;
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+>>>>>>> 4e33fc47a612efd65af7d38a321da48f07af7923

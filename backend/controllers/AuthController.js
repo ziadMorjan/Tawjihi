@@ -5,8 +5,9 @@ const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 const { createToken } = require("../utils/JWTs");
 const CustomError = require("../utils/CustomError");
 const { sendEmail } = require("../utils/emails");
+const Cart = require("../models/Cart");
 
-const sendAuthRes = function (res, user, statusCode) {
+const sendAuthRes = async function (res, user, statusCode) {
     const token = createToken(user.id);
     const isDev = process.env.NODE_ENV !== 'production';
     const options = {
@@ -16,12 +17,16 @@ const sendAuthRes = function (res, user, statusCode) {
         maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
+    const cart = await Cart.findOne({ user: user.id });
+
+    const userToRes = { ...user._doc, ...{ cart: cart.courses } };
+    delete userToRes.password;
+
     res.cookie('token', token, options);
 
     res.status(statusCode).json({
         status: "success",
-        user,
-        token
+        user: userToRes
     });
 }
 

@@ -1,5 +1,5 @@
 //react
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 //hooks
 import { useCRUD } from "../../hooks/useCRUD";
@@ -19,23 +19,28 @@ import { NavBar } from "../../layout/navBar";
 //toast
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CardSkeleton } from "../../components/Loading/LoadingCard";
 
 const WishList = () => {
   const { wishlist, setWishList } = useCRUD(); // ✅ استخدم wishList الصحيح
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
       try {
+        setIsLoading(true)
         const res = await axios.get(`${API_URL}/wishlist`, {
           withCredentials: true,
         });
         setWishList(res.data.wishlist);
       } catch (e) {
         console.log(e);
+      } finally {
+        setIsLoading(false)
       }
     };
     getData();
-  }, [setWishList]);
+  }, []);
 
   return (
     <div>
@@ -45,32 +50,40 @@ const WishList = () => {
       <NavBar />
       <Containers>
 
-      <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة المفضلة</h2>
-      {wishlist.length === 0 ? (
-        <p style={{ textAlign: "center" }}>لا توجد عناصر.</p>
-      ) : (
+        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة المفضلة</h2>
+
         <div
-        className="wishlist-grid"
-        style={{ display: "flex", flexWrap: "wrap" }}
+          className="wishlist-grid"
+          style={{ display: "flex", flexWrap: "wrap" }}
         >
-          {wishlist.map((item) => (
-            <Card
-            key={item._id}
-            item={item}
-            id={item._id}
-            imgSrc={item.img || "/assets/img/logo.png"}
-            name={item.name}
-            starIcon={item.averageRating}
-            price={item.price}
-            priceAfterDiscount={item.priceAfterDiscount}
-            teacherName={item.teacher?.name}
-            teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-            branch={item.branches.map((b) => b.name).join(" | ")}
-            subject={item.subject?.name}
-            />
-          ))}
+
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+
+          ) : wishlist.length === 0 ? (
+            <p style={{ textAlign: "center" , width: "100%" }}>لا توجد عناصر.</p>
+
+          ) : (
+            wishlist.map((item) => (
+              <Card
+                key={item._id}
+                item={item}
+                id={item._id}
+                imgSrc={item.img || "/assets/img/logo.png"}
+                name={item.name}
+                starIcon={item.averageRating}
+                price={item.price}
+                priceAfterDiscount={item.priceAfterDiscount}
+                teacherName={item.teacher?.name}
+                teacherImg={item.teacher?.img || "/assets/img/logo.png"}
+                branch={item.branches.map((b) => b.name).join(" | ")}
+                subject={item.subject?.name}
+              />
+            ))
+          )
+          }
         </div>
-      )}
+
       </Containers>
     </div>
   );
