@@ -27,7 +27,15 @@ export const Nav = styled.nav`
   }
 
   .navBarItems li a:hover {
-    color: var(--color-primary);
+    
+    /* for the linearGradient */
+    background: ${(props) => props.theme.linearGradient}; /* You can customize colors and direction */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* For Firefox */
+    background-clip: text;
+    color: transparent;  
+
   }
 
   @media (max-width: 767px) {

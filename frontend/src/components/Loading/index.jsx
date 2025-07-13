@@ -1,12 +1,12 @@
 //style
 import { LoadingWrapper, Spinner, LoadingText, BounceDot } from "./style";
 
-const Loading = () => {
+const Loading = ({children}) => {
   return (
     <LoadingWrapper>
       <Spinner />
       <LoadingText>
-        جارٍ التحميل
+        {children || "جاري تحميل المحتوى"}
         <BounceDot delay="0s">.</BounceDot>
         <BounceDot delay="0.1s">.</BounceDot>
         <BounceDot delay="0.2s">.</BounceDot>

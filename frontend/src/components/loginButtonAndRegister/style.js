@@ -4,15 +4,16 @@ export const ButtonLogin = styled("button")`
     width: 10rem;
 
     border: 1px solid var(--color-border);
-    
+
+    /* for the linearGradient */
     background: ${(props) => props.theme.linearGradient}; /* You can customize colors and direction */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-
     /* For Firefox */
     background-clip: text;
     color: transparent;    padding:5px 0px;
 
+    
     border-radius: 3px;
     transition: all 0.5s;
     cursor: pointer;
@@ -29,7 +30,11 @@ export const ButtonLogin = styled("button")`
 
     &:hover {
       color:${({ theme }) => theme.primary};
-      border: 1px solid ${({ theme }) => theme.primary};
+      border: 1px solid transparent;
+      border-radius: 3px;
+      border-image: ${({ theme }) => theme.primary};
+      border-image-slice: 1;
+
     }
 
     @media (max-width: 767px) {

@@ -37,7 +37,15 @@ export const Logoo = styled.h2`
 `;
 
 export const Title = styled.h3`
-  color: var(--color-primary);
+ 
+/* for the linearGradient */
+    background: ${(props) => props.theme.linearGradient}; /* You can customize colors and direction */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* For Firefox */
+    background-clip: text;
+    color: transparent;  
+
   margin-bottom: 10px;
 `;
 
