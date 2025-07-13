@@ -170,7 +170,7 @@ export const FilterTab = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 12px 18px;
   border: 2px solid ${({ theme }) => theme.border || "#e1e8ed"};
   background: ${({ theme }) => theme.background || "white"};
   color: ${({ theme }) => theme.color || "#6c757d"};
@@ -193,22 +193,30 @@ export const FilterTab = styled.button`
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
+
   &.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-color: transparent;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-  }
 
-  @media (max-width: 768px) {
-    padding: 10px 20px;
-    font-size: 14px;
+  border: 2px solid ${({ theme }) => theme.background_secondary };
+  border-radius: 25px;
+  padding: 12px 24px; 
 
-    .icon {
-      font-size: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* background */
+
+  color: white;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+
+
+    @media (max-width: 768px) {
+      padding: 10px 20px;
+      font-size: 14px;
+
+      .icon {
+        font-size: 16px;
+      }
     }
-  }
-`
+  `
 
 export const CardsGrid = styled.div`
   display: grid;
