@@ -1,9 +1,10 @@
 //react
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 
 //Library
 import { motion, useInView } from "framer-motion";
 import { AiOutlineClockCircle } from "react-icons/ai";
+import { ThemeContext } from "../../context/ThemeContext";
 
 const AnimatedItem = ({
   children,
@@ -42,6 +43,9 @@ const AnimatedList = ({
   initialSelectedIndex = -1,
   selectedIndex: controlledIndex, // <- receive selectedIndex from parent
 }) => {
+  const {theme} = useContext(ThemeContext);
+
+
   const listRef = useRef(null);
   const [internalIndex, setInternalIndex] = useState(initialSelectedIndex);
   const selectedIndex =
@@ -171,8 +175,8 @@ const AnimatedList = ({
                   border: "1px solid #e2e8f0",
                   userSelect: "none",
                   width: "100%",
-                  backgroundColor: isActive
-                    ? "var(--color-primary)"
+                  background : isActive
+                    ? `${theme.linearGradient}`
                     : "transparent",
                   color: isActive ? "#fff" : "#1a202c",
                 }}

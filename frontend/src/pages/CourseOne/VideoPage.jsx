@@ -97,14 +97,8 @@ const VideoPage = () => {
   if (isloading) {
     return (
       <>
-        <LogoAndButton />
-        <NavBar />
-        <ModalTeacher />
         <Containers>
-          <LoadingWrapper>
             <Loading />
-            <p>جاري تحميل محتوى الدورة...</p>
-          </LoadingWrapper>
         </Containers>
       </>
     )

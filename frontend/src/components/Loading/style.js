@@ -28,15 +28,29 @@ export const LoadingWrapper = styled.div`
   text-align: center;
 `;
 
+
 export const Spinner = styled.div`
   width: 60px;
   height: 60px;
-  border: 6px solid #e0e0e0;
-  border-top: 6px solid var(--color-primary, #1e90ff);
   border-radius: 50%;
+  position: relative;
   animation: ${spin} 1s linear infinite;
   margin-bottom: 2rem;
+  background: ${({theme}) => theme.linearGradient};
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    background: white;
+    border-radius: 50%;
+  }
 `;
+
+
 
 export const LoadingText = styled.div`
   font-size: 1.5rem;
@@ -46,13 +60,17 @@ export const LoadingText = styled.div`
   align-items: center;
   justify-content: center;
 `;
-
 export const BounceDot = styled.span`
   font-size: 2rem;
   margin: 0 2px;
   animation: ${bounce} 1.2s infinite;
   animation-delay: ${(props) => props.delay};
-  color: var(--color-primary, #1e90ff);
+
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 `;
 
 

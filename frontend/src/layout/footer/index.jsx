@@ -15,8 +15,13 @@ import {
 //components
 import { Logo } from "../../components/logo";
 import { PATH } from "../../routes";
+import { useContext } from "react";
+import { ThemeContext } from "../../context/ThemeContext";
 
 const Footer = () => {
+
+  const { theme } = useContext(ThemeContext);
+
   return (
     <FooterWrapper>
       <Container>
@@ -28,8 +33,17 @@ const Footer = () => {
             <ListItem style={{ fontSize: "15px" }}>
               منصة توجيهي طريقك نحو العلامة الكاملة
             </ListItem>
+
+        
             <ListItem
-              style={{ color: "var(--color-primary)", fontSize: "15px" }}
+              style={{
+                background: theme.linearGradient,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text", // Optional, not supported in all browsers
+                color: "transparent",
+                fontSize: "15px",
+              }}
             >
               متابعة دروسك مع مدربين ذو كفاءة واحترافية عالية
             </ListItem>

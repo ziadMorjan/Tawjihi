@@ -1,5 +1,5 @@
 export const lightTheme = {
-  linearGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  linearGradient: "linear-gradient(135deg, rgba(102, 126, 234, 1) 0%, rgba(118, 75, 162, 1) 100%)",
   mode: "light",
   background: "#ffffff",
   background_secondary: "#f1f0f0",
@@ -9,7 +9,7 @@ export const lightTheme = {
   heading: "#000000",
   link: "#007bff",
   linkHover: "#0056b3",
-  primary: "#81d4fa",
+  primary: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
   primaryHover: "#0056b3",
   success_bg: "#d4edda",
   success_text: "#155724",
@@ -21,6 +21,8 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
+    linearGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+
   mode: "dark",
   background: "#121212",
   background_secondary: "#1e1e1e",
