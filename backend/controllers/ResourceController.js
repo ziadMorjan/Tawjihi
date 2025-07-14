@@ -29,7 +29,8 @@ const handleContentFile = asyncErrorHandler(async function (req, res, next) {
             folder: "files/resources",
             resource_type: "raw",
             format: "pdf",
-            type: "upload"
+            type: "upload",
+            access_mode: "public"
         });
 
         if (!result.secure_url) {
