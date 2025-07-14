@@ -38,7 +38,8 @@ const handleCourseImage = asyncErrorHandler(async function (req, res, next) {
         const result = await cloudinary.uploader.upload(filePath, {
             folder: "images/courses",
             resource_type: "image",
-            type: "upload"
+            type: "upload",
+            access_mode: "public"
         });
 
         if (!result.secure_url) {

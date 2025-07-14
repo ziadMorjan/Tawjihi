@@ -55,7 +55,8 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
             const result = await cloudinary.uploader.upload(filePath, {
                 folder: "images/users",
                 resource_type: "image",
-                type: "upload"
+                type: "upload",
+                access_mode: "public"
             });
 
             if (!result.secure_url) {
@@ -84,7 +85,8 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
                 folder: "files/cvs",
                 resource_type: "raw",
                 format: "pdf",
-                type: "upload"
+                type: "upload",
+                access_mode: "public"
             });
             if (!result.secure_url) {
                 fs.unlinkSync(filePath);
