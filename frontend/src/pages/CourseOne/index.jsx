@@ -246,10 +246,11 @@ const CourseOne = () => {
 
         <H3>مراجعات الطلاب</H3>
         <ReviewSection>
-          <ReviewListSection />
+          <ReviewListSection courseId={courseId} />
           <H3>أضف تقييمك</H3>
           <StarRating />
           <CommentForm
+            courseId={courseId}
             register={register}
             handleSubmit={handleSubmit}
             onSubmit={onSubmit}

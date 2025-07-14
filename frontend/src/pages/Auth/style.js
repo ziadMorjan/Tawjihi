@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 
 // Auth Wrapper
 export const Wrapper = styled.div`
@@ -39,19 +39,44 @@ export const UlWrapper = styled.ul`
 
 // Active Link
 export const StyledNavLink = styled(Link)`
+  position: relative;
   padding: 10px 15px;
   text-decoration: none;
   color: #555;
   font-weight: 500;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 
-  ${({ $active }) =>
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    width: 80%;
+    height: 2px;
+    background: ${({ theme }) => theme.linearGradient};
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    color: transparent;
+    background: ${({ theme }) => theme.linearGradient};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  ${({ $active, theme }) =>
     $active &&
-    `
-    color: var(--color-primary);
-    font-weight: bold;
-    text-decoration: underline;
-  `}
+    css`
+      font-weight: bold;
+      color: transparent;
+      background: ${theme.linearGradient};
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
 
-
+      &::after {
+        transform: translateX(-50%) scaleX(1);
+      }
+    `}
 `;

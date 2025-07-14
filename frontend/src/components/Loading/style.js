@@ -160,3 +160,8 @@ export const SkeletonPrice = styled(SkeletonLineShort)`
   width: 60px;
   height: 16px;
 `;
+
+
+export const StyledSkeletonComment = styled(SkeletonElement)`
+  
+`
