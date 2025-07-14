@@ -9,8 +9,10 @@ import { H3 } from "../typography";
 
 //hooks
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { API_URL } from "../../config";
 
-const CommentForm = () => {
+const CommentForm = ({ courseId }) => {
   const {
     register,
     handleSubmit,
@@ -18,8 +20,22 @@ const CommentForm = () => {
     reset,
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("تم إرسال التعليق:", data);
+  const onSubmit = async (data) => {
+    try {
+      // setReviewsLoading(true);
+      const response = await axios.post(`${API_URL}/lessons/${courseId}/comments`,
+        { content: data.comment },
+        { withCredentials: true });
+
+      console.log("Review posts successfully:", response);
+
+      // Process reviews as needed
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    } finally {
+
+    }
+
     reset();
   };
 

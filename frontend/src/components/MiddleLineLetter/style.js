@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const MiddleLineLetterStyle = styled.div`
   width: 100%;
   height: 2px;
-  background-color: var(--color-primary);
+  background: ${({theme}) => theme.linearGradient};
   margin: 30px auto;
   position: relative;
 
@@ -12,11 +12,10 @@ export const MiddleLineLetterStyle = styled.div`
     top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: white;
+    background-color: ${({theme}) => theme.background};
     padding: 0 10px;
     font-size: 14px;
-    color: var(--text-color, #333);
+    color: ${({theme}) => theme.color};
     white-space: nowrap;
-    background-color:#f9f9f9;
   }
 `;

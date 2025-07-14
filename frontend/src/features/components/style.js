@@ -5,7 +5,7 @@ export const Form = styled.form`
   width: 100%;
   max-width: 400px;
   margin: -10px auto;
-  background: var(--color-background);
+  background: ${({ theme }) => theme.background};
   padding: 1.5rem;
   border-radius: 1rem;
 
@@ -23,7 +23,9 @@ export const Label = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
   font-size: 1rem;
-  color: var(--color-primary);
+  background: ${({ theme }) => theme.linearGradient};
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 export const Input = styled.input`
@@ -52,7 +54,7 @@ export const ErrorText = styled.div`
 export const Button = styled.button`
   width: 100%;
   padding: 0.8rem 1.5rem;
-  background-color: var(--color-primary);
+  background: ${({ theme }) => theme.linearGradient};
   color: white;
   border: none;
   border-radius: 0.6rem;

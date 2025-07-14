@@ -20,7 +20,7 @@ export const ReviewList = styled.div`
 export const ReviewCard = styled.div`
   display: flex;
   gap: 16px;
-  background-color: #f1f5f9;
+  background-color: ${({ theme }) => theme.background};
   padding: 16px;
   border-radius: 10px;
 `;
