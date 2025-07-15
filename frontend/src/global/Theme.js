@@ -18,18 +18,19 @@ export const lightTheme = {
   warning_bg: "#fff3cd",
   warning_text: "#856404",
   warning_border: "#ffeeba",
+  checkBorder: "#764ba2",
 };
 
 export const darkTheme = {
     linearGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
 
   mode: "dark",
-  background: "#121212",
+  background: "#333",
   background_secondary: "#1e1e1e",
   box_shadow: "rgba(255, 255, 255, 0.3)",
   box_shadow_hover: "rgba(255, 255, 255, 0.5)",
   color: "#e0e0e0",
-  heading: "#000000",
+  heading: "#222",
   link: "#66b2ff",
   linkHover: "#3399ff",
   primary: "#4fc3f7",
@@ -41,4 +42,5 @@ export const darkTheme = {
   warning_bg: "#5d4d00",
   warning_text: "#ffe082",
   warning_border: "#ffca28",
+  checkBorder: "#764ba2",
 };

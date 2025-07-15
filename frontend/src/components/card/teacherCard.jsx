@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 const Card = styled.div`
   position: relative;
   overflow: hidden;
-  background: white;
+  background: ${props => props.theme.background};
+  border: 1px solid ${props => props.theme.border || "#e5e7eb"};
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -122,7 +123,7 @@ const NameSection = styled.div`
 const TeacherName = styled.h3`
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: ${props => props.theme.color || "#000"};
   margin: 0;
   transition: color 0.2s ease;
 

@@ -32,7 +32,7 @@ export const SidebarContainer = styled.aside`
   width: 300px;
   min-height: 100vh;
   max-height: 100vh;
-  background: #ffffff;
+  background: ${props => props.theme.background};
   border-left: 1px solid #e5e7eb;
   z-index: 1000;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -40,6 +40,8 @@ export const SidebarContainer = styled.aside`
   overflow: hidden;
   display: flex;
   flex-direction: column;
+
+  border: 1px solid ${props => props.theme.border};
 
 
   /* Tablet Portrait */
@@ -238,7 +240,7 @@ export const HeaderBadge = styled.span`
 
 export const FilterCard = styled.div`
   margin: 1rem 1.5rem;
-  background: white;
+  background: ${props => props.theme.background};
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   overflow: hidden;
@@ -281,13 +283,13 @@ export const FilterTitle = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  background: #f8fafc;
+  background: ${props => props.theme.background};
   border-bottom: 1px solid #e5e7eb;
   
   .title-text {
     font-size: 1rem;
     font-weight: 600;
-    color: #374151;
+    color: ${props => props.theme.color};
     line-height: 1.2;
     word-break: break-word;
     flex: 1;
@@ -560,7 +562,7 @@ export const SidebarFooter = styled.div`
   margin-top: auto;
   padding: 1.5rem;
   border-top: 1px solid #f1f5f9;
-  background: #f8fafc;
+  background: ${props => props.theme.background};
   flex-shrink: 0;
   
   p {

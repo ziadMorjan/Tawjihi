@@ -322,9 +322,8 @@ export const CourseCard = ({
           {/* Teacher Info */}
           {teacherName && (
             <TeacherInfo>
-
               <TeacherDetails>
-                <UserIcon/>
+                <UserIcon />
                 <TeacherLabel>المعلم: </TeacherLabel>
                 <TeacherName>{teacherName}</TeacherName>
               </TeacherDetails>
