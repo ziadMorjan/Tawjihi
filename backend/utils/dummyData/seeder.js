@@ -1,15 +1,40 @@
+const fs = require("fs");
 // eslint-disable-next-line import/no-extraneous-dependencies, node/no-unpublished-require
 const { fakerAR } = require('@faker-js/faker');
 const dotenv = require('dotenv');
-const { connectDB } = require('../config/db');
-const User = require('../models/User');
+const { connectDB } = require('../../config/db');
+const Branch = require('../../models/Branch');
+const Cart = require('../../models/Cart');
+const Comment = require('../../models/Comment');
+const Coupon = require('../../models/Coupon');
+const Course = require('../../models/Course');
+const Enrollment = require('../../models/Enrollment');
+const Lesson = require('../../models/Lesson');
+const New = require('../../models/New');
+const Payment = require('../../models/Payment');
+const Review = require('../../models/Review');
+const Subject = require('../../models/Subject');
+const TeacherReview = require('../../models/TeacherReview');
+const User = require('../../models/User');
 
-dotenv.config({ path: '../config.env' });
+dotenv.config({ path: '../../config.env' });
 
-const deleteAllUsers = async () => {
+const deleteData = async () => {
     try {
+        await Branch.deleteMany({});
+        await Cart.deleteMany({});
+        await Comment.deleteMany({});
+        await Coupon.deleteMany({});
+        await Course.deleteMany({});
+        await Enrollment.deleteMany({});
+        await Lesson.deleteMany({});
+        await New.deleteMany({});
+        await Payment.deleteMany({});
+        await Review.deleteMany({});
+        await Subject.deleteMany({});
+        await TeacherReview.deleteMany({});
         await User.deleteMany({});
-        console.log('All users deleted successfully');
+        console.log('All data deleted successfully');
     } catch (error) {
         console.error('Error deleting users:', error);
         process.exit(-1);
@@ -23,7 +48,7 @@ async function seedAdmin() {
             email: 'admin@tawjihi.com',
             description: 'Admin user for the application',
             password: 'admin123',
-            phone: '0591234567',
+            phone: fakerAR.helpers.fromRegExp("05[6-7][0-9]{3}[0-9]{4}"),
             role: 'admin',
             coverImage: fakerAR.image.personPortrait(),
         });
@@ -49,7 +74,7 @@ async function seedUsers() {
                 allowSpecialCharacters: false
             }),
             password: 12345678,
-            Phone: fakerAR.phone.number(),
+            Phone: fakerAR.helpers.fromRegExp("05[6-7][0-9]{3}[0-9]{4}"),
             coverImage: fakerAR.image.personPortrait(),
             role: "user",
             isActive: true
@@ -57,7 +82,7 @@ async function seedUsers() {
     };
 
     let users = [];
-    for (let i = 0; i < 10; i += 1) {
+    for (let i = 0; i < 50; i += 1) {
         users.push(generateUser(fakerAR.helpers.arrayElement(['male', 'female'])));
     }
     try {
@@ -68,7 +93,6 @@ async function seedUsers() {
         process.exit(-1);
     }
 }
-
 
 async function seedTeachers() {
 
@@ -85,9 +109,9 @@ async function seedTeachers() {
                 provider: "gmail.com",
                 allowSpecialCharacters: false
             }),
-            description: fakerAR.lorem.sentence(),
+            description: `وصف للمعلم ${firstName} ${lastName}`,
             password: 12345678,
-            phone: fakerAR.phone.number(),
+            phone: fakerAR.helpers.fromRegExp("05[6-7][0-9]{3}[0-9]{4}"),
             coverImage: fakerAR.image.personPortrait({ sex: gender }),
             cv: "https://res.cloudinary.com/tawhihi/raw/upload/v1752490269/files/cvs/ycvuuocuzzztsw9gh4t4.pdf",
             role: "teacher",
@@ -96,7 +120,7 @@ async function seedTeachers() {
     };
 
     let teachers = [];
-    for (let i = 0; i < 10; i += 1) {
+    for (let i = 0; i < 11; i += 1) {
         teachers.push(generateTeacher(fakerAR.helpers.arrayElement(['male', 'female'])));
     }
     try {
@@ -104,6 +128,28 @@ async function seedTeachers() {
         console.log(`Teachers created successfully`);
     } catch (error) {
         console.error('Error creating users:', error);
+        process.exit(-1);
+    }
+}
+
+async function seedBranches() {
+    const branches = JSON.parse(fs.readFileSync("./branches.json"));
+    try {
+        await Branch.create(branches);
+        console.log(`Branches created successfully`);
+    } catch (error) {
+        console.error('Error creating Branches:', error);
+        process.exit(-1);
+    }
+}
+
+async function seedSubjects() {
+    const subjects = JSON.parse(fs.readFileSync("./subjects.json"));
+    try {
+        await Subject.create(subjects);
+        console.log(`Subjects created successfully`);
+    } catch (error) {
+        console.error('Error creating subjects:', error);
         process.exit(-1);
     }
 }
@@ -120,13 +166,16 @@ async function seedTeachers() {
     }
     try {
         if (mode === "-d") {
-            await deleteAllUsers();
+            await deleteData();
             process.exit(0);
         }
         else if (mode === "-i") {
             await seedAdmin();
             await seedUsers();
             await seedTeachers();
+            await seedBranches();
+            await seedSubjects();
+            console.log("Now you can login as teacher to add courses and as user to enrol courses!");
             process.exit(0);
         }
     } catch (error) {
