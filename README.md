@@ -143,13 +143,19 @@ STRIPE_WEBHOOK_SECRET=
 Seed the admin user in the database:
 
 ```bash
-cd utils
+cd "utils\dummyData"
 ```
 
-Then
+Then to make Sure that db is empty
 
 ```bash
-node seeder.js
+node seeder.js -d
+```
+
+Then to insert dummy data into db
+
+```bash
+node seeder.js -i
 ```
 
 ---

@@ -82,7 +82,7 @@ async function seedUsers() {
     };
 
     let users = [];
-    for (let i = 0; i < 10; i += 1) {
+    for (let i = 0; i < 50; i += 1) {
         users.push(generateUser(fakerAR.helpers.arrayElement(['male', 'female'])));
     }
     try {
@@ -120,7 +120,7 @@ async function seedTeachers() {
     };
 
     let teachers = [];
-    for (let i = 0; i < 10; i += 1) {
+    for (let i = 0; i < 11; i += 1) {
         teachers.push(generateTeacher(fakerAR.helpers.arrayElement(['male', 'female'])));
     }
     try {
