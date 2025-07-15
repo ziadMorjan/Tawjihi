@@ -5,10 +5,11 @@ const CourseCardContainer = styled.div`
   position: relative;
   min-width: 30%;
   overflow: hidden;
-  background: white;
+  background: ${props => props.theme.background};
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  border: 1px solid ${props => props.theme.border || "#e5e7eb"};
   margin: 20px 0;
     &:hover {
     transform: translateY(-8px);
@@ -133,7 +134,7 @@ const CourseInfo = styled.div`
 const CourseTitle = styled.h3`
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: #${props => props.theme.color || "111827"};
   line-height: 1.3;
   margin: 0;
   transition: color 0.2s ease;
@@ -169,7 +170,7 @@ const MetaIcon = styled.svg`
 const TeacherInfo = styled.div`
   display: flex;
   align-items: center;
-  background: #f9fafb;
+  background: ${props => props.theme.background};
   border-radius: 12px;
 `;
 
@@ -214,7 +215,7 @@ const TeacherLabel = styled.p`
 const TeacherName = styled.p`
   font-size: 14px;
   font-weight: 500;
-  color: #111827;
+  color: #${props => props.theme.color};
   margin: 0;
   white-space: nowrap;
   overflow: hidden;

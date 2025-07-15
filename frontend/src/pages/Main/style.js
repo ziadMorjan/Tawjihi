@@ -196,7 +196,7 @@ export const FilterTab = styled.button`
 
   &.active {
 
-  border: 2px solid ${({ theme }) => theme.background_secondary };
+  border: 2px solid ${({ theme }) => theme.background };
   border-radius: 25px;
   padding: 12px 24px; 
 

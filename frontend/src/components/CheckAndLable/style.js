@@ -6,8 +6,8 @@ export const HiddenCheckBox = styled.input`
   display: none;
 
   &:checked + label::before {
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
+    background:${props => props.theme.linearGradient};
+    border-color: ${props => props.theme.checkBorder};
   }
 
 `;
@@ -26,9 +26,8 @@ export const StyledLabel = styled.label`
     top: 2px;
     width: 16px;
     height: 16px;
-    border: 2px solid #ccc;
+    border: 2px solid ${props => props.theme.checkBorder};
     border-radius: 4px;
-    background-color: #fff;
     transition: all 0.2s ease;
   }
 
@@ -42,9 +41,10 @@ export const CheckAndLabelWrapper = styled.div`
   transition: background 0.2s ease;
 
   &:hover {
-    color: var(--color-primary);
+    color : ${props => props.theme.checkBorder};
   }
 `;
+    
 
 export const CheckAndLabelContainer = styled.div`
   width: 100%;
