@@ -4,7 +4,8 @@ const {
     addUserIdToReqBody,
     addLessonIdToReqBody,
     checkCommentBelongToUser,
-    checkCourseBelongToTeacher
+    checkCourseBelongToTeacher,
+    addLessonIdToReqQuery
 } = require("../middlewares/commentMiddleware");
 const {
     createCommentValidator,
@@ -22,11 +23,13 @@ const {
 
 const router = express.Router({ mergeParams: true });
 
-router.use(protect)
-
 router.route("/")
-    .get(getAllComments)
+    .get(
+        addLessonIdToReqQuery,
+        getAllComments
+    )
     .post(
+        protect,
         allowedTo("user"),
         addUserIdToReqBody,
         addLessonIdToReqBody,
@@ -40,6 +43,7 @@ router.route("/:id")
         getComment
     )
     .patch(
+        protect,
         allowedTo("user"),
         addUserIdToReqBody,
         addLessonIdToReqBody,
@@ -48,6 +52,7 @@ router.route("/:id")
         updateComment
     )
     .delete(
+        protect,
         allowedTo("user", "teacher"),
         addLessonIdToReqBody,
         checkCommentBelongToUser,

@@ -9,6 +9,13 @@ const addTeacherIdToReqBody = (req, res, next) => {
     next();
 }
 
+const addTeacherIdToReqQuery = (req, res, next) => {
+    if (req.params.teacherId) {
+        req.query.teacher = req.params.teacherId;
+    }
+    next();
+}
+
 const addUserIdToReqBody = (req, res, next) => {
     req.body.user = req.user.id;
     next();
@@ -30,5 +37,6 @@ const deleteTeacherReviewMiddleware = asyncErrorHandler(async (req, res, next) =
 module.exports = {
     addUserIdToReqBody,
     addTeacherIdToReqBody,
-    deleteTeacherReviewMiddleware
+    deleteTeacherReviewMiddleware,
+    addTeacherIdToReqQuery
 };

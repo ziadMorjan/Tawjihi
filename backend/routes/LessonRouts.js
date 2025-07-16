@@ -5,7 +5,8 @@ const { protect, allowedTo } = require("../middlewares/authMiddleware");
 const {
     checkCourseBelongToTeacher,
     checkCourseBelongToTeacherInCreate,
-    addCourseIdToReqBody
+    addCourseIdToReqBody,
+    addCourseIdToReqQuery
 } = require("../middlewares/lessonMiddleware");
 
 const {
@@ -33,7 +34,10 @@ router.use("/:lessonId/resources", resourceRouts);
 router.use("/:lessonId/comments", commentsRouts);
 
 router.route('/')
-    .get(getAllLessons)
+    .get(
+        getAllLessons,
+        addCourseIdToReqQuery
+    )
     .post(
         protect,
         allowedTo("teacher"),

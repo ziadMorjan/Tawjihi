@@ -3,7 +3,8 @@ const { protect, allowedTo } = require('../middlewares/authMiddleware');
 const {
     addUserIdToReqBody,
     addCourseIdToReqBody,
-    deleteReviewMiddleware
+    deleteReviewMiddleware,
+    addCourseIdToReqQuery
 } = require('../middlewares/reviewMiddleware');
 const {
     createReviewValidator,
@@ -23,7 +24,10 @@ const router = express.Router({ mergeParams: true });
 
 // Routes for Review
 router.route('/')
-    .get(getAllReviews)
+    .get(
+        getAllReviews,
+        addCourseIdToReqQuery
+    )
     .post(
         protect,
         allowedTo('user'),
