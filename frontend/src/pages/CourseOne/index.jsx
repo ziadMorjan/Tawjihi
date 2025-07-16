@@ -30,6 +30,7 @@ import {
   WatchText,
   MetaInfo,
   StartButtonWrapper,
+  SectionTitle,
 } from "./style";
 
 import { API_URL } from "../../config";
@@ -244,18 +245,27 @@ const CourseOne = () => {
           </RightWrapper>
         </Container>
 
-        <H3>مراجعات الطلاب</H3>
+        <SectionTitle>مراجعات الطلاب</SectionTitle>
         <ReviewSection>
-          <ReviewListSection courseId={courseId} />
-          <H3>أضف تقييمك</H3>
-          <StarRating />
-          <CommentForm
-            courseId={courseId}
-            register={register}
-            handleSubmit={handleSubmit}
-            onSubmit={onSubmit}
-            errors={errors}
-          />
+          <ReviewListSection courseId={courseId} userId={userId} from={'coursePage'} />
+
+          {isEnrolled && (
+            <>
+              <H3>أضف تقييمك</H3>
+              <StarRating />
+
+              <CommentForm
+                courseId={courseId}
+                from={'coursePage'}
+                
+                register={register}
+                handleSubmit={handleSubmit}
+                onSubmit={onSubmit}
+                errors={errors}
+              />
+            </>
+          )}
+
         </ReviewSection>
       </Containers>
     </>

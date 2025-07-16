@@ -33,6 +33,7 @@ import NoVideos from "../../components/NoVideos"
 import { API_URL } from "../../config"
 import axios from "axios"
 import Loading from "../../components/Loading"
+import { useForm } from "react-hook-form"
 
 const VideoPage = () => {
   // States
@@ -47,11 +48,20 @@ const VideoPage = () => {
   const currentIndex = Number(videoIndex) >= 0 && items[videoIndex] ? Number(videoIndex) : 0
   const selectedVideo = items[currentIndex] || {}
 
-  console.log(selectedVideo.resources)
+  console.log("this is selected video",selectedVideo)
 
   const handleVideoSelect = (item, index) => {
     navigate(`/courses/${name}/${id}/video/${index}`, { state: { items } })
   }
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+
 
   useEffect(() => {
     if (!items.length) return
@@ -98,7 +108,7 @@ const VideoPage = () => {
     return (
       <>
         <Containers>
-            <Loading />
+          <Loading />
         </Containers>
       </>
     )
@@ -199,13 +209,11 @@ const VideoPage = () => {
 
         <ReviewSection>
           <SectionTitle>التعليقات والمراجعات</SectionTitle>
-          <div className="reviews-content">
-            <ReviewListSection />
-            <div className="comment-form-section">
-              <h4>أضف تعليقك</h4>
-              <CommentForm />
-            </div>
-          </div>
+          <ReviewListSection lessonId={selectedVideo._id} from={'videoPage'} />
+          <CommentForm
+            lessonId={selectedVideo._id}
+            from={'videoPage'}
+            />
         </ReviewSection>
       </Containers>
     </>
