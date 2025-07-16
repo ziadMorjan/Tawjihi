@@ -138,6 +138,11 @@ PASS_EMAIL=
 # Stripe
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
+
+# cloudinary config
+CLOUDINARY_API_KEY=927453153956879
+CLOUDINARY_API_SECRET=89HTinRftm_lE6akhDJElkOg9e0
+CLOUDINARY_CLOUD_NAME=tawhihi
 ```
 
 Seed the admin user in the database:
