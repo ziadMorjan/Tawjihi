@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { API_URL } from "../../config";
 
-const CommentForm = ({ courseId }) => {
+const CommentForm = ({ courseId, lessonId, from }) => {
   const {
     register,
     handleSubmit,
@@ -21,11 +21,28 @@ const CommentForm = ({ courseId }) => {
   } = useForm();
 
   const onSubmit = async (data) => {
+    console.log("Submitted data:", data);
     try {
       // setReviewsLoading(true);
-      const response = await axios.post(`${API_URL}/lessons/${courseId}/comments`,
-        { content: data.comment },
-        { withCredentials: true });
+
+      let response = {};
+      if (from === 'videoPage') {
+        response = await axios.post(`${API_URL}/lessons/${lessonId}/comments`,
+          {
+            content: data.comment,
+            // Assuming a default rating of 3
+          },
+          { withCredentials: true });
+
+      } else if (from === 'coursePage') {
+        response = await axios.post(`${API_URL}/courses/${courseId}/reviews`,
+          {
+            comment: data.comment,
+            rating: 3, // Assuming a default rating of 3
+          },
+          { withCredentials: true });
+      }
+
 
       console.log("Review posts successfully:", response);
 

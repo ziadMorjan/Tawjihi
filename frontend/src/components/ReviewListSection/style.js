@@ -47,12 +47,14 @@ export const ReviewHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
+
+
 `;
 
 export const ReviewerName = styled.span`
   font-weight: 600;
   font-size: 16px;
-  color: #222;
+  color: ${({ theme }) => theme.color};
 `;
 
 export const ReviewText = styled.p`
@@ -61,3 +63,13 @@ export const ReviewText = styled.p`
   margin: 0;
   line-height: 1.6;
 `;
+
+export const ReviewActions = styled.div`
+  display: flex;
+  gap: 8px;
+
+  & svg {
+    color: rgba(118, 75, 162, 0.9);
+    cursor: pointer;
+  }
+   `

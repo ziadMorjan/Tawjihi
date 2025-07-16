@@ -1,6 +1,7 @@
 //style
 import {
   AvatarCircle,
+  ReviewActions,
   ReviewCard,
   ReviewContent,
   ReviewerName,
@@ -16,11 +17,14 @@ import axios from "axios";
 import { API_URL } from "../../config";
 import SkeletonComment from "../Loading/SkeletonComment";
 import { Typography } from "@mui/material";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
-const ReviewListSection = ({ courseId }) => {
+const ReviewListSection = ({ courseId, lessonId, from }) => {
 
   const [reviews, setReviews] = useState([]);
   const [isReviewsLoading, setReviewsLoading] = useState(false);
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData?._id;
 
   console.log("Course ID:", courseId);
 
@@ -28,7 +32,16 @@ const ReviewListSection = ({ courseId }) => {
     const getReviews = async () => {
       try {
         setReviewsLoading(true);
-        const response = await axios.get(`${API_URL}/lessons/${courseId}/comments`, { withCredentials: true });
+        let response = {}
+
+        if (from === 'videoPage') {
+                  console.log("the url:", `${API_URL}/lessons/${lessonId}/comments`);
+
+          response = await axios.get(`${API_URL}/lessons/${lessonId}/comments`, { withCredentials: true });
+        
+        } else if (from === 'coursePage') {
+          response = await axios.get(`${API_URL}/courses/${courseId}/reviews`, { withCredentials: true });
+        }
 
         console.log("Reviews fetched successfully:", response);
         setReviews(response.data.data.docs)
@@ -41,6 +54,24 @@ const ReviewListSection = ({ courseId }) => {
     }
     getReviews();
   }, [])
+
+  const handleDelete = async (clickedReviewId) => {
+    try {
+
+      let response = {};
+      if (from === 'videoPage') {
+        response = await axios.delete(`${API_URL}/lessons/${lessonId}/comments/${clickedReviewId}`, { withCredentials: true });
+        
+      } else if (from === 'coursePage') {
+        response = await axios.delete(`${API_URL}/courses/${courseId}/reviews/${clickedReviewId}`, { withCredentials: true });
+      }
+
+      console.log("Review deleted successfully:", response);
+      setReviews(reviews.filter(review => review._id !== clickedReviewId));
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  }
 
 
   return (
@@ -55,26 +86,39 @@ const ReviewListSection = ({ courseId }) => {
         ))
 
       ) : (reviews.length === 0 ? (
-        <Typography>
+        <Typography style={{ padding: "10px 0px" }}>
           لا توجد مراجعات حتى الآن
         </Typography>
-        
+
       ) : (
 
         reviews.map((review, index) => (
-
           <ReviewCard key={index}>
-            <AvatarCircle>أ</AvatarCircle>
+            <AvatarCircle> {review.user.name.charAt(0).toUpperCase()} </AvatarCircle>
             <ReviewContent>
               <ReviewHeader>
-                <ReviewerName>أحمد خالد</ReviewerName>
+
+                {/* أيقونات التعديل والحذف */}
+                <ReviewerName>{review.user.name}</ReviewerName>
+                <ReviewActions>
+                  {review.user._id === userId && (
+                    <>
+                      <FaEdit />
+                      <FaTrash onClick={() => handleDelete(review._id)} />
+                    </>
+                  )}
+                </ReviewActions>
               </ReviewHeader>
+
               <ReviewText>
-                {review.content}
+                {from === 'videoPage'
+                  ? review.content
+                  : from === 'coursePage'
+                    ? review.comment
+                    : null}
               </ReviewText>
             </ReviewContent>
           </ReviewCard>
-
         ))))}
 
     </ReviewList>
