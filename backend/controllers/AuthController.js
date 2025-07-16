@@ -135,7 +135,6 @@ const logout = (req, res) => {
         httpOnly: true,
         sameSite: isDev ? 'Lax' : 'None',
         secure: !isDev,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
     };
     res.clearCookie("token", options);
     res.status(200).json({

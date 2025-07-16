@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const cloudinary = require("../config/cloudinary");
+const { extractPublicId } = require("../utils/extractPublicId");
 
 const CourseSchema = new mongoose.Schema(
     {
@@ -67,6 +69,23 @@ CourseSchema.pre(/^find/, function (next) {
             path: 'subject',
             select: 'name _id'
         });
+    next();
+});
+
+CourseSchema.post(/delete/i, async function name(doc, next) {
+
+    if (doc.coverImage) {
+        if (doc.coverImage.includes("cloudinary")) {
+            const publicKey = extractPublicId(doc.coverImage);
+            try {
+                await cloudinary.uploader.destroy(publicKey, { resource_type: 'image' });
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+    }
+
     next();
 });
 

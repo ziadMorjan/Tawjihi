@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const bcryptjs = require("bcryptjs");
+const cloudinary = require("../config/cloudinary");
+const { extractPublicId } = require("../utils/extractPublicId");
+
 
 const UserSchema = new mongoose.Schema(
     {
@@ -62,6 +65,34 @@ const UserSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+UserSchema.post(/delete/i, async function name(doc, next) {
+
+    if (doc.coverImage) {
+        if (doc.coverImage.includes("cloudinary")) {
+            const publicKey = extractPublicId(doc.coverImage, { resource_type: 'image' });
+            try {
+                await cloudinary.uploader.destroy(publicKey);
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+    }
+
+    if (doc.cv) {
+        if (doc.cv.includes("cloudinary")) {
+            const publicKey = extractPublicId(doc.cv);
+            try {
+                await cloudinary.uploader.destroy(publicKey, { resource_type: 'raw' });
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+    }
+    next();
+});
 
 UserSchema.pre(/^find/, function name(next) {
     this.populate({
