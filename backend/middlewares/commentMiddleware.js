@@ -4,6 +4,12 @@ const Course = require("../models/Course");
 const CustomError = require("../utils/CustomError");
 const { asyncErrorHandler } = require("./errorMiddleware");
 
+const addLessonIdToReqQuery = (req, res, next) => {
+    if (req.params.lessonId)
+        req.query.lesson = req.params.lessonId;
+    next();
+}
+
 const addLessonIdToReqBody = (req, res, next) => {
     if (req.params.lessonId) {
         req.body.lesson = req.params.lessonId;
@@ -46,5 +52,6 @@ module.exports = {
     addUserIdToReqBody,
     addLessonIdToReqBody,
     checkCommentBelongToUser,
-    checkCourseBelongToTeacher
+    checkCourseBelongToTeacher,
+    addLessonIdToReqQuery
 };

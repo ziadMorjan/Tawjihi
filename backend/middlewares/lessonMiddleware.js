@@ -26,8 +26,15 @@ const addCourseIdToReqBody = asyncErrorHandler(async function (req, res, next) {
     next();
 });
 
+const addCourseIdToReqQuery = asyncErrorHandler(async function (req, res, next) {
+    if (req.params.courseId)
+        req.query.course = req.params.courseId;
+    next();
+});
+
 module.exports = {
     checkCourseBelongToTeacherInCreate,
     checkCourseBelongToTeacher,
-    addCourseIdToReqBody
+    addCourseIdToReqBody,
+    addCourseIdToReqQuery
 }

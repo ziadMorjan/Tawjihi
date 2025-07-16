@@ -2,6 +2,12 @@ const Review = require("../models/Review");
 const CustomError = require("../utils/CustomError");
 const { asyncErrorHandler } = require("./errorMiddleware");
 
+const addCourseIdToReqQuery = (req, res, next) => {
+    if (req.params.courseId)
+        req.query.course = req.params.courseId;
+    next();
+}
+
 const addCourseIdToReqBody = (req, res, next) => {
     if (req.params.courseId) {
         req.body.course = req.params.courseId;
@@ -35,5 +41,6 @@ const deleteReviewMiddleware = asyncErrorHandler(async (req, res, next) => {
 module.exports = {
     addUserIdToReqBody,
     addCourseIdToReqBody,
-    deleteReviewMiddleware
+    deleteReviewMiddleware,
+    addCourseIdToReqQuery
 };
