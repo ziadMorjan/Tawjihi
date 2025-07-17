@@ -71,7 +71,8 @@ const MainPage = () => {
   const { data: dataCourses, isLoading } = useApi(`${API_URL}/courses/`)
   const { data: dataTeachers } = useApi(`${API_URL}/users/?role=teacher&isActive=true&limit=3`)
 
-  console.log("data is ", dataCourses)
+  console.log("data is -----------------", dataCourses)
+  console.log("Teachers is ++++++++++++++++", dataTeachers)
 
   //filteredCourses
   const filteredCourses = useMemo(() => {
@@ -159,7 +160,7 @@ const MainPage = () => {
                     key={item._id}
                     item={item}
                     id={item._id}
-                    imgSrc={item.img || "/assets/img/logo.png"}
+                    imgSrc={item.coverImg || "/assets/img/logo.png"}
                     name={item.name}
                     starIcon={item.averageRating}
                     price={item.price}
@@ -217,8 +218,8 @@ const MainPage = () => {
                   <TeacherCard
                     id={item._id}
                     name={item.name}
-                    desc="مدرس محترف لمواد الفيزياء والرياضيات"
-                    imgSrc={item.img || "/assets/img/logo.png"}
+                    desc={item.description || "لا يوجد وصف متاح"}
+                    imgSrc={item.coverImage || "/assets/img/logo.png"}
                     key={index}
                     starIcon={4.5}
                     badge="معلم"

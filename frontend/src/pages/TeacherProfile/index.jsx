@@ -536,7 +536,7 @@ function TeacherProfile() {
               <ProfileHeader>
                 <ProfileImageContainer>
                   <ProfileImage
-                    src="https://th.bing.com/th/id/OIP.x2wDWv8Y8uPFo00LXaOGxAHaHa?w=199&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
+                    src={profileData?.coverImage}
                     alt={`صورة ${profileData?.name}`}
                   />
                   <OnlineIndicator />
@@ -598,7 +598,7 @@ function TeacherProfile() {
                     download={`${profileData.name}_CV.pdf`}
                   >
                     <span>📄</span>
-                    تحميل السيرة الذاتية
+                    عرض السيرة الذاتية
                   </ModernDownloadButton>
                 )}
               </SectionContent>
