@@ -37,6 +37,7 @@ import { API_URL } from "../../config";
 import Loading from "../../components/Loading";
 import { StyledBuyButtonAndPriceBadge } from "../../components/buyButtonAndPriceBadge/style";
 import { CurrentPrice } from "../../components/card/style";
+import { CourseIcon } from "../../components/Icon/courseIcon";
 
 const CourseOne = () => {
   const [thisCourse, setThisCourse] = useState({});
@@ -45,6 +46,7 @@ const CourseOne = () => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
+
 
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData?._id;
@@ -168,19 +170,19 @@ const CourseOne = () => {
           <DetailsWrapper>
             <ProgressRow>
               {/* <Progress /> */}
-              <WatchText>نسبة المشاهدة 60%</WatchText>
+              {/* <WatchText>نسبة المشاهدة 60%</WatchText> */}
             </ProgressRow>
 
             <div>
               <Pargrahph>البداية مع</Pargrahph>
-              <H2>دورة {thisCourse?.name || "..."}</H2>
+              <H2>{thisCourse?.name || "..."}</H2>
               <Pargrahph>
                 {thisCourse?.description || "وصف الدورة غير متوفر."}
               </Pargrahph>
 
               <MetaInfo>
-                {/* <CourseIcon icon="clock" text="13H" />
-                <CourseIcon icon="star" text="4.5" /> */}
+                <CourseIcon icon="clock" text="13H" />
+                <CourseIcon icon="star" text={thisCourse.averageRating} />
               </MetaInfo>
             </div>
 
@@ -237,8 +239,8 @@ const CourseOne = () => {
             <TeacherCard
               id={thisCourse.teacher?._id}
               name={thisCourse.teacher?.name || "معلم غير معروف"}
-              desc="مدرس محترف لمواد الفيزياء والرياضيات"
-              imgSrc="/images/mohammed.jpg"
+              desc={thisCourse.teacher?.description}
+              imgSrc={thisCourse.teacher?.coverImage}
               starIcon={thisCourse.averageRating || 0}
               badge="معلم"
             />
@@ -247,7 +249,11 @@ const CourseOne = () => {
 
         <SectionTitle>مراجعات الطلاب</SectionTitle>
         <ReviewSection>
-          <ReviewListSection courseId={courseId} userId={userId} from={'coursePage'} />
+          <ReviewListSection
+            courseId={courseId}
+            userId={userId}
+            from={"coursePage"}
+          />
 
           {isEnrolled && (
             <>
@@ -256,8 +262,7 @@ const CourseOne = () => {
 
               <CommentForm
                 courseId={courseId}
-                from={'coursePage'}
-                
+                from={"coursePage"}
                 register={register}
                 handleSubmit={handleSubmit}
                 onSubmit={onSubmit}
@@ -265,7 +270,6 @@ const CourseOne = () => {
               />
             </>
           )}
-
         </ReviewSection>
       </Containers>
     </>

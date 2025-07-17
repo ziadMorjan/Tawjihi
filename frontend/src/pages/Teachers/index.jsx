@@ -71,7 +71,7 @@ function Teachers() {
                   {currentItems.map((teacher, index) => (
                     <TeacherCard
                       key={teacher._id || index}
-                      imgSrc={teacher.img || "/assets/img/logo.png"}
+                      imgSrc={teacher.coverImage || "/assets/img/logo.png"}
                       name={teacher.name}
                       starIcon={teacher.averageRating}
                       id={teacher._id}
