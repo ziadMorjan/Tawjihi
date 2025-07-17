@@ -59,7 +59,7 @@ export const ReviewerName = styled.span`
 
 export const ReviewText = styled.p`
   font-size: 14px;
-  color: #444;
+  color: ${({ theme }) => theme.color};
   margin: 0;
   line-height: 1.6;
 `;

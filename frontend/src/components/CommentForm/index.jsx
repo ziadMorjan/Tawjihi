@@ -1,16 +1,18 @@
-//MUI Library
+// MUI
 import { Label } from "@mui/icons-material";
+import { CircularProgress } from "@mui/material";
 
-//styles
+// styles
 import { FieldRow, LeaveCommentWrapper, SubmitButton, TextArea } from "./style";
 
-//components
+// components
 import { H3 } from "../typography";
 
-//hooks
+// hooks
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { API_URL } from "../../config";
+import { useState } from "react";
 
 const CommentForm = ({ courseId, lessonId, from }) => {
   const {
@@ -20,40 +22,38 @@ const CommentForm = ({ courseId, lessonId, from }) => {
     reset,
   } = useForm();
 
-  const onSubmit = async (data) => {
-    console.log("Submitted data:", data);
-    try {
-      // setReviewsLoading(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
       let response = {};
-      if (from === 'videoPage') {
-        response = await axios.post(`${API_URL}/lessons/${lessonId}/comments`,
+      if (from === "videoPage") {
+        response = await axios.post(
+          `${API_URL}/lessons/${lessonId}/comments`,
           {
             content: data.comment,
-            // Assuming a default rating of 3
           },
-          { withCredentials: true });
-
-      } else if (from === 'coursePage') {
-        response = await axios.post(`${API_URL}/courses/${courseId}/reviews`,
+          { withCredentials: true }
+        );
+      } else if (from === "coursePage") {
+        response = await axios.post(
+          `${API_URL}/courses/${courseId}/reviews`,
           {
             comment: data.comment,
-            rating: 3, // Assuming a default rating of 3
+            rating: 3, // default rating
           },
-          { withCredentials: true });
+          { withCredentials: true }
+        );
       }
 
-
-      console.log("Review posts successfully:", response);
-
-      // Process reviews as needed
+      console.log("Review posted successfully:", response);
     } catch (error) {
-      console.error("Error fetching reviews:", error);
+      console.error("Error posting review:", error);
     } finally {
-
+      setIsSubmitting(false);
+      reset();
     }
-
-    reset();
   };
 
   return (
@@ -65,9 +65,16 @@ const CommentForm = ({ courseId, lessonId, from }) => {
           <TextArea
             placeholder="اكتب تعليقك هنا..."
             {...register("comment", { required: "يرجى كتابة تعليقك" })}
+            disabled={isSubmitting}
           />
         </FieldRow>
-        <SubmitButton type="submit">إرسال التعليق</SubmitButton>
+        <SubmitButton type="submit" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <CircularProgress size={22} color="inherit" />
+          ) : (
+            "إرسال التعليق"
+          )}
+        </SubmitButton>
         {errors.comment && (
           <span style={{ color: "red", fontSize: "13px", margin: "0px 10px" }}>
             {errors.comment.message}
