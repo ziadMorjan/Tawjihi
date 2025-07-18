@@ -23,6 +23,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { useComments } from "../../context/CommentContext";
 
 const modalStyle = {
   position: "absolute",
@@ -37,52 +38,48 @@ const modalStyle = {
 };
 
 const ReviewListSection = ({ courseId, lessonId, from }) => {
-  const [reviews, setReviews] = useState([]);
-  const [isReviewsLoading, setReviewsLoading] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [editContent, setEditContent] = useState('');
+  const {
+    course_comments,
+    lesson_comments,
+    isReviewsLoading,
+    isReviewPosting,
+    isReviewDeleting,
+    reviewDeletingId,
+    isUpdating,
+    getCourseComments,
+    postCourseComment,
+    deleteCourseComment,
+    updateCourseComment,
+    getLessonComments,
+    postLessonComment,
+    deleteLessonComment,
+    updateLessonComment,
+  } = useComments();
+
+  const reviews = from === "videoPage" ? lesson_comments : course_comments;
+
+  const [editContent, setEditContent] = useState("");
   const [editReviewId, setEditReviewId] = useState(null);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData?._id;
 
   useEffect(() => {
-    const getReviews = async () => {
-      try {
-        setReviewsLoading(true);
-        let response = {}
-
-        if (from === 'videoPage') {
-          response = await axios.get(`${API_URL}/lessons/${lessonId}/comments`, { withCredentials: true });
-        } else if (from === 'coursePage') {
-          response = await axios.get(`${API_URL}/courses/${courseId}/reviews`, { withCredentials: true });
-        }
-
-        setReviews(response.data.data.docs)
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      } finally {
-        setReviewsLoading(false);
-      }
+    if (from === "videoPage") {
+      getLessonComments(lessonId);
+    } else if (from === "coursePage") {
+      getCourseComments(courseId);
     }
-    getReviews();
   }, [courseId, lessonId]);
 
   const handleDelete = async (clickedReviewId) => {
-    try {
-      let response = {};
-      if (from === 'videoPage') {
-        response = await axios.delete(`${API_URL}/lessons/${lessonId}/comments/${clickedReviewId}`, { withCredentials: true });
-      } else if (from === 'coursePage') {
-        response = await axios.delete(`${API_URL}/courses/${courseId}/reviews/${clickedReviewId}`, { withCredentials: true });
-      }
-
-      setReviews(reviews.filter(review => review._id !== clickedReviewId));
-    } catch (error) {
-      console.error("Error deleting review:", error);
+    if (from === "videoPage") {
+      await deleteLessonComment(lessonId, clickedReviewId);
+    } else if (from === "coursePage") {
+      await deleteCourseComment(courseId, clickedReviewId);
     }
-  }
+  };
 
   const openEditModal = (reviewId, currentContent) => {
     setEditReviewId(reviewId);
@@ -91,85 +88,83 @@ const ReviewListSection = ({ courseId, lessonId, from }) => {
   };
 
   const handleUpdate = async () => {
-    setIsUpdating(true);
-    try {
-      let response;
-      if (from === 'videoPage') {
-        response = await axios.patch(
-          `${API_URL}/lessons/${lessonId}/comments/${editReviewId}`,
-          { content: editContent },
-          { withCredentials: true }
-        );
-      } else if (from === 'coursePage') {
-        response = await axios.patch(
-          `${API_URL}/courses/${courseId}/reviews/${editReviewId}`,
-          { comment: editContent },
-          { withCredentials: true }
-        );
-      }
-
-      setReviews((prevReviews) =>
-        prevReviews.map((review) =>
-          review._id === editReviewId
-            ? {
-                ...review,
-                ...(from === 'videoPage' ? { content: editContent } : { comment: editContent }),
-              }
-            : review
-        )
-      );
-
-      setModalOpen(false);
-    } catch (error) {
-      console.error("Error updating review:", error);
-    } finally {
-      setIsUpdating(false);
+    if (from === "videoPage") {
+      await updateLessonComment(lessonId, editReviewId, editContent);
+    } else if (from === "coursePage") {
+      await updateCourseComment(courseId, editReviewId, editContent);
     }
+    setModalOpen(false);
   };
 
   return (
     <>
       <ReviewList>
         {isReviewsLoading ? (
-          Array.from({ length: 3 }).map((_, i) => (
-            <SkeletonComment key={i} />
-          ))
+          Array.from({ length: 3 }).map((_, i) => <SkeletonComment key={i} />)
         ) : reviews.length === 0 ? (
           <Typography style={{ padding: "10px 0px" }}>
             لا توجد مراجعات حتى الآن
           </Typography>
         ) : (
-          reviews.map((review, index) => (
+          reviews?.map((review, index) => (
             <ReviewCard key={index}>
-              <AvatarCircle>{review.user.name.charAt(0).toUpperCase()}</AvatarCircle>
+              <AvatarCircle>
+                {review?.user?.name?.charAt(0).toUpperCase()}
+              </AvatarCircle>
               <ReviewContent>
                 <ReviewHeader>
-                  <ReviewerName>{review.user.name}</ReviewerName>
+                  <ReviewerName>{review?.user?.name}</ReviewerName>
                   <ReviewActions>
-                    {review.user._id === userId && (
+                    {review?.user?._id === userId && (
                       <>
                         <FaEdit
-                          style={{ cursor: "pointer" }}
+                          style={{
+                            cursor:
+                              isUpdating || isReviewDeleting
+                                ? "not-allowed"
+                                : "pointer",
+                            opacity:
+                              isUpdating || isReviewDeleting ? 0.5 : 1,
+                          }}
                           onClick={() =>
+                            !isUpdating &&
+                            !isReviewDeleting &&
                             openEditModal(
-                              review._id,
-                              from === 'videoPage' ? review.content : review.comment
+                              review?._id,
+                              from === "videoPage"
+                                ? review.content
+                                : review.comment
                             )
                           }
                         />
-                        <FaTrash
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleDelete(review._id)}
-                        />
+                        {isReviewDeleting && reviewDeletingId === review?._id ? (
+                          <CircularProgress size={16} />
+                        ) : (
+                          <FaTrash
+                            style={{
+                              cursor:
+                                isUpdating || isReviewDeleting
+                                  ? "not-allowed"
+                                  : "pointer",
+                              opacity:
+                                isUpdating || isReviewDeleting ? 0.5 : 1,
+                            }}
+                            onClick={() =>
+                              !isUpdating &&
+                              !isReviewDeleting &&
+                              handleDelete(review?._id)
+                            }
+                          />
+                        )}
                       </>
                     )}
                   </ReviewActions>
                 </ReviewHeader>
                 <ReviewText>
-                  {from === 'videoPage'
-                    ? review.content
-                    : from === 'coursePage'
-                    ? review.comment
+                  {from === "videoPage"
+                    ? review?.content
+                    : from === "coursePage"
+                    ? review?.comment
                     : null}
                 </ReviewText>
               </ReviewContent>

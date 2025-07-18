@@ -25,6 +25,7 @@ import { NewOldProvider } from './context/NewOldContext';
 import { SearchContextProvider } from './context/SearchContext';
 import { SideBarContextProvider } from './context/SideBarContext';
 import { AppContext, AppProvider } from './context/WishAndCartListContext';
+import { CommentsProvider } from './context/CommentContext';
 
 
 //start point
@@ -57,8 +58,12 @@ root.render(
                                 pauseOnFocusLoss
                                 draggable
                                 pauseOnHover
-                              />                    
+                              />           
+                              <CommentsProvider>         
+                              
                               <App />
+
+                              </CommentsProvider>
                             </AppProvider>
                           </SearchContextProvider>
                         </NewOldProvider>
