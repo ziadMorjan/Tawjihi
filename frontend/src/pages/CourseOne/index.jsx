@@ -47,7 +47,6 @@ const CourseOne = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
 
-
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData?._id;
 
@@ -59,7 +58,7 @@ const CourseOne = () => {
   );
 
   useEffect(() => {
-    if (!userId) return;
+    // if (!userId) return;
 
     const getCourse = async () => {
       try {
