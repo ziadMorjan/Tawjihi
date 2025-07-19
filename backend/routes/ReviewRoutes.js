@@ -25,8 +25,8 @@ const router = express.Router({ mergeParams: true });
 // Routes for Review
 router.route('/')
     .get(
-        getAllReviews,
-        addCourseIdToReqQuery
+        addCourseIdToReqQuery,
+        getAllReviews
     )
     .post(
         protect,

@@ -35,8 +35,8 @@ router.use("/:lessonId/comments", commentsRouts);
 
 router.route('/')
     .get(
-        getAllLessons,
-        addCourseIdToReqQuery
+        addCourseIdToReqQuery,
+        getAllLessons
     )
     .post(
         protect,

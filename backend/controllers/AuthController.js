@@ -5,6 +5,7 @@ const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 const { createToken } = require("../utils/JWTs");
 const CustomError = require("../utils/CustomError");
 const { sendEmail } = require("../utils/emails");
+const { resetPasswordTemp } = require("../utils/emailTemps");
 const Cart = require("../models/Cart");
 
 const sendAuthRes = async function (res, user, statusCode) {
@@ -67,13 +68,11 @@ const forgetPassword = asyncErrorHandler(async function (req, res) {
     user.resetPasswordCodeVerified = false;
     await user.save();
 
-    let emailBody = `Hi ${user.name}!\nWe receive your request to reset your, use the bellow code to reset your password.\n\n${resetCode}\n\nthis code is valid for 15 minuets`;
-
     let options = {
         from: "Tawjihi Support",
         to: user.email,
         subject: "Reset password",
-        text: emailBody
+        text: resetPasswordTemp(user.name, resetCode)
     }
 
     try {

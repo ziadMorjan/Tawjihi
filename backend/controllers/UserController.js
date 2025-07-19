@@ -16,6 +16,7 @@ const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 const { createToken } = require("../utils/JWTs");
 const CustomError = require("../utils/CustomError");
 const { sendEmail } = require("../utils/emails");
+const { acceptTeacherTemp, refuseTeacherTemp } = require("../utils/emailTemps");
 const Cart = require("../models/Cart");
 
 const getAllUsers = getAll(User);
@@ -142,13 +143,11 @@ let acceptTeacher = asyncErrorHandler(async function (req, res) {
         new: true
     });
 
-    let emailBody = `Hi ${user.name}\n\n we have accepted you to join us as a teacher you can login now using your email and password`;
-
     let options = {
         from: "Tawjihi support",
         to: user.email,
         subject: "Accepted as a teacher",
-        text: emailBody
+        text: acceptTeacherTemp(user.name)
     };
 
     try {
@@ -162,16 +161,11 @@ let acceptTeacher = asyncErrorHandler(async function (req, res) {
 let refuseTeacher = asyncErrorHandler(async function (req, res) {
     let user = await User.findByIdAndDelete(req.params.id);
 
-    let emailBody = `Hi ${user.name}\n\n Unlucky we could not accept you to join us as a teacher,\n\n strength your cv and try to join us later`;
-
-    if (user.isActive === true)
-        emailBody = `Hi ${user.name}\n\n Unlucky we will refuse you teacher`;
-
     let options = {
         from: "Tawjihi support",
         to: user.email,
         subject: "Not accepted as a teacher",
-        text: emailBody
+        text: refuseTeacherTemp(user.name, user.isActive),
     };
 
     try {
