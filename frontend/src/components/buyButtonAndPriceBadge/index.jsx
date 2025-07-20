@@ -1,4 +1,3 @@
-import React from 'react'
 import { StyledBuyButtonAndPriceBadge } from './style'
 
 function BuyButtonAndPriceBadge({children}) {

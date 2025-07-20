@@ -6,7 +6,6 @@ import {
   SkeletonTeacherName,
   SkeletonTeacherUnderline,
   SkeletonTeacherDesc,
-
 } from "./SkeletonTeacherStyle";
 
 export const SkeletonTeacherCard = () => {
@@ -17,8 +16,7 @@ export const SkeletonTeacherCard = () => {
       <SkeletonTeacherName />
       <SkeletonTeacherUnderline />
       <SkeletonTeacherDesc />
-        <SkeletonTeacherName />
-
+      <SkeletonTeacherName />
     </SkeletonTeacherWrapper>
   );
 };

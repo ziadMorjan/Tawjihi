@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 //components
-import { Card, CourseCard } from "../../components/card/courseCard";
+import { CourseCard } from "../../components/card/courseCard";
 
 //axios
 import axios from "axios";
@@ -15,7 +15,6 @@ import { NavBar } from "../../layout/navBar";
 //toast
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button } from "../../components/Buttons/button";
 import { Containers } from "../../components/Container";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
 

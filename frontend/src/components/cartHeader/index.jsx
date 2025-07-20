@@ -1,4 +1,4 @@
-import React from 'react'
+//style
 import { StyledCartHeader } from './style'
 
 export function CartHeader({children}) {

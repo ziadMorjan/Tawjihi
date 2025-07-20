@@ -8,11 +8,7 @@ import {
   ReviewList,
   ReviewText,
 } from "./style";
-
-import { StarRating } from "../Star/starRating";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_URL } from "../../config";
 import SkeletonComment from "../Loading/SkeletonComment";
 import {
   Typography,
@@ -42,16 +38,13 @@ const ReviewListSection = ({ courseId, lessonId, from }) => {
     course_comments,
     lesson_comments,
     isReviewsLoading,
-    isReviewPosting,
     isReviewDeleting,
     reviewDeletingId,
     isUpdating,
     getCourseComments,
-    postCourseComment,
     deleteCourseComment,
     updateCourseComment,
     getLessonComments,
-    postLessonComment,
     deleteLessonComment,
     updateLessonComment,
   } = useComments();

@@ -5,7 +5,6 @@ import {
   SkeletonPrice,
   SkeletonStars,
   SkeletonStarsPrice,
-  SkeletonTeacherImg,
   SkeletonTeacherName,
   SkeletonWrapper,
   TeacherInfoWrapper,

@@ -42,7 +42,7 @@ export const PATH = {
   ResetPassword: "reset-password",
   Teachers: "teachers",
   TeacherProfile: "teachers/:id",
-  User:"user",
+  User: "user",
   WishList: "wishlist",
   CartList: "cartlist",
   MyCourses: "my-courses",
@@ -76,18 +76,18 @@ export const routers = [
     ],
   },
 
-    // Protected Routes
-    {
-        path: PATH.User,
-        element: <ProtectedRoute />, // Wrapper
-        children: [
-            { path: PATH.WishList, element: <WishList /> },
-            { path: PATH.CartList, element: <CartList /> },
-            { path: PATH.MyCourses, element: <MyCourses /> },
-            { path: PATH.UserProfile, element: <UserProfile /> },
-            { path: PATH.EditProfile, element: <EditProfile /> },
-        ],
-    },
+  // Protected Routes
+  {
+    path: PATH.User,
+    element: <ProtectedRoute />, // Wrapper
+    children: [
+      { path: PATH.WishList, element: <WishList /> },
+      { path: PATH.CartList, element: <CartList /> },
+      { path: PATH.MyCourses, element: <MyCourses /> },
+      { path: PATH.UserProfile, element: <UserProfile /> },
+      { path: PATH.EditProfile, element: <EditProfile /> },
+    ],
+  },
   // Protected Routes
   {
     path: PATH.User,

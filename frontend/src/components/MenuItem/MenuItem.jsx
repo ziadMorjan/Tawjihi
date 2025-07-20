@@ -126,19 +126,19 @@ export default function CustomizedMenus() {
         variant="text"
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
-       sx={(theme) => ({
-  backgroundImage: theme.linearGradient || "linear-gradient(135deg, #667eea, #764ba2)",
-  backgroundClip: "text",
-  WebkitBackgroundClip: "text",
-  color: "transparent",
-  WebkitTextFillColor: "transparent",
-  fontSize: "14px",
-  textTransform: "none",
-  px: 1, // paddingLeft & paddingRight
-  py: 0, // paddingTop & paddingBottom
-  maxWidth: 100,
-})}
-
+        sx={(theme) => ({
+          backgroundImage:
+            theme.linearGradient || "linear-gradient(135deg, #667eea, #764ba2)",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          color: "transparent",
+          WebkitTextFillColor: "transparent",
+          fontSize: "14px",
+          textTransform: "none",
+          px: 1, // paddingLeft & paddingRight
+          py: 0, // paddingTop & paddingBottom
+          maxWidth: 100,
+        })}
       >
         {user?.name?.split(" ")[0] || "المستخدم"}
       </Button>

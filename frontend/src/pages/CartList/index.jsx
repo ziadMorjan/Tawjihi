@@ -1,11 +1,8 @@
 //react
 import { useEffect, useState } from "react";
 
-//hooks
-import { useCRUD } from "../../hooks/useCRUD";
-
 //components
-import { Card, CourseCard } from "../../components/card/courseCard";
+import { CourseCard } from "../../components/card/courseCard";
 import { Containers } from "../../components/Container";
 
 //axios
@@ -20,13 +17,12 @@ import { CartHeader } from "../../components/cartHeader";
 //toast
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button } from "../../components/Buttons/button";
 import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
 
 const CartList = () => {
   // const { cart, setCartList } = useCRUD();
-  const [ cart, setCartList ] = useState([]);
+  const [cart, setCartList] = useState([]);
 
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +30,7 @@ const CartList = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         const res = await axios.get(`${API_URL}/cart`, {
           withCredentials: true,
         });
@@ -42,7 +38,7 @@ const CartList = () => {
       } catch (e) {
         console.log(e);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     };
     getData();
@@ -103,13 +99,10 @@ const CartList = () => {
           className="cart-grid"
           style={{ display: "flex", flexWrap: "wrap" }}
         >
-
           {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
-
           ) : cart.length === 0 ? (
-            <p style={{ textAlign: "center" , width: "100%"}}>لا توجد عناصر.</p>
-
+            <p style={{ textAlign: "center", width: "100%" }}>لا توجد عناصر.</p>
           ) : (
             cart.map((item) => (
               <CourseCard
@@ -126,9 +119,9 @@ const CartList = () => {
                 branch={item.branches.map((b) => b.name).join(" | ")}
                 subject={item.subject?.name}
               />
-            )))}
+            ))
+          )}
         </div>
-
       </Containers>
     </div>
   );

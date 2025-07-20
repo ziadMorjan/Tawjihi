@@ -1,6 +1,6 @@
 // src/context/CommentsContext.js
 
-import React, { createContext, useReducer, useContext } from 'react';
+import { createContext, useReducer, useContext } from 'react';
 import axios from 'axios';
 import { API_URL } from '../config';
 
@@ -58,7 +58,7 @@ const reducer = (state, action) => {
                 ...state,
                 course_comments: [...state.course_comments, { ...action.payload, user: { ...user } }],
             };
-            
+
         case ACTIONS.DELETE_COURSE_COMMENT:
             return {
                 ...state,
