@@ -1,216 +1,205 @@
-# Tawjihi - Online Educational Platform
+# Tawjihi - Online Learning and Course Management Platform
 
-**Tawjihi** is a comprehensive online educational platform tailored for the **Tawjihi curriculum**, offering a rich and engaging learning experience. The system supports students, teachers, and administrators through structured courses, interactive lessons, and robust management features.
+**Tawjihi** is a comprehensive, full-stack web platform designed for delivering interactive online education based on the **Tawjihi curriculum**. Built with the **MERN** stack (MongoDB, Express.js, React.js, Node.js), the system empowers **students**, **teachers**, and **administrators** to engage in modern digital learning through structured courses, rich lessons, secure payments, and user-friendly dashboards.
+
+---
 
 ## 🎯 Target Audience
 
-- **Students**: Enroll in courses, access educational content, track progress, and engage with teachers and peers.
-- **Teachers**: Create and manage courses, upload resources, and provide instruction.
-- **Administrators**: Manage users, courses, payments, and platform-wide operations.
+- **Students**: Browse and enroll in courses, watch video lessons, download materials, and track progress.
+- **Teachers**: Create and manage courses, upload videos/documents, interact with students.
+- **Administrators**: Oversee users, content, payments, and platform-wide settings.
 
 ---
 
-## 🌟 Features
+## 🌟 Key Features
 
-- **Authentication & Authorization**: Secure login and registration with role-based access control.
-- **Course Management**:
-  - Browse and search courses by subject, teacher, or branch.
-  - Detailed course pages with outlines and resources.
-  - Full CRUD support for teachers.
-- **Lesson & Resource Delivery**:
-  - Structured lessons with integrated videos, documents, and external links.
-- **Enrollment System**:
-  - Students can enroll in courses and track their progress.
-- **Shopping Cart & Wishlist**:
-  - Add courses to cart or wishlist for future purchase.
-- **Payment Integration**:
-  - Secure payment processing (Stripe integration supported).
-- **Comments & Reviews**:
-  - Students can leave feedback and interact via comments.
-- **Teacher Profiles**:
-  - Dedicated pages showing teacher qualifications and reviews.
-- **News & Updates**:
-  - Section for platform news and educational updates.
-- **Responsive Design**:
-  - Fully responsive interface for desktop, tablet, and mobile.
+- 🔐 **Authentication & Authorization**: Role-based login for admins, teachers, and students using JWT and OAuth (Google & Facebook).
+- 📚 **Course Management**:
+  - Teachers can create, edit, and manage their own courses.
+  - Students can browse by category, subject, or teacher.
+- 🎬 **Lesson Delivery**: Each course includes structured lessons with videos, resources, and external links.
+- 🛒 **Cart & Wishlist**: Add courses to shopping cart or wishlist for later.
+- 💳 **Payment System**: Stripe integration for secure checkout.
+- 📝 **Comments & Reviews**: Students can leave feedback and rate courses.
+- 👨‍🏫 **Teacher Profiles**: View teacher bios, reviews, and associated courses.
+- 📰 **News & Updates**: Section for platform-wide announcements and education-related news.
+- 📱 **Responsive UI**: Works seamlessly across desktop, tablet, and mobile devices.
+- ☁️ **Cloudinary Integration**: For uploading and managing media files.
 
 ---
 
-## ⚙️ Technologies
+## ⚙️ Tech Stack
 
-**Backend**: Node.js, Express.js, MongoDB, Mongoose, Passport.js, JWT  
-**Frontend**: React.js, Styled Components, Lottie
+### 🔧 Backend
 
-**Other Libraries**:
+- Node.js, Express.js
+- MongoDB + Mongoose
+- Passport.js, JWT, OAuth2
+- Cloudinary, Stripe, Multer
 
-- `bcryptjs` – Password hashing
-- `validator` – Data validation
-- `nodemailer` – Email services
-- `lucide-react` – Icon library
+### 🎨 Frontend
+
+- React.js
+- Styled Components
+- CoreUI React Dashboard
+- Lottie, Lucide Icons
+
+### 📦 Other Libraries
+
+- `bcryptjs` – Password encryption
+- `validator` – Input validation
+- `nodemailer` – Email delivery
 
 ---
 
 ## 🛠️ Installation
 
-### 📦 Prerequisites
+### 📋 Prerequisites
 
-Make sure the following are installed:
-
-- [Node.js](https://nodejs.org/) v14+
-- npm (comes with Node.js)
-- [MongoDB](https://www.mongodb.com/try/download/community)
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [MongoDB](https://www.mongodb.com/)
+- [Git](https://git-scm.com/)
+- [Cloudinary](https://cloudinary.com/)
+- [Stripe](https://stripe.com/)
 
 ---
 
-### 🚀 Setup
+### 🚀 Getting Started
 
-In your terminal:
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/ziadMorjan/Tawjihi.git
+cd Tawjihi
 ```
 
-#### 🔧 Frontend Setup
+#### 2. Backend Setup
 
 ```bash
-cd frontend
-```
-
-Then
-
-```bash
+cd backend
 npm install
-```
-
-#### 🔧 Backend Setup
-
-```bash
-cd ../backend
-```
-
-Then
-
-```bash
-npm install
-```
-
-Create a `config.env` file inside the `backend` directory:
-
-```bash
 cp config-lock.env config.env
 ```
 
-Then fill in the required environment variables:
+> Update `config.env` with your environment variables:
 
 ```env
 # Environment
-NODE_ENV=
+NODE_ENV=development
+PORT=5000
+BASE_URL=http://localhost:5000
 
-# Server
-PORT=
-BASE_URL=
-
-# Database
-DB_URI=
-DB_NAME=
+# MongoDB
+DB_URI=your_mongo_uri
+DB_NAME=your_db_name
 
 # JWT
-JWT_SECRET=
-JWT_EXPIRED=
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRED=30d
 
-# Frontend URL
-FRONTEND_URL=
+# Frontend
+FRONTEND_URL=http://localhost:3000
 
-# Google OAuth
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-
-# Facebook OAuth
-FACEBOOK_CLIENT_ID=
-FACEBOOK_CLIENT_SECRET=
+# OAuth
+GOOGLE_CLIENT_ID=your_google_id
+GOOGLE_CLIENT_SECRET=your_google_secret
+FACEBOOK_CLIENT_ID=your_facebook_id
+FACEBOOK_CLIENT_SECRET=your_facebook_secret
 
 # Email
-HOST_EMAIL=
-PORT_EMAIL=
-USER_EMAIL=
-PASS_EMAIL=
+HOST_EMAIL=your_email_host
+PORT_EMAIL=your_email_port
+USER_EMAIL=your_email_user
+PASS_EMAIL=your_email_password
 
 # Stripe
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
+STRIPE_SECRET_KEY=your_stripe_key
+STRIPE_WEBHOOK_SECRET=your_webhook_secret
 
-# cloudinary config
-CLOUDINARY_API_KEY=927453153956879
-CLOUDINARY_API_SECRET=89HTinRftm_lE6akhDJElkOg9e0
-CLOUDINARY_CLOUD_NAME=tawhihi
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-Seed the admin user in the database:
+#### 3. Frontend Setup
 
 ```bash
-cd "utils\dummyData"
+cd ../frontend
+npm install
 ```
 
-Then to make Sure that db is empty
+---
+
+## ▶️ Running the App
+
+Start backend server:
 
 ```bash
+cd ../backend
+npm run dev
+```
+
+Start frontend server:
+
+```bash
+cd ../frontend
+npm start
+```
+
+Visit: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🧪 Seed Dummy Data (Optional)
+
+```bash
+cd backend/utils/dummyData
+
+# To clear existing data
 node seeder.js -d
-```
 
-Then to insert dummy data into db
-
-```bash
+# To insert sample data
 node seeder.js -i
 ```
 
 ---
 
-## ▶️ Run the Project
-
-In the `backend` directory, start the backend server:
-
-```bash
-npm run start:dev
-```
-
-In a new terminal window, run the frontend server from the `frontend` directory:
-
-```bash
-npm start
-```
-
----
-
-## 🧭 Usage Flow
-
-1. **Register** as a student or teacher.
-2. **Login** to your account.
-3. **Browse Courses** and view course details.
-4. **Add to Cart/Wishlist** and proceed to checkout.
-5. **Access Lessons** and track progress.
-6. **Leave Reviews** and participate in discussions.
-7. **Update Your Profile** and preferences.
-
----
-
 ## 📬 API Documentation
 
-Explore and test the API using this [Postman collection](https://lively-capsule-44952.postman.co/workspace/APIs~7f9a2d9f-44a8-4923-a28c-aa5ceddac228/collection/40896646-d0bf1d05-8fc6-4fcc-b200-92e506a8d974?action=share&creator=40896646&active-environment=40896646-2e2ca253-997a-4d46-9df4-4b039503073c)
+Use the Postman collection to test APIs:
+
+[🔗 Tawjihi API on Postman](https://lively-capsule-44952.postman.co/workspace/APIs~7f9a2d9f-44a8-4923-a28c-aa5ceddac228/collection/40896646-d0bf1d05-8fc6-4fcc-b200-92e506a8d974)
 
 ---
 
-## 🤝 Contributors
+## 📚 Usage Flow
 
-- [Ziad Morjan](https://github.com/ziadMorjan) – Original developer
-- [Ali Abu Safia](https://github.com/AliHassan2712) – Original developer
-- [Mohammed Sabbah](https://github.com/Mohammed-Sabbah) – Original developer
+1. Register or login (via form or Google)
+2. Browse available courses
+3. Add to cart or wishlist
+4. Checkout using Stripe
+5. Watch lessons, download materials
+6. Leave comments or reviews
+
+---
+
+## 👥 Contributors
+
+- [Ziad Morjan](https://github.com/ziadMorjan)
+- [Ali Abu Safia](https://github.com/AliHassan2712)
+- [Mohammed Sabbah](https://github.com/Mohammed-Sabbah)
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+Licensed under the [MIT License](LICENSE).
 
 ---
 
-> We appreciate your feedback ❤️
+## 🙏 Acknowledgments
+
+- All educators supporting open education
+- Open-source tools & library maintainers

@@ -14,7 +14,6 @@ const {
 } = require("./controller");
 const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 const CustomError = require("../utils/CustomError");
-const cloudinary = require("../config/cloudinary");
 
 const uploadLessonVideo = uploadSingleField("video");
 
@@ -36,23 +35,10 @@ const handleVideo = asyncErrorHandler(async function (req, res, next) {
         const filePath = path.join(uploadDir, name);
         fs.writeFileSync(filePath, req.file.buffer);
         const duration = Math.round(await getVideoDurationInSeconds(filePath));
-
-        const result = await cloudinary.uploader.upload(filePath, {
-            folder: "videos/lessons",
-            resource_type: "video",
-            type: "upload",
-            access_mode: "public"
-        });
-
-        if (!result.secure_url) {
-            fs.unlinkSync(filePath);
-            throw new CustomError("Failed to upload video to cloud", 500);
-        }
-
-        fs.unlinkSync(filePath);
-
         req.body.duration = duration;
-        req.body.video = result.secure_url;
+
+        req.upload = "lesson";
+        req.filePath = filePath;
     }
     next();
 });

@@ -2,7 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const sharp = require("sharp");
-const cloudinary = require("../config/cloudinary");
 const User = require("../models/User");
 const { uploadMultipleFields } = require("../middlewares/uploadsMiddleware");
 const {
@@ -16,6 +15,7 @@ const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 const { createToken } = require("../utils/JWTs");
 const CustomError = require("../utils/CustomError");
 const { sendEmail } = require("../utils/emails");
+const { acceptTeacherTemp, refuseTeacherTemp } = require("../utils/emailTemps");
 const Cart = require("../models/Cart");
 
 const getAllUsers = getAll(User);
@@ -52,20 +52,9 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
                 .toBuffer();
 
             fs.writeFileSync(filePath, buffer);
-            const result = await cloudinary.uploader.upload(filePath, {
-                folder: "images/users",
-                resource_type: "image",
-                type: "upload",
-                access_mode: "public"
-            });
 
-            if (!result.secure_url) {
-                fs.unlinkSync(filePath);
-                throw new CustomError("Failed to upload cover image to cloud", 500);
-            }
-
-            fs.unlinkSync(filePath);
-            req.body.coverImage = result.secure_url;
+            req.coverImageFilePath = filePath;
+            req.upload = "user";
         }
         if (req.files.cv) {
             let { mimetype } = req.files.cv[0];
@@ -81,20 +70,9 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
             }
             const filePath = path.join(uploadDir, name);
             fs.writeFileSync(filePath, req.files.cv[0].buffer);
-            const result = await cloudinary.uploader.upload(filePath, {
-                folder: "files/cvs",
-                resource_type: "raw",
-                format: "pdf",
-                type: "upload",
-                access_mode: "public"
-            });
-            if (!result.secure_url) {
-                fs.unlinkSync(filePath);
-                throw new CustomError("Failed to upload cv to cloud", 500);
-            }
-            fs.unlinkSync(filePath);
 
-            req.body.cv = result.secure_url;
+            req.cvFilePath = filePath;
+            req.upload = "user";
         }
     }
     next();
@@ -142,13 +120,11 @@ let acceptTeacher = asyncErrorHandler(async function (req, res) {
         new: true
     });
 
-    let emailBody = `Hi ${user.name}\n\n we have accepted you to join us as a teacher you can login now using your email and password`;
-
     let options = {
         from: "Tawjihi support",
         to: user.email,
         subject: "Accepted as a teacher",
-        text: emailBody
+        text: acceptTeacherTemp(user.name)
     };
 
     try {
@@ -162,16 +138,11 @@ let acceptTeacher = asyncErrorHandler(async function (req, res) {
 let refuseTeacher = asyncErrorHandler(async function (req, res) {
     let user = await User.findByIdAndDelete(req.params.id);
 
-    let emailBody = `Hi ${user.name}\n\n Unlucky we could not accept you to join us as a teacher,\n\n strength your cv and try to join us later`;
-
-    if (user.isActive === true)
-        emailBody = `Hi ${user.name}\n\n Unlucky we will refuse you teacher`;
-
     let options = {
         from: "Tawjihi support",
         to: user.email,
         subject: "Not accepted as a teacher",
-        text: emailBody
+        text: refuseTeacherTemp(user.name, user.isActive),
     };
 
     try {

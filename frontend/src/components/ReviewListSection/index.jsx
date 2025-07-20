@@ -130,7 +130,12 @@ const ReviewListSection = ({ courseId, lessonId, from }) => {
                             )
                           }
                         />
+                        {console.log("isReviewDeleting", isReviewDeleting)}
+                        {console.log("reviewDeletingId", reviewDeletingId)}
+                        {console.log("review", review?._id)}
+
                         {isReviewDeleting && reviewDeletingId === review?._id ? (
+
                           <CircularProgress size={16} />
                         ) : (
                           <FaTrash
@@ -157,8 +162,8 @@ const ReviewListSection = ({ courseId, lessonId, from }) => {
                   {from === "videoPage"
                     ? review?.content
                     : from === "coursePage"
-                    ? review?.comment
-                    : null}
+                      ? review?.comment
+                      : null}
                 </ReviewText>
               </ReviewContent>
             </ReviewCard>

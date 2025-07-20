@@ -13,7 +13,6 @@ const {
 const { uploadSingleField } = require("../middlewares/uploadsMiddleware");
 const { asyncErrorHandler } = require('../middlewares/errorMiddleware');
 const CustomError = require("../utils/CustomError");
-const cloudinary = require("../config/cloudinary");
 
 const getAllNews = getAll(New);
 
@@ -50,20 +49,8 @@ const handleNewCoverImage = asyncErrorHandler(async function (req, res, next) {
 
         fs.writeFileSync(filePath, buffer);
 
-        const result = await cloudinary.uploader.upload(filePath, {
-            folder: "images/news",
-            resource_type: "image",
-            type: "upload",
-            access_mode: "public"
-        });
-
-        if (!result.secure_url) {
-            fs.unlinkSync(filePath);
-            throw new CustomError("Failed to upload cover image to cloud", 500);
-        }
-
-        fs.unlinkSync(filePath);
-        req.body.coverImage = result.secure_url;
+        req.upload = "new";
+        req.filePath = filePath;
     }
     next();
 });

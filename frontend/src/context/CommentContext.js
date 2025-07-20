@@ -12,7 +12,7 @@ const initialState = {
     isReviewsLoading: false,
     isReviewPosting: false,
     isReviewDeleting: false,
-    reviewDeletingId: false,
+    reviewDeletingId: null,
     isUpdating: false,
     error: null,
 };
@@ -21,6 +21,7 @@ const ACTIONS = {
     SET_LOADING: 'SET_LOADING',
     SET_POSTING: 'SET_POSTING',
     SET_DELETING: 'SET_DELETING',
+    SET_DELETING_ID: 'SET_DELETING_ID',
     SET_UPDATING: 'SET_UPDATING',
     GET_ALL_COURSE_COMMENTS: 'GET_ALL_COURSE_COMMENTS',
     POST_COURSE_COMMENT: 'POST_COURSE_COMMENT',
@@ -44,6 +45,8 @@ const reducer = (state, action) => {
             return { ...state, isReviewPosting: action.payload };
         case ACTIONS.SET_DELETING:
             return { ...state, isReviewDeleting: action.payload };
+        case ACTIONS.SET_DELETING_ID:
+            return { ...state,reviewDeletingId : action.payload };
         case ACTIONS.SET_UPDATING:
             return { ...state, isUpdating: action.payload };
         case ACTIONS.SET_ERROR:
@@ -152,6 +155,8 @@ export const CommentsProvider = ({ children }) => {
     const deleteCourseComment = async (courseId, commentId) => {
         try {
             dispatch({ type: ACTIONS.SET_DELETING, payload: true });
+            dispatch({ type: ACTIONS.SET_DELETING_ID, payload: commentId });
+
             await axios.delete(
                 `${API_URL}/courses/${courseId}/reviews/${commentId}`,
                 { withCredentials: true }
@@ -161,6 +166,7 @@ export const CommentsProvider = ({ children }) => {
             dispatch({ type: ACTIONS.SET_ERROR, payload: error });
         } finally {
             dispatch({ type: ACTIONS.SET_DELETING, payload: false });
+            dispatch({ type: ACTIONS.SET_DELETING_ID, payload: null });
         }
     };
 
@@ -224,6 +230,8 @@ export const CommentsProvider = ({ children }) => {
     const deleteLessonComment = async (lessonId, commentId) => {
         try {
             dispatch({ type: ACTIONS.SET_DELETING, payload: true });
+            dispatch({ type: ACTIONS.SET_DELETING_ID, payload: commentId });
+
             await axios.delete(
                 `${API_URL}/lessons/${lessonId}/comments/${commentId}`,
                 { withCredentials: true }
@@ -233,6 +241,7 @@ export const CommentsProvider = ({ children }) => {
             dispatch({ type: ACTIONS.SET_ERROR, payload: error });
         } finally {
             dispatch({ type: ACTIONS.SET_DELETING, payload: false });
+            dispatch({ type: ACTIONS.SET_DELETING_ID, payload: null });
         }
     };
 

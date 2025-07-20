@@ -12,8 +12,6 @@ const {
 } = require('./controller');
 const Course = require('../models/Course');
 const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
-const cloudinary = require("../config/cloudinary");
-const CustomError = require("../utils/CustomError");
 
 
 const uploadCourseImage = uploadSingleField("coverImage");
@@ -35,20 +33,8 @@ const handleCourseImage = asyncErrorHandler(async function (req, res, next) {
             .toBuffer();
 
         fs.writeFileSync(filePath, buffer);
-        const result = await cloudinary.uploader.upload(filePath, {
-            folder: "images/courses",
-            resource_type: "image",
-            type: "upload",
-            access_mode: "public"
-        });
-
-        if (!result.secure_url) {
-            fs.unlinkSync(filePath);
-            throw new CustomError("Failed to upload cover image to cloud", 500);
-        }
-
-        fs.unlinkSync(filePath);
-        req.body.coverImage = result.secure_url;
+        req.upload = "course";
+        req.filePath = filePath;
     }
     next();
 });
