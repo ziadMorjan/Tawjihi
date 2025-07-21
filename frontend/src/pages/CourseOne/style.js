@@ -167,6 +167,7 @@ export const ReviewSection = styled.div`
   padding: 32px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid ${({ theme }) => theme.border || "#e1e8ed"};
+  margin-bottom: 30px;
 
   .reviews-content {
     margin-top: 24px;
