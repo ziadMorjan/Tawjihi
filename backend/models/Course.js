@@ -60,7 +60,7 @@ CourseSchema.pre(/^find/, function (next) {
     this
         .populate({
             path: 'teacher',
-            select: 'name _id'
+            select: 'name _id description coverImage'
         })
         .populate({
             path: 'branches',
