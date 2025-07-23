@@ -186,7 +186,7 @@ const CourseOne = () => {
 
             <StartButtonWrapper>
               {isEnrolled ? (
-                <Button variant="contained" color="primary">
+                <Button variant="contained" color="primary" onClick={() => handleSelect(null, 0)}>
                   ابدأ الدورة الآن
                 </Button>
               ) : (
