@@ -1,7 +1,6 @@
-const fs = require("fs");
-const cloudinary = require("../config/cloudinary");
-const CustomError = require("./CustomError");
-
+import fs from 'fs';
+import cloudinary from '../config/cloudinary.js';
+import CustomError from './CustomError.js';
 
 const uploadToCloud = async (req) => {
     if (req.upload === "course") {
@@ -119,4 +118,4 @@ const uploadToCloud = async (req) => {
     }
 }
 
-module.exports = uploadToCloud;
+export default uploadToCloud;

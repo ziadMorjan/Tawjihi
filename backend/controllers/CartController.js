@@ -1,8 +1,8 @@
-const Cart = require("../models/Cart");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
-const Course = require("../models/Course");
-const Coupon = require("../models/Coupon");
-const CustomError = require("../utils/CustomError");
+import Cart from '../models/Cart.js';
+import Course from '../models/Course.js';
+import Coupon from '../models/Coupon.js';
+import CustomError from '../utils/CustomError.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 
 const sendRes = async (res, cart) => {
     res.status(200).json({
@@ -11,7 +11,7 @@ const sendRes = async (res, cart) => {
     });
 }
 
-const getLoggedUserCart = asyncErrorHandler(async function (req, res) {
+export const getLoggedUserCart = asyncErrorHandler(async function (req, res) {
     let cart = await Cart.findOne({ user: req.user.id });
     if (!cart)
         cart = await Cart.create({ user: req.user.id });
@@ -19,7 +19,7 @@ const getLoggedUserCart = asyncErrorHandler(async function (req, res) {
     sendRes(res, cart);
 });
 
-const addToCart = asyncErrorHandler(async function (req, res) {
+export const addToCart = asyncErrorHandler(async function (req, res) {
     let cart = await Cart.findOne({ user: req.user.id });
     const course = await Course.findById(req.params.courseId);
 
@@ -44,7 +44,7 @@ const addToCart = asyncErrorHandler(async function (req, res) {
     sendRes(res, cart);
 });
 
-const removeFromCart = asyncErrorHandler(async function (req, res) {
+export const removeFromCart = asyncErrorHandler(async function (req, res) {
     let cart = await Cart.findOne({ user: req.user.id });
     const course = await Course.findById(req.params.courseId);
 
@@ -67,7 +67,7 @@ const removeFromCart = asyncErrorHandler(async function (req, res) {
     sendRes(res, cart);
 });
 
-const clearCart = asyncErrorHandler(async function (req, res) {
+export const clearCart = asyncErrorHandler(async function (req, res) {
     const cart = await Cart.findOneAndUpdate(
         { user: req.user.id },
         {
@@ -81,7 +81,7 @@ const clearCart = asyncErrorHandler(async function (req, res) {
     sendRes(res, cart);
 });
 
-const applyCoupon = asyncErrorHandler(async function (req, res) {
+export const applyCoupon = asyncErrorHandler(async function (req, res) {
     let cart = await Cart.findOne({ user: req.user.id });
     let coupon = await Coupon.findOne({ name: req.body.coupon });
 
@@ -97,11 +97,3 @@ const applyCoupon = asyncErrorHandler(async function (req, res) {
 
     sendRes(res, cart);
 });
-
-module.exports = {
-    getLoggedUserCart,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    applyCoupon
-}

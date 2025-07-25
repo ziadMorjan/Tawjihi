@@ -1,13 +1,13 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const User = require('../../models/User');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import User from '../../models/User.js';
+import CustomError from '../CustomError.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const signupValidator = [
-    validator.check('name')
+export const signupValidator = [
+    check('name')
         .notEmpty()
         .withMessage('Name is required'),
-    validator.check("email")
+    check("email")
         .notEmpty()
         .withMessage('email is required')
         .custom(async (value) => {
@@ -18,7 +18,7 @@ const signupValidator = [
             return true;
         }),
 
-    validator.check('password')
+    check('password')
         .notEmpty()
         .withMessage('password is required')
         .isLength({ min: 8 })
@@ -30,7 +30,7 @@ const signupValidator = [
             return true;
         }),
 
-    validator.check('phone')
+    check('phone')
         .isMobilePhone(["ar-PS", "he-IL"])
         .withMessage('invalid phone number format')
         .custom(async (value) => {
@@ -41,7 +41,7 @@ const signupValidator = [
             return true;
         }),
 
-    validator.check("role")
+    check("role")
         .optional()
         .isIn(["admin", "teacher", "user"])
         .withMessage("invalid role")
@@ -54,8 +54,8 @@ const signupValidator = [
     validationMiddleware
 ];
 
-const loginValidator = [
-    validator.check("email")
+export const loginValidator = [
+    check("email")
         .notEmpty()
         .withMessage('email is required')
         .custom(async (value) => {
@@ -66,7 +66,7 @@ const loginValidator = [
             return true;
         }),
 
-    validator.check('password')
+    check('password')
         .notEmpty()
         .withMessage('password is required')
         .isLength({ min: 8 })
@@ -75,8 +75,8 @@ const loginValidator = [
     validationMiddleware
 ]
 
-const forgetPasswordValidator = [
-    validator.check("email")
+export const forgetPasswordValidator = [
+    check("email")
         .notEmpty()
         .withMessage('email is required')
         .custom(async (value) => {
@@ -90,8 +90,8 @@ const forgetPasswordValidator = [
     validationMiddleware
 ]
 
-const verifyResetCodValidator = [
-    validator.check("resetCode")
+export const verifyResetCodValidator = [
+    check("resetCode")
         .notEmpty()
         .withMessage('resetCode is required')
         .custom(async (value) => {
@@ -104,8 +104,8 @@ const verifyResetCodValidator = [
     validationMiddleware
 ]
 
-const resetPasswordValidator = [
-    validator.check("email")
+export const resetPasswordValidator = [
+    check("email")
         .notEmpty()
         .withMessage('email is required')
         .custom(async (value) => {
@@ -116,7 +116,7 @@ const resetPasswordValidator = [
             return true;
         }),
 
-    validator.check('newPassword')
+    check('newPassword')
         .notEmpty()
         .withMessage('newPassword is required')
         .isLength({ min: 8 })
@@ -131,11 +131,3 @@ const resetPasswordValidator = [
 
     validationMiddleware
 ]
-
-module.exports = {
-    signupValidator,
-    loginValidator,
-    forgetPasswordValidator,
-    verifyResetCodValidator,
-    resetPasswordValidator
-}

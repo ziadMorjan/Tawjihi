@@ -1,4 +1,4 @@
-exports.extractPublicId = (url) => {
+const extractPublicId = (url) => {
     const parts = url.split('/upload/');
     if (parts.length < 2) return null;
 
@@ -9,3 +9,5 @@ exports.extractPublicId = (url) => {
 
     return publicId;
 }
+
+export default extractPublicId;

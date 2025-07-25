@@ -1,27 +1,27 @@
-const TeacherReview = require("../models/TeacherReview");
-const CustomError = require("../utils/CustomError");
-const { asyncErrorHandler } = require("./errorMiddleware");
+import TeacherReview from '../models/TeacherReview.js';
+import CustomError from '../utils/CustomError.js';
+import { asyncErrorHandler } from './errorMiddleware.js';
 
-const addTeacherIdToReqBody = (req, res, next) => {
+export const addTeacherIdToReqBody = (req, res, next) => {
     if (req.params.teacherId) {
         req.body.teacher = req.params.teacherId;
     }
     next();
 }
 
-const addTeacherIdToReqQuery = (req, res, next) => {
+export const addTeacherIdToReqQuery = (req, res, next) => {
     if (req.params.teacherId) {
         req.query.teacher = req.params.teacherId;
     }
     next();
 }
 
-const addUserIdToReqBody = (req, res, next) => {
+export const addUserIdToReqBody = (req, res, next) => {
     req.body.user = req.user.id;
     next();
 }
 
-const deleteTeacherReviewMiddleware = asyncErrorHandler(async (req, res, next) => {
+export const deleteTeacherReviewMiddleware = asyncErrorHandler(async (req, res, next) => {
     const tReview = await TeacherReview.findById(req.params.id);
     if (!tReview) {
         throw new CustomError("No review found with that ID");
@@ -33,10 +33,3 @@ const deleteTeacherReviewMiddleware = asyncErrorHandler(async (req, res, next) =
     }
     next();
 });
-
-module.exports = {
-    addUserIdToReqBody,
-    addTeacherIdToReqBody,
-    deleteTeacherReviewMiddleware,
-    addTeacherIdToReqQuery
-};

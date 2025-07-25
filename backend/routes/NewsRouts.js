@@ -1,18 +1,18 @@
-const express = require("express");
+import express from 'express';
 
-const {
+import {
     protect,
     allowedTo
-} = require('../middlewares/authMiddleware');
+} from '../middlewares/authMiddleware.js';
 
-const {
+import {
     createNewValidator,
     updateNewValidator,
     getNewValidator,
     deleteNewValidator
-} = require("../utils/validators/newsValidator");
+} from '../utils/validators/newsValidator.js';
 
-const {
+import {
     getAllNews,
     createNew,
     getNew,
@@ -20,9 +20,9 @@ const {
     deleteNew,
     uploadNewCoverImage,
     handleNewCoverImage
-} = require("../controllers/NewController");
+} from '../controllers/NewController.js';
 
-let router = express.Router();
+const router = express.Router();
 
 router.route("/")
     .get(getAllNews)
@@ -52,4 +52,4 @@ router.route("/:id")
         deleteNew
     );
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const resourceSchema = new mongoose.Schema(
     {
@@ -16,4 +16,4 @@ const resourceSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = resourceSchema;
+export default resourceSchema;

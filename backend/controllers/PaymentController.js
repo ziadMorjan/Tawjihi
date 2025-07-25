@@ -1,17 +1,18 @@
-const Stripe = require('stripe');
+import Stripe from 'stripe';
+import Course from "../models/Course.js";
+import Payment from '../models/Payment.js';
+import Enrollment from '../models/Enrollment.js';
+import { getAll, getOne } from "./controller.js";
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
+
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const Course = require('../models/Course');
-const Enrollment = require("../models/Enrollment");
-const Payment = require("../models/Payment");
-const { getAll, getOne } = require("./controller");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
 
-const getPayments = getAll(Payment);
+export const getPayments = getAll(Payment);
 
-const getPayment = getOne(Payment, "Payment");
+export const getPayment = getOne(Payment, "Payment");
 
-const createCheckoutSession = asyncErrorHandler(async (req, res) => {
+export const createCheckoutSession = asyncErrorHandler(async (req, res) => {
     const { ids } = req.body;
     let promises = ids.map(id => Course.findById(id));
     let courses = await Promise.all(promises);
@@ -43,7 +44,7 @@ const createCheckoutSession = asyncErrorHandler(async (req, res) => {
     });
 });
 
-const webhook = asyncErrorHandler(async (req, res) => {
+export const webhook = asyncErrorHandler(async (req, res) => {
     const sig = req.headers["stripe-signature"];
     let event;
 
@@ -69,10 +70,3 @@ const webhook = asyncErrorHandler(async (req, res) => {
 
     res.status(200).json({ status: "Received" });
 });
-
-module.exports = {
-    getPayments,
-    getPayment,
-    createCheckoutSession,
-    webhook
-};

@@ -1,12 +1,12 @@
-const CustomError = require("../utils/CustomError");
-const { asyncErrorHandler } = require("./errorMiddleware");
+import CustomError from '../utils/CustomError.js';
+import { asyncErrorHandler } from './errorMiddleware.js';
 
-const addUserIdToReqParams = function (req, res, next) {
+export const addUserIdToReqParams = function (req, res, next) {
     req.params.id = req.user.id;
     next();
 }
 
-const updateMeMiddleware = asyncErrorHandler(async function (req, res, next) {
+export const updateMeMiddleware = asyncErrorHandler(async function (req, res, next) {
     if (req.body.password || req.body.password)
         throw new CustomError("You can not change your password from here!", 403);
     if (req.body.role)
@@ -14,13 +14,7 @@ const updateMeMiddleware = asyncErrorHandler(async function (req, res, next) {
     next();
 });
 
-const activationMiddleware = bool => function (req, res, next) {
+export const activationMiddleware = bool => function (req, res, next) {
     req.body = { isActive: bool };
     next();
-}
-
-module.exports = {
-    addUserIdToReqParams,
-    updateMeMiddleware,
-    activationMiddleware
 }

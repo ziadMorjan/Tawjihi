@@ -1,14 +1,18 @@
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const Lesson = require("../models/Lesson");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
-const { uploadSingleField } = require("../middlewares/uploadsMiddleware");
-const CustomError = require("../utils/CustomError");
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url'; // 👈 Add this import
+import Lesson from '../models/Lesson.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
+import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
 
-const uploadContentFile = uploadSingleField("content");
+// --- Recreate __dirname for ES Modules ---
+const __filename = fileURLToPath(import.meta.url); // Gets the file path
+const __dirname = path.dirname(__filename);     // Gets the directory path
 
-const handleContentFile = asyncErrorHandler(async function (req, res, next) {
+export const uploadContentFile = uploadSingleField("content");
+
+export const handleContentFile = asyncErrorHandler(async function (req, res, next) {
     if (req.file) {
         let { mimetype } = req.file;
         if (!mimetype.endsWith("pdf"))
@@ -30,7 +34,7 @@ const handleContentFile = asyncErrorHandler(async function (req, res, next) {
     next();
 });
 
-const getAllResource = asyncErrorHandler(async function (req, res) {
+export const getAllResource = asyncErrorHandler(async function (req, res) {
     let lesson = await Lesson.findById(req.params.lessonId);
 
     res.status(200).json({
@@ -42,7 +46,7 @@ const getAllResource = asyncErrorHandler(async function (req, res) {
     });
 });
 
-const createResource = asyncErrorHandler(async function (req, res) {
+export const createResource = asyncErrorHandler(async function (req, res) {
     let lesson = await Lesson.findByIdAndUpdate(
         req.params.lessonId,
         {
@@ -63,10 +67,10 @@ const createResource = asyncErrorHandler(async function (req, res) {
     });
 });
 
-const getResource = asyncErrorHandler(async function (req, res) {
+export const getResource = asyncErrorHandler(async function (req, res) {
     let lesson = await Lesson.findById(req.params.lessonId);
 
-    let [resource] = lesson.resources.filter(reso => reso._id.toString() === req.params.id);
+    let [resource] = lesson.resources.filter(resource => resource._id.toString() === req.params.id);
 
     res.status(200).json({
         status: "success",
@@ -76,21 +80,15 @@ const getResource = asyncErrorHandler(async function (req, res) {
     });
 });
 
-const updateResource = asyncErrorHandler(async function (req, res) {
+export const updateResource = asyncErrorHandler(async function (req, res) {
     let lesson = await Lesson.findById(req.params.lessonId);
-    let resourceIndex = lesson.resources.findIndex(reso => reso._id.toString() === req.params.id);
+    let resourceIndex = lesson.resources.findIndex(resource => resource._id.toString() === req.params.id);
 
     if (req.body.name)
         lesson.resources[resourceIndex].name = req.body.name;
 
     if (req.body.content)
         lesson.resources[resourceIndex].content = req.body.content;
-
-    lesson.resources = lesson.resources.map(reso => {
-        if (reso.content.startsWith("http"))
-            reso.content = reso.content.split("/").pop();
-        return reso;
-    })
 
     await lesson.save();
 
@@ -102,7 +100,7 @@ const updateResource = asyncErrorHandler(async function (req, res) {
     });
 });
 
-const deleteResource = asyncErrorHandler(async function (req, res) {
+export const deleteResource = asyncErrorHandler(async function (req, res) {
     await Lesson.findByIdAndUpdate(req.params.lessonId,
         {
             $pull: { resources: { _id: req.params.id } }
@@ -113,13 +111,3 @@ const deleteResource = asyncErrorHandler(async function (req, res) {
 
     res.status(204).send();
 });
-
-module.exports = {
-    getAllResource,
-    createResource,
-    getResource,
-    updateResource,
-    deleteResource,
-    uploadContentFile,
-    handleContentFile
-}

@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const resourceSchema = require('./Resource');
-const cloudinary = require("../config/cloudinary");
-const { extractPublicId } = require("../utils/extractPublicId");
+import mongoose from 'mongoose';
+import resourceSchema from './Resource.js';
+import cloudinary from '../config/cloudinary.js'
+import extractPublicId from '../utils/extractPublicId.js';
 
 const lessonSchema = new mongoose.Schema(
     {
@@ -68,4 +68,4 @@ lessonSchema.post(/delete/i, async function name(doc, next) {
     next();
 });
 
-module.exports = mongoose.model('Lesson', lessonSchema);
+export default mongoose.model('Lesson', lessonSchema);

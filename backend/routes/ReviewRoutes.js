@@ -1,24 +1,31 @@
-const express = require('express');
-const { protect, allowedTo } = require('../middlewares/authMiddleware');
-const {
+import express from 'express';
+
+import {
+    protect,
+    allowedTo
+} from '../middlewares/authMiddleware.js';
+
+import {
     addUserIdToReqBody,
     addCourseIdToReqBody,
     deleteReviewMiddleware,
     addCourseIdToReqQuery
-} = require('../middlewares/reviewMiddleware');
-const {
+} from '../middlewares/reviewMiddleware.js';
+
+import {
     createReviewValidator,
     getReviewValidator,
     updateReviewValidator,
     deleteReviewValidator
-} = require('../utils/validators/reviewValidator');
-const {
+} from '../utils/validators/reviewValidator.js';
+
+import {
     getAllReviews,
     createReview,
     getReview,
     updateReview,
     deleteReview
-} = require('../controllers/ReviewController');
+} from '../controllers/ReviewController.js';
 
 const router = express.Router({ mergeParams: true });
 
@@ -54,4 +61,4 @@ router.route('/:id')
         deleteReview
     );
 
-module.exports = router;
+export default router;

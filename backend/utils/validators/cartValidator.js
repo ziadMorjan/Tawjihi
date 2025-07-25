@@ -1,12 +1,12 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const CustomError = require('../CustomError');
-const Course = require('../../models/Course');
-const Enrollment = require('../../models/Enrollment');
-const Coupon = require('../../models/Coupon');
+import { check } from 'express-validator';
+import Course from '../../models/Course.js';
+import Coupon from '../../models/Coupon.js';
+import Enrollment from '../../models/Enrollment.js';
+import CustomError from '../CustomError.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const cartValidator = [
-    validator.check("courseId")
+export const cartValidator = [
+    check("courseId")
         .notEmpty()
         .withMessage("course is required")
         .isMongoId()
@@ -27,8 +27,8 @@ const cartValidator = [
     validationMiddleware
 ];
 
-const applyCouponValidator = [
-    validator.check("coupon")
+export const applyCouponValidator = [
+    check("coupon")
         .notEmpty()
         .withMessage("coupon is required")
         .custom(async (value) => {
@@ -45,8 +45,3 @@ const applyCouponValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    cartValidator,
-    applyCouponValidator
-}

@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const Cart = require("./Cart");
+import mongoose from 'mongoose';
+import Cart from './Cart.js';
 
 const enrollmentSchema = new mongoose.Schema(
     {
@@ -46,4 +46,4 @@ enrollmentSchema.post("save", async function (doc, next) {
     next();
 })
 
-module.exports = mongoose.model("Enrollment", enrollmentSchema);
+export default mongoose.model("Enrollment", enrollmentSchema);

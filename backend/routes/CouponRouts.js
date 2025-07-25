@@ -1,26 +1,26 @@
-const express = require("express");
+import express from 'express';
 
-const {
+import {
     protect,
     allowedTo
-} = require('../middlewares/authMiddleware');
+} from '../middlewares/authMiddleware.js';
 
-const {
+import {
     createCouponValidator,
     updateCouponValidator,
     getCouponValidator,
     deleteCouponValidator
-} = require("../utils/validators/couponValidator");
+} from '../utils/validators/couponValidator.js';
 
-const {
+import {
     getAllCoupons,
     createCoupon,
     getCoupon,
     updateCoupon,
     deleteCoupon,
-} = require("../controllers/CouponController");
+} from '../controllers/CouponController.js';
 
-let router = express.Router();
+const router = express.Router();
 
 router.use(protect, allowedTo("admin"));
 
@@ -33,4 +33,4 @@ router.route("/:id")
     .patch(updateCouponValidator, updateCoupon)
     .delete(deleteCouponValidator, deleteCoupon);
 
-module.exports = router;
+export default router;

@@ -1,28 +1,31 @@
-const express = require("express");
-const passport = require("passport");
-const {
-    uploadUserFiles,
-    handleUserFiles
-} = require("../controllers/UserController");
-const { protect } = require("../middlewares/authMiddleware");
-const {
+import express from "express";
+import passport from "passport";
+import { createToken } from '../utils/JWTs.js';
+import { protect } from '../middlewares/authMiddleware.js';
+
+import {
     signupValidator,
     loginValidator,
     forgetPasswordValidator,
     verifyResetCodValidator,
     resetPasswordValidator
-} = require("../utils/validators/authValidator");
-const {
+} from '../utils/validators/authValidator.js';
+
+import {
     signup,
     login,
     forgetPassword,
     verifyResetCod,
     resetPassword,
     logout
-} = require("../controllers/AuthController");
-const { createToken } = require("../utils/JWTs");
+} from '../controllers/AuthController.js';
 
-let router = express.Router();
+import {
+    uploadUserFiles,
+    handleUserFiles
+} from '../controllers/UserController.js';
+
+const router = express.Router();
 
 const oauthCallbackHandler = function (req, res) {
     const token = createToken(req.user.id);
@@ -90,4 +93,4 @@ router.get("/logout",
 );
 
 
-module.exports = router;
+export default router;

@@ -1,26 +1,12 @@
-const Branch = require("../models/Branch");
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne,
-} = require("./controller");
+import Branch from "../models/Branch.js";
+import { getAll, createOne, getOne, updateOne, deleteOne } from "./controller.js";
 
-const getAllBranches = getAll(Branch);
+export const getAllBranches = getAll(Branch);
 
-const createBranch = createOne(Branch);
+export const createBranch = createOne(Branch);
 
-const getBranch = getOne(Branch, "Branch");
+export const getBranch = getOne(Branch, "Branch");
 
-const updateBranch = updateOne(Branch, "Branch");
+export const updateBranch = updateOne(Branch, "Branch");
 
-const deleteBranch = deleteOne(Branch, "Branch");
-
-module.exports = {
-    getAllBranches,
-    createBranch,
-    getBranch,
-    updateBranch,
-    deleteBranch,
-};
+export const deleteBranch = deleteOne(Branch, "Branch");

@@ -1,10 +1,10 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Branch = require('../../models/Branch');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import Branch from '../../models/Branch.js';
+import CustomError from '../CustomError.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createBranchValidator = [
-    validator.check('name')
+export const createBranchValidator = [
+    check('name')
         .notEmpty()
         .withMessage('Name is required')
         .isLength({ min: 3 })
@@ -16,7 +16,7 @@ const createBranchValidator = [
             }
             return true;
         }),
-    validator.check('description')
+    check('description')
         .optional()
         .isLength({ min: 10, max: 1000 })
         .withMessage('Description must be between 10 and 1000 characters long'),
@@ -24,14 +24,14 @@ const createBranchValidator = [
     validationMiddleware
 ];
 
-const updateBranchValidator = [
-    validator.check("id")
+export const updateBranchValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Branch ID is required")
         .isMongoId()
         .withMessage("Invalid Branch ID"),
 
-    validator.check('name')
+    check('name')
         .optional()
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long')
@@ -42,7 +42,7 @@ const updateBranchValidator = [
             }
             return true;
         }),
-    validator.check('description')
+    check('description')
         .optional()
         .isLength({ min: 10, max: 1000 })
         .withMessage('Description must be between 10 and 1000 characters long'),
@@ -50,8 +50,8 @@ const updateBranchValidator = [
     validationMiddleware
 ];
 
-const getBranchValidator = [
-    validator.check("id")
+export const getBranchValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Branch ID is required")
         .isMongoId()
@@ -60,8 +60,8 @@ const getBranchValidator = [
     validationMiddleware
 ];
 
-const deleteBranchValidator = [
-    validator.check("id")
+export const deleteBranchValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Branch ID is required")
         .isMongoId()
@@ -69,10 +69,3 @@ const deleteBranchValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    createBranchValidator,
-    updateBranchValidator,
-    getBranchValidator,
-    deleteBranchValidator
-}

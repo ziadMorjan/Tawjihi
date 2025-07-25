@@ -1,10 +1,10 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Coupon = require('../../models/Coupon');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Coupon from '../../models/Coupon.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createCouponValidator = [
-    validator.check('name')
+export const createCouponValidator = [
+    check('name')
         .notEmpty()
         .withMessage('Name is required')
         .custom(async (value) => {
@@ -15,14 +15,14 @@ const createCouponValidator = [
             return true;
         }),
 
-    validator.check('discount')
+    check('discount')
         .notEmpty()
         .withMessage('discount is required')
         .isNumeric()
         .withMessage('discount must be number'),
 
 
-    validator.check('expire')
+    check('expire')
         .notEmpty()
         .withMessage('expire is required')
         .isDate()
@@ -31,14 +31,14 @@ const createCouponValidator = [
     validationMiddleware
 ];
 
-const updateCouponValidator = [
-    validator.check("id")
+export const updateCouponValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Coupon ID is required")
         .isMongoId()
         .withMessage("Invalid Coupon ID"),
 
-    validator.check('name')
+    check('name')
         .optional()
         .notEmpty()
         .withMessage('Name is required')
@@ -50,7 +50,7 @@ const updateCouponValidator = [
             return true;
         }),
 
-    validator.check('discount')
+    check('discount')
         .optional()
         .notEmpty()
         .withMessage('discount is required')
@@ -58,7 +58,7 @@ const updateCouponValidator = [
         .withMessage('discount must be number'),
 
 
-    validator.check('expire')
+    check('expire')
         .optional()
         .notEmpty()
         .withMessage('expire is required')
@@ -68,8 +68,8 @@ const updateCouponValidator = [
     validationMiddleware
 ];
 
-const getCouponValidator = [
-    validator.check("id")
+export const getCouponValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Coupon ID is required")
         .isMongoId()
@@ -78,8 +78,8 @@ const getCouponValidator = [
     validationMiddleware
 ];
 
-const deleteCouponValidator = [
-    validator.check("id")
+export const deleteCouponValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Coupon ID is required")
         .isMongoId()
@@ -87,10 +87,3 @@ const deleteCouponValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    createCouponValidator,
-    updateCouponValidator,
-    getCouponValidator,
-    deleteCouponValidator
-}

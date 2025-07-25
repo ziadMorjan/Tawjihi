@@ -1,11 +1,11 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Course = require('../../models/Course');
-const CustomError = require('../CustomError');
-const Enrollment = require('../../models/Enrollment');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Course from '../../models/Course.js';
+import Enrollment from '../../models/Enrollment.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createCheckoutSessionValidator = [
-    validator.check("ids")
+export const createCheckoutSessionValidator = [
+    check("ids")
         .notEmpty()
         .withMessage("Courses are required")
         .isArray()
@@ -26,7 +26,3 @@ const createCheckoutSessionValidator = [
     ,
     validationMiddleware
 ];
-
-module.exports = {
-    createCheckoutSessionValidator
-}

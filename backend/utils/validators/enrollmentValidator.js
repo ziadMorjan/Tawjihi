@@ -1,11 +1,11 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Enrollment = require('../../models/Enrollment');
-const CustomError = require('../CustomError');
-const Course = require('../../models/Course');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Course from '../../models/Course.js';
+import Enrollment from '../../models/Enrollment.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createEnrollmentValidator = [
-    validator.check('course')
+export const createEnrollmentValidator = [
+    check('course')
         .notEmpty()
         .withMessage('course is required')
         .isMongoId()
@@ -30,7 +30,7 @@ const createEnrollmentValidator = [
             return true;
         }),
 
-    validator.check('user')
+    check('user')
         .notEmpty()
         .withMessage('user is required')
         .isMongoId()
@@ -40,8 +40,8 @@ const createEnrollmentValidator = [
 ];
 
 
-const getEnrollmentValidator = [
-    validator.check("id")
+export const getEnrollmentValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Enrollment ID is required")
         .isMongoId()
@@ -50,14 +50,14 @@ const getEnrollmentValidator = [
     validationMiddleware
 ];
 
-const updateEnrollmentValidator = [
-    validator.check("id")
+export const updateEnrollmentValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Enrollment ID is required")
         .isMongoId()
         .withMessage("Invalid Enrollment ID"),
 
-    validator.check('course')
+    check('course')
         .optional()
         .notEmpty()
         .withMessage('course is required')
@@ -83,7 +83,7 @@ const updateEnrollmentValidator = [
             return true;
         }),
 
-    validator.check('user')
+    check('user')
         .optional()
         .notEmpty()
         .withMessage('user is required')
@@ -93,8 +93,8 @@ const updateEnrollmentValidator = [
     validationMiddleware
 ];
 
-const deleteEnrollmentValidator = [
-    validator.check("id")
+export const deleteEnrollmentValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Enrollment ID is required")
         .isMongoId()
@@ -102,10 +102,3 @@ const deleteEnrollmentValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    createEnrollmentValidator,
-    getEnrollmentValidator,
-    updateEnrollmentValidator,
-    deleteEnrollmentValidator
-}

@@ -1,14 +1,14 @@
-const crypto = require("crypto");
-const bcryptjs = require("bcryptjs");
-const User = require("../models/User");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
-const { createToken } = require("../utils/JWTs");
-const CustomError = require("../utils/CustomError");
-const { sendEmail } = require("../utils/emails");
-const { resetPasswordTemp } = require("../utils/emailTemps");
-const Cart = require("../models/Cart");
+import crypto from 'crypto';
+import bcryptjs from 'bcryptjs';
+import User from '../models/User.js';
+import Cart from '../models/Cart.js';
+import { sendEmail } from '../utils/emails.js';
+import CustomError from '../utils/CustomError.js';
+import { createToken } from '../utils/JWTs.js';
+import { resetPasswordTemp } from '../utils/emailTemps.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 
-const sendAuthRes = async function (res, user, statusCode) {
+export const sendAuthRes = async function (res, user, statusCode) {
     const token = createToken(user.id);
     const isDev = process.env.NODE_ENV !== 'production';
     const options = {
@@ -34,7 +34,7 @@ const sendAuthRes = async function (res, user, statusCode) {
     });
 }
 
-const signup = asyncErrorHandler(async function (req, res, next) {
+export const signup = asyncErrorHandler(async function (req, res, next) {
     if (req.body.role === "teacher")
         req.body.isActive = false;
 
@@ -49,7 +49,7 @@ const signup = asyncErrorHandler(async function (req, res, next) {
     sendAuthRes(res, user, 201);
 });
 
-const login = asyncErrorHandler(async function (req, res) {
+export const login = asyncErrorHandler(async function (req, res) {
     let user = await User.findOne({ email: req.body.email }).select("+password");
 
     if (!user.isActive || !bcryptjs.compareSync(req.body.password, user.password))
@@ -58,7 +58,7 @@ const login = asyncErrorHandler(async function (req, res) {
     sendAuthRes(res, user, 200);
 });
 
-const forgetPassword = asyncErrorHandler(async function (req, res) {
+export const forgetPassword = asyncErrorHandler(async function (req, res) {
     let user = await User.findOne({ email: req.body.email });
 
     let resetCode = crypto.randomInt(100000, 999999);
@@ -92,7 +92,7 @@ const forgetPassword = asyncErrorHandler(async function (req, res) {
     });
 });
 
-const verifyResetCod = asyncErrorHandler(async function (req, res) {
+export const verifyResetCod = asyncErrorHandler(async function (req, res) {
     let hashedResetCode = crypto.createHash("sha256").update(req.body.resetCode.toString()).digest("hex");
 
     let user = await User.findOne({
@@ -112,7 +112,7 @@ const verifyResetCod = asyncErrorHandler(async function (req, res) {
     });
 });
 
-const resetPassword = asyncErrorHandler(async function (req, res) {
+export const resetPassword = asyncErrorHandler(async function (req, res) {
     let user = await User.findOne({ email: req.body.email });
 
     if (!user.resetPasswordCodeVerified)
@@ -128,7 +128,7 @@ const resetPassword = asyncErrorHandler(async function (req, res) {
     sendAuthRes(res, user, 201);
 });
 
-const logout = (req, res) => {
+export const logout = (req, res) => {
     const isDev = process.env.NODE_ENV !== 'production';
     const options = {
         httpOnly: true,
@@ -140,13 +140,4 @@ const logout = (req, res) => {
         status: "success",
         message: "Logged out"
     });
-}
-
-module.exports = {
-    signup,
-    login,
-    forgetPassword,
-    verifyResetCod,
-    resetPassword,
-    logout
 }

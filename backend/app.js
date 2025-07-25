@@ -1,13 +1,13 @@
-const express = require('express');
-const morgan = require('morgan');
-const cors = require('cors');
-const passport = require("passport");
-const cookieParser = require('cookie-parser');
+import express from 'express';
+import morgan from 'morgan';
+import cors from 'cors';
+import passport from "passport";
+import cookieParser from 'cookie-parser';
 
-const { googleStrategy, facebookStrategy } = require("./config/passport");
-const routes = require("./routes");
-const { webhook } = require("./controllers/PaymentController");
-const { globalErrorHandler } = require('./middlewares/errorMiddleware');
+import routes from "./routes/index.js";
+import { webhook } from "./controllers/PaymentController.js";
+import { googleStrategy, facebookStrategy } from "./config/passport.js";
+import { globalErrorHandler } from './middlewares/errorMiddleware.js';
 
 const app = express();
 
@@ -24,6 +24,7 @@ app.post('/api/v1/webhook', express.raw({ type: "application/json" }), webhook);
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('uploads'));
 app.use(passport.initialize());
 
@@ -33,4 +34,4 @@ routes(app);
 // Global error handler
 app.use(globalErrorHandler);
 
-module.exports = app;
+export default app;

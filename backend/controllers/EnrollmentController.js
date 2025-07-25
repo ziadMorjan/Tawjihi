@@ -1,27 +1,12 @@
-const Enrollment = require('../models/Enrollment');
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne
-} = require("./controller");
+import Enrollment from '../models/Enrollment.js';
+import { getAll, createOne, getOne, updateOne, deleteOne } from "./controller.js";
 
-const getAllEnrollments = getAll(Enrollment);
+export const getAllEnrollments = getAll(Enrollment);
 
-const createEnrollment = createOne(Enrollment);
+export const createEnrollment = createOne(Enrollment);
 
-const getEnrollment = getOne(Enrollment, "enrollment");
+export const getEnrollment = getOne(Enrollment, "enrollment");
 
-const updateEnrollment = updateOne(Enrollment, "enrollment");
+export const updateEnrollment = updateOne(Enrollment, "enrollment");
 
-const deleteEnrollment = deleteOne(Enrollment, "enrollment");
-
-
-module.exports = {
-    getAllEnrollments,
-    createEnrollment,
-    getEnrollment,
-    updateEnrollment,
-    deleteEnrollment
-}
+export const deleteEnrollment = deleteOne(Enrollment, "enrollment");

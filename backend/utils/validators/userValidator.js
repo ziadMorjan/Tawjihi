@@ -1,14 +1,14 @@
-const validator = require('express-validator');
-const bcryptjs = require("bcryptjs");
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const User = require('../../models/User');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import { compareSync } from "bcryptjs";
+import User from '../../models/User.js';
+import CustomError from '../CustomError.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createUserValidator = [
-    validator.check('name')
+export const createUserValidator = [
+    check('name')
         .notEmpty()
         .withMessage('Name is required'),
-    validator.check("email")
+    check("email")
         .notEmpty()
         .withMessage('email is required')
         .custom(async (value) => {
@@ -19,7 +19,7 @@ const createUserValidator = [
             return true;
         }),
 
-    validator.check('password')
+    check('password')
         .notEmpty()
         .withMessage('password is required')
         .isLength({ min: 8 })
@@ -31,7 +31,7 @@ const createUserValidator = [
             return true;
         }),
 
-    validator.check('phone')
+    check('phone')
         .isMobilePhone(["ar-PS", "he-IL"])
         .withMessage('invalid phone number format')
         .custom(async (value) => {
@@ -42,7 +42,7 @@ const createUserValidator = [
             return true;
         }),
 
-    validator.check("role")
+    check("role")
         .optional()
         .isIn(["admin", "teacher", "user"])
         .withMessage("invalid role"),
@@ -50,19 +50,19 @@ const createUserValidator = [
     validationMiddleware
 ];
 
-const updateUserValidator = [
-    validator.check("id")
+export const updateUserValidator = [
+    check("id")
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
         .withMessage("Invalid User ID"),
 
-    validator.check('name')
+    check('name')
         .optional()
         .notEmpty()
         .withMessage('Name is required'),
 
-    validator.check("email")
+    check("email")
         .optional()
         .notEmpty()
         .withMessage('email is required')
@@ -76,7 +76,7 @@ const updateUserValidator = [
             return true;
         }),
 
-    validator.check('password')
+    check('password')
         .optional()
         .notEmpty()
         .withMessage('password is required')
@@ -90,7 +90,7 @@ const updateUserValidator = [
         }),
 
 
-    validator.check('phone')
+    check('phone')
         .optional()
         .isMobilePhone(["ar-PS", "he-IL"])
         .withMessage('invalid phone number format')
@@ -102,7 +102,7 @@ const updateUserValidator = [
             return true;
         }),
 
-    validator.check("role")
+    check("role")
         .optional()
         .isIn(["admin", "teacher", "user"])
         .withMessage("invalid role"),
@@ -110,8 +110,8 @@ const updateUserValidator = [
     validationMiddleware
 ];
 
-const getUserValidator = [
-    validator.check("id")
+export const getUserValidator = [
+    check("id")
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
@@ -120,8 +120,8 @@ const getUserValidator = [
     validationMiddleware
 ];
 
-const deleteUserValidator = [
-    validator.check("id")
+export const deleteUserValidator = [
+    check("id")
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
@@ -130,26 +130,26 @@ const deleteUserValidator = [
     validationMiddleware
 ];
 
-const changePasswordValidator = [
-    validator.check("id")
+export const changePasswordValidator = [
+    check("id")
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
         .withMessage("Invalid User ID"),
 
-    validator.check('currentPassword')
+    check('currentPassword')
         .notEmpty()
         .withMessage('current password is required')
         .custom(async (value, { req }) => {
             let user = await User.findById(req.user.id).select("+password");
 
-            if (!bcryptjs.compareSync(value, user.password)) {
+            if (!compareSync(value, user.password)) {
                 throw new CustomError('Wrong current password', 400);
             }
             return true;
         }),
 
-    validator.check('newPassword')
+    check('newPassword')
         .notEmpty()
         .withMessage('new password is required')
         .isLength({ min: 8 })
@@ -165,8 +165,8 @@ const changePasswordValidator = [
 ];
 
 
-const activateUserValidator = [
-    validator.check("id")
+export const activateUserValidator = [
+    check("id")
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
@@ -176,8 +176,8 @@ const activateUserValidator = [
 ];
 
 
-const deactivateUserValidator = [
-    validator.check("id")
+export const deactivateUserValidator = [
+    check("id")
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
@@ -186,8 +186,8 @@ const deactivateUserValidator = [
     validationMiddleware
 ];
 
-const acceptTeacherValidator = [
-    validator.check("id")
+export const acceptTeacherValidator = [
+    check("id")
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
@@ -209,8 +209,8 @@ const acceptTeacherValidator = [
     validationMiddleware
 ];
 
-const refuseTeacherValidator = [
-    validator.check("id")
+export const refuseTeacherValidator = [
+    check("id")
         .notEmpty()
         .withMessage("User ID is required")
         .isMongoId()
@@ -228,15 +228,3 @@ const refuseTeacherValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    createUserValidator,
-    updateUserValidator,
-    getUserValidator,
-    deleteUserValidator,
-    changePasswordValidator,
-    activateUserValidator,
-    deactivateUserValidator,
-    acceptTeacherValidator,
-    refuseTeacherValidator
-}

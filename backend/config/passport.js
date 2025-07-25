@@ -1,8 +1,8 @@
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const FacebookStrategy = require("passport-facebook").Strategy;
-const User = require("../models/User");
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as FacebookStrategy } from 'passport-facebook';
+import User from '../models/User.js';
 
-const googleStrategy = new GoogleStrategy(
+export const googleStrategy = new GoogleStrategy(
     {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -32,7 +32,7 @@ const googleStrategy = new GoogleStrategy(
     }
 );
 
-const facebookStrategy = new FacebookStrategy(
+export const facebookStrategy = new FacebookStrategy(
     {
         clientID: process.env.FACEBOOK_CLIENT_ID,
         clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
@@ -63,8 +63,3 @@ const facebookStrategy = new FacebookStrategy(
 
     }
 );
-
-module.exports = {
-    googleStrategy,
-    facebookStrategy
-}

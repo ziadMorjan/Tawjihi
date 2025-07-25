@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const cloudinary = require("../config/cloudinary");
-const { extractPublicId } = require("../utils/extractPublicId");
+import mongoose from 'mongoose';
+import cloudinary from '../config/cloudinary.js';
+import extractPublicId from '../utils/extractPublicId.js';
 
 const CourseSchema = new mongoose.Schema(
     {
@@ -90,4 +90,4 @@ CourseSchema.post(/delete/i, async function name(doc, next) {
 });
 
 
-module.exports = mongoose.model('Course', CourseSchema);
+export default mongoose.model('Course', CourseSchema);

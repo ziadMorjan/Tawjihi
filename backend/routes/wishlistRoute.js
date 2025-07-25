@@ -1,13 +1,19 @@
-const express = require("express");
-const { protect, allowedTo } = require("../middlewares/authMiddleware");
-const { wishlistValidator } = require("../utils/validators/wishlistValidator");
-const {
+import express from 'express';
+
+import {
+    protect,
+    allowedTo
+} from '../middlewares/authMiddleware.js';
+
+import { wishlistValidator } from '../utils/validators/wishlistValidator.js';
+
+import {
     getUserWishlist,
     addToWishlist,
     removeFromWishlist
-} = require("../controllers/WishlistController");
+} from '../controllers/WishlistController.js';
 
-let router = express.Router();
+const router = express.Router();
 
 router.use(protect, allowedTo("user"));
 
@@ -17,4 +23,4 @@ router.route("/:courseId")
     .post(wishlistValidator, addToWishlist)
     .delete(wishlistValidator, removeFromWishlist);
 
-module.exports = router;
+export default router;

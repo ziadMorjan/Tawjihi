@@ -1,26 +1,26 @@
-const express = require("express");
+import express from 'express';
 
-const {
+import {
     protect,
     allowedTo
-} = require('../middlewares/authMiddleware');
+} from '../middlewares/authMiddleware.js';
 
-const {
+import {
     createBranchValidator,
     updateBranchValidator,
     getBranchValidator,
     deleteBranchValidator
-} = require("../utils/validators/branchValidator");
+} from '../utils/validators/branchValidator.js';
 
-const {
+import {
     getAllBranches,
     createBranch,
     getBranch,
     updateBranch,
     deleteBranch,
-} = require("../controllers/BranchController");
+} from '../controllers/BranchController.js';
 
-let router = express.Router();
+const router = express.Router();
 
 router.route("/")
     .get(getAllBranches)
@@ -46,4 +46,4 @@ router.route("/:id")
         deleteBranch
     );
 
-module.exports = router;
+export default router;

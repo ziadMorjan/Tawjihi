@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const teacherReviewSchema = new mongoose.Schema(
     {
@@ -87,4 +87,4 @@ teacherReviewSchema.post("findOneAndDelete", async function (doc, next) {
     next();
 });
 
-module.exports = mongoose.model("TeacherReview", teacherReviewSchema);
+export default mongoose.model("TeacherReview", teacherReviewSchema);

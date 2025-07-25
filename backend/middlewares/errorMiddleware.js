@@ -1,6 +1,6 @@
-const CustomError = require('../utils/CustomError');
+import CustomError from '../utils/CustomError.js';
 
-let devError = function (err, res) {
+const devError = function (err, res) {
     res.status(err.statusCode).json({
         status: err.status,
         message: err.message,
@@ -9,7 +9,7 @@ let devError = function (err, res) {
     });
 }
 
-let prodError = function (err, res) {
+const prodError = function (err, res) {
     if (err.isOperational) {
         res.status(err.statusCode).json({
             status: err.status,
@@ -23,25 +23,25 @@ let prodError = function (err, res) {
     }
 }
 
-let castError = (err) => new CustomError(`Invalid ${err.path}: ${err.value}`, 400);
+const castError = (err) => new CustomError(`Invalid ${err.path}: ${err.value}`, 400);
 
-let validationError = (err) => {
+const validationError = (err) => {
     const errors = Object.values(err.errors).map(el => el.message);
     const message = `Invalid input data. ${errors.join('. ')}`;
     return new CustomError(message, 400);
 }
 
-let duplicateError = (err) => {
+const duplicateError = (err) => {
     const value = err.keyValue.name;
     const message = `Duplicate field value: ${value}. Please use another value!`;
     return new CustomError(message, 400);
 }
 
-let JsonWebTokenError = () => new CustomError(`Invalid token. Please log in again!`, 401);
+const JsonWebTokenError = () => new CustomError(`Invalid token. Please log in again!`, 401);
 
-let tokenExpiredError = () => new CustomError(`Your token has expired! Please log in again.`, 401);
+const tokenExpiredError = () => new CustomError(`Your token has expired! Please log in again.`, 401);
 
-let globalErrorHandler = (err, req, res, next) => {
+export const globalErrorHandler = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
     err.message = err.message || 'Something went wrong';
@@ -60,14 +60,8 @@ let globalErrorHandler = (err, req, res, next) => {
     }
 }
 
-let asyncErrorHandler = function (fn) {
+export const asyncErrorHandler = function (fn) {
     return function (req, res, next) {
         fn(req, res, next).catch(err => next(err));
     }
-}
-
-
-module.exports = {
-    globalErrorHandler,
-    asyncErrorHandler
 }

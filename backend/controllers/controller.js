@@ -1,10 +1,10 @@
-const { default: slugify } = require("slugify");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
-const CustomError = require("../utils/CustomError");
-const QueryManipulater = require("../utils/QueryManipulater");
+import slugify from 'slugify';
+import QueryManipulator from '../utils/QueryManipulator.js';
+import CustomError from '../utils/CustomError.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 
-const getAll = (model) => asyncErrorHandler(async function (req, res) {
-    let qm = new QueryManipulater(req, model)
+export const getAll = (model) => asyncErrorHandler(async function (req, res) {
+    let qm = new QueryManipulator(req, model)
         .filter()
         .selectFields()
         .search()
@@ -22,7 +22,7 @@ const getAll = (model) => asyncErrorHandler(async function (req, res) {
     });
 });
 
-const createOne = (model) => asyncErrorHandler(async function (req, res) {
+export const createOne = (model) => asyncErrorHandler(async function (req, res) {
     if (req.body.name)
         req.body.slug = slugify(req.body.name);
 
@@ -36,7 +36,7 @@ const createOne = (model) => asyncErrorHandler(async function (req, res) {
     });
 });
 
-const getOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
+export const getOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
     let doc = await model.findById(req.params.id);
 
     if (!doc) {
@@ -51,7 +51,7 @@ const getOne = (model, modelName = "") => asyncErrorHandler(async function (req,
     });
 });
 
-let updateOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
+export const updateOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
     if (req.body.name)
         req.body.slug = slugify(req.body.name);
 
@@ -72,7 +72,7 @@ let updateOne = (model, modelName = "") => asyncErrorHandler(async function (req
     });
 });
 
-let deleteOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
+export const deleteOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
     let deletedDoc = await model.findByIdAndDelete(req.params.id);
 
     if (!deletedDoc) {
@@ -81,11 +81,3 @@ let deleteOne = (model, modelName = "") => asyncErrorHandler(async function (req
 
     res.status(204).send();
 });
-
-module.exports = {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne
-};

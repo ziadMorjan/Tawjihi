@@ -1,33 +1,32 @@
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const sharp = require("sharp");
-const New = require('../models/New');
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne
-} = require("./controller");
-const { uploadSingleField } = require("../middlewares/uploadsMiddleware");
-const { asyncErrorHandler } = require('../middlewares/errorMiddleware');
-const CustomError = require("../utils/CustomError");
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import sharp from 'sharp';
+import { fileURLToPath } from 'url'; // 👈 Add this import
+import New from '../models/New.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
+import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
+import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
-const getAllNews = getAll(New);
-
-const createNew = createOne(New);
-
-const getNew = getOne(New, "new");
-
-const updateNew = updateOne(New, "new");
-
-const deleteNew = deleteOne(New, "new");
+// --- Recreate __dirname for ES Modules ---
+const __filename = fileURLToPath(import.meta.url); // Gets the file path
+const __dirname = path.dirname(__filename);     // Gets the directory path
 
 
-const uploadNewCoverImage = uploadSingleField("coverImage");
+export const getAllNews = getAll(New);
 
-const handleNewCoverImage = asyncErrorHandler(async function (req, res, next) {
+export const createNew = createOne(New);
+
+export const getNew = getOne(New, "new");
+
+export const updateNew = updateOne(New, "new");
+
+export const deleteNew = deleteOne(New, "new");
+
+
+export const uploadNewCoverImage = uploadSingleField("coverImage");
+
+export const handleNewCoverImage = asyncErrorHandler(async function (req, res, next) {
     if (req.file) {
         let { mimetype } = req.file;
         if (!mimetype.startsWith("image"))
@@ -54,14 +53,3 @@ const handleNewCoverImage = asyncErrorHandler(async function (req, res, next) {
     }
     next();
 });
-
-
-module.exports = {
-    getAllNews,
-    createNew,
-    getNew,
-    updateNew,
-    deleteNew,
-    uploadNewCoverImage,
-    handleNewCoverImage
-}

@@ -1,24 +1,24 @@
-const express = require("express");
+import express from 'express';
 
-const {
+import {
     protect,
     allowedTo
-} = require('../middlewares/authMiddleware');
+} from '../middlewares/authMiddleware.js';
 
-const {
+import {
     cartValidator,
     applyCouponValidator
-} = require("../utils/validators/cartValidator");
+} from '../utils/validators/cartValidator.js';
 
-const {
+import {
     getLoggedUserCart,
     addToCart,
     removeFromCart,
     clearCart,
     applyCoupon
-} = require("../controllers/CartController");
+} from '../controllers/CartController.js';
 
-let router = express.Router();
+const router = express.Router();
 
 router.use(protect, allowedTo("user"));
 
@@ -32,4 +32,4 @@ router.route("/:courseId")
     .post(cartValidator, addToCart)
     .delete(cartValidator, removeFromCart);
 
-module.exports = router;
+export default router;

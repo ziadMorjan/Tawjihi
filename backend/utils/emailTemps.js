@@ -1,5 +1,5 @@
-const resetPasswordTemp = (name, resetCode) =>
-    `<!DOCTYPE html>
+export const resetPasswordTemp = (name, resetCode) =>
+  `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -67,7 +67,7 @@ const resetPasswordTemp = (name, resetCode) =>
 </html>
 `
 
-const acceptTeacherTemp = (name) => `<!DOCTYPE html>
+export const acceptTeacherTemp = (name) => `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -120,7 +120,7 @@ const acceptTeacherTemp = (name) => `<!DOCTYPE html>
 </html>
 `
 
-const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
+export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -174,9 +174,3 @@ const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
   </body>
 </html>
 `
-
-module.exports = {
-    resetPasswordTemp,
-    acceptTeacherTemp,
-    refuseTeacherTemp
-}

@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const bcryptjs = require("bcryptjs");
-const cloudinary = require("../config/cloudinary");
-const { extractPublicId } = require("../utils/extractPublicId");
+import mongoose from 'mongoose';
+import bcryptjs from 'bcryptjs';
+import cloudinary from '../config/cloudinary.js';
+import extractPublicId from '../utils/extractPublicId.js';
 
 
 const UserSchema = new mongoose.Schema(
@@ -107,4 +107,4 @@ UserSchema.pre("save", function (next) {
     next();
 });
 
-module.exports = mongoose.model('User', UserSchema);
+export default mongoose.model('User', UserSchema);

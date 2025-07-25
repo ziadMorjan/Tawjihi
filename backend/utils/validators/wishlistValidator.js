@@ -1,10 +1,10 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Course = require('../../models/Course');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import Course from '../../models/Course.js';
+import CustomError from '../CustomError.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const wishlistValidator = [
-    validator.check('courseId')
+export const wishlistValidator = [
+    check('courseId')
         .notEmpty()
         .withMessage("Course ID is required")
         .isMongoId()
@@ -18,7 +18,3 @@ const wishlistValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    wishlistValidator
-}

@@ -1,23 +1,23 @@
-const fs = require("fs");
+import { readFileSync } from "fs";
 // eslint-disable-next-line import/no-extraneous-dependencies, node/no-unpublished-require
-const { fakerAR } = require('@faker-js/faker');
-const dotenv = require('dotenv');
-const { connectDB } = require('../../config/db');
-const Branch = require('../../models/Branch');
-const Cart = require('../../models/Cart');
-const Comment = require('../../models/Comment');
-const Coupon = require('../../models/Coupon');
-const Course = require('../../models/Course');
-const Enrollment = require('../../models/Enrollment');
-const Lesson = require('../../models/Lesson');
-const New = require('../../models/New');
-const Payment = require('../../models/Payment');
-const Review = require('../../models/Review');
-const Subject = require('../../models/Subject');
-const TeacherReview = require('../../models/TeacherReview');
-const User = require('../../models/User');
+import { fakerAR } from '@faker-js/faker';
+import { config } from 'dotenv';
+import { connectDB } from '../../config/db.js';
+import Branch from '../../models/Branch.js';
+import Cart from '../../models/Cart.js';
+import Comment from '../../models/Comment.js';
+import Coupon from '../../models/Coupon.js';
+import Course from '../../models/Course.js';
+import Enrollment from '../../models/Enrollment.js';
+import Lesson from '../../models/Lesson.js';
+import New from '../../models/New.js';
+import Payment from '../../models/Payment.js';
+import Review from '../../models/Review.js';
+import Subject from '../../models/Subject.js';
+import TeacherReview from '../../models/TeacherReview.js';
+import User from '../../models/User.js';
 
-dotenv.config({ path: '../../config.env' });
+config({ path: '../../config.env' });
 
 const deleteData = async () => {
     try {
@@ -133,7 +133,7 @@ async function seedTeachers() {
 }
 
 async function seedBranches() {
-    const branches = JSON.parse(fs.readFileSync("./branches.json"));
+    const branches = JSON.parse(readFileSync("./branches.json"));
     try {
         await Branch.create(branches);
         console.log(`Branches created successfully`);
@@ -144,9 +144,9 @@ async function seedBranches() {
 }
 
 async function seedSubjects() {
-    const subjects = JSON.parse(fs.readFileSync("./subjects.json"));
+    const subjects = JSON.parse(readFileSync("./subjects.json"));
     try {
-        await Subject.create(subjects);
+        await Branch.create(subjects);
         console.log(`Subjects created successfully`);
     } catch (error) {
         console.error('Error creating subjects:', error);

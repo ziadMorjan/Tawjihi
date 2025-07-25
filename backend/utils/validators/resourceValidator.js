@@ -1,10 +1,11 @@
-const validator = require("express-validator");
-const { validationMiddleware } = require("../../middlewares/validationMiddleware");
-const CustomError = require("../CustomError");
-const Lesson = require("../../models/Lesson");
+import { check } from "express-validator";
+import CustomError from "../CustomError.js";
+import Lesson from "../../models/Lesson.js";
+import { validationMiddleware } from "../../middlewares/validationMiddleware.js";
 
-const getAllResourceValidator = [
-    validator.check("lessonId")
+
+export const getAllResourceValidator = [
+    check("lessonId")
         .notEmpty()
         .withMessage("lesson ID is required")
         .isMongoId()
@@ -19,8 +20,8 @@ const getAllResourceValidator = [
     validationMiddleware
 ]
 
-const createResourceValidator = [
-    validator.check("name")
+export const createResourceValidator = [
+    check("name")
         .notEmpty()
         .withMessage("Name is required")
         .isString()
@@ -28,11 +29,11 @@ const createResourceValidator = [
         .trim()
         .escape(),
 
-    validator.check("content")
+    check("content")
         .notEmpty()
         .withMessage("content is required"),
 
-    validator.check("lessonId")
+    check("lessonId")
         .notEmpty()
         .withMessage("lesson ID is required")
         .isMongoId()
@@ -47,8 +48,8 @@ const createResourceValidator = [
     validationMiddleware
 ]
 
-const getResourceValidator = [
-    validator.check("lessonId")
+export const getResourceValidator = [
+    check("lessonId")
         .notEmpty()
         .withMessage("lesson ID is required")
         .isMongoId()
@@ -60,7 +61,7 @@ const getResourceValidator = [
             return true;
         }),
 
-    validator.check("id")
+    check("id")
         .notEmpty()
         .withMessage("resource ID is required")
         .isMongoId()
@@ -70,7 +71,7 @@ const getResourceValidator = [
             if (!lesson)
                 throw new CustomError("lesson not found", 404);
 
-            let resource = lesson.resources.find(reso => reso._id.toString() === id);
+            let resource = lesson.resources.find(resource => resource._id.toString() === id);
             if (!resource)
                 throw new CustomError("No resource found", 404);
 
@@ -79,8 +80,8 @@ const getResourceValidator = [
     validationMiddleware
 ]
 
-const updateResourceValidator = [
-    validator.check("name")
+export const updateResourceValidator = [
+    check("name")
         .optional()
         .notEmpty()
         .withMessage("Name is required")
@@ -89,12 +90,12 @@ const updateResourceValidator = [
         .trim()
         .escape(),
 
-    validator.check("content")
+    check("content")
         .optional()
         .notEmpty()
         .withMessage("content is required"),
 
-    validator.check("lessonId")
+    check("lessonId")
         .notEmpty()
         .withMessage("lesson ID is required")
         .isMongoId()
@@ -106,7 +107,7 @@ const updateResourceValidator = [
             return true;
         }),
 
-    validator.check("id")
+    check("id")
         .notEmpty()
         .withMessage("resource ID is required")
         .isMongoId()
@@ -116,7 +117,7 @@ const updateResourceValidator = [
             if (!lesson)
                 throw new CustomError("lesson not found", 404);
 
-            let resource = lesson.resources.find(reso => reso._id.toString() === id);
+            let resource = lesson.resources.find(resource => resource._id.toString() === id);
             if (!resource)
                 throw new CustomError("No resource found", 404);
 
@@ -125,14 +126,14 @@ const updateResourceValidator = [
     validationMiddleware
 ]
 
-const deleteResourceValidator = [
-    validator.check("id")
+export const deleteResourceValidator = [
+    check("id")
         .notEmpty()
         .withMessage("resource ID is required")
         .isMongoId()
         .withMessage("resource ID must be a valid MongoDB ObjectId"),
 
-    validator.check("lessonId")
+    check("lessonId")
         .notEmpty()
         .withMessage("lesson ID is required")
         .isMongoId()
@@ -144,7 +145,7 @@ const deleteResourceValidator = [
             return true;
         }),
 
-    validator.check("id")
+    check("id")
         .notEmpty()
         .withMessage("resource ID is required")
         .isMongoId()
@@ -154,7 +155,7 @@ const deleteResourceValidator = [
             if (!lesson)
                 throw new CustomError("lesson not found", 404);
 
-            let resource = lesson.resources.find(reso => reso._id.toString() === id);
+            let resource = lesson.resources.find(resource => resource._id.toString() === id);
             if (!resource)
                 throw new CustomError("No resource found", 404);
 
@@ -163,11 +164,3 @@ const deleteResourceValidator = [
 
     validationMiddleware
 ]
-
-module.exports = {
-    getAllResourceValidator,
-    createResourceValidator,
-    getResourceValidator,
-    updateResourceValidator,
-    deleteResourceValidator
-}

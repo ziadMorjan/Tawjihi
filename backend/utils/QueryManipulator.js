@@ -1,4 +1,4 @@
-module.exports = class QueryManipulater {
+export default class QueryManipulator {
     constructor(req, model) {
         this.req = req;
         this.model = model;

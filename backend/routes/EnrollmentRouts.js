@@ -1,26 +1,26 @@
-const express = require("express");
-const { protect, allowedTo } = require("../middlewares/authMiddleware");
-const {
+import express from 'express';
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
+import {
     addUserToReqBody,
     deleteEnrollmentMiddleware
-} = require("../middlewares/enrollmentMiddleware");
+} from '../middlewares/enrollmentMiddleware.js';
 
-const {
+import {
     createEnrollmentValidator,
     getEnrollmentValidator,
     updateEnrollmentValidator,
     deleteEnrollmentValidator
-} = require("../utils/validators/enrollmentValidator");
+} from '../utils/validators/enrollmentValidator.js';
 
-const {
+import {
     getAllEnrollments,
     createEnrollment,
     getEnrollment,
     updateEnrollment,
     deleteEnrollment
-} = require("../controllers/EnrollmentController");
+} from '../controllers/EnrollmentController.js';
 
-let router = express.Router();
+const router = express.Router();
 
 router.route("/")
     .get(getAllEnrollments)
@@ -52,4 +52,4 @@ router.route("/:id")
 
 
 
-module.exports = router;
+export default router;

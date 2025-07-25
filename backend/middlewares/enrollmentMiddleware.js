@@ -1,15 +1,14 @@
-const Enrollment = require("../models/Enrollment");
-const User = require("../models/User");
-const CustomError = require("../utils/CustomError");
-const { asyncErrorHandler } = require("./errorMiddleware");
+import User from '../models/User.js';
+import Enrollment from '../models/Enrollment.js';
+import CustomError from '../utils/CustomError.js';
+import { asyncErrorHandler } from './errorMiddleware.js';
 
-
-const addUserToReqBody = (req, res, next) => {
+export const addUserToReqBody = (req, res, next) => {
     req.body.user = req.user.id;
     next();
 }
 
-const deleteEnrollmentMiddleware = asyncErrorHandler(async function (req, res, next) {
+export const deleteEnrollmentMiddleware = asyncErrorHandler(async function (req, res, next) {
     let enrollment = await Enrollment.findById(req.params.id);
     let user = await User.findById(req.user.id);
 
@@ -26,8 +25,3 @@ const deleteEnrollmentMiddleware = asyncErrorHandler(async function (req, res, n
     }
     next();
 });
-
-module.exports = {
-    addUserToReqBody,
-    deleteEnrollmentMiddleware
-}

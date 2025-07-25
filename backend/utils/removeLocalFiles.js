@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from 'fs';
 
 const removeLocalFiles = async (req) => {
     if (req.upload === "course") {
@@ -34,4 +34,4 @@ const removeLocalFiles = async (req) => {
     }
 }
 
-module.exports = removeLocalFiles;
+export default removeLocalFiles;

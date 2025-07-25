@@ -1,9 +1,9 @@
-const CustomError = require("../utils/CustomError");
-const { asyncErrorHandler } = require("./errorMiddleware");
-const JWTs = require("../utils/JWTs");
-const User = require("../models/User");
+import User from "../models/User.js";
+import CustomError from "../utils/CustomError.js";
+import { verifyToken } from "../utils/JWTs.js";
+import { asyncErrorHandler } from "./errorMiddleware.js";
 
-const protect = asyncErrorHandler(async function (req, res, next) {
+export const protect = asyncErrorHandler(async function (req, res, next) {
     let token;
     let authHeader = req.headers.authorization || req.headers.Authorization;
 
@@ -16,7 +16,7 @@ const protect = asyncErrorHandler(async function (req, res, next) {
     if (!token)
         throw new CustomError("You are not logged in", 401);
 
-    let decoded = await JWTs.verifyToken(token);
+    let decoded = await verifyToken(token);
 
     if (!decoded)
         throw new CustomError("Invalid token", 401);
@@ -35,15 +35,9 @@ const protect = asyncErrorHandler(async function (req, res, next) {
     next();
 });
 
-const allowedTo = (...roles) => asyncErrorHandler(async function (req, res, next) {
+export const allowedTo = (...roles) => asyncErrorHandler(async function (req, res, next) {
     if (!roles.includes(req.user.role))
         throw new CustomError("You are not allowed to perform this action", 403);
 
     next();
 });
-
-
-module.exports = {
-    protect,
-    allowedTo
-};

@@ -1,36 +1,34 @@
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const sharp = require("sharp");
-const User = require("../models/User");
-const { uploadMultipleFields } = require("../middlewares/uploadsMiddleware");
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne,
-} = require("./controller");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
-const { createToken } = require("../utils/JWTs");
-const CustomError = require("../utils/CustomError");
-const { sendEmail } = require("../utils/emails");
-const { acceptTeacherTemp, refuseTeacherTemp } = require("../utils/emailTemps");
-const Cart = require("../models/Cart");
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import sharp from 'sharp';
+import { fileURLToPath } from 'url'; // 👈 Add this import
+import User from '../models/User.js';
+import { sendEmail } from '../utils/emails.js';
+import CustomError from '../utils/CustomError.js';
+import { createToken } from '../utils/JWTs.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
+import { uploadMultipleFields } from '../middlewares/uploadsMiddleware.js';
+import { acceptTeacherTemp, refuseTeacherTemp } from '../utils/emailTemps.js';
+import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
-const getAllUsers = getAll(User);
+// --- Recreate __dirname for ES Modules ---
+const __filename = fileURLToPath(import.meta.url); // Gets the file path
+const __dirname = path.dirname(__filename);     // Gets the directory path
 
-const createUser = createOne(User);
+export const getAllUsers = getAll(User);
 
-const getUser = getOne(User, "User");
+export const createUser = createOne(User);
 
-const updateUser = updateOne(User, "User");
+export const getUser = getOne(User, "User");
 
-const deleteUser = deleteOne(User, "User");
+export const updateUser = updateOne(User, "User");
 
-const uploadUserFiles = uploadMultipleFields([{ name: "coverImage", maxCount: 1 }, { name: "cv", maxCount: 1 }]);
+export const deleteUser = deleteOne(User, "User");
 
-const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
+export const uploadUserFiles = uploadMultipleFields([{ name: "coverImage", maxCount: 1 }, { name: "cv", maxCount: 1 }]);
+
+export const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
     if (req.files) {
         if (req.files.coverImage) {
             let { mimetype } = req.files.coverImage[0];
@@ -79,13 +77,13 @@ const handleUserFiles = asyncErrorHandler(async function (req, res, next) {
 });
 
 
-const deleteMe = asyncErrorHandler(async function (req, res) {
+export const deleteMe = asyncErrorHandler(async function (req, res) {
     await User.findByIdAndUpdate(req.params.id, { isActive: false });
 
     res.status(204).send();
 });
 
-const getMe = asyncErrorHandler(async function (req, res) {
+export const getMe = asyncErrorHandler(async function (req, res) {
     const user = await User.findById(req.user.id).select("-password -PasswordChangedAt");
 
     const cart = await Cart.findOne({ user: user.id });
@@ -99,7 +97,7 @@ const getMe = asyncErrorHandler(async function (req, res) {
     });
 });
 
-const changePassword = asyncErrorHandler(async function (req, res) {
+export const changePassword = asyncErrorHandler(async function (req, res) {
     let user = await User.findById(req.params.id);
 
     user.password = req.body.newPassword;
@@ -114,7 +112,7 @@ const changePassword = asyncErrorHandler(async function (req, res) {
     });
 });
 
-let acceptTeacher = asyncErrorHandler(async function (req, res) {
+export const acceptTeacher = asyncErrorHandler(async function (req, res) {
     let user = await User.findByIdAndUpdate(req.params.id, req.body, {
         runValidators: true,
         new: true
@@ -135,7 +133,7 @@ let acceptTeacher = asyncErrorHandler(async function (req, res) {
     }
 });
 
-let refuseTeacher = asyncErrorHandler(async function (req, res) {
+export const refuseTeacher = asyncErrorHandler(async function (req, res) {
     let user = await User.findByIdAndDelete(req.params.id);
 
     let options = {
@@ -152,18 +150,3 @@ let refuseTeacher = asyncErrorHandler(async function (req, res) {
         throw new CustomError("Some thing wrong happened in sending the email", 500);
     }
 });
-
-module.exports = {
-    uploadUserFiles,
-    handleUserFiles,
-    getAllUsers,
-    createUser,
-    getUser,
-    updateUser,
-    deleteUser,
-    changePassword,
-    deleteMe,
-    getMe,
-    acceptTeacher,
-    refuseTeacher
-};

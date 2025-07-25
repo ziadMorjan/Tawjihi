@@ -1,14 +1,18 @@
-const express = require("express");
-const { protect, allowedTo } = require("../middlewares/authMiddleware");
-const { checkResourceBelongToTeacher } = require("../middlewares/resourceMiddleware");
-const {
+import express from 'express';
+
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
+
+import { checkResourceBelongToTeacher } from '../middlewares/resourceMiddleware.js';
+
+import {
     getAllResourceValidator,
     createResourceValidator,
     getResourceValidator,
     updateResourceValidator,
     deleteResourceValidator
-} = require("../utils/validators/resourceValidator");
-const {
+} from '../utils/validators/resourceValidator.js';
+
+import {
     getAllResource,
     createResource,
     getResource,
@@ -16,9 +20,9 @@ const {
     deleteResource,
     uploadContentFile,
     handleContentFile
-} = require("../controllers/ResourceController");
+} from '../controllers/ResourceController.js';
 
-let router = express.Router({ mergeParams: true });
+const router = express.Router({ mergeParams: true });
 
 router.route("/")
     .get(
@@ -55,4 +59,4 @@ router.route("/:id")
         deleteResource
     );
 
-module.exports = router;
+export default router;

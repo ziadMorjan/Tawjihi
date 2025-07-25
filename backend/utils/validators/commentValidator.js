@@ -1,12 +1,12 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Comment = require('../../models/Comment');
-const CustomError = require('../CustomError');
-const Lesson = require('../../models/Lesson');
-const Enrollment = require('../../models/Enrollment');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Lesson from '../../models/Lesson.js';
+import Comment from '../../models/Comment.js';
+import Enrollment from '../../models/Enrollment.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createCommentValidator = [
-    validator.check('lesson')
+export const createCommentValidator = [
+    check('lesson')
         .notEmpty()
         .withMessage('lesson is required')
         .isMongoId()
@@ -28,13 +28,13 @@ const createCommentValidator = [
             return true;
         }),
 
-    validator.check('user')
+    check('user')
         .notEmpty()
         .withMessage('user is required')
         .isMongoId()
         .withMessage("invalid user id"),
 
-    validator.check('content')
+    check('content')
         .notEmpty()
         .withMessage('comment is required'),
 
@@ -42,8 +42,8 @@ const createCommentValidator = [
 ];
 
 
-const getCommentValidator = [
-    validator.check("id")
+export const getCommentValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Comment ID is required")
         .isMongoId()
@@ -58,8 +58,8 @@ const getCommentValidator = [
     validationMiddleware
 ];
 
-const updateCommentValidator = [
-    validator.check("id")
+export const updateCommentValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Comment ID is required")
         .isMongoId()
@@ -72,7 +72,7 @@ const updateCommentValidator = [
         }),
 
 
-    validator.check('lesson')
+    check('lesson')
         .optional()
         .notEmpty()
         .withMessage('lesson is required')
@@ -95,14 +95,14 @@ const updateCommentValidator = [
             return true;
         }),
 
-    validator.check('user')
+    check('user')
         .optional()
         .notEmpty()
         .withMessage('user is required')
         .isMongoId()
         .withMessage("invalid user id"),
 
-    validator.check('content')
+    check('content')
         .optional()
         .notEmpty()
         .withMessage('comment is required'),
@@ -110,8 +110,8 @@ const updateCommentValidator = [
     validationMiddleware
 ];
 
-const deleteCommentValidator = [
-    validator.check("id")
+export const deleteCommentValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Comment ID is required")
         .isMongoId()
@@ -125,10 +125,3 @@ const deleteCommentValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    createCommentValidator,
-    getCommentValidator,
-    updateCommentValidator,
-    deleteCommentValidator
-}

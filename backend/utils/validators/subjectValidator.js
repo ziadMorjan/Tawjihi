@@ -1,10 +1,10 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Subject = require('../../models/Subject');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Subject from '../../models/Subject.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createSubjectValidator = [
-    validator.check('name')
+export const createSubjectValidator = [
+    check('name')
         .notEmpty()
         .withMessage('Name is required')
         .isLength({ min: 3 })
@@ -16,7 +16,7 @@ const createSubjectValidator = [
             }
             return true;
         }),
-    validator.check('description')
+    check('description')
         .optional()
         .isLength({ min: 10, max: 1000 })
         .withMessage('Description must be between 10 and 1000 characters long'),
@@ -24,14 +24,14 @@ const createSubjectValidator = [
     validationMiddleware
 ];
 
-const updateSubjectValidator = [
-    validator.check("id")
+export const updateSubjectValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Subject ID is required")
         .isMongoId()
         .withMessage("Invalid Subject ID"),
 
-    validator.check('name')
+    check('name')
         .optional()
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long')
@@ -42,7 +42,7 @@ const updateSubjectValidator = [
             }
             return true;
         }),
-    validator.check('description')
+    check('description')
         .optional()
         .isLength({ min: 10, max: 1000 })
         .withMessage('Description must be between 10 and 1000 characters long'),
@@ -50,8 +50,8 @@ const updateSubjectValidator = [
     validationMiddleware
 ];
 
-const getSubjectValidator = [
-    validator.check("id")
+export const getSubjectValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Subject ID is required")
         .isMongoId()
@@ -60,8 +60,8 @@ const getSubjectValidator = [
     validationMiddleware
 ];
 
-const deleteSubjectValidator = [
-    validator.check("id")
+export const deleteSubjectValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Subject ID is required")
         .isMongoId()
@@ -69,10 +69,3 @@ const deleteSubjectValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    createSubjectValidator,
-    updateSubjectValidator,
-    getSubjectValidator,
-    deleteSubjectValidator
-}

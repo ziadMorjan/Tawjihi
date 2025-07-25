@@ -1,23 +1,21 @@
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const { getVideoDurationInSeconds } = require("get-video-duration");
-const Lesson = require('../models/Lesson');
-const { uploadSingleField } = require("../middlewares/uploadsMiddleware");
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+import { getVideoDurationInSeconds } from 'get-video-duration';
+import Lesson from '../models/Lesson.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
+import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
+import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne
-} = require("./controller");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
-const CustomError = require("../utils/CustomError");
+// --- Recreate __dirname for ES Modules ---
+const __filename = fileURLToPath(import.meta.url); // Gets the file path
+const __dirname = path.dirname(__filename);     // Gets the directory path
 
-const uploadLessonVideo = uploadSingleField("video");
 
-const handleVideo = asyncErrorHandler(async function (req, res, next) {
+export const uploadLessonVideo = uploadSingleField("video");
+
+export const handleVideo = asyncErrorHandler(async function (req, res, next) {
     if (req.file) {
         let { mimetype } = req.file;
         if (!mimetype.startsWith("video"))
@@ -44,23 +42,12 @@ const handleVideo = asyncErrorHandler(async function (req, res, next) {
 });
 
 
-const getAllLessons = getAll(Lesson);
+export const getAllLessons = getAll(Lesson);
 
-const createLesson = createOne(Lesson);
+export const createLesson = createOne(Lesson);
 
-const getLesson = getOne(Lesson, "Lesson");
+export const getLesson = getOne(Lesson, "Lesson");
 
-const updateLesson = updateOne(Lesson, "Lesson");
+export const updateLesson = updateOne(Lesson, "Lesson");
 
-const deleteLesson = deleteOne(Lesson, "Lesson");
-
-
-module.exports = {
-    getAllLessons,
-    createLesson,
-    getLesson,
-    updateLesson,
-    deleteLesson,
-    uploadLessonVideo,
-    handleVideo
-}
+export const deleteLesson = deleteOne(Lesson, "Lesson");

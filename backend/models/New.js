@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
-const cloudinary = require("../config/cloudinary");
-const { extractPublicId } = require("../utils/extractPublicId");
-
+import mongoose from 'mongoose';
+import cloudinary from '../config/cloudinary.js';
+import extractPublicId from '../utils/extractPublicId.js';
 
 const newSchema = new mongoose.Schema(
     {
@@ -39,4 +38,4 @@ newSchema.post(/delete/i, async function name(doc, next) {
 });
 
 
-module.exports = mongoose.model("New", newSchema);
+export default mongoose.model("New", newSchema);

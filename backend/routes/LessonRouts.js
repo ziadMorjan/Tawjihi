@@ -1,22 +1,22 @@
-const express = require('express');
+import express from 'express';
 
-const { protect, allowedTo } = require("../middlewares/authMiddleware");
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-const {
+import {
     checkCourseBelongToTeacher,
     checkCourseBelongToTeacherInCreate,
     addCourseIdToReqBody,
     addCourseIdToReqQuery
-} = require("../middlewares/lessonMiddleware");
+} from '../middlewares/lessonMiddleware.js';
 
-const {
+import {
     createLessonValidator,
     getLessonValidator,
     updateLessonValidator,
     deleteLessonValidator
-} = require("../utils/validators/lessonValidator");
+} from '../utils/validators/lessonValidator.js';
 
-const {
+import {
     getAllLessons,
     createLesson,
     getLesson,
@@ -24,11 +24,12 @@ const {
     deleteLesson,
     uploadLessonVideo,
     handleVideo
-} = require('../controllers/LessonController');
-const resourceRouts = require('./ResourceRouts');
-const commentsRouts = require('./CommentRoutes');
+} from '../controllers/LessonController.js';
 
-let router = express.Router({ mergeParams: true });
+import resourceRouts from './ResourceRouts.js';
+import commentsRouts from './CommentRoutes.js';
+
+const router = express.Router({ mergeParams: true });
 
 router.use("/:lessonId/resources", resourceRouts);
 router.use("/:lessonId/comments", commentsRouts);
@@ -70,4 +71,4 @@ router.route('/:id')
         deleteLesson
     );
 
-module.exports = router;
+export default router;

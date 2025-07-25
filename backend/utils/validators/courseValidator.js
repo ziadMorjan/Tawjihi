@@ -1,24 +1,24 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const User = require('../../models/User');
-const Branch = require('../../models/Branch');
-const CustomError = require('../CustomError');
-const Course = require('../../models/Course');
-const Subject = require('../../models/Subject');
+import { check } from 'express-validator';
+import User from '../../models/User.js';
+import Subject from '../../models/Subject.js';
+import Branch from '../../models/Branch.js';
+import Course from '../../models/Course.js';
+import CustomError from '../CustomError.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createCourseValidator = [
-    validator.check('name')
+export const createCourseValidator = [
+    check('name')
         .notEmpty()
         .withMessage('Name is required')
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long'),
 
-    validator.check('description')
+    check('description')
         .optional()
         .isLength({ min: 10, max: 1000 })
         .withMessage('Description must be between 10 and 1000 characters long'),
 
-    validator.check("teacher")
+    check("teacher")
         .notEmpty()
         .withMessage("Course must belong to teacher")
         .isMongoId()
@@ -32,7 +32,7 @@ const createCourseValidator = [
             return true;
         }),
 
-        validator.check("subject")
+    check("subject")
         .notEmpty()
         .withMessage("Course must belong to subject")
         .isMongoId()
@@ -41,11 +41,11 @@ const createCourseValidator = [
             let subject = await Subject.findById(value);
             if (!subject)
                 throw new CustomError("The provided subject does not exist in the db", 404);
-            
+
             return true;
         }),
 
-    validator.check("branches")
+    check("branches")
         .notEmpty()
         .withMessage("Course must belong to at least one branch")
         .isArray()
@@ -63,11 +63,11 @@ const createCourseValidator = [
             return true;
         }),
 
-    validator.check("price")
+    check("price")
         .notEmpty().withMessage("price is required")
         .isNumeric().withMessage("price must be number"),
 
-    validator.check("priceAfterDiscount")
+    check("priceAfterDiscount")
         .optional()
         .custom((value, { req }) => {
             if (req.body.price) {
@@ -80,8 +80,8 @@ const createCourseValidator = [
     validationMiddleware
 ];
 
-const updateCourseValidator = [
-    validator.check("id")
+export const updateCourseValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Course ID is required")
         .isMongoId()
@@ -93,19 +93,19 @@ const updateCourseValidator = [
             return true;
         }),
 
-    validator.check('name')
+    check('name')
         .optional()
         .notEmpty()
         .withMessage('Name is required')
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long'),
 
-    validator.check('description')
+    check('description')
         .optional()
         .isLength({ min: 10, max: 1000 })
         .withMessage('Description must be between 10 and 1000 characters long'),
 
-    validator.check("teacher")
+    check("teacher")
         .optional()
         .notEmpty()
         .withMessage("Course must belong to teacher")
@@ -118,7 +118,7 @@ const updateCourseValidator = [
             return true;
         }),
 
-        validator.check("subject")
+    check("subject")
         .optional()
         .notEmpty()
         .withMessage("Course must belong to subject")
@@ -128,11 +128,11 @@ const updateCourseValidator = [
             let subject = await Subject.findById(value);
             if (!subject)
                 throw new CustomError("The provided subject does not exist in the db", 404);
-            
+
             return true;
         }),
 
-    validator.check("branches")
+    check("branches")
         .optional()
         .notEmpty()
         .withMessage("Course must belong to at least one branch")
@@ -152,12 +152,12 @@ const updateCourseValidator = [
         }),
 
 
-    validator.check("price")
+    check("price")
         .optional()
         .notEmpty().withMessage("price is required")
         .isNumeric().withMessage("price must be number"),
 
-    validator.check("priceAfterDiscount")
+    check("priceAfterDiscount")
         .optional()
         .custom((value, { req }) => {
             if (req.body.price) {
@@ -171,8 +171,8 @@ const updateCourseValidator = [
     validationMiddleware
 ];
 
-const getCourseValidator = [
-    validator.check("id")
+export const getCourseValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Course ID is required")
         .isMongoId()
@@ -181,8 +181,8 @@ const getCourseValidator = [
     validationMiddleware
 ];
 
-const deleteCourseValidator = [
-    validator.check("id")
+export const deleteCourseValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Course ID is required")
         .isMongoId()
@@ -196,10 +196,3 @@ const deleteCourseValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    createCourseValidator,
-    updateCourseValidator,
-    getCourseValidator,
-    deleteCourseValidator
-}

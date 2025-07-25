@@ -1,26 +1,26 @@
-const express = require('express');
+import express from 'express';
 
-const {
+import {
     protect,
     allowedTo
-} = require('../middlewares/authMiddleware');
+} from '../middlewares/authMiddleware.js';
 
-let router = express.Router();
-
-const {
+import {
     getSubjectValidator,
     createSubjectValidator,
     updateSubjectValidator,
     deleteSubjectValidator
-} = require("../utils/validators/subjectValidator");
+} from '../utils/validators/subjectValidator.js';
 
-const {
+import {
     getAllSubjects,
     createSubject,
     getSubject,
     updateSubject,
     deleteSubject,
-} = require("../controllers/SubjectController");
+} from '../controllers/SubjectController.js';
+
+const router = express.Router();
 
 router.route("/")
     .get(getAllSubjects)
@@ -46,4 +46,4 @@ router.route("/:id")
         deleteSubject
     );
 
-module.exports = router;
+export default router;

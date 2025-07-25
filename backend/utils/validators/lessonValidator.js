@@ -1,10 +1,10 @@
-const validator = require("express-validator");
-const { validationMiddleware } = require("../../middlewares/validationMiddleware");
-const Course = require("../../models/Course");
-const CustomError = require("../CustomError");
+import { check } from "express-validator";
+import CustomError from "../CustomError.js";
+import Course from "../../models/Course.js";
+import { validationMiddleware } from "../../middlewares/validationMiddleware.js";
 
-const createLessonValidator = [
-    validator.check("name")
+export const createLessonValidator = [
+    check("name")
         .notEmpty()
         .withMessage("Name is required")
         .isString()
@@ -12,7 +12,7 @@ const createLessonValidator = [
         .trim()
         .escape(),
 
-    validator.check("description")
+    check("description")
         .notEmpty()
         .withMessage("Description is required")
         .isString()
@@ -20,11 +20,11 @@ const createLessonValidator = [
         .trim()
         .escape(),
 
-    validator.check("video")
+    check("video")
         .notEmpty()
         .withMessage("Video is required"),
 
-    validator.check("course")
+    check("course")
         .notEmpty()
         .withMessage("Course ID is required")
         .isMongoId()
@@ -39,8 +39,8 @@ const createLessonValidator = [
     validationMiddleware
 ]
 
-const getLessonValidator = [
-    validator.check("id")
+export const getLessonValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Lesson ID is required")
         .isMongoId()
@@ -49,8 +49,8 @@ const getLessonValidator = [
     validationMiddleware
 ]
 
-const updateLessonValidator = [
-    validator.check("name")
+export const updateLessonValidator = [
+    check("name")
         .optional()
         .notEmpty()
         .withMessage("Name is required")
@@ -59,7 +59,7 @@ const updateLessonValidator = [
         .trim()
         .escape(),
 
-    validator.check("description")
+    check("description")
         .optional()
         .notEmpty()
         .withMessage("Description is required")
@@ -68,12 +68,12 @@ const updateLessonValidator = [
         .trim()
         .escape(),
 
-    validator.check("video")
+    check("video")
         .optional()
         .notEmpty()
         .withMessage("Video is required"),
 
-    validator.check("course")
+    check("course")
         .optional()
         .notEmpty()
         .withMessage("Course ID is required")
@@ -89,8 +89,8 @@ const updateLessonValidator = [
     validationMiddleware
 ]
 
-const deleteLessonValidator = [
-    validator.check("id")
+export const deleteLessonValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Lesson ID is required")
         .isMongoId()
@@ -98,10 +98,3 @@ const deleteLessonValidator = [
 
     validationMiddleware
 ]
-
-module.exports = {
-    createLessonValidator,
-    getLessonValidator,
-    updateLessonValidator,
-    deleteLessonValidator
-}

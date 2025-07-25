@@ -1,24 +1,22 @@
-const express = require('express');
+import express from "express";
+import lessonRouts from './LessonRouts.js';
+import reviewsRouts from './ReviewRoutes.js';
 
-const lessonRouts = require("./LessonRouts");
-
-const reviewsRouts = require("./ReviewRoutes");
-
-const {
+import {
     protect,
     allowedTo
-} = require('../middlewares/authMiddleware');
+} from '../middlewares/authMiddleware.js';
 
-const { checkCourseBelongToTeacher } = require("../middlewares/courseMiddleware");
+import { checkCourseBelongToTeacher } from '../middlewares/courseMiddleware.js';
 
-const {
+import {
     createCourseValidator,
     updateCourseValidator,
     getCourseValidator,
     deleteCourseValidator
-} = require('../utils/validators/courseValidator');
+} from '../utils/validators/courseValidator.js';
 
-const {
+import {
     getAllCourses,
     createCourse,
     getCourse,
@@ -26,9 +24,9 @@ const {
     deleteCourse,
     uploadCourseImage,
     handleCourseImage
-} = require('../controllers/CourseController');
+} from '../controllers/CourseController.js';
 
-let router = express.Router();
+const router = express.Router();
 
 router.use("/:courseId/lessons", lessonRouts);
 
@@ -64,4 +62,4 @@ router.route('/:id')
         deleteCourse,
     );
 
-module.exports = router;
+export default router;

@@ -1,12 +1,19 @@
-const express = require('express');
-const router = express.Router();
-const { protect, allowedTo } = require('../middlewares/authMiddleware');
-const { createCheckoutSessionValidator } = require("../utils/validators/paymentValidator");
-const {
+import express from 'express';
+
+import {
+    protect,
+    allowedTo
+} from '../middlewares/authMiddleware.js';
+
+import { createCheckoutSessionValidator } from '../utils/validators/paymentValidator.js';
+
+import {
     createCheckoutSession,
     getPayments,
     getPayment,
-} = require('../controllers/PaymentController');
+} from '../controllers/PaymentController.js';
+
+const router = express.Router();
 
 router.use(protect);
 
@@ -24,4 +31,4 @@ router.route("/")
 router.route("/:id")
     .get(getPayment);
 
-module.exports = router;
+export default router;

@@ -1,11 +1,6 @@
-const util = require("util")
-const JWT = require("jsonwebtoken");
+import util from 'util';
+import jwt from 'jsonwebtoken';
 
-const createToken = id => JWT.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRED });
+export const createToken = id => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRED });
 
-const verifyToken = token => util.promisify(JWT.verify)(token, process.env.JWT_SECRET);
-
-module.exports = {
-    createToken,
-    verifyToken
-}
+export const verifyToken = token => util.promisify(jwt.verify)(token, process.env.JWT_SECRET);

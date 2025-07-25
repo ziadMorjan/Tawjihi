@@ -1,11 +1,11 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const TeacherReview = require('../../models/TeacherReview');
-const User = require('../../models/User');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import User from '../../models/User.js';
+import TeacherReview from '../../models/TeacherReview.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createTeacherReviewValidator = [
-    validator.check('teacher')
+export const createTeacherReviewValidator = [
+    check('teacher')
         .notEmpty()
         .withMessage('teacher is required')
         .isMongoId()
@@ -37,19 +37,19 @@ const createTeacherReviewValidator = [
             }
         ),
 
-    validator.check('user')
+    check('user')
         .notEmpty()
         .withMessage('user is required')
         .isMongoId()
         .withMessage("invalid user id"),
 
-    validator.check('comment')
+    check('comment')
         .notEmpty()
         .withMessage('Review comment is required')
         .isLength({ max: 500 })
         .withMessage('Review comment must be less than 500 characters'),
 
-    validator.check('rating')
+    check('rating')
         .notEmpty()
         .withMessage('Review rating is required')
         .isNumeric()
@@ -61,8 +61,8 @@ const createTeacherReviewValidator = [
 ];
 
 
-const getTeacherReviewValidator = [
-    validator.check("id")
+export const getTeacherReviewValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Review ID is required")
         .isMongoId()
@@ -77,8 +77,8 @@ const getTeacherReviewValidator = [
     validationMiddleware
 ];
 
-const updateTeacherReviewValidator = [
-    validator.check("id")
+export const updateTeacherReviewValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Review ID is required")
         .isMongoId()
@@ -90,7 +90,7 @@ const updateTeacherReviewValidator = [
             }
         }),
 
-    validator.check('teacher')
+    check('teacher')
         .optional()
         .notEmpty()
         .withMessage('teacher is required')
@@ -111,21 +111,21 @@ const updateTeacherReviewValidator = [
         }),
 
 
-    validator.check('user')
+    check('user')
         .optional()
         .notEmpty()
         .withMessage('user is required')
         .isMongoId()
         .withMessage("invalid user id"),
 
-    validator.check('comment')
+    check('comment')
         .optional()
         .notEmpty()
         .withMessage('Review comment is required')
         .isLength({ max: 500 })
         .withMessage('Review comment must be less than 500 characters'),
 
-    validator.check('rating')
+    check('rating')
         .optional()
         .notEmpty()
         .withMessage('Review rating is required')
@@ -137,8 +137,8 @@ const updateTeacherReviewValidator = [
     validationMiddleware
 ];
 
-const deleteTeacherReviewValidator = [
-    validator.check("id")
+export const deleteTeacherReviewValidator = [
+    check("id")
         .notEmpty()
         .withMessage("Review ID is required")
         .isMongoId()
@@ -152,10 +152,3 @@ const deleteTeacherReviewValidator = [
 
     validationMiddleware
 ];
-
-module.exports = {
-    createTeacherReviewValidator,
-    getTeacherReviewValidator,
-    updateTeacherReviewValidator,
-    deleteTeacherReviewValidator
-}

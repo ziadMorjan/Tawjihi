@@ -1,16 +1,17 @@
-const express = require('express');
-const {
+import express from 'express';
+
+import {
     protect,
     allowedTo
-} = require('../middlewares/authMiddleware');
+} from '../middlewares/authMiddleware.js';
 
-const {
+import {
     addUserIdToReqParams,
     updateMeMiddleware,
     activationMiddleware
-} = require("../middlewares/userMiddleware");
+} from '../middlewares/userMiddleware.js';
 
-const {
+import {
     getUserValidator,
     createUserValidator,
     updateUserValidator,
@@ -20,9 +21,9 @@ const {
     deactivateUserValidator,
     acceptTeacherValidator,
     refuseTeacherValidator
-} = require("../utils/validators/userValidator");
+} from '../utils/validators/userValidator.js';
 
-const {
+import {
     getAllUsers,
     createUser,
     getUser,
@@ -35,9 +36,9 @@ const {
     changePassword,
     acceptTeacher,
     refuseTeacher
-} = require("../controllers/UserController");
+} from '../controllers/UserController.js';
 
-const teacherReviewRoutes = require("./TeacherReviewRoutes");
+import teacherReviewRoutes from './TeacherReviewRoutes.js';
 
 const router = express.Router();
 
@@ -147,4 +148,4 @@ router.route("/:id")
         deleteUser
     );
 
-module.exports = router;
+export default router;

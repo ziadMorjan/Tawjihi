@@ -1,28 +1,28 @@
-const Comment = require("../models/Comment");
-const Lesson = require("../models/Lesson");
-const Course = require("../models/Course");
-const CustomError = require("../utils/CustomError");
-const { asyncErrorHandler } = require("./errorMiddleware");
+import Comment from '../models/Comment.js';
+import Lesson from '../models/Lesson.js';
+import Course from '../models/Course.js';
+import CustomError from '../utils/CustomError.js';
+import { asyncErrorHandler } from './errorMiddleware.js';
 
-const addLessonIdToReqQuery = (req, res, next) => {
+export const addLessonIdToReqQuery = (req, res, next) => {
     if (req.params.lessonId)
         req.query.lesson = req.params.lessonId;
     next();
 }
 
-const addLessonIdToReqBody = (req, res, next) => {
+export const addLessonIdToReqBody = (req, res, next) => {
     if (req.params.lessonId) {
         req.body.lesson = req.params.lessonId;
     }
     next();
 }
 
-const addUserIdToReqBody = (req, res, next) => {
+export const addUserIdToReqBody = (req, res, next) => {
     req.body.user = req.user.id;
     next();
 }
 
-const checkCommentBelongToUser = asyncErrorHandler(async (req, res, next) => {
+export const checkCommentBelongToUser = asyncErrorHandler(async (req, res, next) => {
     if (req.user.role === "user") {
         const comment = await Comment.findById(req.params.id);
         if (comment)
@@ -32,7 +32,7 @@ const checkCommentBelongToUser = asyncErrorHandler(async (req, res, next) => {
     next();
 });
 
-const checkCourseBelongToTeacher = asyncErrorHandler(async (req, res, next) => {
+export const checkCourseBelongToTeacher = asyncErrorHandler(async (req, res, next) => {
     if (req.user.role === "teacher") {
         const comment = await Comment.findById(req.params.id);
         if (comment) {
@@ -47,11 +47,3 @@ const checkCourseBelongToTeacher = asyncErrorHandler(async (req, res, next) => {
     next();
 });
 
-
-module.exports = {
-    addUserIdToReqBody,
-    addLessonIdToReqBody,
-    checkCommentBelongToUser,
-    checkCourseBelongToTeacher,
-    addLessonIdToReqQuery
-};
