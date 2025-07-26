@@ -152,7 +152,6 @@ function EditProfile() {
         { withCredentials: true }
       );
 
-      console.log("fskajfkasjklfas",response)
 
       const updatedUser = { ...response.data.data.updatedDoc };
       localStorage.setItem("user", JSON.stringify(updatedUser));

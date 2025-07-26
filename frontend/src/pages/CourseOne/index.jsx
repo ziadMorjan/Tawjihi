@@ -119,7 +119,6 @@ const CourseOne = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("تم إرسال التعليق:", data);
     reset();
   };
 
@@ -155,7 +154,6 @@ const CourseOne = () => {
 
   return (
     <>
-      {console.log("thisCourse:", thisCourse)}
       <LogoAndButton />
       <NavBar />
       <ModalTeacher />

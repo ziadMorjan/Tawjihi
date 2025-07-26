@@ -139,7 +139,6 @@ export const CommentsProvider = ({ children }) => {
                 { withCredentials: true }
             );
 
-            console.log(res.data.data.newDoc);
 
             dispatch({
                 type: ACTIONS.POST_COURSE_COMMENT,
@@ -178,7 +177,6 @@ export const CommentsProvider = ({ children }) => {
                 { comment },
                 { withCredentials: true }
             );
-            console.log(res);
             dispatch({
                 type: ACTIONS.UPDATE_COURSE_COMMENT,
                 payload: res.data.data.updatedDoc,

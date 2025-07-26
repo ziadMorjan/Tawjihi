@@ -130,10 +130,7 @@ const ReviewListSection = ({ courseId, lessonId, from }) => {
                             )
                           }
                         />
-                        {console.log("isReviewDeleting", isReviewDeleting)}
-                        {console.log("reviewDeletingId", reviewDeletingId)}
-                        {console.log("review", review?._id)}
-
+                    
                         {isReviewDeleting && reviewDeletingId === review?._id ? (
 
                           <CircularProgress size={16} />

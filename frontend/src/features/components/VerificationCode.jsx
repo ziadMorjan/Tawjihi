@@ -68,7 +68,6 @@ export const VerificationCode = () => {
         resetCode,
       });
 
-      console.log("Submitted:", response.data);
       navigate(`/${PATH.ResetPassword}`);
       reset();
     } catch (error) {

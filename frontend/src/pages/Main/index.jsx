@@ -71,9 +71,6 @@ const MainPage = () => {
   const { data: dataCourses, isLoading } = useApi(`${API_URL}/courses/`)
   const { data: dataTeachers } = useApi(`${API_URL}/users/?role=teacher&isActive=true&limit=3`)
 
-  console.log("data is -----------------", dataCourses)
-  console.log("Teachers is ++++++++++++++++", dataTeachers)
-
   //filteredCourses
   const filteredCourses = useMemo(() => {
     return dataCourses.filter((course) => {
