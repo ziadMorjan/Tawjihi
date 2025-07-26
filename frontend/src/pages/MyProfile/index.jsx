@@ -40,60 +40,89 @@ import {
   UserEmail,
   UserName,
 } from "./style";
+
 import { Avatar } from "@mui/material";
+import axios from "axios";
+import { API_URL } from "../../config";
+import { useEffect, useState } from "react";
+import { PATH } from "../../routes";
 
 function UserProfile() {
   const navigate = useNavigate();
 
-  // Keeping the original logic for getting user data
-  const dataUser = JSON.parse(localStorage.getItem("user") || "{}") || {
-    name: "جون دو",
-    email: "johndoe@example.com",
-    bio: "لا يوجد نبذة حتى الآن.",
-    role: "طالب",
-    profileImage:
-      "https://th.bing.com/th/id/OIP.x2wDWv8Y8uPFo00LXaOGxAHaHa?w=199&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-    joinedAt: "2024",
-    coverImage: "/placeholder.svg?height=200&width=800",
-  };
+  const dataUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const userId = dataUser._id;
 
-  const { name, email, bio, role, profileImage, joinedAt, coverImage } =
-    dataUser;
+  const {
+    name = "اسم المستخدم",
+    email = "بريد غير متوفر",
+    description = "وصف غير متوفر",
+    role = "user",
+    profileImage,
+    joinedAt,
+    coverImage,
+    cart = [],
+    wishlist = [],
+  } = dataUser;
 
-  // Keeping the original account details logic
   const accountDetails = [
     { label: "الاسم", value: name, icon: "👤" },
     { label: "البريد الإلكتروني", value: email, icon: "✉️" },
-    { label: "الدور", value: role || "طالب", icon: "🎓" },
+    {
+      label: "الدور",
+      value: role === "user" ? "طالب" : role,
+      icon: "🎓",
+    },
     { label: "عضو منذ", value: joinedAt || "2024", icon: "📅" },
   ];
 
-  // Keeping the original courses stats logic
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchEnrolledCourses = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/enrollments?user=${userId}`,
+          { withCredentials: true }
+        );
+        setEnrolledCourses(response.data.data.docs);
+      } catch (error) {
+        console.error("Error fetching enrolled courses:", error);
+      }
+    };
+    fetchEnrolledCourses();
+  }, [userId]);
+
   const coursesStats = [
     {
       label: "الدورات المسجَّل بها",
-      value: "٤ دورات",
+      value:
+        enrolledCourses.length > 0
+          ? `${enrolledCourses.length} دورات`
+          : "لا توجد دورات مسجلة",
       icon: "📚",
       color: "#3b82f6",
     },
     {
-      label: "الدورات المكتملة",
-      value: "٢ دورة",
+      label: "الدورات في السلة",
+      value:
+        cart.length > 0 ? `${cart.length} دورات` : "لا توجد دورات في السلة",
       icon: "🏆",
       color: "#10b981",
     },
-    { label: "المفضلة", value: "٣ دورات", icon: "⭐", color: "#f59e0b" },
     {
-      label: "المراجعات المُضافة",
-      value: "٥ مراجعات",
-      icon: "💬",
-      color: "#8b5cf6",
+      label: "المفضلة",
+      value:
+        wishlist.length > 0
+          ? `${wishlist.length} دورات`
+          : "لا توجد دورات مفضلة",
+      icon: "⭐",
+      color: "#f59e0b",
     },
   ];
 
   const handleEditProfile = () => {
-    // Keeping the original navigation logic with React Router
-    navigate("/user/edit-profile");
+    navigate(`/user/${PATH.EditProfile}`);
   };
 
   return (
@@ -116,16 +145,13 @@ function UserProfile() {
               <ProfileHeader>
                 {/* Avatar */}
                 <AvatarContainer>
-                  <Avatar>
-                    {profileImage ? (
-                      <AvatarImage
-                        src={profileImage || "/placeholder.svg"}
-                        alt={name}
-                      />
-                    ) : (
-                      name.charAt(0)
-                    )}
-                  </Avatar>
+                  {profileImage ? (
+                    <Avatar>
+                      <AvatarImage src={profileImage} alt={name} />
+                    </Avatar>
+                  ) : (
+                    <Avatar>{name?.charAt(0)}</Avatar>
+                  )}
                 </AvatarContainer>
 
                 <ProfileInfo>
@@ -135,7 +161,7 @@ function UserProfile() {
                       <span>✉️</span>
                       {email}
                     </UserEmail>
-                    <RoleBadge>{role}</RoleBadge>
+                    <RoleBadge>{role === "user" ? "طالب" : role}</RoleBadge>
                   </UserDetails>
 
                   <EditButton onClick={handleEditProfile}>
@@ -152,7 +178,7 @@ function UserProfile() {
             <SectionContent>
               <SectionTitle>نبذة</SectionTitle>
               <AboutText>
-                {bio ||
+                {description ||
                   "لم يقم هذا المستخدم بإضافة نبذة حتى الآن. يمكنك هنا كتابة اهتماماتك أو أهدافك التعليمية أو مهنتك."}
               </AboutText>
             </SectionContent>

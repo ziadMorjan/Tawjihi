@@ -1,16 +1,17 @@
 import styled from "styled-components"
 
-// Styled Components
+// Wrapper for pagination container (centers horizontally)
 export const PaginationWrapper = styled.div`
   display: block;
   margin: auto;
 `
 
+// Container for pagination buttons with responsive gap
 export const PaginationContainer = styled.div`
   display: flex;
   gap: 8px;
   justify-content: center;
-  margin: 20px 0px;
+  margin: 20px 0;
   flex-wrap: wrap;
 
   @media (max-width: 768px) {
@@ -22,6 +23,7 @@ export const PaginationContainer = styled.div`
   }
 `
 
+// Pagination button styles
 export const PaginationButton = styled.button`
   min-width: 36px;
   height: 36px;
@@ -29,12 +31,12 @@ export const PaginationButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white;
+  background-color: ${({ theme }) => theme.checkBorder};
   border: 1px solid #ccc;
   border-radius: 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #007bff;
+  color: white;
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -42,16 +44,21 @@ export const PaginationButton = styled.button`
     transform: none;
   }
 
-  &:hover:not(:disabled):not([data-active="true"]) {
+  // Hover style applies only when not disabled and not active
+  &:hover:not(:disabled) {
     background-color: #f0f0f0;
+    opacity: 0.5;
   }
 
-  ${({ $active }) =>
+  // Active button styles, controlled by $active prop
+  ${({ $active, theme }) =>
     $active &&
     `
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
+      background-color: ${theme.checkBorder};
+      color: #f0f0f0;
+      border-color: ${theme.checkBorder};
+      cursor: default;
+      pointer-events: none;
   `}
 
   &:disabled {

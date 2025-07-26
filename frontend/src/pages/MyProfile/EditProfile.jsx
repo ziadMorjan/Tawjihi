@@ -1,10 +1,8 @@
+// EditProfile.jsx
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { Form, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 import {
   ButtonGroup,
   CancelButton,
@@ -18,10 +16,7 @@ import {
   ImageUploadOverlay,
   ImageUploadText,
   Input,
-  InputContainer,
-  Label,
   MaxWidthContainer,
-  PasswordToggle,
   ProfileImage,
   ProfileImageContainer,
   ProfileImageSection,
@@ -30,34 +25,47 @@ import {
   Subtitle,
   TextArea,
   UploadIcon,
+  Title,
+  Form,
+  NotificationContainer,
+  NotificationIcon,
+  NotificationMessage,
+  LoadingSpinner,
+  PasswordLink,
+  FormSection,
+  SectionTitle,
+  InputGroup,
+  IconWrapper,
+  FloatingLabel,
+  ProgressIndicator,
+  SuccessMessage,
 } from "./style";
-import { Title } from "@mui/icons-material";
+import axios from "axios";
+import { API_URL } from "../../config";
 
 function EditProfile() {
-  const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    roleUser: "طالب",
+    bio: "",
+  });
+
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setError,
-    clearErrors,
-    watch,
-    formState: { errors },
-  } = useForm();
-
-  const password = watch("password");
+  const [errors, setErrors] = useState({});
+  const [notification, setNotification] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (user) {
-      reset({
+      setFormData({
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
@@ -66,103 +74,149 @@ function EditProfile() {
       });
       setImagePreview(user.profileImage || "");
     }
-  }, [reset]);
+  }, []);
+
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
 
   const handleImageChange = (e) => {
-    clearErrors("profileImage");
+    setErrors((prev) => ({ ...prev, profileImage: "" }));
     const file = e.target.files[0];
+
     if (file) {
       if (!file.type.startsWith("image/")) {
-        setError("profileImage", {
-          type: "manual",
-          message: "الملف يجب أن يكون صورة فقط",
-        });
+        setErrors((prev) => ({
+          ...prev,
+          profileImage: "الملف يجب أن يكون صورة فقط",
+        }));
         return;
       }
+
+      setUploadProgress(0);
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 100);
+
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  const onSubmit = async (data) => {
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) newErrors.name = "الاسم مطلوب";
+    if (!formData.email.trim()) newErrors.email = "البريد الإلكتروني مطلوب";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      newErrors.email = "تنسيق البريد غير صالح";
+    if (formData.phone && !/^[+]?[\d\s\-()]+$/.test(formData.phone))
+      newErrors.phone = "رقم الهاتف غير صالح";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
     setIsSubmitting(true);
+
     try {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("phone", data.phone);
-      formData.append("bio", data.bio);
+      const submitFormData = new FormData();
+      submitFormData.append("name", formData.name);
+      submitFormData.append("email", formData.email);
+      submitFormData.append("phone", formData.phone);
+      submitFormData.append("bio", formData.bio);
+      if (imageFile) submitFormData.append("coverImage", imageFile);
 
-      if (data.password) {
-        formData.append("password", data.password);
-      }
+      const response = await axios.patch(
+        `${API_URL}/users/updateMe`,
+        submitFormData,
+        { withCredentials: true }
+      );
 
-      if (imageFile) formData.append("coverImage", imageFile);
+      console.log("fskajfkasjklfas",response)
 
-      // Remove roleUser from data if it exists
-      if ("roleUser" in data) {
-        delete data.roleUser;
-      }
-
-      const API_URL =
-        process.env.REACT_APP_API_URL || "http://localhost:3001/api";
-      const res = await axios.patch(`${API_URL}/users/updateMe`, formData, {
-        withCredentials: true,
-      });
-
-      const updatedUser = {
-        ...res.data.data.updatedDoc,
-      };
-
+      const updatedUser = { ...response.data.data.updatedDoc };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      toast.success("تم تحديث الملف الشخصي بنجاح!");
-      navigate("/user/profile");
+      showNotification("success", "تم تحديث الملف الشخصي بنجاح!");
+      setTimeout(() => {
+        navigate("/user/user-profile");
+      }, 2000);
     } catch (err) {
       console.error(err);
-      toast.error("حدث خطأ ما. يرجى المحاولة مرة أخرى.");
+      showNotification("error", "حدث خطأ ما. يرجى المحاولة مرة أخرى.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    navigate("/user/profile");
+    navigate("/user/user-profile");
   };
 
   return (
     <Container>
       <MaxWidthContainer>
         <Header>
-          <Title>تعديل الملف الشخصي</Title>
-          <Subtitle>قم بتحديث بيانات حسابك أدناه</Subtitle>
+          <Title>✨ تعديل الملف الشخصي</Title>
+          <Subtitle>قم بتحديث بيانات حسابك وإضفاء لمستك الشخصية</Subtitle>
         </Header>
 
         <FormCard>
-          <Form
-            onSubmit={handleSubmit(onSubmit)}
-            encType="multipart/form-data"
-            noValidate
-          >
-            {/* Profile Image Section */}
+          <Form onSubmit={onSubmit} noValidate>
             <ProfileImageSection>
               <ProfileImageContainer>
                 <ProfileImage
-                  src={imagePreview || "https://via.placeholder.com/150"}
+                  src={
+                    imagePreview ||
+                    "/placeholder.svg?height=150&width=150&query=profile avatar"
+                  }
                   alt="الصورة الشخصية"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() =>
+                    !isSubmitting && fileInputRef.current?.click()
+                  }
                   tabIndex={0}
                   onKeyDown={(e) =>
-                    e.key === "Enter" && fileInputRef.current?.click()
+                    e.key === "Enter" &&
+                    !isSubmitting &&
+                    fileInputRef.current?.click()
                   }
                   role="button"
                   aria-label="رفع صورة الملف الشخصي"
                   title="اضغط لتغيير الصورة"
+                  hasImage={!!imagePreview}
+                  style={{
+                    cursor: isSubmitting ? "not-allowed" : "pointer",
+                    boxShadow: isSubmitting ? "none" : "0 0 8px #667eea",
+                    transition: "box-shadow 0.3s ease",
+                  }}
                 />
-                <ImageUploadOverlay
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <UploadIcon>📷</UploadIcon>
-                </ImageUploadOverlay>
+                {!isSubmitting && (
+                  <ImageUploadOverlay
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <UploadIcon>📸</UploadIcon>
+                    <ImageUploadText>تغيير الصورة</ImageUploadText>
+                  </ImageUploadOverlay>
+                )}
               </ProfileImageContainer>
 
               <HiddenInput
@@ -171,170 +225,137 @@ function EditProfile() {
                 ref={fileInputRef}
                 onChange={handleImageChange}
                 aria-describedby="profileImageError"
+                disabled={isSubmitting}
               />
 
-              <ImageUploadText>اضغط على الصورة لتغييرها</ImageUploadText>
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <ProgressIndicator aria-label="Upload progress">
+                  <div style={{ width: `${uploadProgress}%` }} />
+                </ProgressIndicator>
+              )}
 
               {errors.profileImage && (
                 <ErrorText id="profileImageError">
-                  {errors.profileImage.message}
+                  ⚠️ {errors.profileImage}
                 </ErrorText>
               )}
             </ProfileImageSection>
 
-            {/* Form Fields */}
-            <FormGrid>
-              <FormGroup>
-                <Label htmlFor="name">الاسم الكامل</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  {...register("name", { required: "الاسم مطلوب" })}
-                  aria-invalid={errors.name ? "true" : "false"}
-                  aria-describedby="nameError"
-                />
-                {errors.name && (
-                  <ErrorText id="nameError">{errors.name.message}</ErrorText>
+            <FormSection>
+              <SectionTitle>📋 المعلومات الشخصية</SectionTitle>
+              <FormGrid>
+                {[
+                  {
+                    id: "name",
+                    label: "الاسم الكامل",
+                    type: "text",
+                    icon: "👤",
+                    required: true,
+                    error: errors.name,
+                    disabled: isSubmitting,
+                  },
+                  {
+                    id: "email",
+                    label: "البريد الإلكتروني",
+                    type: "email",
+                    icon: "📧",
+                    required: true,
+                    error: errors.email,
+                    disabled: isSubmitting,
+                  },
+                  {
+                    id: "phone",
+                    label: "رقم الهاتف",
+                    type: "tel",
+                    icon: "📱",
+                    required: false,
+                    error: errors.phone,
+                    disabled: isSubmitting,
+                  },
+                ].map(
+                  ({ id, label, type, icon, required, error, disabled }) => (
+                    <FormGroup key={id}>
+                      <InputGroup>
+                        <IconWrapper>{icon}</IconWrapper>
+                        <Input
+                          id={id}
+                          name={id}
+                          type={type}
+                          value={formData[id]}
+                          onChange={handleInputChange}
+                          placeholder=" "
+                          aria-invalid={error ? "true" : "false"}
+                          aria-describedby={`${id}Error`}
+                          hasError={!!error}
+                          disabled={disabled}
+                          required={required}
+                        />
+                        <FloatingLabel htmlFor={id}>{label}</FloatingLabel>
+                      </InputGroup>
+                      {error && (
+                        <ErrorText id={`${id}Error`}>❌ {error}</ErrorText>
+                      )}
+                    </FormGroup>
+                  )
                 )}
-              </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="email">البريد الإلكتروني</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register("email", {
-                    required: "البريد الإلكتروني مطلوب",
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: "تنسيق البريد غير صالح",
-                    },
-                  })}
-                  aria-invalid={errors.email ? "true" : "false"}
-                  aria-describedby="emailError"
-                />
-                {errors.email && (
-                  <ErrorText id="emailError">{errors.email.message}</ErrorText>
-                )}
-              </FormGroup>
+                <FormGroup>
+                  <InputGroup>
+                    <IconWrapper>🎭</IconWrapper>
+                    <Select
+                      id="roleUser"
+                      name="roleUser"
+                      value={formData.roleUser}
+                      onChange={handleInputChange}
+                      disabled
+                      aria-readonly="true"
+                    >
+                      <option value="طالب">طالب</option>
+                      <option value="معلم">معلم</option>
+                      <option value="مدير">مدير</option>
+                    </Select>
+                    <FloatingLabel htmlFor="roleUser">الدور</FloatingLabel>
+                  </InputGroup>
+                </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="phone">رقم الهاتف</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  {...register("phone", {
-                    pattern: {
-                      value: /^[+]?[\d\s\-()]+$/,
-                      message: "رقم الهاتف غير صالح",
-                    },
-                  })}
-                  aria-invalid={errors.phone ? "true" : "false"}
-                  aria-describedby="phoneError"
-                  placeholder="مثال: +966501234567"
-                />
-                {errors.phone && (
-                  <ErrorText id="phoneError">{errors.phone.message}</ErrorText>
-                )}
-              </FormGroup>
+                <FormGroup className="full-width">
+                  <InputGroup>
+                    <IconWrapper>📝</IconWrapper>
+                    <TextArea
+                      id="bio"
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleInputChange}
+                      rows={4}
+                      placeholder="اكتب نبذة مختصرة عن نفسك..."
+                      disabled={isSubmitting}
+                    />
+                    <FloatingLabel htmlFor="bio">النبذة الشخصية</FloatingLabel>
+                  </InputGroup>
+                </FormGroup>
+              </FormGrid>
+            </FormSection>
 
-              <FormGroup>
-                <Label htmlFor="roleUser">الدور</Label>
-                <Select id="roleUser" {...register("roleUser")}>
-                  <option value="طالب">طالب</option>
-                  <option value="معلم">معلم</option>
-                  <option value="مدير">مدير</option>
-                </Select>
-              </FormGroup>
+            <FormSection>
+              <SectionTitle>🔐 الأمان والحماية</SectionTitle>
+              <PasswordLink>
+                <Link
+                  to="/user/change-password"
+                  tabIndex={isSubmitting ? -1 : 0}
+                  aria-disabled={isSubmitting}
+                >
+                  <span>🔑</span> تغيير كلمة المرور
+                </Link>
+              </PasswordLink>
+            </FormSection>
 
-              <FormGroup>
-                <Label htmlFor="password">كلمة المرور الجديدة (اختياري)</Label>
-                <InputContainer>
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    {...register("password", {
-                      minLength: {
-                        value: 6,
-                        message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
-                      },
-                    })}
-                    aria-invalid={errors.password ? "true" : "false"}
-                    aria-describedby="passwordError"
-                    placeholder="اتركه فارغاً إذا لم ترد تغييره"
-                  />
-                  <PasswordToggle
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={
-                      showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"
-                    }
-                  >
-                    {showPassword ? "🙈" : "👁️"}
-                  </PasswordToggle>
-                </InputContainer>
-                {errors.password && (
-                  <ErrorText id="passwordError">
-                    {errors.password.message}
-                  </ErrorText>
-                )}
-              </FormGroup>
-
-              <FormGroup>
-                <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
-                <InputContainer>
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    {...register("confirmPassword", {
-                      validate: (value) => {
-                        if (password && !value) {
-                          return "تأكيد كلمة المرور مطلوب";
-                        }
-                        if (password && value !== password) {
-                          return "كلمات المرور غير متطابقة";
-                        }
-                        return true;
-                      },
-                    })}
-                    aria-invalid={errors.confirmPassword ? "true" : "false"}
-                    aria-describedby="confirmPasswordError"
-                    placeholder="أعد كتابة كلمة المرور"
-                  />
-                  <PasswordToggle
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    aria-label={
-                      showConfirmPassword
-                        ? "إخفاء تأكيد كلمة المرور"
-                        : "إظهار تأكيد كلمة المرور"
-                    }
-                  >
-                    {showConfirmPassword ? "🙈" : "👁️"}
-                  </PasswordToggle>
-                </InputContainer>
-                {errors.confirmPassword && (
-                  <ErrorText id="confirmPasswordError">
-                    {errors.confirmPassword.message}
-                  </ErrorText>
-                )}
-              </FormGroup>
-
-              <FormGroup className="full-width">
-                <Label htmlFor="bio">النبذة الشخصية</Label>
-                <TextArea
-                  id="bio"
-                  {...register("bio")}
-                  rows={4}
-                  placeholder="اكتب نبذة مختصرة عن نفسك..."
-                />
-              </FormGroup>
-            </FormGrid>
-
-            {/* Action Buttons */}
             <ButtonGroup>
-              <CancelButton type="button" onClick={handleCancel}>
-                إلغاء
+              <CancelButton
+                type="button"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+              >
+                <span>❌</span> إلغاء
               </CancelButton>
               <SaveButton
                 type="submit"
@@ -343,19 +364,38 @@ function EditProfile() {
               >
                 {isSubmitting ? (
                   <>
-                    <span>⏳</span>
+                    <LoadingSpinner aria-label="جارٍ الحفظ" />
                     جارٍ الحفظ...
                   </>
                 ) : (
                   <>
-                    <span>💾</span>
-                    حفظ التغييرات
+                    <span>💾</span> حفظ التغييرات
                   </>
                 )}
               </SaveButton>
             </ButtonGroup>
           </Form>
         </FormCard>
+
+        {notification && (
+          <NotificationContainer
+            type={notification.type}
+            role="alert"
+            aria-live="assertive"
+            style={{ animation: "slideIn 0.3s ease forwards" }}
+          >
+            <NotificationIcon>
+              {notification.type === "success" ? "✅" : "❌"}
+            </NotificationIcon>
+            <NotificationMessage>{notification.message}</NotificationMessage>
+          </NotificationContainer>
+        )}
+
+        {notification?.type === "success" && (
+          <SuccessMessage aria-live="polite">
+            <div>🎉 تم الحفظ بنجاح! سيتم توجيهك خلال ثوانٍ...</div>
+          </SuccessMessage>
+        )}
       </MaxWidthContainer>
     </Container>
   );

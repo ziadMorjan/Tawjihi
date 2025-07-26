@@ -1,4 +1,3 @@
-//react
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -24,7 +23,6 @@ import NightsStayIcon from "@mui/icons-material/NightsStay";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
 export const LogoAndButton = () => {
-  //check if user is auth
   const { isAuth, setIsAuth } = useContext(AuthContext);
   let user = localStorage.getItem("user");
   useEffect(() => {
@@ -36,41 +34,28 @@ export const LogoAndButton = () => {
   const { toggleTheme, theme } = useContext(ThemeContext);
 
   return (
-    <div>
-      <WrapperNav>
-        <Logo />
+    <WrapperNav>
+      <Logo />
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <NotificationsIcon />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <NotificationsIcon />
 
-          <IconButton
-            sx={{ color: "var(--color-dark-bg)" }}
-            onClick={toggleTheme}
-            aria-label="toggle theme"
-          >
-            {theme.mode === "dark" ? (
-              <WbSunnyIcon style={{ color: "var(--color-dark-text)" }} />
-            ) : (
-              <NightsStayIcon />
-            )}
-          </IconButton>
-          {isAuth ? (
-            <LoginAndRegisterButton>
-              <CustomizedMenus />
-            </LoginAndRegisterButton>
+        <IconButton sx={{ color: "var(--color-dark-bg)" }} onClick={toggleTheme} aria-label="toggle theme">
+          {theme.mode === "dark" ? (
+            <WbSunnyIcon style={{ color: "var(--color-dark-text)" }} />
           ) : (
-            <LoginAndRegisterButton>
-              <Link to={`/${PATH.Auth}`}>التسجيل وتسجيل الدخول </Link>
-            </LoginAndRegisterButton>
+            <NightsStayIcon />
           )}
-        </div>
-      </WrapperNav>
-    </div>
+        </IconButton>
+
+        {isAuth ? (
+          <CustomizedMenus />
+        ) : (
+          <LoginAndRegisterButton>
+            <Link to={`/${PATH.Auth}`}>التسجيل وتسجيل الدخول</Link>
+          </LoginAndRegisterButton>
+        )}
+      </div>
+    </WrapperNav>
   );
 };

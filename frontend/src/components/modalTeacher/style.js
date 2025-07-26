@@ -75,7 +75,7 @@ export const FormGroup = styled.div`
 export const Label = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: var(--color-primary);
+  color: ${props => props.theme.checkBorder};
 `;
 
 export const Input = styled.input`
@@ -93,7 +93,7 @@ export const Textarea = styled.textarea`
 
 export const Button = styled.button`
   padding: 0.6rem 1.2rem;
-  background-color: var(--color-primary);
+  background-color: ${props => props.theme.checkBorder};
   color: white;
   border: none;
   border-radius: 8px;

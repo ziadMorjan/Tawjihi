@@ -356,7 +356,7 @@ export const Card = styled.div`
   transition: all 0.3s ease;
   margin: 20px auto;
   cursor: pointer;
-  min-width: 30%;
+  width: 300px;
 
   @media (max-width: 767px) {
     max-width: 100%;

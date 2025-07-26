@@ -18,7 +18,8 @@ export const SvgICon = styled.svg`
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: #fff;
-  fill: var(--color-primary);
+  fill: ${props => props.theme.checkBorder};
+;
     transition: all 0.5s linear;
 
   &.iconBar {
@@ -53,7 +54,7 @@ export const SuggestionBox = styled.ul`
   right: 20%; /* aligns to the right of the input */
   width: 50%; /* or use a fixed width like 300px */
   background: white;
-  color: var(--color-primary);
+    color : ${props => props.theme.checkBorder};
   border-top: none;
   max-height: 200px;
   overflow-y: auto;
