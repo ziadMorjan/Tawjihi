@@ -103,7 +103,7 @@ export const changePassword = asyncErrorHandler(async (req, res) => {
 
 	user.password = req.body.newPassword;
 	user.PasswordChangedAt = Date.now();
-	user.save();
+	await user.save();
 
 	sendAuthRes(res, user, 200);
 });
