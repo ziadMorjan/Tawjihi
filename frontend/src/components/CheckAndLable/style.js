@@ -51,6 +51,7 @@ export const CheckAndLabelContainer = styled.div`
 
   &.active {
     background-color: #eef6ff;
-    color: var(--color-primary);
+    color : ${props => props.theme.checkBorder};
+    border: 1px solid ${props => props.theme.checkBorder};
   }
 `;

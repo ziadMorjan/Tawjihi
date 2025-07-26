@@ -6,6 +6,8 @@ import {
   StyledLabel,
 } from "./style";
 
+
+
 export const CheckAndLabel = ({
   text,
   id,

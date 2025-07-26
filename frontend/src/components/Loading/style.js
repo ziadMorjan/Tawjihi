@@ -36,7 +36,7 @@ export const Spinner = styled.div`
   position: relative;
   animation: ${spin} 1s linear infinite;
   margin-bottom: 2rem;
-  background: ${({theme}) => theme.linearGradient};
+  background: ${({ theme }) => theme.linearGradient};
 
   &::before {
     content: "";

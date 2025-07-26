@@ -13,7 +13,7 @@ import { LogoAndButton } from "../../components/LogoAndButton";
 import { Containers } from "../../components/Container";
 import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
 import { CardSkeleton } from "../../components/Loading/LoadingCard";
-import { Card, CourseCard } from "../../components/card/courseCard";
+import { CourseCard } from "../../components/card/courseCard";
 import Paginations from "../../components/paginations";
 import { ModalTeacher } from "../../components/modalTeacher";
 

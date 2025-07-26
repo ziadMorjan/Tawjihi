@@ -1,4 +1,5 @@
-// react
+// routes.js (or wherever you define routes)
+
 import { Navigate } from "react-router-dom";
 import { lazy } from "react";
 
@@ -13,9 +14,12 @@ import OneCourse from "../pages/CourseOne";
 import MyCourses from "../pages/MyCourses";
 import UserProfile from "../pages/MyProfile";
 import EditProfile from "../pages/MyProfile/EditProfile";
-import ProtectedRoute from "../components/ProtectedRoute";
+import ChangePassword from "../pages/MyProfile/changePassword.jsx";
 
-// Pages (lazy loaded)
+import ProtectedRoute from "../components/ProtectedRoute";
+import App from "../App";
+
+// Lazy loaded pages
 const Main = lazy(() => import("../pages/Main"));
 const About = lazy(() => import("../pages/About"));
 const Auth = lazy(() => import("../pages/Auth"));
@@ -42,64 +46,60 @@ export const PATH = {
   ResetPassword: "reset-password",
   Teachers: "teachers",
   TeacherProfile: "teachers/:id",
-  User:"user",
+  User: "user",
   WishList: "wishlist",
   CartList: "cartlist",
   MyCourses: "my-courses",
   OAuthSuccess: "oauth-success",
   UserProfile: "user-profile",
   EditProfile: "edit-profile",
-  NotAuth: "not-auth"
+  NotAuth: "not-auth",
+  ChangePassword: "change-password",
 };
 
 export const routers = [
-  { index: true, element: <Main /> },
-  { path: PATH.About, element: <About /> },
-  { path: PATH.Courses, element: <Courses /> },
-  { path: PATH.CoursesOne, element: <OneCourse /> },
-  { path: PATH.VideoLesson, element: <VideoPage /> },
-  { path: PATH.ForgetPassword, element: <ForgetPassword /> },
-  { path: PATH.VerificationCode, element: <VerificationCode /> },
-  { path: PATH.ResetPassword, element: <ResetPassword /> },
-  { path: PATH.Teachers, element: <Teachers /> },
-  { path: PATH.TeacherProfile, element: <TeacherProfile /> },
-  { path: PATH.NotAuth, element: <NotAuth /> },
-
-  // Auth Routes
   {
-    path: PATH.Auth,
-    element: <Auth />,
+    path: "/",
+    element: <App />,
     children: [
-      { index: true, element: <Navigate to="login" /> },
-      { path: "login", element: <LoginForm /> },
-      { path: "register", element: <RegisterForm /> },
-    ],
-  },
+      { index: true, element: <Main /> },
+      { path: "about", element: <About /> },
+      { path: "courses", element: <Courses /> },
+      { path: "courses/:name/:id", element: <OneCourse /> },
+      { path: "courses/:name/:id/video/:videoIndex", element: <VideoPage /> },
 
-    // Protected Routes
-    {
-        path: PATH.User,
-        element: <ProtectedRoute />, // Wrapper
+      {
+        path: "auth",
+        element: <Auth />,
         children: [
-            { path: PATH.WishList, element: <WishList /> },
-            { path: PATH.CartList, element: <CartList /> },
-            { path: PATH.MyCourses, element: <MyCourses /> },
-            { path: PATH.UserProfile, element: <UserProfile /> },
-            { path: PATH.EditProfile, element: <EditProfile /> },
+          { index: true, element: <Navigate to="login" /> },
+          { path: "login", element: <LoginForm /> },
+          { path: "register", element: <RegisterForm /> },
         ],
-    },
-  // Protected Routes
-  {
-    path: PATH.User,
-    element: <ProtectedRoute />,
-    children: [
-      { path: PATH.WishList, element: <WishList /> },
-      { path: PATH.CartList, element: <CartList /> },
-      { path: PATH.MyCourses, element: <MyCourses /> },
-      { path: PATH.UserProfile, element: <UserProfile /> },
-      { path: PATH.EditProfile, element: <EditProfile /> },
+      },
+
+      { path: "forget-password", element: <ForgetPassword /> },
+      { path: "verification-code", element: <VerificationCode /> },
+      { path: "reset-password", element: <ResetPassword /> },
+      { path: "teachers", element: <Teachers /> },
+      { path: "teachers/:id", element: <TeacherProfile /> },
+      { path: "not-auth", element: <NotAuth /> },
+      { path: "oauth-success", element: <OAuthSuccess /> },
+
+      {
+        path: "user",
+        element: <ProtectedRoute />,
+        children: [
+          { path: "wishlist", element: <WishList /> },
+          { path: "cartlist", element: <CartList /> },
+          { path: "my-courses", element: <MyCourses /> },
+          { path: "user-profile", element: <UserProfile /> },
+          { path: "edit-profile", element: <EditProfile /> },
+          { path: "change-password", element: <ChangePassword /> },
+        ],
+      },
+
+      { path: "*", element: <NotFound /> },
     ],
   },
-  { path: PATH.OAuthSuccess, element: <OAuthSuccess /> },
-  { path: "*", element: <NotFound /> },
 ];

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useCRUD } from "../../hooks/useCRUD";
 
 //components
-import { Card, CourseCard } from "../../components/card/courseCard";
+import {CourseCard } from "../../components/card/courseCard";
 import { Containers } from "../../components/Container";
 
 //axios

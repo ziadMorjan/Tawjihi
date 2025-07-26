@@ -37,11 +37,7 @@ const Footer = () => {
         
             <ListItem
               style={{
-                background: theme.linearGradient,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text", // Optional, not supported in all browsers
-                color: "transparent",
+                color: "white",
                 fontSize: "15px",
               }}
             >

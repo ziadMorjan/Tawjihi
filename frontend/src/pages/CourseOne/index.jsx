@@ -27,7 +27,6 @@ import {
   Container,
   ReviewSection,
   ProgressRow,
-  WatchText,
   MetaInfo,
   StartButtonWrapper,
   SectionTitle,
@@ -80,7 +79,7 @@ const CourseOne = () => {
           }
         );
         if (lessonsRes) {
-          setLessons(lessonsRes.data.data.docs);
+          setLessons(lessonsRes.data.data.docs.reverse());
         }
 
         // Get enrollments

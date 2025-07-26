@@ -10,9 +10,6 @@ import { H3 } from "../typography";
 
 // hooks
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import { API_URL } from "../../config";
-import { useState } from "react";
 import { useComments } from "../../context/CommentContext";
 
 const CommentForm = ({ courseId, lessonId, from }) => {
@@ -25,29 +22,11 @@ const CommentForm = ({ courseId, lessonId, from }) => {
 
 
   const {
-    course_comments,
-    lesson_comments,
-    isReviewsLoading,
     isReviewPosting,
-    isReviewDeleting,
-    isUpdating,
-
-    getCourseComments,
     postCourseComment,
-    deleteCourseComment,
-    updateCourseComment,
-
-    getLessonComments,
     postLessonComment,
-    deleteLessonComment,
-    updateLessonComment,
-
     error
   } = useComments()
-
-
-
-
 
 
   const onSubmit = async (data) => {

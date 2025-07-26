@@ -1,7 +1,7 @@
 //style
 import { LoadingWrapper, Spinner, LoadingText, BounceDot } from "./style";
 
-const Loading = ({children}) => {
+const Loading = ({ children }) => {
   return (
     <LoadingWrapper>
       <Spinner />

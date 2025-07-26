@@ -26,7 +26,7 @@ import { useApi } from "../../hooks/useApi";
 import { normalizeArabic } from "../../utils/normlizeArabic";
 
 const Sidebar = ({ onFilterChange }) => {
-  const { search, setSearch } = useContext(SearchContext);
+  const { search } = useContext(SearchContext);
   const normalizedSearch = normalizeArabic(search?.toLowerCase() || "");
 
   let { data: subject, isLoading } = useApi(`${API_URL}/subjects`);

@@ -25,7 +25,8 @@ export const Description = styled.p`
 `;
 
 export const BackButton = styled(Link)`
-  background-color: var(--color-primary, #1e90ff);
+  background-color:${props => props.theme.checkBorder};
+
   color: white;
   padding: 0.75rem 2rem;
   border-radius: 8px;
@@ -34,6 +35,7 @@ export const BackButton = styled(Link)`
   transition: background 0.3s ease;
 
   &:hover {
-    background-color: #006fd6;
+    background-color: ${props => props.theme.checkBorder};
+    color: white;
   }
 `;

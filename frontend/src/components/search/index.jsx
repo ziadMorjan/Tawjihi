@@ -85,7 +85,8 @@ const SearchBar = () => {
         onClick={handleSearch}
       >
         <path
-          fill="var(--color-primary)"
+          fill="${props => props.theme.checkBorder};
+"
           d="M15.5 14h-.79l-.28-.27C15.41 12.59 
           16 11.11 16 9.5 16 5.91 13.09 3 
           9.5 3S3 5.91 3 9.5 5.91 16 

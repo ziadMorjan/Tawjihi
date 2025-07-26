@@ -38,7 +38,7 @@ const OAuthSuccess = () => {
       .finally(() => setLoading(false));
   }, [navigate, setIsAuth]);
 
-  if (loading) return <div>Logging in...</div>;
+  if (loading) return <div>يتم الان التحويل علي الصفحة الرئيسية...</div>;
 };
 
 export default OAuthSuccess;
