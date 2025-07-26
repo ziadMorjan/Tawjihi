@@ -1,5 +1,5 @@
 export const resetPasswordTemp = (name, resetCode) =>
-  `<!DOCTYPE html>
+	`<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -65,7 +65,7 @@ export const resetPasswordTemp = (name, resetCode) =>
     </div>
   </body>
 </html>
-`
+`;
 
 export const acceptTeacherTemp = (name) => `<!DOCTYPE html>
 <html lang="en">
@@ -118,7 +118,7 @@ export const acceptTeacherTemp = (name) => `<!DOCTYPE html>
     </div>
   </body>
 </html>
-`
+`;
 
 export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
 <html lang="en">
@@ -156,7 +156,7 @@ export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
     >
       <p>Hello ${name},</p>
       <p>
-        ${isActive ? `Unlucky we will refuse you as teacher` : `Unlucky we could not accept you to join us as a teacher, strength your cv and try to join us later`}
+        ${isActive ? 'Unlucky we will refuse you as teacher' : 'Unlucky we could not accept you to join us as a teacher, strength your cv and try to join us later'}
       </p>  
       <p>
       <p>Best regards,<br />Tawjihi support</p>
@@ -173,4 +173,4 @@ export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
     </div>
   </body>
 </html>
-`
+`;

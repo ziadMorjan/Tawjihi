@@ -15,24 +15,23 @@ import PaymentRoutes from './PaymentRoutes.js';
 import CommentRoutes from './CommentRoutes.js';
 import defaultRoutes from './DefaultRoute.js';
 
-
-const routes = app => {
-    app.use('/api/v1/branches', branchRoutes);
-    app.use('/api/v1/subjects', subjectRoutes);
-    app.use('/api/v1/users', userRoutes);
-    app.use('/api/v1/courses', courseRoutes);
-    app.use('/api/v1/auth', authRoutes);
-    app.use('/api/v1/lessons', lessonRouts);
-    app.use('/api/v1/enrollments', enrollmentRouts);
-    app.use('/api/v1/news', newsRouts);
-    app.use('/api/v1/wishlist', wishlistRouts);
-    app.use('/api/v1/reviews', ReviewRoutes);
-    app.use('/api/v1/coupons', couponRouts);
-    app.use('/api/v1/cart', cartRouts);
-    app.use('/api/v1/teacherReviews', TeacherReviewRoutes);
-    app.use('/api/v1/payment', PaymentRoutes);
-    app.use('/api/v1/comments', CommentRoutes);
-    app.use(defaultRoutes);
-}
+const routes = (app) => {
+	app.use('/api/v1/branches', branchRoutes);
+	app.use('/api/v1/subjects', subjectRoutes);
+	app.use('/api/v1/users', userRoutes);
+	app.use('/api/v1/courses', courseRoutes);
+	app.use('/api/v1/auth', authRoutes);
+	app.use('/api/v1/lessons', lessonRouts);
+	app.use('/api/v1/enrollments', enrollmentRouts);
+	app.use('/api/v1/news', newsRouts);
+	app.use('/api/v1/wishlist', wishlistRouts);
+	app.use('/api/v1/reviews', ReviewRoutes);
+	app.use('/api/v1/coupons', couponRouts);
+	app.use('/api/v1/cart', cartRouts);
+	app.use('/api/v1/teacherReviews', TeacherReviewRoutes);
+	app.use('/api/v1/payment', PaymentRoutes);
+	app.use('/api/v1/comments', CommentRoutes);
+	app.use(defaultRoutes);
+};
 
 export default routes;

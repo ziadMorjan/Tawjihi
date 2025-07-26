@@ -5,8 +5,8 @@ export const getAllComments = getAll(Comment);
 
 export const createComment = createOne(Comment);
 
-export const getComment = getOne(Comment, "Comment");
+export const getComment = getOne(Comment, 'Comment');
 
-export const updateComment = updateOne(Comment, "Comment");
+export const updateComment = updateOne(Comment, 'Comment');
 
-export const deleteComment = deleteOne(Comment, "Comment");
+export const deleteComment = deleteOne(Comment, 'Comment');

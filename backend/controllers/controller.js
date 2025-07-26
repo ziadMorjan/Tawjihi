@@ -3,81 +3,84 @@ import QueryManipulator from '../utils/QueryManipulator.js';
 import CustomError from '../utils/CustomError.js';
 import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 
-export const getAll = (model) => asyncErrorHandler(async function (req, res) {
-    let qm = new QueryManipulator(req, model)
-        .filter()
-        .selectFields()
-        .search()
-        .sort()
-        .paginate();
+export const getAll = (model) =>
+	asyncErrorHandler(async (req, res) => {
+		const qm = new QueryManipulator(req, model)
+			.filter()
+			.selectFields()
+			.search()
+			.sort()
+			.paginate();
 
-    let docs = await qm.query;
+		const docs = await qm.query;
 
-    res.status(200).json({
-        status: "success",
-        count: docs.length,
-        data: {
-            docs
-        },
-    });
-});
+		res.status(200).json({
+			status: 'success',
+			count: docs.length,
+			data: {
+				docs,
+			},
+		});
+	});
 
-export const createOne = (model) => asyncErrorHandler(async function (req, res) {
-    if (req.body.name)
-        req.body.slug = slugify(req.body.name);
+export const createOne = (model) =>
+	asyncErrorHandler(async (req, res) => {
+		if (req.body.name) req.body.slug = slugify(req.body.name);
 
-    let newDoc = await model.create(req.body);
+		const newDoc = await model.create(req.body);
 
-    res.status(201).json({
-        status: "success",
-        data: {
-            newDoc
-        },
-    });
-});
+		res.status(201).json({
+			status: 'success',
+			data: {
+				newDoc,
+			},
+		});
+	});
 
-export const getOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
-    let doc = await model.findById(req.params.id);
+export const getOne = (model, modelName = '') =>
+	asyncErrorHandler(async (req, res) => {
+		const doc = await model.findById(req.params.id);
 
-    if (!doc) {
-        throw new CustomError(`${modelName} not found`, 404);
-    }
+		if (!doc) {
+			throw new CustomError(`${modelName} not found`, 404);
+		}
 
-    res.status(200).json({
-        status: "success",
-        data: {
-            doc,
-        },
-    });
-});
+		res.status(200).json({
+			status: 'success',
+			data: {
+				doc,
+			},
+		});
+	});
 
-export const updateOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
-    if (req.body.name)
-        req.body.slug = slugify(req.body.name);
+export const updateOne = (model, modelName = '') =>
+	asyncErrorHandler(async (req, res) => {
+		if (req.body.name) req.body.slug = slugify(req.body.name);
 
-    let updatedDoc = await model.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-    });
+		const updatedDoc = await model.findByIdAndUpdate(req.params.id, req.body, {
+			new: true,
+			runValidators: true,
+		});
 
-    if (!updatedDoc) {
-        throw new CustomError(`${modelName} not found`, 404);
-    }
+		if (!updatedDoc) {
+			throw new CustomError(`${modelName} not found`, 404);
+		}
 
-    res.status(200).json({
-        status: "success",
-        data: {
-            updatedDoc,
-        },
-    });
-});
+		res.status(200).json({
+			status: 'success',
+			data: {
+				updatedDoc,
+			},
+		});
+	});
 
-export const deleteOne = (model, modelName = "") => asyncErrorHandler(async function (req, res) {
-    let deletedDoc = await model.findByIdAndDelete(req.params.id);
+export const deleteOne = (model, modelName = '') =>
+	asyncErrorHandler(async (req, res) => {
+		const deletedDoc = await model.findByIdAndDelete(req.params.id);
 
-    if (!deletedDoc) {
-        throw new CustomError(`${modelName} not found`, 404);
-    }
+		if (!deletedDoc) {
+			throw new CustomError(`${modelName} not found`, 404);
+		}
 
-    res.status(204).send();
-});
+		res.status(204).send();
+	});
