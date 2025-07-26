@@ -7,7 +7,6 @@ import User from '../models/User.js';
 import Cart from '../models/Cart.js';
 import { sendEmail } from '../utils/emails.js';
 import CustomError from '../utils/CustomError.js';
-import { createToken } from '../utils/JWTs.js';
 import { sendAuthRes } from './AuthController.js';
 import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 import { uploadMultipleFields } from '../middlewares/uploadsMiddleware.js';
@@ -106,9 +105,7 @@ export const changePassword = asyncErrorHandler(async (req, res) => {
 	user.PasswordChangedAt = Date.now();
 	user.save();
 
-	const token = createToken(user.id);
-
-	sendAuthRes(res, user, token);
+	sendAuthRes(res, user, 200);
 });
 
 export const acceptTeacher = asyncErrorHandler(async (req, res) => {
