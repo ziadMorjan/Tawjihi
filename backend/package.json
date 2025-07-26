@@ -7,7 +7,9 @@
 		"start": "SET NODE_ENV=production& node server.js",
 		"dev": "nodemon server.js",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"prettier": "prettier --check .",
+		"prettier:fix": "prettier --write ."
 	},
 	"author": "",
 	"license": "ISC",
