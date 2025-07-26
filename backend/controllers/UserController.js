@@ -8,6 +8,7 @@ import Cart from '../models/Cart.js';
 import { sendEmail } from '../utils/emails.js';
 import CustomError from '../utils/CustomError.js';
 import { createToken } from '../utils/JWTs.js';
+import { sendAuthRes } from './AuthController.js';
 import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 import { uploadMultipleFields } from '../middlewares/uploadsMiddleware.js';
 import { acceptTeacherTemp, refuseTeacherTemp } from '../utils/emailTemps.js';
@@ -107,10 +108,7 @@ export const changePassword = asyncErrorHandler(async (req, res) => {
 
 	const token = createToken(user.id);
 
-	res.status(200).json({
-		status: 'success',
-		token,
-	});
+	sendAuthRes(res, user, token);
 });
 
 export const acceptTeacher = asyncErrorHandler(async (req, res) => {
