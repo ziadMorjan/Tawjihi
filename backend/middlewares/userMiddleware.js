@@ -8,7 +8,7 @@ export const addUserIdToReqParams = function (req, res, next) {
 
 // eslint-disable-next-line require-await
 export const updateMeMiddleware = asyncErrorHandler(async (req, res, next) => {
-	if (req.body.password || req.body.password)
+	if (req.body.currentPassword || req.body.newPassword || req.body.newConfirmPassword)
 		throw new CustomError('You can not change your password from here!', 403);
 	if (req.body.role) throw new CustomError('You can not change your role!', 403);
 	next();
