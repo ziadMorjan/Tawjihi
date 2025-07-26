@@ -85,12 +85,14 @@ export const updateUserValidator = [
 		.optional()
 		.isMobilePhone(['ar-PS', 'he-IL'])
 		.withMessage('invalid phone number format')
-		.custom(async (value) => {
+		.custom(async (value, { req }) => {
 			const user = await User.findOne({ phone: value });
 			if (user) {
-				throw new CustomError('this phone number is used try another one', 400);
+				if (user.id !== req.user.id) {
+					throw new CustomError('this phone number is used try another one', 400);
+				}
+				return true;
 			}
-			return true;
 		}),
 
 	check('role').optional().isIn(['admin', 'teacher', 'user']).withMessage('invalid role'),
