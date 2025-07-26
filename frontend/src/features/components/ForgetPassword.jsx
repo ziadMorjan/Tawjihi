@@ -69,7 +69,6 @@ export const ForgetPassword = () => {
 
     try {
       const response = await axios.post(`${API_URL}/auth/forgetPassword`, data);
-      console.log("Submitted:", response.data);
 
       localStorage.setItem("email", data.email);
       navigate(`/${PATH.VerificationCode}`);

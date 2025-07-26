@@ -131,7 +131,6 @@ export const ModalTeacher = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Form submitted:", response.data);
       setRes(true);
       setShowAlert(true);
       reset();

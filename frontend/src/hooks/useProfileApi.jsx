@@ -13,7 +13,6 @@ export const useProfileApi = (url) => {
       try {
         setIsLoading(true);
         const res = await axios.get(url);
-        console.log(res.data.data, 'form Api');
         setData(res.data.data);
       } catch (e) {
         setError(e.message);
@@ -29,7 +28,6 @@ export const useProfileApi = (url) => {
 //     try {
 //       setIsLoading(true);
 //       const res = await axios.post(url, payload);
-//       console.log("POST success:", res.data);
 //       return res.data;
 //     } catch (e) {
 //       setError(e.message);

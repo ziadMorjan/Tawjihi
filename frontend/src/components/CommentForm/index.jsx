@@ -37,7 +37,6 @@ const CommentForm = ({ courseId, lessonId, from }) => {
     } else if (from === "coursePage") {
       postCourseComment(courseId, data.comment);
 
-      console.log(error)
     }
 
     reset();

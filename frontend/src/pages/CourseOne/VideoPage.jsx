@@ -48,7 +48,6 @@ const VideoPage = () => {
   const currentIndex = Number(videoIndex) >= 0 && items[videoIndex] ? Number(videoIndex) : 0
   const selectedVideo = items[currentIndex] || {}
 
-  console.log("this is selected video",selectedVideo)
 
   const handleVideoSelect = (item, index) => {
     navigate(`/courses/${name}/${id}/video/${index}`, { state: { items } })
