@@ -7,8 +7,7 @@ import { asyncErrorHandler } from './errorMiddleware.js';
 export const validationMiddleware = asyncErrorHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		await removeLocalFiles(req);
-		console.log(errors.array());
+		removeLocalFiles(req);
 		const message = errors
 			.array()
 			.map((el) => el.msg)

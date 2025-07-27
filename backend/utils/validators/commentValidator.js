@@ -8,13 +8,13 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const createCommentValidator = [
 	check('lesson')
 		.notEmpty()
-		.withMessage('lesson is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_required'))
 		.isMongoId()
-		.withMessage('invalid lesson id')
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id'))
 		.custom(async (value, { req }) => {
 			const lesson = await Lesson.findById(value);
 			if (!lesson) {
-				throw new CustomError('No lesson found', 404);
+				throw new CustomError(req.__('validation.no_lesson_found'), 404);
 			}
 			const enrollment = await Enrollment.findOne({
 				course: lesson.course,
@@ -22,7 +22,7 @@ export const createCommentValidator = [
 			});
 			if (!enrollment) {
 				throw new CustomError(
-					'You can not make a Comment on lesson on course you not enrolled in',
+					req.__('validation.cannot_comment_on_unenrolled_course'),
 					403,
 				);
 			}
@@ -31,11 +31,13 @@ export const createCommentValidator = [
 
 	check('user')
 		.notEmpty()
-		.withMessage('user is required')
+		.withMessage((value, { req }) => req.__('validation.user_required'))
 		.isMongoId()
-		.withMessage('invalid user id'),
+		.withMessage((value, { req }) => req.__('validation.invalid_user_id')),
 
-	check('content').notEmpty().withMessage('comment is required'),
+	check('content')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.comment_required')),
 
 	validationMiddleware,
 ];
@@ -43,13 +45,13 @@ export const createCommentValidator = [
 export const getCommentValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Comment ID is required')
+		.withMessage((value, { req }) => req.__('validation.comment_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Comment ID')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_comment_id'))
+		.custom(async (value, { req }) => {
 			const comment = await Comment.findById(value);
 			if (!comment) {
-				throw new CustomError('No Comment found', 404);
+				throw new CustomError(req.__('validation.no_comment_found'), 404);
 			}
 		}),
 
@@ -59,26 +61,26 @@ export const getCommentValidator = [
 export const updateCommentValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Comment ID is required')
+		.withMessage((value, { req }) => req.__('validation.comment_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Comment ID')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_comment_id'))
+		.custom(async (value, { req }) => {
 			const comment = await Comment.findById(value);
 			if (!comment) {
-				throw new CustomError('No Comment found', 404);
+				throw new CustomError(req.__('validation.no_comment_found'), 404);
 			}
 		}),
 
 	check('lesson')
 		.optional()
 		.notEmpty()
-		.withMessage('lesson is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_required'))
 		.isMongoId()
-		.withMessage('invalid lesson id')
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id'))
 		.custom(async (value, { req }) => {
 			const lesson = await Lesson.findById(value);
 			if (!lesson) {
-				throw new CustomError('No lesson found', 404);
+				throw new CustomError(req.__('validation.no_lesson_found'), 404);
 			}
 			const enrollment = await Enrollment.findOne({
 				course: lesson.course,
@@ -86,7 +88,7 @@ export const updateCommentValidator = [
 			});
 			if (!enrollment) {
 				throw new CustomError(
-					'You can not make a Comment on lesson on course you not enrolled in',
+					req.__('validation.cannot_comment_on_unenrolled_course'),
 					403,
 				);
 			}
@@ -96,11 +98,14 @@ export const updateCommentValidator = [
 	check('user')
 		.optional()
 		.notEmpty()
-		.withMessage('user is required')
+		.withMessage((value, { req }) => req.__('validation.user_required'))
 		.isMongoId()
-		.withMessage('invalid user id'),
+		.withMessage((value, { req }) => req.__('validation.invalid_user_id')),
 
-	check('content').optional().notEmpty().withMessage('comment is required'),
+	check('content')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.comment_required')),
 
 	validationMiddleware,
 ];
@@ -108,13 +113,13 @@ export const updateCommentValidator = [
 export const deleteCommentValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Comment ID is required')
+		.withMessage((value, { req }) => req.__('validation.comment_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Comment ID')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_comment_id'))
+		.custom(async (value, { req }) => {
 			const comment = await Comment.findById(value);
 			if (!comment) {
-				throw new CustomError('No Comment found', 404);
+				throw new CustomError(req.__('validation.no_comment_found'), 404);
 			}
 		}),
 

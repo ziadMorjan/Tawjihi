@@ -9,72 +9,72 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const createCourseValidator = [
 	check('name')
 		.notEmpty()
-		.withMessage('Name is required')
+		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.isLength({ min: 3 })
-		.withMessage('Name must be at least 3 characters long'),
+		.withMessage((value, { req }) => req.__('validation.name_min_length')),
 
 	check('description')
 		.optional()
 		.isLength({ min: 10, max: 1000 })
-		.withMessage('Description must be between 10 and 1000 characters long'),
+		.withMessage((value, { req }) => req.__('validation.description_length')),
 
 	check('teacher')
 		.notEmpty()
-		.withMessage('Course must belong to teacher')
+		.withMessage((value, { req }) => req.__('validation.course_must_have_teacher'))
 		.isMongoId()
-		.withMessage('Invalid teacher id format')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_teacher_id'))
+		.custom(async (value, { req }) => {
 			const teacher = await User.findById(value);
-			if (!teacher)
-				throw new CustomError('The provided teacher does not exist in the db', 404);
+			if (!teacher) throw new CustomError(req.__('validation.teacher_not_found'), 404);
 			if (teacher.id !== value)
-				throw new CustomError('You can not create a course for another teacher', 403);
+				throw new CustomError(
+					req.__('validation.cannot_create_course_for_another_teacher'),
+					403,
+				);
 			return true;
 		}),
 
 	check('subject')
 		.notEmpty()
-		.withMessage('Course must belong to subject')
+		.withMessage((value, { req }) => req.__('validation.course_must_have_subject'))
 		.isMongoId()
-		.withMessage('Invalid subject id format')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_subject_id'))
+		.custom(async (value, { req }) => {
 			const subject = await Subject.findById(value);
-			if (!subject)
-				throw new CustomError('The provided subject does not exist in the db', 404);
+			if (!subject) throw new CustomError(req.__('validation.subject_not_found'), 404);
 
 			return true;
 		}),
 
 	check('branches')
 		.notEmpty()
-		.withMessage('Course must belong to at least one branch')
+		.withMessage((value, { req }) => req.__('validation.course_must_have_branch'))
 		.isArray()
-		.withMessage('Branches must be an array')
-		.custom(async (branchIds) => {
+		.withMessage((value, { req }) => req.__('validation.branches_must_be_array'))
+		.custom(async (branchIds, { req }) => {
 			if (!Array.isArray(branchIds) || branchIds.length === 0)
-				throw new CustomError('Course must belong to at least one branch', 404);
+				throw new CustomError(req.__('validation.course_must_have_branch'), 404);
 
 			const promises = branchIds.map((id) => Branch.findById(id));
 			const branches = await Promise.all(promises);
 			const result = branches.every((item) => item !== null);
 
-			if (!result)
-				throw new CustomError('One or more provided branches do not exist in the db', 404);
+			if (!result) throw new CustomError(req.__('validation.branch_not_found'), 404);
 			return true;
 		}),
 
 	check('price')
 		.notEmpty()
-		.withMessage('price is required')
+		.withMessage((value, { req }) => req.__('validation.price_required'))
 		.isNumeric()
-		.withMessage('price must be number'),
+		.withMessage((value, { req }) => req.__('validation.price_must_be_number')),
 
 	check('priceAfterDiscount')
 		.optional()
 		.custom((value, { req }) => {
 			if (req.body.price) {
 				if (value > req.body.price)
-					throw new CustomError('priceAfterDiscount must be less than price', 400);
+					throw new CustomError(req.__('validation.price_after_discount_invalid'), 400);
 			}
 			return true;
 		}),
@@ -85,50 +85,48 @@ export const createCourseValidator = [
 export const updateCourseValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Course ID is required')
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Course ID')
-		.custom(async (courseId) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id'))
+		.custom(async (courseId, { req }) => {
 			const course = await Course.findById(courseId);
-			if (!course) throw new CustomError('No course found', 404);
+			if (!course) throw new CustomError(req.__('validation.no_course_found'), 404);
 			return true;
 		}),
 
 	check('name')
 		.optional()
 		.notEmpty()
-		.withMessage('Name is required')
+		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.isLength({ min: 3 })
-		.withMessage('Name must be at least 3 characters long'),
+		.withMessage((value, { req }) => req.__('validation.name_min_length')),
 
 	check('description')
 		.optional()
 		.isLength({ min: 10, max: 1000 })
-		.withMessage('Description must be between 10 and 1000 characters long'),
+		.withMessage((value, { req }) => req.__('validation.description_length')),
 
 	check('teacher')
 		.optional()
 		.notEmpty()
-		.withMessage('Course must belong to teacher')
+		.withMessage((value, { req }) => req.__('validation.course_must_have_teacher'))
 		.isMongoId()
-		.withMessage('Invalid teacher id format')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_teacher_id'))
+		.custom(async (value, { req }) => {
 			const teacher = await User.findById(value);
-			if (!teacher)
-				throw new CustomError('The provided teacher does not exist in the db', 404);
+			if (!teacher) throw new CustomError(req.__('validation.teacher_not_found'), 404);
 			return true;
 		}),
 
 	check('subject')
 		.optional()
 		.notEmpty()
-		.withMessage('Course must belong to subject')
+		.withMessage((value, { req }) => req.__('validation.course_must_have_subject'))
 		.isMongoId()
-		.withMessage('Invalid subject id format')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_subject_id'))
+		.custom(async (value, { req }) => {
 			const subject = await Subject.findById(value);
-			if (!subject)
-				throw new CustomError('The provided subject does not exist in the db', 404);
+			if (!subject) throw new CustomError(req.__('validation.subject_not_found'), 404);
 
 			return true;
 		}),
@@ -136,35 +134,34 @@ export const updateCourseValidator = [
 	check('branches')
 		.optional()
 		.notEmpty()
-		.withMessage('Course must belong to at least one branch')
+		.withMessage((value, { req }) => req.__('validation.course_must_have_branch'))
 		.isArray()
-		.withMessage('Branches must be an array')
-		.custom(async (branchIds) => {
+		.withMessage((value, { req }) => req.__('validation.branches_must_be_array'))
+		.custom(async (branchIds, { req }) => {
 			if (!Array.isArray(branchIds) || branchIds.length === 0)
-				throw new CustomError('Course must belong to at least one branch', 404);
+				throw new CustomError(req.__('validation.course_must_have_branch'), 404);
 
 			const promises = branchIds.map((id) => Branch.findById(id));
 			const branches = await Promise.all(promises);
 			const result = branches.every((item) => item !== null);
 
-			if (!result)
-				throw new CustomError('One or more provided branches do not exist in the db', 404);
+			if (!result) throw new CustomError(req.__('validation.branch_not_found'), 404);
 			return true;
 		}),
 
 	check('price')
 		.optional()
 		.notEmpty()
-		.withMessage('price is required')
+		.withMessage((value, { req }) => req.__('validation.price_required'))
 		.isNumeric()
-		.withMessage('price must be number'),
+		.withMessage((value, { req }) => req.__('validation.price_must_be_number')),
 
 	check('priceAfterDiscount')
 		.optional()
 		.custom((value, { req }) => {
 			if (req.body.price) {
 				if (value > req.body.price)
-					throw new CustomError('priceAfterDiscount must be less than price', 400);
+					throw new CustomError(req.__('validation.price_after_discount_invalid'), 400);
 			}
 			return true;
 		}),
@@ -175,9 +172,9 @@ export const updateCourseValidator = [
 export const getCourseValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Course ID is required')
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Course ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id')),
 
 	validationMiddleware,
 ];
@@ -185,12 +182,12 @@ export const getCourseValidator = [
 export const deleteCourseValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Course ID is required')
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Course ID')
-		.custom(async (courseId) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id'))
+		.custom(async (courseId, { req }) => {
 			const course = await Course.findById(courseId);
-			if (!course) throw new CustomError('No course found', 404);
+			if (!course) throw new CustomError(req.__('validation.no_course_found'), 404);
 			return true;
 		}),
 

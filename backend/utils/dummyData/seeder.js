@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { fakerAR } from '@faker-js/faker';
 import { config } from 'dotenv';
 import { connectDB } from '../../config/db.js';
+import i18n from '../../config/i18n.js';
 import Branch from '../../models/Branch.js';
 import Cart from '../../models/Cart.js';
 import Comment from '../../models/Comment.js';
@@ -18,6 +19,8 @@ import User from '../../models/User.js';
 
 config({ path: '../../config.env' });
 
+const t = (key, options) => i18n.__({ phrase: key, locale: 'en' }, options);
+
 const deleteData = async () => {
 	try {
 		await Branch.deleteMany({});
@@ -33,9 +36,9 @@ const deleteData = async () => {
 		await Subject.deleteMany({});
 		await TeacherReview.deleteMany({});
 		await User.deleteMany({});
-		console.log('All data deleted successfully');
+		console.log(t('seeder.all_data_deleted'));
 	} catch (error) {
-		console.error('Error deleting users:', error);
+		console.error(t('seeder.error_deleting_data', { error }));
 		process.exit(-1);
 	}
 };
@@ -51,9 +54,9 @@ const seedAdmin = async () => {
 			role: 'admin',
 			coverImage: fakerAR.image.personPortrait(),
 		});
-		console.log('Admin created successfully');
+		console.log(t('seeder.admin_created'));
 	} catch (error) {
-		console.error('Error creating admin :', error);
+		console.error(t('seeder.error_creating_admin', { error }));
 		process.exit(-1);
 	}
 };
@@ -85,9 +88,9 @@ const seedUsers = async () => {
 	}
 	try {
 		await User.create(users);
-		console.log('Users created successfully');
+		console.log(t('seeder.users_created'));
 	} catch (error) {
-		console.error('Error creating users:', error);
+		console.error(t('seeder.error_creating_users', { error }));
 		process.exit(-1);
 	}
 };
@@ -122,9 +125,9 @@ const seedTeachers = async () => {
 	}
 	try {
 		await User.create(teachers);
-		console.log('Teachers created successfully');
+		console.log(t('seeder.teachers_created'));
 	} catch (error) {
-		console.error('Error creating users:', error);
+		console.error(t('seeder.error_creating_teachers', { error }));
 		process.exit(-1);
 	}
 };
@@ -133,9 +136,9 @@ const seedBranches = async () => {
 	const branches = JSON.parse(readFileSync('./branches.json'));
 	try {
 		await Branch.create(branches);
-		console.log('Branches created successfully');
+		console.log(t('seeder.branches_created'));
 	} catch (error) {
-		console.error('Error creating Branches:', error);
+		console.error(t('seeder.error_creating_branches', { error }));
 		process.exit(-1);
 	}
 };
@@ -144,9 +147,9 @@ const seedSubjects = async () => {
 	const subjects = JSON.parse(readFileSync('./subjects.json'));
 	try {
 		await Branch.create(subjects);
-		console.log('Subjects created successfully');
+		console.log(t('seeder.subjects_created'));
 	} catch (error) {
-		console.error('Error creating subjects:', error);
+		console.error(t('seeder.error_creating_subjects', { error }));
 		process.exit(-1);
 	}
 };
@@ -158,7 +161,7 @@ const seedSubjects = async () => {
 (async () => {
 	const mode = process.argv[2];
 	if (!mode || (mode !== '-d' && mode !== '-i')) {
-		console.error('Please provide a valid mode: -d to delete all users or -i to seed users');
+		console.error(t('seeder.invalid_mode'));
 		process.exit(-1);
 	}
 	try {
@@ -171,13 +174,11 @@ const seedSubjects = async () => {
 			await seedTeachers();
 			await seedBranches();
 			await seedSubjects();
-			console.log(
-				'Now you can login as teacher to add courses and as user to enrol courses!',
-			);
+			console.log(t('seeder.seeding_complete'));
 			process.exit(0);
 		}
 	} catch (error) {
-		console.error('Error in seeding process:', error);
+		console.error(t('seeder.error_in_seeding', { error }));
 		process.exit(-1);
 	}
 })();

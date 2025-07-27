@@ -6,20 +6,20 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const createSubjectValidator = [
 	check('name')
 		.notEmpty()
-		.withMessage('Name is required')
+		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.isLength({ min: 3 })
-		.withMessage('Name must be at least 3 characters long')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.name_min_length'))
+		.custom(async (value, { req }) => {
 			const subject = await Subject.findOne({ name: value });
 			if (subject) {
-				throw new CustomError('Subject already exists', 400);
+				throw new CustomError(req.__('validation.subject_already_exists'), 400);
 			}
 			return true;
 		}),
 	check('description')
 		.optional()
 		.isLength({ min: 10, max: 1000 })
-		.withMessage('Description must be between 10 and 1000 characters long'),
+		.withMessage((value, { req }) => req.__('validation.description_length')),
 
 	validationMiddleware,
 ];
@@ -27,25 +27,25 @@ export const createSubjectValidator = [
 export const updateSubjectValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Subject ID is required')
+		.withMessage((value, { req }) => req.__('validation.subject_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Subject ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_subject_id_format')),
 
 	check('name')
 		.optional()
 		.isLength({ min: 3 })
-		.withMessage('Name must be at least 3 characters long')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.name_min_length'))
+		.custom(async (value, { req }) => {
 			const subject = await Subject.findOne({ name: value });
 			if (subject) {
-				throw new CustomError('Subject already exists', 400);
+				throw new CustomError(req.__('validation.subject_already_exists'), 400);
 			}
 			return true;
 		}),
 	check('description')
 		.optional()
 		.isLength({ min: 10, max: 1000 })
-		.withMessage('Description must be between 10 and 1000 characters long'),
+		.withMessage((value, { req }) => req.__('validation.description_length')),
 
 	validationMiddleware,
 ];
@@ -53,9 +53,9 @@ export const updateSubjectValidator = [
 export const getSubjectValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Subject ID is required')
+		.withMessage((value, { req }) => req.__('validation.subject_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Subject ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_subject_id_format')),
 
 	validationMiddleware,
 ];
@@ -63,9 +63,9 @@ export const getSubjectValidator = [
 export const deleteSubjectValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Subject ID is required')
+		.withMessage((value, { req }) => req.__('validation.subject_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Subject ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_subject_id_format')),
 
 	validationMiddleware,
 ];

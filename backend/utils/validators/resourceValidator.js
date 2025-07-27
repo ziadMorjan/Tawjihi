@@ -6,12 +6,12 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const getAllResourceValidator = [
 	check('lessonId')
 		.notEmpty()
-		.withMessage('lesson ID is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
 		.isMongoId()
-		.withMessage('lesson ID must be a valid MongoDB ObjectId')
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
 		.custom(async (lessonId, { req }) => {
 			const lesson = await Lesson.findById(lessonId);
-			if (!lesson) throw new CustomError('lesson not found', 404);
+			if (!lesson) throw new CustomError(req.__('validation.no_lesson_found'), 404);
 			return true;
 		}),
 
@@ -21,22 +21,24 @@ export const getAllResourceValidator = [
 export const createResourceValidator = [
 	check('name')
 		.notEmpty()
-		.withMessage('Name is required')
+		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.isString()
-		.withMessage('Name must be a string')
+		.withMessage((value, { req }) => req.__('validation.name_must_be_string'))
 		.trim()
 		.escape(),
 
-	check('content').notEmpty().withMessage('content is required'),
+	check('content')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.content_required')),
 
 	check('lessonId')
 		.notEmpty()
-		.withMessage('lesson ID is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
 		.isMongoId()
-		.withMessage('lesson ID must be a valid MongoDB ObjectId')
-		.custom(async (lessonId) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
+		.custom(async (lessonId, { req }) => {
 			const lesson = await Lesson.findById(lessonId);
-			if (!lesson) throw new CustomError('lesson not found', 404);
+			if (!lesson) throw new CustomError(req.__('validation.no_lesson_found'), 404);
 			return true;
 		}),
 
@@ -46,26 +48,26 @@ export const createResourceValidator = [
 export const getResourceValidator = [
 	check('lessonId')
 		.notEmpty()
-		.withMessage('lesson ID is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
 		.isMongoId()
-		.withMessage('lesson ID must be a valid MongoDB ObjectId')
-		.custom(async (lessonId) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
+		.custom(async (lessonId, { req }) => {
 			const lesson = await Lesson.findById(lessonId);
-			if (!lesson) throw new CustomError('lesson not found', 404);
+			if (!lesson) throw new CustomError(req.__('validation.no_lesson_found'), 404);
 			return true;
 		}),
 
 	check('id')
 		.notEmpty()
-		.withMessage('resource ID is required')
+		.withMessage((value, { req }) => req.__('validation.resource_id_required'))
 		.isMongoId()
-		.withMessage('resource ID must be a valid MongoDB ObjectId')
+		.withMessage((value, { req }) => req.__('validation.invalid_resource_id'))
 		.custom(async (id, { req }) => {
 			const lesson = await Lesson.findById(req.params.lessonId);
-			if (!lesson) throw new CustomError('lesson not found', 404);
+			if (!lesson) throw new CustomError(req.__('validation.no_lesson_found'), 404);
 
 			const resource = lesson.resources.find((resource) => resource._id.toString() === id);
-			if (!resource) throw new CustomError('No resource found', 404);
+			if (!resource) throw new CustomError(req.__('validation.no_resource_found'), 404);
 
 			return true;
 		}),
@@ -76,36 +78,39 @@ export const updateResourceValidator = [
 	check('name')
 		.optional()
 		.notEmpty()
-		.withMessage('Name is required')
+		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.isString()
-		.withMessage('Name must be a string')
+		.withMessage((value, { req }) => req.__('validation.name_must_be_string'))
 		.trim()
 		.escape(),
 
-	check('content').optional().notEmpty().withMessage('content is required'),
+	check('content')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.content_required')),
 
 	check('lessonId')
 		.notEmpty()
-		.withMessage('lesson ID is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
 		.isMongoId()
-		.withMessage('lesson ID must be a valid MongoDB ObjectId')
-		.custom(async (lessonId) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
+		.custom(async (lessonId, { req }) => {
 			const lesson = await Lesson.findById(lessonId);
-			if (!lesson) throw new CustomError('lesson not found', 404);
+			if (!lesson) throw new CustomError(req.__('validation.no_lesson_found'), 404);
 			return true;
 		}),
 
 	check('id')
 		.notEmpty()
-		.withMessage('resource ID is required')
+		.withMessage((value, { req }) => req.__('validation.resource_id_required'))
 		.isMongoId()
-		.withMessage('resource ID must be a valid MongoDB ObjectId')
+		.withMessage((value, { req }) => req.__('validation.invalid_resource_id'))
 		.custom(async (id, { req }) => {
 			const lesson = await Lesson.findById(req.params.lessonId);
-			if (!lesson) throw new CustomError('lesson not found', 404);
+			if (!lesson) throw new CustomError(req.__('validation.no_lesson_found'), 404);
 
 			const resource = lesson.resources.find((resource) => resource._id.toString() === id);
-			if (!resource) throw new CustomError('No resource found', 404);
+			if (!resource) throw new CustomError(req.__('validation.no_resource_found'), 404);
 
 			return true;
 		}),
@@ -115,32 +120,32 @@ export const updateResourceValidator = [
 export const deleteResourceValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('resource ID is required')
+		.withMessage((value, { req }) => req.__('validation.resource_id_required'))
 		.isMongoId()
-		.withMessage('resource ID must be a valid MongoDB ObjectId'),
+		.withMessage((value, { req }) => req.__('validation.invalid_resource_id')),
 
 	check('lessonId')
 		.notEmpty()
-		.withMessage('lesson ID is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
 		.isMongoId()
-		.withMessage('lesson ID must be a valid MongoDB ObjectId')
-		.custom(async (lessonId) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
+		.custom(async (lessonId, { req }) => {
 			const lesson = await Lesson.findById(lessonId);
-			if (!lesson) throw new CustomError('lesson not found', 404);
+			if (!lesson) throw new CustomError(req.__('validation.no_lesson_found'), 404);
 			return true;
 		}),
 
 	check('id')
 		.notEmpty()
-		.withMessage('resource ID is required')
+		.withMessage((value, { req }) => req.__('validation.resource_id_required'))
 		.isMongoId()
-		.withMessage('resource ID must be a valid MongoDB ObjectId')
+		.withMessage((value, { req }) => req.__('validation.invalid_resource_id'))
 		.custom(async (id, { req }) => {
 			const lesson = await Lesson.findById(req.params.lessonId);
-			if (!lesson) throw new CustomError('lesson not found', 404);
+			if (!lesson) throw new CustomError(req.__('validation.no_lesson_found'), 404);
 
 			const resource = lesson.resources.find((resource) => resource._id.toString() === id);
-			if (!resource) throw new CustomError('No resource found', 404);
+			if (!resource) throw new CustomError(req.__('validation.no_resource_found'), 404);
 
 			return true;
 		}),

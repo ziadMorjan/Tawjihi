@@ -6,20 +6,20 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const createBranchValidator = [
 	check('name')
 		.notEmpty()
-		.withMessage('Name is required')
+		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.isLength({ min: 3 })
-		.withMessage('Name must be at least 3 characters long')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.name_min_length'))
+		.custom(async (value, { req }) => {
 			const branch = await Branch.findOne({ name: value });
 			if (branch) {
-				throw new CustomError('Branch already exists', 400);
+				throw new CustomError(req.__('validation.branch_already_exists'), 400);
 			}
 			return true;
 		}),
 	check('description')
 		.optional()
 		.isLength({ min: 10, max: 1000 })
-		.withMessage('Description must be between 10 and 1000 characters long'),
+		.withMessage((value, { req }) => req.__('validation.description_length')),
 
 	validationMiddleware,
 ];
@@ -27,25 +27,25 @@ export const createBranchValidator = [
 export const updateBranchValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Branch ID is required')
+		.withMessage((value, { req }) => req.__('validation.branch_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Branch ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_branch_id')),
 
 	check('name')
 		.optional()
 		.isLength({ min: 3 })
-		.withMessage('Name must be at least 3 characters long')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.name_min_length'))
+		.custom(async (value, { req }) => {
 			const branch = await Branch.findOne({ name: value });
 			if (branch) {
-				throw new CustomError('Branch already exists', 400);
+				throw new CustomError(req.__('validation.branch_already_exists'), 400);
 			}
 			return true;
 		}),
 	check('description')
 		.optional()
 		.isLength({ min: 10, max: 1000 })
-		.withMessage('Description must be between 10 and 1000 characters long'),
+		.withMessage((value, { req }) => req.__('validation.description_length')),
 
 	validationMiddleware,
 ];
@@ -53,9 +53,9 @@ export const updateBranchValidator = [
 export const getBranchValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Branch ID is required')
+		.withMessage((value, { req }) => req.__('validation.branch_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Branch ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_branch_id')),
 
 	validationMiddleware,
 ];
@@ -63,9 +63,9 @@ export const getBranchValidator = [
 export const deleteBranchValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Branch ID is required')
+		.withMessage((value, { req }) => req.__('validation.branch_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Branch ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_branch_id')),
 
 	validationMiddleware,
 ];

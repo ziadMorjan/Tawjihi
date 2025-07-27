@@ -6,30 +6,32 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const createLessonValidator = [
 	check('name')
 		.notEmpty()
-		.withMessage('Name is required')
+		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.isString()
-		.withMessage('Name must be a string')
+		.withMessage((value, { req }) => req.__('validation.name_must_be_string'))
 		.trim()
 		.escape(),
 
 	check('description')
 		.notEmpty()
-		.withMessage('Description is required')
+		.withMessage((value, { req }) => req.__('validation.description_required'))
 		.isString()
-		.withMessage('Description must be a string')
+		.withMessage((value, { req }) => req.__('validation.description_must_be_string'))
 		.trim()
 		.escape(),
 
-	check('video').notEmpty().withMessage('Video is required'),
+	check('video')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.video_required')),
 
 	check('course')
 		.notEmpty()
-		.withMessage('Course ID is required')
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
 		.isMongoId()
-		.withMessage('Course ID must be a valid MongoDB ObjectId')
-		.custom(async (courseId) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
+		.custom(async (courseId, { req }) => {
 			const course = await Course.findById(courseId);
-			if (!course) throw new CustomError('Course not found', 404);
+			if (!course) throw new CustomError(req.__('validation.no_course_found'), 404);
 			return true;
 		}),
 
@@ -39,9 +41,9 @@ export const createLessonValidator = [
 export const getLessonValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Lesson ID is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
 		.isMongoId()
-		.withMessage('Lesson ID must be a valid MongoDB ObjectId'),
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format')),
 
 	validationMiddleware,
 ];
@@ -50,32 +52,35 @@ export const updateLessonValidator = [
 	check('name')
 		.optional()
 		.notEmpty()
-		.withMessage('Name is required')
+		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.isString()
-		.withMessage('Name must be a string')
+		.withMessage((value, { req }) => req.__('validation.name_must_be_string'))
 		.trim()
 		.escape(),
 
 	check('description')
 		.optional()
 		.notEmpty()
-		.withMessage('Description is required')
+		.withMessage((value, { req }) => req.__('validation.description_required'))
 		.isString()
-		.withMessage('Description must be a string')
+		.withMessage((value, { req }) => req.__('validation.description_must_be_string'))
 		.trim()
 		.escape(),
 
-	check('video').optional().notEmpty().withMessage('Video is required'),
+	check('video')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.video_required')),
 
 	check('course')
 		.optional()
 		.notEmpty()
-		.withMessage('Course ID is required')
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
 		.isMongoId()
-		.withMessage('Course ID must be a valid MongoDB ObjectId')
-		.custom(async (courseId) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
+		.custom(async (courseId, { req }) => {
 			const course = await Course.findById(courseId);
-			if (!course) throw new CustomError('Course not found', 404);
+			if (!course) throw new CustomError(req.__('validation.no_course_found'), 404);
 			return true;
 		}),
 
@@ -85,9 +90,9 @@ export const updateLessonValidator = [
 export const deleteLessonValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Lesson ID is required')
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
 		.isMongoId()
-		.withMessage('Lesson ID must be a valid MongoDB ObjectId'),
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format')),
 
 	validationMiddleware,
 ];

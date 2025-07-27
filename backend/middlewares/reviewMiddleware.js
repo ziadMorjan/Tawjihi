@@ -22,16 +22,16 @@ export const addUserIdToReqBody = (req, res, next) => {
 export const deleteReviewMiddleware = asyncErrorHandler(async (req, res, next) => {
 	const review = await Review.findById(req.params.id);
 	if (!review) {
-		throw new CustomError('No review found with that ID');
+		throw new CustomError(req.__('reviews.no_review_found'), 404);
 	}
 	if (req.user.role === 'user') {
 		if (review.user.id !== req.user.id) {
-			throw new CustomError('You are not authorized to delete this review', 403);
+			throw new CustomError(req.__('reviews.not_authorized_to_delete'), 403);
 		}
 	}
 	if (req.user.role === 'teacher') {
 		if (review.course.teacher.id !== req.user.id) {
-			throw new CustomError('You are not authorized to delete this review', 403);
+			throw new CustomError(req.__('reviews.not_authorized_to_delete'), 403);
 		}
 	}
 	next();

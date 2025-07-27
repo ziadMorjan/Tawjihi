@@ -42,8 +42,7 @@ export const signup = asyncErrorHandler(async (req, res, next) => {
 	if (user.role === 'teacher') {
 		return res.status(201).json({
 			status: 'success',
-			message:
-				'We reive your request to join us as a teacher, we will contact with you in 24 hours',
+			message: req.__('auth.teacher_signup_success'),
 		});
 	}
 	sendAuthRes(res, user, 201);
@@ -53,13 +52,14 @@ export const login = asyncErrorHandler(async (req, res) => {
 	const user = await User.findOne({ email: req.body.email }).select('+password');
 
 	if (!user.isActive || !bcryptjs.compareSync(req.body.password, user.password))
-		throw new CustomError('Wrong email or password', 400);
+		throw new CustomError(req.__('auth.wrong_email_or_password'), 400);
 
 	sendAuthRes(res, user, 200);
 });
 
 export const forgetPassword = asyncErrorHandler(async (req, res) => {
 	const user = await User.findOne({ email: req.body.email });
+	const locale = req.getLocale();
 
 	const resetCode = crypto.randomInt(100000, 999999);
 
@@ -71,8 +71,8 @@ export const forgetPassword = asyncErrorHandler(async (req, res) => {
 	const options = {
 		from: 'Tawjihi Support',
 		to: user.email,
-		subject: 'Reset password',
-		text: resetPasswordTemp(user.name, resetCode),
+		subject: req.__('emails.reset_password.subject'),
+		html: resetPasswordTemp(user.name, resetCode, locale),
 	};
 
 	try {
@@ -82,12 +82,12 @@ export const forgetPassword = asyncErrorHandler(async (req, res) => {
 		user.resetPasswordCodeExpired = undefined;
 		user.resetPasswordCodeVerified = undefined;
 		await user.save();
-		throw new CustomError('Sending email failed', 500);
+		throw new CustomError(req.__('auth.sending_email_failed'), 500);
 	}
 
 	res.status(200).json({
 		status: 'success',
-		message: 'Reset password code has sent to your email',
+		message: req.__('auth.reset_password_email_sent'),
 	});
 });
 
@@ -102,14 +102,14 @@ export const verifyResetCod = asyncErrorHandler(async (req, res) => {
 		resetPasswordCodeExpired: { $gte: Date.now() },
 	});
 
-	if (!user) throw new CustomError('No user found', 404);
+	if (!user) throw new CustomError(req.__('auth.user_not_found'), 404);
 
 	user.resetPasswordCodeVerified = true;
 	await user.save();
 
 	res.status(200).json({
 		status: 'success',
-		message: 'You can reset password now',
+		message: req.__('auth.can_reset_password'),
 	});
 });
 
@@ -117,7 +117,7 @@ export const resetPassword = asyncErrorHandler(async (req, res) => {
 	const user = await User.findOne({ email: req.body.email });
 
 	if (!user.resetPasswordCodeVerified)
-		throw new CustomError('You have not verify the reset code yet', 403);
+		throw new CustomError(req.__('auth.not_verified_reset_code'), 403);
 
 	user.password = req.body.newPassword;
 	user.resetPasswordCode = undefined;
@@ -139,6 +139,6 @@ export const logout = (req, res) => {
 	res.clearCookie('token', options);
 	res.status(200).json({
 		status: 'success',
-		message: 'Logged out',
+		message: req.__('auth.logged_out'),
 	});
 };

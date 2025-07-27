@@ -6,7 +6,7 @@ export const checkCourseBelongToTeacher = asyncErrorHandler(async (req, res, nex
 	if (req.user.role === 'teacher') {
 		const course = await Course.findById(req.params.id);
 		if (req.user.id !== course.teacher.id)
-			throw new CustomError('This course does not belong to you', 403);
+			throw new CustomError(req.__('courses.course_does_not_belong_to_you'), 403);
 	}
 	next();
 });

@@ -26,7 +26,7 @@ export const checkCommentBelongToUser = asyncErrorHandler(async (req, res, next)
 		const comment = await Comment.findById(req.params.id);
 		if (comment)
 			if (comment.user.id !== req.user.id)
-				throw new CustomError('This comment does not belong to you.', 403);
+				throw new CustomError(req.__('comments.comment_does_not_belong_to_you'), 403);
 	}
 	next();
 });
@@ -39,10 +39,7 @@ export const checkCourseBelongToTeacher = asyncErrorHandler(async (req, res, nex
 			if (lesson) {
 				const course = await Course.findById(lesson.course);
 				if (course.teacher.id !== req.user.id)
-					throw new CustomError(
-						'This comment is on lesson on course does not belong to you.',
-						403,
-					);
+					throw new CustomError(req.__('comments.comment_on_unowned_course'), 403);
 			}
 		}
 	}

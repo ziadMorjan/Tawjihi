@@ -1,10 +1,14 @@
-export const resetPasswordTemp = (name, resetCode) =>
-	`<!DOCTYPE html>
-<html lang="en">
+import i18n from '../config/i18n.js';
+
+export const resetPasswordTemp = (name, resetCode, locale) => {
+	const t = (key, options) => i18n.__({ phrase: key, locale }, options);
+
+	return `<!DOCTYPE html>
+<html lang="${locale}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify Your Email</title>
+    <title>${t('emails.reset_password.title')}</title>
   </head>
   <body
     style="
@@ -14,6 +18,7 @@ export const resetPasswordTemp = (name, resetCode) =>
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
+      direction: ${locale === 'ar' ? 'rtl' : 'ltr'};
     "
   >
     <div
@@ -23,7 +28,7 @@ export const resetPasswordTemp = (name, resetCode) =>
         text-align: center;
       "
     >
-      <h1 style="color: white; margin: 0">Verify Your Email</h1>
+      <h1 style="color: white; margin: 0">${t('emails.reset_password.title')}</h1>
     </div>
     <div
       style="
@@ -33,8 +38,8 @@ export const resetPasswordTemp = (name, resetCode) =>
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       "
     >
-      <p>Hello ${name},</p>
-      <p>Thank you for signing up! Your verification code is:</p>
+      <p>${t('emails.reset_password.greeting', { name })}</p>
+      <p>${t('emails.reset_password.body')}</p>
       <div style="text-align: center; margin: 30px 0">
         <span
           style="
@@ -47,11 +52,10 @@ export const resetPasswordTemp = (name, resetCode) =>
         >
       </div>
       <p>
-        Enter this code on the verification page to complete your registration.
+        ${t('emails.reset_password.code_expiry')}
       </p>
-      <p>This code will expire in 10 minutes for security reasons.</p>
-      <p>If you didn't create an account with us, please ignore this email.</p>
-      <p>Best regards,<br />Tawjihi support</p>
+      <p>${t('emails.reset_password.ignore_email')}</p>
+      <p>${t('emails.reset_password.regards')}</p>
     </div>
     <div
       style="
@@ -61,18 +65,21 @@ export const resetPasswordTemp = (name, resetCode) =>
         font-size: 0.8em;
       "
     >
-      <p>This is an automated message, please do not reply to this email.</p>
+      <p>${t('emails.reset_password.automated_message')}</p>
     </div>
   </body>
 </html>
 `;
+};
 
-export const acceptTeacherTemp = (name) => `<!DOCTYPE html>
-<html lang="en">
+export const acceptTeacherTemp = (name, locale) => {
+	const t = (key, options) => i18n.__({ phrase: key, locale }, options);
+	return `<!DOCTYPE html>
+<html lang="${locale}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify Your Email</title>
+    <title>${t('emails.accept_teacher.title')}</title>
   </head>
   <body
     style="
@@ -82,6 +89,7 @@ export const acceptTeacherTemp = (name) => `<!DOCTYPE html>
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
+      direction: ${locale === 'ar' ? 'rtl' : 'ltr'};
     "
   >
     <div
@@ -91,7 +99,7 @@ export const acceptTeacherTemp = (name) => `<!DOCTYPE html>
         text-align: center;
       "
     >
-      <h1 style="color: white; margin: 0">Verify Your Email</h1>
+      <h1 style="color: white; margin: 0">${t('emails.accept_teacher.title')}</h1>
     </div>
     <div
       style="
@@ -101,10 +109,9 @@ export const acceptTeacherTemp = (name) => `<!DOCTYPE html>
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       "
     >
-      <p>Hello ${name},</p>
-      <p>we have accepted you to join us as a teacher you can login now using your email and password</p>  
-      <p>
-      <p>Best regards,<br />Tawjihi support</p>
+      <p>${t('emails.accept_teacher.greeting', { name })}</p>
+      <p>${t('emails.accept_teacher.body')}</p>  
+      <p>${t('emails.accept_teacher.regards')}</p>
     </div>
     <div
       style="
@@ -114,18 +121,25 @@ export const acceptTeacherTemp = (name) => `<!DOCTYPE html>
         font-size: 0.8em;
       "
     >
-      <p>This is an automated message, please do not reply to this email.</p>
+      <p>${t('emails.accept_teacher.automated_message')}</p>
     </div>
   </body>
 </html>
 `;
+};
 
-export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
-<html lang="en">
+export const refuseTeacherTemp = (name, isActive, locale) => {
+	const t = (key, options) => i18n.__({ phrase: key, locale }, options);
+	const body = isActive
+		? t('emails.refuse_teacher.body_active')
+		: t('emails.refuse_teacher.body_inactive');
+
+	return `<!DOCTYPE html>
+<html lang="${locale}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify Your Email</title>
+    <title>${t('emails.refuse_teacher.title')}</title>
   </head>
   <body
     style="
@@ -135,6 +149,7 @@ export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
+      direction: ${locale === 'ar' ? 'rtl' : 'ltr'};
     "
   >
     <div
@@ -144,7 +159,7 @@ export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
         text-align: center;
       "
     >
-      <h1 style="color: white; margin: 0">Verify Your Email</h1>
+      <h1 style="color: white; margin: 0">${t('emails.refuse_teacher.title')}</h1>
     </div>
     <div
       style="
@@ -154,12 +169,9 @@ export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       "
     >
-      <p>Hello ${name},</p>
-      <p>
-        ${isActive ? 'Unlucky we will refuse you as teacher' : 'Unlucky we could not accept you to join us as a teacher, strength your cv and try to join us later'}
-      </p>  
-      <p>
-      <p>Best regards,<br />Tawjihi support</p>
+      <p>${t('emails.refuse_teacher.greeting', { name })}</p>
+      <p>${body}</p>  
+      <p>${t('emails.refuse_teacher.regards')}</p>
     </div>
     <div
       style="
@@ -169,8 +181,9 @@ export const refuseTeacherTemp = (name, isActive) => `<!DOCTYPE html>
         font-size: 0.8em;
       "
     >
-      <p>This is an automated message, please do not reply to this email.</p>
+      <p>${t('emails.refuse_teacher.automated_message')}</p>
     </div>
   </body>
 </html>
 `;
+};

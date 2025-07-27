@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import sharp from 'sharp';
-import { fileURLToPath } from 'url'; // 👈 Add this import
+import { fileURLToPath } from 'url';
 import User from '../models/User.js';
 import Cart from '../models/Cart.js';
 import { sendEmail } from '../utils/emails.js';
@@ -13,9 +13,8 @@ import { uploadMultipleFields } from '../middlewares/uploadsMiddleware.js';
 import { acceptTeacherTemp, refuseTeacherTemp } from '../utils/emailTemps.js';
 import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
-// --- Recreate __dirname for ES Modules ---
-const __filename = fileURLToPath(import.meta.url); // Gets the file path
-const __dirname = path.dirname(__filename); // Gets the directory path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const getAllUsers = getAll(User);
 
@@ -37,12 +36,11 @@ export const handleUserFiles = asyncErrorHandler(async (req, res, next) => {
 		if (req.files.coverImage) {
 			const { mimetype } = req.files.coverImage[0];
 			if (!mimetype.startsWith('image'))
-				throw new CustomError('invalid file type for cover image');
+				throw new CustomError(req.__('generic.invalid_file_type_for_cover_image'), 400);
 
 			const unique = crypto.randomUUID();
 			const name = `user-${unique}-${Date.now()}.jpeg`;
 			const uploadDir = path.join(__dirname, '..', 'uploads', 'images', 'users');
-			// Ensure directory exists
 			if (!fs.existsSync(uploadDir)) {
 				fs.mkdirSync(uploadDir, { recursive: true });
 			}
@@ -60,12 +58,12 @@ export const handleUserFiles = asyncErrorHandler(async (req, res, next) => {
 		}
 		if (req.files.cv) {
 			const { mimetype } = req.files.cv[0];
-			if (!mimetype.endsWith('pdf')) throw new CustomError('invalid file type for cv');
+			if (!mimetype.endsWith('pdf'))
+				throw new CustomError(req.__('users.invalid_file_type_for_cv'), 400);
 
 			const unique = crypto.randomUUID();
 			const name = `cv-${unique}-${Date.now()}.pdf`;
 			const uploadDir = path.join(__dirname, '..', 'uploads', 'cvs');
-			// Ensure directory exists
 			if (!fs.existsSync(uploadDir)) {
 				fs.mkdirSync(uploadDir, { recursive: true });
 			}
@@ -80,16 +78,13 @@ export const handleUserFiles = asyncErrorHandler(async (req, res, next) => {
 });
 
 export const deleteMe = asyncErrorHandler(async (req, res) => {
-	await User.findByIdAndUpdate(req.params.id, { isActive: false });
-
+	await User.findByIdAndUpdate(req.user.id, { isActive: false });
 	res.status(204).send();
 });
 
 export const getMe = asyncErrorHandler(async (req, res) => {
 	const user = await User.findById(req.user.id).select('-password -PasswordChangedAt');
-
 	const cart = await Cart.findOne({ user: user.id });
-
 	const userToRes = { ...user._doc, ...{ cart: cart.courses } };
 
 	res.status(200).json({
@@ -99,7 +94,7 @@ export const getMe = asyncErrorHandler(async (req, res) => {
 });
 
 export const changePassword = asyncErrorHandler(async (req, res) => {
-	const user = await User.findById(req.params.id);
+	const user = await User.findById(req.user.id);
 
 	user.password = req.body.newPassword;
 	user.PasswordChangedAt = Date.now();
@@ -113,36 +108,38 @@ export const acceptTeacher = asyncErrorHandler(async (req, res) => {
 		runValidators: true,
 		new: true,
 	});
+	const locale = req.getLocale();
 
 	const options = {
 		from: 'Tawjihi support',
 		to: user.email,
-		subject: 'Accepted as a teacher',
-		text: acceptTeacherTemp(user.name),
+		subject: req.__('emails.accept_teacher.subject'),
+		html: acceptTeacherTemp(user.name, locale),
 	};
 
 	try {
 		await sendEmail(options);
 		res.status(200).json({ status: 'success' });
 	} catch (error) {
-		throw new CustomError('Some thing wrong happened in sending the email', 500);
+		throw new CustomError(req.__('generic.something_went_wrong_sending_email'), 500);
 	}
 });
 
 export const refuseTeacher = asyncErrorHandler(async (req, res) => {
 	const user = await User.findByIdAndDelete(req.params.id);
+	const locale = req.getLocale();
 
 	const options = {
 		from: 'Tawjihi support',
 		to: user.email,
-		subject: 'Not accepted as a teacher',
-		text: refuseTeacherTemp(user.name, user.isActive),
+		subject: req.__('emails.refuse_teacher.subject'),
+		html: refuseTeacherTemp(user.name, user.isActive, locale),
 	};
 
 	try {
 		await sendEmail(options);
 		res.status(204).send();
 	} catch (error) {
-		throw new CustomError('Some thing wrong happened in sending the email', 500);
+		throw new CustomError(req.__('generic.something_went_wrong_sending_email'), 500);
 	}
 });

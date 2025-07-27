@@ -9,9 +9,8 @@ import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
 import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
-// --- Recreate __dirname for ES Modules ---
-const __filename = fileURLToPath(import.meta.url); // Gets the file path
-const __dirname = path.dirname(__filename); // Gets the directory path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const getAllNews = getAll(New);
 
@@ -29,12 +28,12 @@ export const handleNewCoverImage = asyncErrorHandler(async (req, res, next) => {
 	if (req.file) {
 		const { mimetype } = req.file;
 		if (!mimetype.startsWith('image'))
-			throw new CustomError('invalid file type for cover image');
+			throw new CustomError(req.__('generic.invalid_file_type_for_cover_image'), 400);
 
 		const unique = crypto.randomUUID();
 		const name = `new-${unique}-${Date.now()}.jpeg`;
 		const uploadDir = path.join(__dirname, '..', 'uploads', 'images', 'news');
-		// Ensure directory exists
+
 		if (!fs.existsSync(uploadDir)) {
 			fs.mkdirSync(uploadDir, { recursive: true });
 		}

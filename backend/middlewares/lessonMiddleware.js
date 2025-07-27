@@ -6,7 +6,7 @@ import { asyncErrorHandler } from './errorMiddleware.js';
 export const checkCourseBelongToTeacherInCreate = asyncErrorHandler(async (req, res, next) => {
 	const course = await Course.findById(req.body.course);
 	if (req.user.id !== course.teacher.id)
-		throw new CustomError('You can not add lectures, This course does not belong to you', 403);
+		throw new CustomError(req.__('lessons.cannot_add_lecture_to_unowned_course'), 403);
 	next();
 });
 
@@ -14,7 +14,7 @@ export const checkCourseBelongToTeacher = asyncErrorHandler(async (req, res, nex
 	const lesson = await Lesson.findById(req.params.id);
 	const course = await Course.findById(lesson.course);
 	if (req.user.id !== course.teacher.id)
-		throw new CustomError('This lessons belong to course that does not belong to you', 403);
+		throw new CustomError(req.__('lessons.lesson_on_unowned_course'), 403);
 	next();
 });
 

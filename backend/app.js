@@ -4,6 +4,7 @@ import cors from 'cors';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 
+import i18n from './config/i18n.js';
 import routes from './routes/index.js';
 import { webhook } from './controllers/PaymentController.js';
 import { googleStrategy, facebookStrategy } from './config/passport.js';
@@ -13,6 +14,8 @@ const app = express();
 
 passport.use(googleStrategy);
 passport.use(facebookStrategy);
+
+app.use(i18n.init);
 
 app.use(morgan('dev'));
 app.use(

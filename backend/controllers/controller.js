@@ -37,12 +37,16 @@ export const createOne = (model) =>
 		});
 	});
 
-export const getOne = (model, modelName = '') =>
+export const getOne = (model, modelName = 'Document') =>
 	asyncErrorHandler(async (req, res) => {
 		const doc = await model.findById(req.params.id);
 
 		if (!doc) {
-			throw new CustomError(`${modelName} not found`, 404);
+			const translatedModelName = req.__(`models.${modelName}`);
+			throw new CustomError(
+				req.__('generic.not_found', { model_name: translatedModelName }),
+				404,
+			);
 		}
 
 		res.status(200).json({
@@ -53,7 +57,7 @@ export const getOne = (model, modelName = '') =>
 		});
 	});
 
-export const updateOne = (model, modelName = '') =>
+export const updateOne = (model, modelName = 'Document') =>
 	asyncErrorHandler(async (req, res) => {
 		if (req.body.name) req.body.slug = slugify(req.body.name);
 
@@ -63,7 +67,11 @@ export const updateOne = (model, modelName = '') =>
 		});
 
 		if (!updatedDoc) {
-			throw new CustomError(`${modelName} not found`, 404);
+			const translatedModelName = req.__(`models.${modelName}`);
+			throw new CustomError(
+				req.__('generic.not_found', { model_name: translatedModelName }),
+				404,
+			);
 		}
 
 		res.status(200).json({
@@ -74,12 +82,16 @@ export const updateOne = (model, modelName = '') =>
 		});
 	});
 
-export const deleteOne = (model, modelName = '') =>
+export const deleteOne = (model, modelName = 'Document') =>
 	asyncErrorHandler(async (req, res) => {
 		const deletedDoc = await model.findByIdAndDelete(req.params.id);
 
 		if (!deletedDoc) {
-			throw new CustomError(`${modelName} not found`, 404);
+			const translatedModelName = req.__(`models.${modelName}`);
+			throw new CustomError(
+				req.__('generic.not_found', { model_name: translatedModelName }),
+				404,
+			);
 		}
 
 		res.status(204).send();

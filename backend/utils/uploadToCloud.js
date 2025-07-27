@@ -1,6 +1,7 @@
 import fs from 'fs';
 import cloudinary from '../config/cloudinary.js';
 import CustomError from './CustomError.js';
+import i18n from '../config/i18n.js';
 
 const uploadToCloud = async (req) => {
 	if (req.upload === 'course') {
@@ -13,7 +14,10 @@ const uploadToCloud = async (req) => {
 			});
 			if (!result.secure_url) {
 				fs.unlinkSync(req.filePath);
-				throw new CustomError('Failed to upload cover image to cloud', 500);
+				throw new CustomError(
+					i18n.__({ phrase: 'uploads.failed_to_upload_cover_image', locale: 'en' }),
+					500,
+				);
 			}
 
 			fs.unlinkSync(req.filePath);
@@ -32,7 +36,10 @@ const uploadToCloud = async (req) => {
 
 			if (!result.secure_url) {
 				fs.unlinkSync(req.filePath);
-				throw new CustomError('Failed to upload video to cloud', 500);
+				throw new CustomError(
+					i18n.__({ phrase: 'uploads.failed_to_upload_video', locale: 'en' }),
+					500,
+				);
 			}
 
 			fs.unlinkSync(req.filePath);
@@ -52,7 +59,10 @@ const uploadToCloud = async (req) => {
 
 			if (!result.secure_url) {
 				fs.unlinkSync(req.filePath);
-				throw new CustomError('Failed to upload cover image to cloud', 500);
+				throw new CustomError(
+					i18n.__({ phrase: 'uploads.failed_to_upload_cover_image', locale: 'en' }),
+					500,
+				);
 			}
 
 			fs.unlinkSync(req.filePath);
@@ -72,7 +82,10 @@ const uploadToCloud = async (req) => {
 
 			if (!result.secure_url) {
 				fs.unlinkSync(req.filePath);
-				throw new CustomError('Failed to upload video to cloud', 500);
+				throw new CustomError(
+					i18n.__({ phrase: 'uploads.failed_to_upload_video', locale: 'en' }),
+					500,
+				);
 			}
 
 			fs.unlinkSync(req.filePath);
@@ -92,7 +105,10 @@ const uploadToCloud = async (req) => {
 
 			if (!result.secure_url) {
 				fs.unlinkSync(req.coverImageFilePath);
-				throw new CustomError('Failed to upload cover image to cloud', 500);
+				throw new CustomError(
+					i18n.__({ phrase: 'uploads.failed_to_upload_cover_image', locale: 'en' }),
+					500,
+				);
 			}
 
 			fs.unlinkSync(req.coverImageFilePath);
@@ -109,7 +125,10 @@ const uploadToCloud = async (req) => {
 			});
 			if (!result.secure_url) {
 				fs.unlinkSync(req.cvFilePath);
-				throw new CustomError('Failed to upload cv to cloud', 500);
+				throw new CustomError(
+					i18n.__({ phrase: 'uploads.failed_to_upload_cv', locale: 'en' }),
+					500,
+				);
 			}
 			fs.unlinkSync(req.cvFilePath);
 

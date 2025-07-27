@@ -21,10 +21,8 @@ export const addToCart = asyncErrorHandler(async (req, res) => {
 	let cart = await Cart.findOne({ user: req.user.id });
 	const course = await Course.findById(req.params.courseId);
 
-	// user have no cart
 	if (!cart) cart = await Cart.create({ user: req.user.id });
 	else {
-		// user have cart
 		const index = cart.courses.findIndex((item) => item.id === course.id);
 		if (index === -1) {
 			cart = await Cart.findOneAndUpdate(
@@ -84,7 +82,10 @@ export const applyCoupon = asyncErrorHandler(async (req, res) => {
 	if (cart.courses.length !== 0) {
 		const index = cart.appliedCoupons.findIndex((item) => item.toString() === coupon.id);
 		if (index !== -1)
-			throw new CustomError(`you have applied this coupon '${coupon.name}' before`, 400);
+			throw new CustomError(
+				req.__('cart.coupon_already_applied', { coupon_name: coupon.name }),
+				400,
+			);
 
 		cart.totalPriceAfterDiscount = parseFloat(
 			(cart.totalPrice - (coupon.discount / 100) * cart.totalPrice).toFixed(2),

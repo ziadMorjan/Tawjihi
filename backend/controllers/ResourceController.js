@@ -1,15 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { fileURLToPath } from 'url'; // 👈 Add this import
+import { fileURLToPath } from 'url';
 import Lesson from '../models/Lesson.js';
 import CustomError from '../utils/CustomError.js';
 import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
 
-// --- Recreate __dirname for ES Modules ---
-const __filename = fileURLToPath(import.meta.url); // Gets the file path
-const __dirname = path.dirname(__filename); // Gets the directory path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const uploadContentFile = uploadSingleField('content');
 
@@ -17,11 +16,11 @@ export const uploadContentFile = uploadSingleField('content');
 export const handleContentFile = asyncErrorHandler(async (req, res, next) => {
 	if (req.file) {
 		const { mimetype } = req.file;
-		if (!mimetype.endsWith('pdf')) throw new CustomError('invalid file', 400);
+		if (!mimetype.endsWith('pdf')) throw new CustomError(req.__('generic.invalid_file'), 400);
 		const unique = crypto.randomUUID();
 		const name = `resource-${unique}-${Date.now()}.pdf`;
 		const uploadDir = path.join(__dirname, '..', 'uploads', 'lessons', 'resources');
-		// Ensure directory exists
+
 		if (!fs.existsSync(uploadDir)) {
 			fs.mkdirSync(uploadDir, { recursive: true });
 		}
@@ -90,7 +89,6 @@ export const updateResource = asyncErrorHandler(async (req, res) => {
 	);
 
 	if (req.body.name) lesson.resources[resourceIndex].name = req.body.name;
-
 	if (req.body.content) lesson.resources[resourceIndex].content = req.body.content;
 
 	await lesson.save();

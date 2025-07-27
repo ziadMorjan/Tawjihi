@@ -8,13 +8,13 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const createReviewValidator = [
 	check('course')
 		.notEmpty()
-		.withMessage('course is required')
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
 		.isMongoId()
-		.withMessage('invalid course id')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id'))
+		.custom(async (value, { req }) => {
 			const course = await Course.findById(value);
 			if (!course) {
-				throw new CustomError('No course found', 404);
+				throw new CustomError(req.__('validation.no_course_found'), 404);
 			}
 			return true;
 		})
@@ -24,10 +24,7 @@ export const createReviewValidator = [
 				user: req.user.id,
 			});
 			if (!enrollment) {
-				throw new CustomError(
-					'You can not make a review on course you not enrolled in',
-					403,
-				);
+				throw new CustomError(req.__('validation.cannot_review_unenrolled_course'), 403);
 			}
 			return true;
 		})
@@ -37,30 +34,30 @@ export const createReviewValidator = [
 				user: req.user.id,
 			});
 			if (review) {
-				throw new CustomError('You have already reviewed this course', 400);
+				throw new CustomError(req.__('validation.already_reviewed_course'), 400);
 			}
 			return true;
 		}),
 
 	check('user')
 		.notEmpty()
-		.withMessage('user is required')
+		.withMessage((value, { req }) => req.__('validation.user_required'))
 		.isMongoId()
-		.withMessage('invalid user id'),
+		.withMessage((value, { req }) => req.__('validation.invalid_user_id')),
 
 	check('comment')
 		.notEmpty()
-		.withMessage('Review comment is required')
+		.withMessage((value, { req }) => req.__('validation.review_comment_required'))
 		.isLength({ max: 500 })
-		.withMessage('Review comment must be less than 500 characters'),
+		.withMessage((value, { req }) => req.__('validation.review_comment_max_length')),
 
 	check('rating')
 		.notEmpty()
-		.withMessage('Review rating is required')
+		.withMessage((value, { req }) => req.__('validation.review_rating_required'))
 		.isNumeric()
-		.withMessage('Review rating must be a number')
+		.withMessage((value, { req }) => req.__('validation.review_rating_must_be_number'))
 		.isFloat({ min: 0, max: 5 })
-		.withMessage('Review rating must be between 0 and 5'),
+		.withMessage((value, { req }) => req.__('validation.review_rating_range')),
 
 	validationMiddleware,
 ];
@@ -68,13 +65,13 @@ export const createReviewValidator = [
 export const getReviewValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Review ID is required')
+		.withMessage((value, { req }) => req.__('validation.review_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Review ID')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_review_id'))
+		.custom(async (value, { req }) => {
 			const review = await Review.findById(value);
 			if (!review) {
-				throw new CustomError('No review found', 404);
+				throw new CustomError(req.__('reviews.no_review_found'), 404);
 			}
 		}),
 
@@ -84,26 +81,26 @@ export const getReviewValidator = [
 export const updateReviewValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Review ID is required')
+		.withMessage((value, { req }) => req.__('validation.review_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Review ID')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_review_id'))
+		.custom(async (value, { req }) => {
 			const review = await Review.findById(value);
 			if (!review) {
-				throw new CustomError('No review found', 404);
+				throw new CustomError(req.__('reviews.no_review_found'), 404);
 			}
 		}),
 
 	check('course')
 		.optional()
 		.notEmpty()
-		.withMessage('course is required')
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
 		.isMongoId()
-		.withMessage('invalid course id')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id'))
+		.custom(async (value, { req }) => {
 			const course = await Course.findById(value);
 			if (!course) {
-				throw new CustomError('No course found', 404);
+				throw new CustomError(req.__('validation.no_course_found'), 404);
 			}
 			return true;
 		})
@@ -113,10 +110,7 @@ export const updateReviewValidator = [
 				user: req.user.id,
 			});
 			if (!enrollment) {
-				throw new CustomError(
-					'You can not update review on course you not enrolled in',
-					403,
-				);
+				throw new CustomError(req.__('validation.cannot_review_unenrolled_course'), 403);
 			}
 			return true;
 		}),
@@ -124,25 +118,25 @@ export const updateReviewValidator = [
 	check('user')
 		.optional()
 		.notEmpty()
-		.withMessage('user is required')
+		.withMessage((value, { req }) => req.__('validation.user_required'))
 		.isMongoId()
-		.withMessage('invalid user id'),
+		.withMessage((value, { req }) => req.__('validation.invalid_user_id')),
 
 	check('comment')
 		.optional()
 		.notEmpty()
-		.withMessage('Review comment is required')
+		.withMessage((value, { req }) => req.__('validation.review_comment_required'))
 		.isLength({ max: 500 })
-		.withMessage('Review comment must be less than 500 characters'),
+		.withMessage((value, { req }) => req.__('validation.review_comment_max_length')),
 
 	check('rating')
 		.optional()
 		.notEmpty()
-		.withMessage('Review rating is required')
+		.withMessage((value, { req }) => req.__('validation.review_rating_required'))
 		.isNumeric()
-		.withMessage('Review rating must be a number')
+		.withMessage((value, { req }) => req.__('validation.review_rating_must_be_number'))
 		.isFloat({ min: 0, max: 5 })
-		.withMessage('Review rating must be between 0 and 5'),
+		.withMessage((value, { req }) => req.__('validation.review_rating_range')),
 
 	validationMiddleware,
 ];
@@ -150,13 +144,13 @@ export const updateReviewValidator = [
 export const deleteReviewValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Review ID is required')
+		.withMessage((value, { req }) => req.__('validation.review_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Review ID')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.invalid_review_id'))
+		.custom(async (value, { req }) => {
 			const review = await Review.findById(value);
 			if (!review) {
-				throw new CustomError('No review found', 404);
+				throw new CustomError(req.__('reviews.no_review_found'), 404);
 			}
 		}),
 

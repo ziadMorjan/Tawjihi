@@ -6,26 +6,26 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const createCouponValidator = [
 	check('name')
 		.notEmpty()
-		.withMessage('Name is required')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.name_required'))
+		.custom(async (value, { req }) => {
 			const coupon = await Coupon.findOne({ name: value });
 			if (coupon) {
-				throw new CustomError('Coupon already exists', 400);
+				throw new CustomError(req.__('validation.coupon_already_exists'), 400);
 			}
 			return true;
 		}),
 
 	check('discount')
 		.notEmpty()
-		.withMessage('discount is required')
+		.withMessage((value, { req }) => req.__('validation.discount_required'))
 		.isNumeric()
-		.withMessage('discount must be number'),
+		.withMessage((value, { req }) => req.__('validation.discount_must_be_number')),
 
 	check('expire')
 		.notEmpty()
-		.withMessage('expire is required')
+		.withMessage((value, { req }) => req.__('validation.expire_required'))
 		.isDate()
-		.withMessage('expire must be date'),
+		.withMessage((value, { req }) => req.__('validation.expire_must_be_date')),
 
 	validationMiddleware,
 ];
@@ -33,18 +33,18 @@ export const createCouponValidator = [
 export const updateCouponValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Coupon ID is required')
+		.withMessage((value, { req }) => req.__('validation.coupon_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Coupon ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_coupon_id')),
 
 	check('name')
 		.optional()
 		.notEmpty()
-		.withMessage('Name is required')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.name_required'))
+		.custom(async (value, { req }) => {
 			const coupon = await Coupon.findOne({ name: value });
 			if (coupon) {
-				throw new CustomError('Coupon already exists', 400);
+				throw new CustomError(req.__('validation.coupon_already_exists'), 400);
 			}
 			return true;
 		}),
@@ -52,16 +52,16 @@ export const updateCouponValidator = [
 	check('discount')
 		.optional()
 		.notEmpty()
-		.withMessage('discount is required')
+		.withMessage((value, { req }) => req.__('validation.discount_required'))
 		.isNumeric()
-		.withMessage('discount must be number'),
+		.withMessage((value, { req }) => req.__('validation.discount_must_be_number')),
 
 	check('expire')
 		.optional()
 		.notEmpty()
-		.withMessage('expire is required')
+		.withMessage((value, { req }) => req.__('validation.expire_required'))
 		.isDate()
-		.withMessage('expire must be date'),
+		.withMessage((value, { req }) => req.__('validation.expire_must_be_date')),
 
 	validationMiddleware,
 ];
@@ -69,9 +69,9 @@ export const updateCouponValidator = [
 export const getCouponValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Coupon ID is required')
+		.withMessage((value, { req }) => req.__('validation.coupon_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Coupon ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_coupon_id')),
 
 	validationMiddleware,
 ];
@@ -79,9 +79,9 @@ export const getCouponValidator = [
 export const deleteCouponValidator = [
 	check('id')
 		.notEmpty()
-		.withMessage('Coupon ID is required')
+		.withMessage((value, { req }) => req.__('validation.coupon_id_required'))
 		.isMongoId()
-		.withMessage('Invalid Coupon ID'),
+		.withMessage((value, { req }) => req.__('validation.invalid_coupon_id')),
 
 	validationMiddleware,
 ];

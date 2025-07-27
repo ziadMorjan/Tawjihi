@@ -7,6 +7,6 @@ export const checkResourceBelongToTeacher = asyncErrorHandler(async (req, res, n
 	const lesson = await Lesson.findById(req.params.lessonId);
 	const course = await Course.findById(lesson.course);
 	if (req.user.id !== course.teacher.id)
-		throw new CustomError('This resource does not belong to you', 403);
+		throw new CustomError(req.__('resources.resource_does_not_belong_to_you'), 403);
 	next();
 });

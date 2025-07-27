@@ -8,17 +8,17 @@ import { validationMiddleware } from '../../middlewares/validationMiddleware.js'
 export const cartValidator = [
 	check('courseId')
 		.notEmpty()
-		.withMessage('course is required')
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
 		.isMongoId()
-		.withMessage('invalid course id')
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id'))
 		.custom(async (value, { req }) => {
 			const course = await Course.findById(value);
-			if (!course) throw new CustomError('no course found', 404);
+			if (!course) throw new CustomError(req.__('validation.no_course_found'), 404);
 			const enrollment = await Enrollment.findOne({
 				course: value,
 				user: req.user.id,
 			});
-			if (enrollment) throw new CustomError('You are already enrolled in this course', 400);
+			if (enrollment) throw new CustomError(req.__('validation.already_enrolled'), 400);
 			return true;
 		}),
 
@@ -28,13 +28,13 @@ export const cartValidator = [
 export const applyCouponValidator = [
 	check('coupon')
 		.notEmpty()
-		.withMessage('coupon is required')
-		.custom(async (value) => {
+		.withMessage((value, { req }) => req.__('validation.coupon_required'))
+		.custom(async (value, { req }) => {
 			const coupon = await Coupon.findOne({
 				name: value,
 				expire: { $gte: Date.now() },
 			});
-			if (!coupon) throw new CustomError('Invalid or expired coupon', 404);
+			if (!coupon) throw new CustomError(req.__('validation.invalid_or_expired_coupon'), 404);
 			return true;
 		}),
 
