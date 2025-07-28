@@ -16,7 +16,8 @@
 		"invalid_token": "Invalid token",
 		"token_user_not_found": "The user provided in the token not found",
 		"password_recently_changed": "User recently changed password, please login again",
-		"action_not_allowed": "You are not allowed to perform this action"
+		"action_not_allowed": "You are not allowed to perform this action",
+		"social_login_required": "You must login using your social account, you cannot use password"
 	},
 	"cart": {
 		"coupon_already_applied": "You have applied this coupon '{{coupon_name}}' before"

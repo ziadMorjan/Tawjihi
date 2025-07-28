@@ -51,6 +51,9 @@ export const signup = asyncErrorHandler(async (req, res, next) => {
 export const login = asyncErrorHandler(async (req, res) => {
 	const user = await User.findOne({ email: req.body.email }).select('+password');
 
+	if (user && !user.password && (user.googleId || user.facebookId))
+		throw new CustomError(req.__('auth.social_login_required'), 403);
+
 	if (!user.isActive || !bcryptjs.compareSync(req.body.password, user.password))
 		throw new CustomError(req.__('auth.wrong_email_or_password'), 400);
 

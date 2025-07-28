@@ -50,10 +50,10 @@ router
 	.patch(
 		protect,
 		allowedTo('admin', 'user', 'teacher'),
-		addUserIdToReqParams,
-		updateMeMiddleware,
 		uploadUserFiles,
 		handleUserFiles,
+		addUserIdToReqParams,
+		updateMeMiddleware,
 		updateUserValidator,
 		updateUser,
 	);

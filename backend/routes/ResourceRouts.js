@@ -30,9 +30,9 @@ router
 	.post(
 		protect,
 		allowedTo('teacher'),
-		checkResourceBelongToTeacher,
 		uploadContentFile,
 		handleContentFile,
+		checkResourceBelongToTeacher,
 		createResourceValidator,
 		createResource,
 	);
@@ -43,9 +43,9 @@ router
 	.patch(
 		protect,
 		allowedTo('teacher'),
-		checkResourceBelongToTeacher,
 		uploadContentFile,
 		handleContentFile,
+		checkResourceBelongToTeacher,
 		updateResourceValidator,
 		updateResource,
 	)
