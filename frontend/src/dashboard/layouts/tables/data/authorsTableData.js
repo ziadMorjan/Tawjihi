@@ -50,11 +50,11 @@ export default function data() {
 
   return {
     columns: [
-      { id: "author", Header: "author", accessorKey: "author", width: "45%", align: "left" },
-      { id: "function", Header: "function", accessorKey: "function", align: "left" },
-      { id: "status", Header: "status", accessorKey: "status", align: "center" },
-      { id: "employed", Header: "employed", accessorKey: "employed", align: "center" },
-      { id: "action", Header: "action", accessorKey: "action", align: "center" },
+      { id: "author", Header: "author", accessor: "author", width: "45%", align: "center" },
+      { id: "function", Header: "function", accessor: "function", align: "center" },
+      { id: "status", Header: "status", accessor: "status", align: "center" },
+      { id: "employed", Header: "employed", accessor: "employed", align: "center" },
+      { id: "action", Header: "action", accessor: "action", align: "center" },
     ],
 
     rows: [
