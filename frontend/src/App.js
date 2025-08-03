@@ -7,11 +7,11 @@ import { MaterialUIControllerProvider } from "./dashboard/context";
 function App() {
   return (
     <Suspense fallback={<Loading />}>
-      {/* <Outlet /> */}
-      <MaterialUIControllerProvider>
-
+      <Outlet />
+      
+      {/* <MaterialUIControllerProvider>
         <DashboardApp />
-      </MaterialUIControllerProvider>
+      </MaterialUIControllerProvider> */}
     </Suspense>
   );
 }

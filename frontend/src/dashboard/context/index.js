@@ -59,6 +59,7 @@ function reducer(state, action) {
     case "LAYOUT": {
       return { ...state, layout: action.value };
     }
+    
     case "DARKMODE": {
       return { ...state, darkMode: action.value };
     }

@@ -59,7 +59,7 @@ import rtlCache from "./utils/rtlCache"; // <-- هذا يجب أن يكون مو
 
 
 
-export default function DashboardApp() {
+export default function DashboardApp( {children}) {
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -119,29 +119,6 @@ export default function DashboardApp() {
       return null;
     });
 
-  const configsButton = (
-    <MDBox
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      width="3.25rem"
-      height="3.25rem"
-      bgColor="white"
-      shadow="sm"
-      borderRadius="50%"
-      position="fixed"
-      right="2rem"
-      bottom="2rem"
-      zIndex={99}
-      color="dark"
-      sx={{ cursor: "pointer" }}
-      onClick={handleConfiguratorOpen}
-    >
-      <Icon fontSize="small" color="inherit">
-        settings
-      </Icon>
-    </MDBox>
-  );
 
   return (
     <CacheProvider value={rtlCache}>
@@ -152,20 +129,17 @@ export default function DashboardApp() {
             <Sidenav
               color={sidenavColor}
               brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-              brandName="Material Dashboard 2"
+              brandName="Tawjihi Dashboard"
               routes={routes}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
-            />
-            <Configurator />
-            {configsButton}
+            />            
           </>
         )}
-        {layout === "vr" && <Configurator />}
-        <Routes>
-          {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/dashboard" />} />
-        </Routes>
+
+        {children}
+
+        
       </ThemeProvider>
     </CacheProvider>
   );

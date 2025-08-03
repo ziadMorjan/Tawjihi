@@ -24,6 +24,7 @@ import { AppProvider } from './context/WishAndCartListContext';
 import { CommentsProvider } from './context/CommentContext';
 
 import { routers } from './routes';
+import { MaterialUIControllerProvider } from './dashboard/context';
 
 const router = createBrowserRouter(routers);
 
@@ -56,7 +57,11 @@ root.render(
                               pauseOnHover
                             />
                             <CommentsProvider>
+                              <MaterialUIControllerProvider>
+
                               <RouterProvider router={router} />
+                              
+                              </MaterialUIControllerProvider>
                             </CommentsProvider>
                           </AppProvider>
                         </SearchContextProvider>

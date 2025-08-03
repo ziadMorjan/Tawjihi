@@ -18,6 +18,10 @@ import ChangePassword from "../pages/MyProfile/changePassword.jsx";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 import App from "../App";
+import Dashboard from "../dashboard/layouts/dashboard/index.js";
+import Tables from "../dashboard/layouts/tables/index.js";
+import Billing from "../dashboard/layouts/billing/index.js";
+import ProtectedDashboardRoute from "../components/ProtectedRoute/ProtectedDashboardRoute.jsx";
 
 // Lazy loaded pages
 const Main = lazy(() => import("../pages/Main"));
@@ -97,6 +101,16 @@ export const routers = [
           { path: "edit-profile", element: <EditProfile /> },
           { path: "change-password", element: <ChangePassword /> },
         ],
+      },
+
+      {
+        path: "dashboard",
+        element: <ProtectedDashboardRoute />,
+        children: [
+          {index: true, element: <Dashboard />},
+          {path: "tables", element: <Tables /> },
+          {path: "billing",element: <Billing />},
+        ]
       },
 
       { path: "*", element: <NotFound /> },
