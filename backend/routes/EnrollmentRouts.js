@@ -1,55 +1,42 @@
-const express = require("express");
-const { protect, allowedTo } = require("../middlewares/authMiddleware");
-const {
-    addUserToReqBody,
-    deleteEnrollmentMiddleware
-} = require("../middlewares/enrollmentMiddleware");
+import express from 'express';
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
+import {
+	addUserToReqBody,
+	deleteEnrollmentMiddleware,
+} from '../middlewares/enrollmentMiddleware.js';
 
-const {
-    createEnrollmentValidator,
-    getEnrollmentValidator,
-    updateEnrollmentValidator,
-    deleteEnrollmentValidator
-} = require("../utils/validators/enrollmentValidator");
+import {
+	createEnrollmentValidator,
+	getEnrollmentValidator,
+	updateEnrollmentValidator,
+	deleteEnrollmentValidator,
+} from '../utils/validators/enrollmentValidator.js';
 
-const {
-    getAllEnrollments,
-    createEnrollment,
-    getEnrollment,
-    updateEnrollment,
-    deleteEnrollment
-} = require("../controllers/EnrollmentController");
+import {
+	getAllEnrollments,
+	createEnrollment,
+	getEnrollment,
+	updateEnrollment,
+	deleteEnrollment,
+} from '../controllers/EnrollmentController.js';
 
-let router = express.Router();
+const router = express.Router();
 
-router.route("/")
-    .get(getAllEnrollments)
-    .post(
-        protect,
-        allowedTo("user"),
-        addUserToReqBody,
-        createEnrollmentValidator,
-        createEnrollment
-    );
+router
+	.route('/')
+	.get(getAllEnrollments)
+	.post(
+		protect,
+		allowedTo('user'),
+		addUserToReqBody,
+		createEnrollmentValidator,
+		createEnrollment,
+	);
 
-router.route("/:id")
-    .get(
-        getEnrollmentValidator,
-        getEnrollment
-    )
-    .patch(
-        protect,
-        allowedTo("admin"),
-        updateEnrollmentValidator,
-        updateEnrollment
-    )
-    .delete(
-        protect,
-        deleteEnrollmentMiddleware,
-        deleteEnrollmentValidator,
-        deleteEnrollment
-    );
+router
+	.route('/:id')
+	.get(getEnrollmentValidator, getEnrollment)
+	.patch(protect, allowedTo('admin'), updateEnrollmentValidator, updateEnrollment)
+	.delete(protect, deleteEnrollmentMiddleware, deleteEnrollmentValidator, deleteEnrollment);
 
-
-
-module.exports = router;
+export default router;

@@ -1,66 +1,51 @@
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const { getVideoDurationInSeconds } = require("get-video-duration");
-const Lesson = require('../models/Lesson');
-const { uploadSingleField } = require("../middlewares/uploadsMiddleware");
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+import { getVideoDurationInSeconds } from 'get-video-duration';
+import Lesson from '../models/Lesson.js';
+import CustomError from '../utils/CustomError.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
+import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
+import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne
-} = require("./controller");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
-const CustomError = require("../utils/CustomError");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const uploadLessonVideo = uploadSingleField("video");
+export const uploadLessonVideo = uploadSingleField('video');
 
-const handleVideo = asyncErrorHandler(async function (req, res, next) {
-    if (req.file) {
-        let { mimetype } = req.file;
-        if (!mimetype.startsWith("video"))
-            throw new CustomError("invalid file type for video", 400);
+export const handleVideo = asyncErrorHandler(async (req, res, next) => {
+	if (req.file) {
+		const { mimetype } = req.file;
+		if (!mimetype.startsWith('video'))
+			throw new CustomError(req.__('generic.invalid_file_type_for_video'), 400);
 
-        let unique = crypto.randomUUID();
-        let ext = mimetype.split("/")[1];
-        let name = `lesson-${unique}-${Date.now()}.${ext}`;
-        const uploadDir = path.join(__dirname, '..', 'uploads', 'lessons', 'videos');
-        // Ensure directory exists
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
+		const unique = crypto.randomUUID();
+		const ext = mimetype.split('/')[1];
+		const name = `lesson-${unique}-${Date.now()}.${ext}`;
+		const uploadDir = path.join(__dirname, '..', 'uploads', 'lessons', 'videos');
 
-        const filePath = path.join(uploadDir, name);
-        fs.writeFileSync(filePath, req.file.buffer);
-        const duration = Math.round(await getVideoDurationInSeconds(filePath));
-        req.body.duration = duration;
+		if (!fs.existsSync(uploadDir)) {
+			fs.mkdirSync(uploadDir, { recursive: true });
+		}
 
-        req.upload = "lesson";
-        req.filePath = filePath;
-    }
-    next();
+		const filePath = path.join(uploadDir, name);
+		fs.writeFileSync(filePath, req.file.buffer);
+		const duration = Math.round(await getVideoDurationInSeconds(filePath));
+		req.body.duration = duration;
+
+		req.upload = 'lesson';
+		req.filePath = filePath;
+	}
+	next();
 });
 
+export const getAllLessons = getAll(Lesson);
 
-const getAllLessons = getAll(Lesson);
+export const createLesson = createOne(Lesson);
 
-const createLesson = createOne(Lesson);
+export const getLesson = getOne(Lesson, 'Lesson');
 
-const getLesson = getOne(Lesson, "Lesson");
+export const updateLesson = updateOne(Lesson, 'Lesson');
 
-const updateLesson = updateOne(Lesson, "Lesson");
-
-const deleteLesson = deleteOne(Lesson, "Lesson");
-
-
-module.exports = {
-    getAllLessons,
-    createLesson,
-    getLesson,
-    updateLesson,
-    deleteLesson,
-    uploadLessonVideo,
-    handleVideo
-}
+export const deleteLesson = deleteOne(Lesson, 'Lesson');

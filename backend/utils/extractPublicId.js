@@ -1,11 +1,13 @@
-exports.extractPublicId = (url) => {
-    const parts = url.split('/upload/');
-    if (parts.length < 2) return null;
+const extractPublicId = (url) => {
+	const parts = url.split('/upload/');
+	if (parts.length < 2) return null;
 
-    const pathWithExtension = parts[1];
+	const pathWithExtension = parts[1];
 
-    const pathWithoutVersion = pathWithExtension.replace(/^v\d+\//, '');
-    const publicId = pathWithoutVersion.replace(/\.[^/.]+$/, '');
+	const pathWithoutVersion = pathWithExtension.replace(/^v\d+\//, '');
+	const publicId = pathWithoutVersion.replace(/\.[^/.]+$/, '');
 
-    return publicId;
-}
+	return publicId;
+};
+
+export default extractPublicId;

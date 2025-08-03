@@ -1,27 +1,25 @@
-const express = require('express');
+import express from 'express';
+
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
+
+import { createCheckoutSessionValidator } from '../utils/validators/paymentValidator.js';
+
+import {
+	createCheckoutSession,
+	getPayments,
+	getPayment,
+} from '../controllers/PaymentController.js';
+
 const router = express.Router();
-const { protect, allowedTo } = require('../middlewares/authMiddleware');
-const { createCheckoutSessionValidator } = require("../utils/validators/paymentValidator");
-const {
-    createCheckoutSession,
-    getPayments,
-    getPayment,
-} = require('../controllers/PaymentController');
 
 router.use(protect);
 
-router.route('/create-checkout-session')
-    .post(
-        allowedTo('user'),
-        createCheckoutSessionValidator,
-        createCheckoutSession
-    );
+router
+	.route('/create-checkout-session')
+	.post(allowedTo('user'), createCheckoutSessionValidator, createCheckoutSession);
 
-router.route("/")
-    .get(getPayments);
+router.route('/').get(getPayments);
 
+router.route('/:id').get(getPayment);
 
-router.route("/:id")
-    .get(getPayment);
-
-module.exports = router;
+export default router;

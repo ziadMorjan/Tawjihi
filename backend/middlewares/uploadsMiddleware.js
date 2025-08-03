@@ -1,11 +1,9 @@
-const multer = require('multer');
+import multer, { memoryStorage } from 'multer';
 
-let upload = multer({
-    storage: multer.memoryStorage()
+const upload = multer({
+	storage: memoryStorage(),
 });
 
-const uploadSingleField = (fieldName) => upload.single(fieldName);
+export const uploadSingleField = (fieldName) => upload.single(fieldName);
 
-const uploadMultipleFields = fields => upload.fields(fields);
-
-module.exports = { uploadSingleField, uploadMultipleFields }
+export const uploadMultipleFields = (fields) => upload.fields(fields);

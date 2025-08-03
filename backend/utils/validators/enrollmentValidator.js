@@ -1,111 +1,99 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Enrollment = require('../../models/Enrollment');
-const CustomError = require('../CustomError');
-const Course = require('../../models/Course');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Course from '../../models/Course.js';
+import Enrollment from '../../models/Enrollment.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createEnrollmentValidator = [
-    validator.check('course')
-        .notEmpty()
-        .withMessage('course is required')
-        .isMongoId()
-        .withMessage("invalid course id")
-        .custom(async (value) => {
-            let course = await Course.findById(value);
-            if (!course) {
-                throw new CustomError('No course found', 404);
-            }
-            return true;
-        })
-        .custom(async (value, { req }) => {
-            let enrollment = await Enrollment.findOne(
-                {
-                    course: value,
-                    user: req.user.id
-                }
-            );
-            if (enrollment) {
-                throw new CustomError('You have already enrolled to this course', 400);
-            }
-            return true;
-        }),
+export const createEnrollmentValidator = [
+	check('course')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id'))
+		.custom(async (value, { req }) => {
+			const course = await Course.findById(value);
+			if (!course) {
+				throw new CustomError(req.__('validation.no_course_found'), 404);
+			}
+			return true;
+		})
+		.custom(async (value, { req }) => {
+			const enrollment = await Enrollment.findOne({
+				course: value,
+				user: req.user.id,
+			});
+			if (enrollment) {
+				throw new CustomError(req.__('validation.already_enrolled_in_course'), 400);
+			}
+			return true;
+		}),
 
-    validator.check('user')
-        .notEmpty()
-        .withMessage('user is required')
-        .isMongoId()
-        .withMessage("invalid user id"),
+	check('user')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.user_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_user_id')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
 
+export const getEnrollmentValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.enrollment_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_enrollment_id')),
 
-const getEnrollmentValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("Enrollment ID is required")
-        .isMongoId()
-        .withMessage("Invalid Enrollment ID"),
-
-    validationMiddleware
+	validationMiddleware,
 ];
 
-const updateEnrollmentValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("Enrollment ID is required")
-        .isMongoId()
-        .withMessage("Invalid Enrollment ID"),
+export const updateEnrollmentValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.enrollment_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_enrollment_id')),
 
-    validator.check('course')
-        .optional()
-        .notEmpty()
-        .withMessage('course is required')
-        .isMongoId()
-        .withMessage("invalid course id")
-        .custom(async (value) => {
-            let course = await Course.findById(value);
-            if (!course) {
-                throw new CustomError('No course found', 404);
-            }
-            return true;
-        })
-        .custom(async (value, { req }) => {
-            let enrollment = await Enrollment.findOne(
-                {
-                    course: value,
-                    user: req.user.id
-                }
-            );
-            if (enrollment) {
-                throw new CustomError('You have already enrolled to this course', 400);
-            }
-            return true;
-        }),
+	check('course')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id'))
+		.custom(async (value, { req }) => {
+			const course = await Course.findById(value);
+			if (!course) {
+				throw new CustomError(req.__('validation.no_course_found'), 404);
+			}
+			return true;
+		})
+		.custom(async (value, { req }) => {
+			const enrollment = await Enrollment.findOne({
+				course: value,
+				user: req.user.id,
+			});
+			if (enrollment) {
+				throw new CustomError(req.__('validation.already_enrolled_in_course'), 400);
+			}
+			return true;
+		}),
 
-    validator.check('user')
-        .optional()
-        .notEmpty()
-        .withMessage('user is required')
-        .isMongoId()
-        .withMessage("invalid user id"),
+	check('user')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.user_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_user_id')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
 
-const deleteEnrollmentValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("Enrollment ID is required")
-        .isMongoId()
-        .withMessage("Invalid Enrollment ID"),
+export const deleteEnrollmentValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.enrollment_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_enrollment_id')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
-
-module.exports = {
-    createEnrollmentValidator,
-    getEnrollmentValidator,
-    updateEnrollmentValidator,
-    deleteEnrollmentValidator
-}

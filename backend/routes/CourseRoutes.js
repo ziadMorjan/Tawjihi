@@ -1,67 +1,64 @@
-const express = require('express');
+import express from 'express';
+import lessonRouts from './LessonRouts.js';
+import reviewsRouts from './ReviewRoutes.js';
 
-const lessonRouts = require("./LessonRouts");
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-const reviewsRouts = require("./ReviewRoutes");
+import { checkCourseBelongToTeacher } from '../middlewares/courseMiddleware.js';
 
-const {
-    protect,
-    allowedTo
-} = require('../middlewares/authMiddleware');
+import {
+	createCourseValidator,
+	updateCourseValidator,
+	getCourseValidator,
+	deleteCourseValidator,
+} from '../utils/validators/courseValidator.js';
 
-const { checkCourseBelongToTeacher } = require("../middlewares/courseMiddleware");
+import {
+	getAllCourses,
+	createCourse,
+	getCourse,
+	updateCourse,
+	deleteCourse,
+	uploadCourseImage,
+	handleCourseImage,
+} from '../controllers/CourseController.js';
 
-const {
-    createCourseValidator,
-    updateCourseValidator,
-    getCourseValidator,
-    deleteCourseValidator
-} = require('../utils/validators/courseValidator');
+const router = express.Router();
 
-const {
-    getAllCourses,
-    createCourse,
-    getCourse,
-    updateCourse,
-    deleteCourse,
-    uploadCourseImage,
-    handleCourseImage
-} = require('../controllers/CourseController');
+router.use('/:courseId/lessons', lessonRouts);
 
-let router = express.Router();
+router.use('/:courseId/reviews', reviewsRouts);
 
-router.use("/:courseId/lessons", lessonRouts);
+router
+	.route('/')
+	.get(getAllCourses)
+	.post(
+		protect,
+		allowedTo('teacher'),
+		uploadCourseImage,
+		handleCourseImage,
+		createCourseValidator,
+		createCourse,
+	);
 
-router.use("/:courseId/reviews", reviewsRouts);
+router
+	.route('/:id')
+	.get(getCourseValidator, getCourse)
+	.patch(
+		protect,
+		allowedTo('teacher'),
+		uploadCourseImage,
+		handleCourseImage,
+		updateCourseValidator,
+		checkCourseBelongToTeacher,
+		updateCourse,
+	)
+	.delete(
+		protect,
+		allowedTo('teacher', 'admin'),
+		deleteCourseValidator,
+		checkCourseBelongToTeacher,
+		deleteCourse,
+	);
 
-router.route('/')
-    .get(getAllCourses)
-    .post(
-        protect,
-        allowedTo('teacher'),
-        uploadCourseImage,
-        handleCourseImage,
-        createCourseValidator,
-        createCourse,
-    );
-
-router.route('/:id')
-    .get(getCourseValidator, getCourse)
-    .patch(
-        protect,
-        allowedTo('teacher'),
-        uploadCourseImage,
-        handleCourseImage,
-        updateCourseValidator,
-        checkCourseBelongToTeacher,
-        updateCourse,
-    )
-    .delete(
-        protect,
-        allowedTo('teacher', 'admin'),
-        deleteCourseValidator,
-        checkCourseBelongToTeacher,
-        deleteCourse,
-    );
-
-module.exports = router;
+export default router;

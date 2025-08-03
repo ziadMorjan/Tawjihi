@@ -1,78 +1,71 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Subject = require('../../models/Subject');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Subject from '../../models/Subject.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createSubjectValidator = [
-    validator.check('name')
-        .notEmpty()
-        .withMessage('Name is required')
-        .isLength({ min: 3 })
-        .withMessage('Name must be at least 3 characters long')
-        .custom(async (value) => {
-            let subject = await Subject.findOne({ name: value });
-            if (subject) {
-                throw new CustomError('Subject already exists', 400);
-            }
-            return true;
-        }),
-    validator.check('description')
-        .optional()
-        .isLength({ min: 10, max: 1000 })
-        .withMessage('Description must be between 10 and 1000 characters long'),
+export const createSubjectValidator = [
+	check('name')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.name_required'))
+		.isLength({ min: 3 })
+		.withMessage((value, { req }) => req.__('validation.name_min_length'))
+		.custom(async (value, { req }) => {
+			const subject = await Subject.findOne({ name: value });
+			if (subject) {
+				throw new CustomError(req.__('validation.subject_already_exists'), 400);
+			}
+			return true;
+		}),
+	check('description')
+		.optional()
+		.isLength({ min: 10, max: 1000 })
+		.withMessage((value, { req }) => req.__('validation.description_length')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
 
-const updateSubjectValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("Subject ID is required")
-        .isMongoId()
-        .withMessage("Invalid Subject ID"),
+export const updateSubjectValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.subject_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_subject_id_format')),
 
-    validator.check('name')
-        .optional()
-        .isLength({ min: 3 })
-        .withMessage('Name must be at least 3 characters long')
-        .custom(async (value) => {
-            let subject = await Subject.findOne({ name: value });
-            if (subject) {
-                throw new CustomError('Subject already exists', 400);
-            }
-            return true;
-        }),
-    validator.check('description')
-        .optional()
-        .isLength({ min: 10, max: 1000 })
-        .withMessage('Description must be between 10 and 1000 characters long'),
+	check('name')
+		.optional()
+		.isLength({ min: 3 })
+		.withMessage((value, { req }) => req.__('validation.name_min_length'))
+		.custom(async (value, { req }) => {
+			const subject = await Subject.findOne({ name: value });
+			if (subject) {
+				throw new CustomError(req.__('validation.subject_already_exists'), 400);
+			}
+			return true;
+		}),
+	check('description')
+		.optional()
+		.isLength({ min: 10, max: 1000 })
+		.withMessage((value, { req }) => req.__('validation.description_length')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
 
-const getSubjectValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("Subject ID is required")
-        .isMongoId()
-        .withMessage("Invalid Subject ID"),
+export const getSubjectValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.subject_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_subject_id_format')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
 
-const deleteSubjectValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("Subject ID is required")
-        .isMongoId()
-        .withMessage("Invalid Subject ID"),
+export const deleteSubjectValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.subject_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_subject_id_format')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
-
-module.exports = {
-    createSubjectValidator,
-    updateSubjectValidator,
-    getSubjectValidator,
-    deleteSubjectValidator
-}

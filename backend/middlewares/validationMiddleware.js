@@ -1,19 +1,22 @@
-const validator = require('express-validator');
-const CustomError = require('../utils/CustomError');
-const uploadToCloud = require("../utils/uploadToCloud");
-const removeLocalFiles = require("../utils/removeLocalFiles");
-const { asyncErrorHandler } = require('./errorMiddleware');
+import { validationResult } from 'express-validator';
+import CustomError from '../utils/CustomError.js';
+import removeLocalFiles from '../utils/removeLocalFiles.js';
+import uploadToCloud from '../utils/uploadToCloud.js';
+import { asyncErrorHandler } from './errorMiddleware.js';
 
-const validationMiddleware = asyncErrorHandler(async function (req, res, next) {
-    let errors = validator.validationResult(req);
-    if (!errors.isEmpty()) {
-        await removeLocalFiles(req);
-        console.log(errors.array());
-        let message = errors.array().map((el) => el.msg).join(' | ');
-        return next(new CustomError(message, 400));
-    }
-    await uploadToCloud(req);
-    next();
+export const validationMiddleware = asyncErrorHandler(async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		if (process.env.NODE_ENV === 'development')
+			console.error('Validation errors:', errors.array());
+
+		removeLocalFiles(req);
+		const message = errors
+			.array()
+			.map((el) => el.msg)
+			.join(' | ');
+		return next(new CustomError(message, 400));
+	}
+	await uploadToCloud(req);
+	next();
 });
-
-module.exports = { validationMiddleware };

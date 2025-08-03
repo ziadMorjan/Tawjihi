@@ -1,65 +1,58 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
+import { check } from 'express-validator';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createNewValidator = [
-    validator.check('title')
-        .notEmpty()
-        .withMessage('title is required')
-        .isLength({ min: 3 })
-        .withMessage('title must be at least 3 characters long'),
+export const createNewValidator = [
+	check('title')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.title_required'))
+		.isLength({ min: 3 })
+		.withMessage((value, { req }) => req.__('validation.title_min_length')),
 
-    validator.check('body')
-        .isLength({ min: 10, max: 10000 })
-        .withMessage('body must be between 10 and 10000 characters long'),
+	check('body')
+		.isLength({ min: 10, max: 10000 })
+		.withMessage((value, { req }) => req.__('validation.body_length')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
 
-const updateNewValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("New ID is required")
-        .isMongoId()
-        .withMessage("Invalid New ID"),
+export const updateNewValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.new_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_new_id')),
 
-    validator.check('title')
-        .optional()
-        .notEmpty()
-        .withMessage('title is required')
-        .isLength({ min: 3 })
-        .withMessage('title must be at least 3 characters long'),
+	check('title')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.title_required'))
+		.isLength({ min: 3 })
+		.withMessage((value, { req }) => req.__('validation.title_min_length')),
 
-    validator.check('body')
-        .optional()
-        .isLength({ min: 10, max: 10000 })
-        .withMessage('body must be between 10 and 10000 characters long'),
+	check('body')
+		.optional()
+		.isLength({ min: 10, max: 10000 })
+		.withMessage((value, { req }) => req.__('validation.body_length')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
 
-const getNewValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("New ID is required")
-        .isMongoId()
-        .withMessage("Invalid New ID"),
+export const getNewValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.new_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_new_id')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
 
-const deleteNewValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("New ID is required")
-        .isMongoId()
-        .withMessage("Invalid New ID"),
+export const deleteNewValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.new_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_new_id')),
 
-    validationMiddleware
+	validationMiddleware,
 ];
-
-module.exports = {
-    createNewValidator,
-    updateNewValidator,
-    getNewValidator,
-    deleteNewValidator
-}

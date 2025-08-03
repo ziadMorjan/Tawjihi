@@ -1,35 +1,25 @@
-const express = require("express");
+import express from 'express';
 
-const {
-    protect,
-    allowedTo
-} = require('../middlewares/authMiddleware');
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-const {
-    cartValidator,
-    applyCouponValidator
-} = require("../utils/validators/cartValidator");
+import { cartValidator, applyCouponValidator } from '../utils/validators/cartValidator.js';
 
-const {
-    getLoggedUserCart,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    applyCoupon
-} = require("../controllers/CartController");
+import {
+	getLoggedUserCart,
+	addToCart,
+	removeFromCart,
+	clearCart,
+	applyCoupon,
+} from '../controllers/CartController.js';
 
-let router = express.Router();
+const router = express.Router();
 
-router.use(protect, allowedTo("user"));
+router.use(protect, allowedTo('user'));
 
-router.post("/applyCoupon", applyCouponValidator, applyCoupon);
+router.post('/applyCoupon', applyCouponValidator, applyCoupon);
 
-router.route("/")
-    .get(getLoggedUserCart)
-    .delete(clearCart);
+router.route('/').get(getLoggedUserCart).delete(clearCart);
 
-router.route("/:courseId")
-    .post(cartValidator, addToCart)
-    .delete(cartValidator, removeFromCart);
+router.route('/:courseId').post(cartValidator, addToCart).delete(cartValidator, removeFromCart);
 
-module.exports = router;
+export default router;

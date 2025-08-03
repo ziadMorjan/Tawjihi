@@ -1,24 +1,19 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Course = require('../../models/Course');
-const CustomError = require('../CustomError');
+import { check } from 'express-validator';
+import Course from '../../models/Course.js';
+import CustomError from '../CustomError.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const wishlistValidator = [
-    validator.check('courseId')
-        .notEmpty()
-        .withMessage("Course ID is required")
-        .isMongoId()
-        .withMessage("Invalid Course ID")
-        .custom(async function (courseId) {
-            let course = await Course.findById(courseId);
-            if (!course)
-                throw new CustomError("No course found", 404);
-            return true;
-        }),
+export const wishlistValidator = [
+	check('courseId')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_course_id'))
+		.custom(async (courseId, { req }) => {
+			const course = await Course.findById(courseId);
+			if (!course) throw new CustomError(req.__('validation.no_course_found'), 404);
+			return true;
+		}),
 
-    validationMiddleware
+	validationMiddleware,
 ];
-
-module.exports = {
-    wishlistValidator
-}

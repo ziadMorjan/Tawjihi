@@ -1,26 +1,12 @@
-const Coupon = require("../models/Coupon");
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne,
-} = require("./controller");
+import Coupon from '../models/Coupon.js';
+import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
-const getAllCoupons = getAll(Coupon);
+export const getAllCoupons = getAll(Coupon);
 
-const createCoupon = createOne(Coupon);
+export const createCoupon = createOne(Coupon);
 
-const getCoupon = getOne(Coupon, "coupon");
+export const getCoupon = getOne(Coupon, 'coupon');
 
-const updateCoupon = updateOne(Coupon, "coupon");
+export const updateCoupon = updateOne(Coupon, 'coupon');
 
-const deleteCoupon = deleteOne(Coupon, "coupon");
-
-module.exports = {
-    getAllCoupons,
-    createCoupon,
-    getCoupon,
-    updateCoupon,
-    deleteCoupon,
-};
+export const deleteCoupon = deleteOne(Coupon, 'coupon');

@@ -1,107 +1,98 @@
-const validator = require("express-validator");
-const { validationMiddleware } = require("../../middlewares/validationMiddleware");
-const Course = require("../../models/Course");
-const CustomError = require("../CustomError");
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Course from '../../models/Course.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createLessonValidator = [
-    validator.check("name")
-        .notEmpty()
-        .withMessage("Name is required")
-        .isString()
-        .withMessage("Name must be a string")
-        .trim()
-        .escape(),
+export const createLessonValidator = [
+	check('name')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.name_required'))
+		.isString()
+		.withMessage((value, { req }) => req.__('validation.name_must_be_string'))
+		.trim()
+		.escape(),
 
-    validator.check("description")
-        .notEmpty()
-        .withMessage("Description is required")
-        .isString()
-        .withMessage("Description must be a string")
-        .trim()
-        .escape(),
+	check('description')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.description_required'))
+		.isString()
+		.withMessage((value, { req }) => req.__('validation.description_must_be_string'))
+		.trim()
+		.escape(),
 
-    validator.check("video")
-        .notEmpty()
-        .withMessage("Video is required"),
+	check('video')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.video_required')),
 
-    validator.check("course")
-        .notEmpty()
-        .withMessage("Course ID is required")
-        .isMongoId()
-        .withMessage("Course ID must be a valid MongoDB ObjectId")
-        .custom(async courseId => {
-            let course = await Course.findById(courseId);
-            if (!course)
-                throw new CustomError("Course not found", 404);
-            return true;
-        }),
+	check('course')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
+		.custom(async (courseId, { req }) => {
+			const course = await Course.findById(courseId);
+			if (!course) throw new CustomError(req.__('validation.no_course_found'), 404);
+			return true;
+		}),
 
-    validationMiddleware
-]
+	validationMiddleware,
+];
 
-const getLessonValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("Lesson ID is required")
-        .isMongoId()
-        .withMessage("Lesson ID must be a valid MongoDB ObjectId"),
+export const getLessonValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format')),
 
-    validationMiddleware
-]
+	validationMiddleware,
+];
 
-const updateLessonValidator = [
-    validator.check("name")
-        .optional()
-        .notEmpty()
-        .withMessage("Name is required")
-        .isString()
-        .withMessage("Name must be a string")
-        .trim()
-        .escape(),
+export const updateLessonValidator = [
+	check('name')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.name_required'))
+		.isString()
+		.withMessage((value, { req }) => req.__('validation.name_must_be_string'))
+		.trim()
+		.escape(),
 
-    validator.check("description")
-        .optional()
-        .notEmpty()
-        .withMessage("Description is required")
-        .isString()
-        .withMessage("Description must be a string")
-        .trim()
-        .escape(),
+	check('description')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.description_required'))
+		.isString()
+		.withMessage((value, { req }) => req.__('validation.description_must_be_string'))
+		.trim()
+		.escape(),
 
-    validator.check("video")
-        .optional()
-        .notEmpty()
-        .withMessage("Video is required"),
+	check('video')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.video_required')),
 
-    validator.check("course")
-        .optional()
-        .notEmpty()
-        .withMessage("Course ID is required")
-        .isMongoId()
-        .withMessage("Course ID must be a valid MongoDB ObjectId")
-        .custom(async courseId => {
-            let course = await Course.findById(courseId);
-            if (!course)
-                throw new CustomError("Course not found", 404);
-            return true;
-        }),
+	check('course')
+		.optional()
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.course_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format'))
+		.custom(async (courseId, { req }) => {
+			const course = await Course.findById(courseId);
+			if (!course) throw new CustomError(req.__('validation.no_course_found'), 404);
+			return true;
+		}),
 
-    validationMiddleware
-]
+	validationMiddleware,
+];
 
-const deleteLessonValidator = [
-    validator.check("id")
-        .notEmpty()
-        .withMessage("Lesson ID is required")
-        .isMongoId()
-        .withMessage("Lesson ID must be a valid MongoDB ObjectId"),
+export const deleteLessonValidator = [
+	check('id')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.lesson_id_required'))
+		.isMongoId()
+		.withMessage((value, { req }) => req.__('validation.invalid_lesson_id_format')),
 
-    validationMiddleware
-]
-
-module.exports = {
-    createLessonValidator,
-    getLessonValidator,
-    updateLessonValidator,
-    deleteLessonValidator
-}
+	validationMiddleware,
+];

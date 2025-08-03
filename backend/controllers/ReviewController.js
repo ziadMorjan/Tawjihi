@@ -1,26 +1,12 @@
-const Review = require('../models/Review');
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne
-} = require('./controller');
+import Review from '../models/Review.js';
+import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
-const getAllReviews = getAll(Review);
+export const getAllReviews = getAll(Review);
 
-const createReview = createOne(Review);
+export const createReview = createOne(Review);
 
-const getReview = getOne(Review, "Review");
+export const getReview = getOne(Review, 'Review');
 
-const updateReview = updateOne(Review, "Review");
+export const updateReview = updateOne(Review, 'Review');
 
-const deleteReview = deleteOne(Review, "Review");
-
-module.exports = {
-    getAllReviews,
-    createReview,
-    getReview,
-    updateReview,
-    deleteReview
-};
+export const deleteReview = deleteOne(Review, 'Review');

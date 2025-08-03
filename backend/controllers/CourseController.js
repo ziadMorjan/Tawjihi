@@ -1,61 +1,52 @@
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const sharp = require("sharp");
-const { uploadSingleField } = require("../middlewares/uploadsMiddleware");
-const {
-    getAll,
-    createOne,
-    getOne,
-    updateOne,
-    deleteOne
-} = require('./controller');
-const Course = require('../models/Course');
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import sharp from 'sharp';
+import { fileURLToPath } from 'url'; // 👈 Add this import
+import Course from '../models/Course.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
+import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
+import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
 
+// --- Recreate __dirname for ES Modules ---
+const __filename = fileURLToPath(import.meta.url); // Gets the file path
+const __dirname = path.dirname(__filename); // Gets the directory path
 
-const uploadCourseImage = uploadSingleField("coverImage");
+export const uploadCourseImage = uploadSingleField('coverImage');
 
-const handleCourseImage = asyncErrorHandler(async function (req, res, next) {
-    if (req.file) {
-        let unique = crypto.randomUUID();
-        let name = `course-${unique}-${Date.now()}.jpeg`;
-        const uploadDir = path.join(__dirname, '..', 'uploads', 'images', 'courses');
-        // Ensure directory exists
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        const filePath = path.join(uploadDir, name);
-        const buffer = await sharp(req.file.buffer)
-            .resize(500, 500)
-            .toFormat("jpeg")
-            .jpeg({ quality: 90 })
-            .toBuffer();
+export const handleCourseImage = asyncErrorHandler(async (req, res, next) => {
+	if (req.file) {
+		const unique = crypto.randomUUID();
+		const name = `course-${unique}-${Date.now()}.jpeg`;
 
-        fs.writeFileSync(filePath, buffer);
-        req.upload = "course";
-        req.filePath = filePath;
-    }
-    next();
+		// Now __dirname is defined and works correctly
+		const uploadDir = path.join(__dirname, '..', 'uploads', 'images', 'courses');
+
+		// Ensure directory exists
+		if (!fs.existsSync(uploadDir)) {
+			fs.mkdirSync(uploadDir, { recursive: true });
+		}
+
+		const filePath = path.join(uploadDir, name);
+		const buffer = await sharp(req.file.buffer)
+			.resize(500, 500)
+			.toFormat('jpeg')
+			.jpeg({ quality: 90 })
+			.toBuffer();
+
+		fs.writeFileSync(filePath, buffer);
+		req.upload = 'course';
+		req.filePath = filePath;
+	}
+	next();
 });
 
+export const getAllCourses = getAll(Course);
 
-const getAllCourses = getAll(Course);
+export const createCourse = createOne(Course);
 
-const createCourse = createOne(Course);
+export const getCourse = getOne(Course, 'Course');
 
-const getCourse = getOne(Course, "Course");
+export const updateCourse = updateOne(Course, 'Course');
 
-const updateCourse = updateOne(Course, "Course");
-
-const deleteCourse = deleteOne(Course, "Course");
-
-module.exports = {
-    getAllCourses,
-    createCourse,
-    getCourse,
-    updateCourse,
-    deleteCourse,
-    uploadCourseImage,
-    handleCourseImage
-}
+export const deleteCourse = deleteOne(Course, 'Course');

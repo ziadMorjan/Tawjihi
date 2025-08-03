@@ -1,58 +1,60 @@
-const express = require("express");
-const { protect, allowedTo } = require("../middlewares/authMiddleware");
-const { checkResourceBelongToTeacher } = require("../middlewares/resourceMiddleware");
-const {
-    getAllResourceValidator,
-    createResourceValidator,
-    getResourceValidator,
-    updateResourceValidator,
-    deleteResourceValidator
-} = require("../utils/validators/resourceValidator");
-const {
-    getAllResource,
-    createResource,
-    getResource,
-    updateResource,
-    deleteResource,
-    uploadContentFile,
-    handleContentFile
-} = require("../controllers/ResourceController");
+import express from 'express';
 
-let router = express.Router({ mergeParams: true });
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-router.route("/")
-    .get(
-        getAllResourceValidator,
-        getAllResource
-    )
-    .post(
-        protect,
-        allowedTo("teacher"),
-        checkResourceBelongToTeacher,
-        uploadContentFile,
-        handleContentFile,
-        createResourceValidator,
-        createResource
-    );
+import { checkResourceBelongToTeacher } from '../middlewares/resourceMiddleware.js';
 
-router.route("/:id")
-    .get(
-        getResourceValidator,
-        getResource
-    ).patch(
-        protect,
-        allowedTo("teacher"),
-        checkResourceBelongToTeacher,
-        uploadContentFile,
-        handleContentFile,
-        updateResourceValidator,
-        updateResource
-    ).delete(
-        protect,
-        allowedTo("teacher"),
-        checkResourceBelongToTeacher,
-        deleteResourceValidator,
-        deleteResource
-    );
+import {
+	getAllResourceValidator,
+	createResourceValidator,
+	getResourceValidator,
+	updateResourceValidator,
+	deleteResourceValidator,
+} from '../utils/validators/resourceValidator.js';
 
-module.exports = router;
+import {
+	getAllResource,
+	createResource,
+	getResource,
+	updateResource,
+	deleteResource,
+	uploadContentFile,
+	handleContentFile,
+} from '../controllers/ResourceController.js';
+
+const router = express.Router({ mergeParams: true });
+
+router
+	.route('/')
+	.get(getAllResourceValidator, getAllResource)
+	.post(
+		protect,
+		allowedTo('teacher'),
+		uploadContentFile,
+		handleContentFile,
+		checkResourceBelongToTeacher,
+		createResourceValidator,
+		createResource,
+	);
+
+router
+	.route('/:id')
+	.get(getResourceValidator, getResource)
+	.patch(
+		protect,
+		allowedTo('teacher'),
+		uploadContentFile,
+		handleContentFile,
+		checkResourceBelongToTeacher,
+		updateResourceValidator,
+		updateResource,
+	)
+	.delete(
+		protect,
+		allowedTo('teacher'),
+		checkResourceBelongToTeacher,
+		deleteResourceValidator,
+		deleteResource,
+	);
+
+export default router;

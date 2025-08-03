@@ -1,32 +1,29 @@
-const validator = require('express-validator');
-const { validationMiddleware } = require('../../middlewares/validationMiddleware');
-const Course = require('../../models/Course');
-const CustomError = require('../CustomError');
-const Enrollment = require('../../models/Enrollment');
+import { check } from 'express-validator';
+import CustomError from '../CustomError.js';
+import Course from '../../models/Course.js';
+import Enrollment from '../../models/Enrollment.js';
+import { validationMiddleware } from '../../middlewares/validationMiddleware.js';
 
-const createCheckoutSessionValidator = [
-    validator.check("ids")
-        .notEmpty()
-        .withMessage("Courses are required")
-        .isArray()
-        .custom(async (ids, { req }) => {
-            const coursesPromises = ids.map(id => Course.findById(id));
-            const courses = await Promise.all(coursesPromises);
-            if (courses.includes(null))
-                throw new CustomError("You can not pay course that not found", 400);
+export const createCheckoutSessionValidator = [
+	check('ids')
+		.notEmpty()
+		.withMessage((value, { req }) => req.__('validation.courses_required'))
+		.isArray()
+		.custom(async (ids, { req }) => {
+			const coursesPromises = ids.map((id) => Course.findById(id));
+			const courses = await Promise.all(coursesPromises);
+			if (courses.includes(null))
+				throw new CustomError(req.__('validation.cannot_pay_for_nonexistent_course'), 400);
 
-            const enrollmentsPromises = courses.map(course => Enrollment.findOne({ course, user: req.user.id }));
-            const enrollments = await Promise.all(enrollmentsPromises);
+			const enrollmentsPromises = courses.map((course) =>
+				Enrollment.findOne({ course, user: req.user.id }),
+			);
+			const enrollments = await Promise.all(enrollmentsPromises);
 
-            if (enrollments.findIndex(enrolment => enrolment !== null) !== -1)
-                throw new CustomError("You can not enroll course more that one time.", 400);
+			if (enrollments.findIndex((enrolment) => enrolment !== null) !== -1)
+				throw new CustomError(req.__('validation.cannot_enroll_multiple_times'), 400);
 
-            return true;
-        })
-    ,
-    validationMiddleware
+			return true;
+		}),
+	validationMiddleware,
 ];
-
-module.exports = {
-    createCheckoutSessionValidator
-}

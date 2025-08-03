@@ -1,8 +1,10 @@
-const express = require('express');
-const CustomError = require('../utils/CustomError');
+import express from 'express';
+import CustomError from '../utils/CustomError.js';
 
-let router = express.Router();
+const router = express.Router();
 
-router.all("*", (req, res, next) => next(new CustomError(`Can't find ${req.originalUrl} on this server`, 404)));
+router.all('*', (req, res, next) =>
+	next(new CustomError(`Can't find ${req.originalUrl} on this server`, 404)),
+);
 
-module.exports = router;
+export default router;

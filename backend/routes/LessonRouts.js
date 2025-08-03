@@ -1,73 +1,73 @@
-const express = require('express');
+import express from 'express';
 
-const { protect, allowedTo } = require("../middlewares/authMiddleware");
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-const {
-    checkCourseBelongToTeacher,
-    checkCourseBelongToTeacherInCreate,
-    addCourseIdToReqBody,
-    addCourseIdToReqQuery
-} = require("../middlewares/lessonMiddleware");
+import {
+	checkCourseBelongToTeacher,
+	checkCourseBelongToTeacherInCreate,
+	addCourseIdToReqBody,
+	addCourseIdToReqQuery,
+} from '../middlewares/lessonMiddleware.js';
 
-const {
-    createLessonValidator,
-    getLessonValidator,
-    updateLessonValidator,
-    deleteLessonValidator
-} = require("../utils/validators/lessonValidator");
+import {
+	createLessonValidator,
+	getLessonValidator,
+	updateLessonValidator,
+	deleteLessonValidator,
+} from '../utils/validators/lessonValidator.js';
 
-const {
-    getAllLessons,
-    createLesson,
-    getLesson,
-    updateLesson,
-    deleteLesson,
-    uploadLessonVideo,
-    handleVideo
-} = require('../controllers/LessonController');
-const resourceRouts = require('./ResourceRouts');
-const commentsRouts = require('./CommentRoutes');
+import {
+	getAllLessons,
+	createLesson,
+	getLesson,
+	updateLesson,
+	deleteLesson,
+	uploadLessonVideo,
+	handleVideo,
+} from '../controllers/LessonController.js';
 
-let router = express.Router({ mergeParams: true });
+import resourceRouts from './ResourceRouts.js';
+import commentsRouts from './CommentRoutes.js';
 
-router.use("/:lessonId/resources", resourceRouts);
-router.use("/:lessonId/comments", commentsRouts);
+const router = express.Router({ mergeParams: true });
 
-router.route('/')
-    .get(
-        addCourseIdToReqQuery,
-        getAllLessons
-    )
-    .post(
-        protect,
-        allowedTo("teacher"),
-        uploadLessonVideo,
-        handleVideo,
-        addCourseIdToReqBody,
-        createLessonValidator,
-        checkCourseBelongToTeacherInCreate,
-        createLesson
-    );
+router.use('/:lessonId/resources', resourceRouts);
+router.use('/:lessonId/comments', commentsRouts);
 
-router.route('/:id')
-    .get(getLessonValidator, getLesson)
-    .patch(
-        protect,
-        allowedTo("teacher"),
-        checkCourseBelongToTeacher,
-        uploadLessonVideo,
-        handleVideo,
-        addCourseIdToReqBody,
-        updateLessonValidator,
-        updateLesson
-    )
-    .delete(
-        protect,
-        allowedTo("teacher"),
-        addCourseIdToReqBody,
-        checkCourseBelongToTeacher,
-        deleteLessonValidator,
-        deleteLesson
-    );
+router
+	.route('/')
+	.get(addCourseIdToReqQuery, getAllLessons)
+	.post(
+		protect,
+		allowedTo('teacher'),
+		uploadLessonVideo,
+		handleVideo,
+		addCourseIdToReqBody,
+		createLessonValidator,
+		checkCourseBelongToTeacherInCreate,
+		createLesson,
+	);
 
-module.exports = router;
+router
+	.route('/:id')
+	.get(getLessonValidator, getLesson)
+	.patch(
+		protect,
+		allowedTo('teacher'),
+		checkCourseBelongToTeacher,
+		uploadLessonVideo,
+		handleVideo,
+		addCourseIdToReqBody,
+		updateLessonValidator,
+		updateLesson,
+	)
+	.delete(
+		protect,
+		allowedTo('teacher'),
+		addCourseIdToReqBody,
+		checkCourseBelongToTeacher,
+		deleteLessonValidator,
+		deleteLesson,
+	);
+
+export default router;

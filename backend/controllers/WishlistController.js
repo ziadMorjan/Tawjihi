@@ -1,49 +1,44 @@
-const User = require("../models/User");
-const { asyncErrorHandler } = require("../middlewares/errorMiddleware");
+import User from '../models/User.js';
+import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 
-const getUserWishlist = asyncErrorHandler(async (req, res) =>
-    res.status(200).json({
-        status: "success",
-        wishlist: req.user.wishlist
-    })
-);
+export const getUserWishlist = (req, res) =>
+	res.status(200).json({
+		status: 'success',
+		wishlist: req.user.wishlist,
+	});
 
-const addToWishlist = asyncErrorHandler(async function (req, res) {
-    let user = await User.findByIdAndUpdate(req.user.id,
-        {
-            $addToSet: { wishlist: req.params.courseId }
-        },
-        {
-            runValidators: true,
-            new: true
-        }
-    );
+export const addToWishlist = asyncErrorHandler(async (req, res) => {
+	const user = await User.findByIdAndUpdate(
+		req.user.id,
+		{
+			$addToSet: { wishlist: req.params.courseId },
+		},
+		{
+			runValidators: true,
+			new: true,
+		},
+	);
 
-    res.status(200).json({
-        status: "success",
-        wishlist: user.wishlist
-    })
+	res.status(200).json({
+		status: 'success',
+		wishlist: user.wishlist,
+	});
 });
 
-const removeFromWishlist = asyncErrorHandler(async function (req, res) {
-    let user = await User.findByIdAndUpdate(req.user.id,
-        {
-            $pull: { wishlist: req.params.courseId }
-        },
-        {
-            runValidators: true,
-            new: true
-        }
-    );
+export const removeFromWishlist = asyncErrorHandler(async (req, res) => {
+	const user = await User.findByIdAndUpdate(
+		req.user.id,
+		{
+			$pull: { wishlist: req.params.courseId },
+		},
+		{
+			runValidators: true,
+			new: true,
+		},
+	);
 
-    res.status(200).json({
-        status: "success",
-        wishlist: user.wishlist
-    })
+	res.status(200).json({
+		status: 'success',
+		wishlist: user.wishlist,
+	});
 });
-
-module.exports = {
-    getUserWishlist,
-    addToWishlist,
-    removeFromWishlist
-}

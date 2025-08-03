@@ -1,16 +1,12 @@
-const Course = require("../models/Course");
-const Lesson = require("../models/Lesson")
-const CustomError = require("../utils/CustomError");
-const { asyncErrorHandler } = require("./errorMiddleware");
+import Course from '../models/Course.js';
+import Lesson from '../models/Lesson.js';
+import CustomError from '../utils/CustomError.js';
+import { asyncErrorHandler } from './errorMiddleware.js';
 
-const checkResourceBelongToTeacher = asyncErrorHandler(async function (req, res, next) {
-    let lesson = await Lesson.findById(req.params.lessonId);
-    let course = await Course.findById(lesson.course);
-    if (req.user.id !== course.teacher.id)
-        throw new CustomError("This resource does not belong to you", 403);
-    next();
+export const checkResourceBelongToTeacher = asyncErrorHandler(async (req, res, next) => {
+	const lesson = await Lesson.findById(req.params.lessonId);
+	const course = await Course.findById(lesson.course);
+	if (req.user.id !== course.teacher.id)
+		throw new CustomError(req.__('resources.resource_does_not_belong_to_you'), 403);
+	next();
 });
-
-module.exports = {
-    checkResourceBelongToTeacher,
-}

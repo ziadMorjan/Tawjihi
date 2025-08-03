@@ -1,49 +1,33 @@
-const express = require('express');
+import express from 'express';
 
-const {
-    protect,
-    allowedTo
-} = require('../middlewares/authMiddleware');
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-let router = express.Router();
+import {
+	getSubjectValidator,
+	createSubjectValidator,
+	updateSubjectValidator,
+	deleteSubjectValidator,
+} from '../utils/validators/subjectValidator.js';
 
-const {
-    getSubjectValidator,
-    createSubjectValidator,
-    updateSubjectValidator,
-    deleteSubjectValidator
-} = require("../utils/validators/subjectValidator");
+import {
+	getAllSubjects,
+	createSubject,
+	getSubject,
+	updateSubject,
+	deleteSubject,
+} from '../controllers/SubjectController.js';
 
-const {
-    getAllSubjects,
-    createSubject,
-    getSubject,
-    updateSubject,
-    deleteSubject,
-} = require("../controllers/SubjectController");
+const router = express.Router();
 
-router.route("/")
-    .get(getAllSubjects)
-    .post(
-        protect,
-        allowedTo("admin"),
-        createSubjectValidator,
-        createSubject,
-    );
+router
+	.route('/')
+	.get(getAllSubjects)
+	.post(protect, allowedTo('admin'), createSubjectValidator, createSubject);
 
-router.route("/:id")
-    .get(getSubjectValidator, getSubject)
-    .patch(
-        protect,
-        allowedTo("admin"),
-        updateSubjectValidator,
-        updateSubject
-    )
-    .delete(
-        protect,
-        allowedTo("admin"),
-        deleteSubjectValidator,
-        deleteSubject
-    );
+router
+	.route('/:id')
+	.get(getSubjectValidator, getSubject)
+	.patch(protect, allowedTo('admin'), updateSubjectValidator, updateSubject)
+	.delete(protect, allowedTo('admin'), deleteSubjectValidator, deleteSubject);
 
-module.exports = router;
+export default router;

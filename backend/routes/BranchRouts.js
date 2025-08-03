@@ -1,49 +1,33 @@
-const express = require("express");
+import express from 'express';
 
-const {
-    protect,
-    allowedTo
-} = require('../middlewares/authMiddleware');
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-const {
-    createBranchValidator,
-    updateBranchValidator,
-    getBranchValidator,
-    deleteBranchValidator
-} = require("../utils/validators/branchValidator");
+import {
+	createBranchValidator,
+	updateBranchValidator,
+	getBranchValidator,
+	deleteBranchValidator,
+} from '../utils/validators/branchValidator.js';
 
-const {
-    getAllBranches,
-    createBranch,
-    getBranch,
-    updateBranch,
-    deleteBranch,
-} = require("../controllers/BranchController");
+import {
+	getAllBranches,
+	createBranch,
+	getBranch,
+	updateBranch,
+	deleteBranch,
+} from '../controllers/BranchController.js';
 
-let router = express.Router();
+const router = express.Router();
 
-router.route("/")
-    .get(getAllBranches)
-    .post(
-        protect,
-        allowedTo("admin"),
-        createBranchValidator,
-        createBranch,
-    );
+router
+	.route('/')
+	.get(getAllBranches)
+	.post(protect, allowedTo('admin'), createBranchValidator, createBranch);
 
-router.route("/:id")
-    .get(getBranchValidator, getBranch)
-    .patch(
-        protect,
-        allowedTo("admin"),
-        updateBranchValidator,
-        updateBranch,
-    )
-    .delete(
-        protect,
-        allowedTo("admin"),
-        deleteBranchValidator,
-        deleteBranch
-    );
+router
+	.route('/:id')
+	.get(getBranchValidator, getBranch)
+	.patch(protect, allowedTo('admin'), updateBranchValidator, updateBranch)
+	.delete(protect, allowedTo('admin'), deleteBranchValidator, deleteBranch);
 
-module.exports = router;
+export default router;

@@ -1,20 +1,24 @@
-const express = require("express");
-const { protect, allowedTo } = require("../middlewares/authMiddleware");
-const { wishlistValidator } = require("../utils/validators/wishlistValidator");
-const {
-    getUserWishlist,
-    addToWishlist,
-    removeFromWishlist
-} = require("../controllers/WishlistController");
+import express from 'express';
 
-let router = express.Router();
+import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-router.use(protect, allowedTo("user"));
+import { wishlistValidator } from '../utils/validators/wishlistValidator.js';
 
-router.get("/", getUserWishlist);
+import {
+	getUserWishlist,
+	addToWishlist,
+	removeFromWishlist,
+} from '../controllers/WishlistController.js';
 
-router.route("/:courseId")
-    .post(wishlistValidator, addToWishlist)
-    .delete(wishlistValidator, removeFromWishlist);
+const router = express.Router();
 
-module.exports = router;
+router.use(protect, allowedTo('user'));
+
+router.get('/', getUserWishlist);
+
+router
+	.route('/:courseId')
+	.post(wishlistValidator, addToWishlist)
+	.delete(wishlistValidator, removeFromWishlist);
+
+export default router;
