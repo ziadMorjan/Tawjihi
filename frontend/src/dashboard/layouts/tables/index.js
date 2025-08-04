@@ -32,7 +32,7 @@ import authorsTableData from "./data/authorsTableData";
 import projectsTableData from "./data/projectsTableData";
 import MDBadge from "../../components/MDBadge";
 
-function Tables() {
+function Tables({tableTitle}) {
   const { columns } = authorsTableData();
 
   const Job = ({ title, description }) => (
@@ -103,7 +103,7 @@ function Tables() {
               coloredShadow="info"
             >
               <MDTypography variant="h6" color="white">
-                Authors Table
+                {tableTitle}
               </MDTypography>
             </MDBox>
             <MDBox pt={3}>

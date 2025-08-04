@@ -42,7 +42,7 @@ import rtlPlugin from "stylis-plugin-rtl";
 
 
 // Material Dashboard 2 React routes
-import routes from "./routes";
+import {adminRoutes, teacherRoutes} from "./routes"
 
 // Material Dashboard 2 React contexts
 import { setMiniSidenav, setOpenConfigurator, useMaterialUIController } from "./context";
@@ -59,7 +59,7 @@ import rtlCache from "./utils/rtlCache"; // <-- هذا يجب أن يكون مو
 
 
 
-export default function DashboardApp( {children}) {
+export default function DashboardApp( {children, role}) {
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -130,7 +130,7 @@ export default function DashboardApp( {children}) {
               color={sidenavColor}
               brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
               brandName="Tawjihi Dashboard"
-              routes={routes}
+              routes={role === "admin" ? adminRoutes : teacherRoutes}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
             />            

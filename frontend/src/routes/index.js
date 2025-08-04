@@ -22,6 +22,7 @@ import Dashboard from "../dashboard/layouts/dashboard/index.js";
 import Tables from "../dashboard/layouts/tables/index.js";
 import Billing from "../dashboard/layouts/billing/index.js";
 import ProtectedDashboardRoute from "../components/ProtectedRoute/ProtectedDashboardRoute.jsx";
+import RoleProtectedRoute from "../components/ProtectedRoute/RoleProtectedRoute.jsx";
 
 // Lazy loaded pages
 const Main = lazy(() => import("../pages/Main"));
@@ -103,15 +104,71 @@ export const routers = [
         ],
       },
 
+
       {
         path: "dashboard",
         element: <ProtectedDashboardRoute />,
         children: [
-          {index: true, element: <Dashboard />},
-          {path: "tables", element: <Tables /> },
-          {path: "billing",element: <Billing />},
+
+
+          {
+            index: true,
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <Dashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "tables",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <Tables tableTitle={"جدول الطلاب"} />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "billing",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <Billing />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "courses", element:
+              <RoleProtectedRoute allowedRoles={["teacher"]}>
+                <Billing />
+              </RoleProtectedRoute>
+          },
+
         ]
       },
+
+      // {
+      //   path: "dashboard",
+      //   element: <ProtectedDashboardRoute />,
+      //   children: [
+      //     {
+      //       path: "admin",
+      //       element: <RoleProtectedRoute allowedRoles={["admin"]} />,
+      //       children: [
+
+      //         { index: true, element: <Dashboard /> },
+      //         { path: "tables", element: <Tables tableTitle={"جدول الطلاب"} /> },
+      //         { path: "billing", element: <Billing /> },
+      //         { path: "courses", element: <Billing /> },
+
+      //       ],
+      //     },
+
+      //     {
+      //       path: "teacher",
+      //       element: <RoleProtectedRoute allowedRoles={["teacher"]} />,
+      //       children: [
+      //         { path: "courses", element: <Billing /> },
+      //       ],
+      //     },
+
+      //   ]
+      // },
 
       { path: "*", element: <NotFound /> },
     ],

@@ -19,7 +19,7 @@ const ProtectedDashboardRoute = () => {
     }
 
     return (
-        <DashboardApp>
+        <DashboardApp role={role}>
             <Outlet />
         </DashboardApp>
     );
