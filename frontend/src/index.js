@@ -26,6 +26,10 @@ import { CommentsProvider } from './context/CommentContext';
 import { routers } from './routes';
 import { MaterialUIControllerProvider } from './dashboard/context';
 
+import { Provider } from 'react-redux';
+import store from './dashboard/redux/store';
+
+
 const router = createBrowserRouter(routers);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -58,9 +62,11 @@ root.render(
                             />
                             <CommentsProvider>
                               <MaterialUIControllerProvider>
+                                <Provider store={store}>
 
-                              <RouterProvider router={router} />
-                              
+                                <RouterProvider router={router} />
+
+                                </Provider>
                               </MaterialUIControllerProvider>
                             </CommentsProvider>
                           </AppProvider>

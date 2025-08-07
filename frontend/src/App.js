@@ -5,6 +5,7 @@ import DashboardApp from "./dashboard/App";
 import { MaterialUIControllerProvider } from "./dashboard/context";
 
 function App() {
+  
   return (
     <Suspense fallback={<Loading />}>
       <Outlet />

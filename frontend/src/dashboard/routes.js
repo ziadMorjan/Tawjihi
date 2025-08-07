@@ -48,7 +48,7 @@ import SignUp from "./layouts/authentication/sign-up";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
-const routes = [
+export const adminRoutes = [
   {
     type: "collapse",
     name: "Dashboard",
@@ -59,60 +59,63 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Tables",
-    key: "tables",
+    name: "الطلاب",
+    key: "dashboard/students",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/dashboard/tables",
-    component: <Tables />,
+    route: "/dashboard/students",
   },
   {
     type: "collapse",
-    name: "Billing",
-    key: "billing",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/dashboard/billing",
+    name: "المعلمين",
+    key: "dashboard/teachers",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/teachers",
+  },
+  {
+    type: "collapse",
+    name: "طلبات المعلمين",
+    key: "dashboard/teachers-requests",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/teachers-requests",
+  },
+  {
+    type: "collapse",
+    name: "الأفرع",
+    key: "dashboard/branches",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/branches",
+  },
+  {
+    type: "collapse",
+    name: "المواضيع",
+    key: "dashboard/subjects",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/subjects",
+  },
+  {
+    type: "collapse",
+    name: "الدورات",
+    key: "dashboard/courses",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/courses",
+  },
+  {
+    type: "collapse",
+    name: "المدفوعات",
+    key: "dashboard/payments",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/payments",
+  },
+
+];
+export const teacherRoutes = [
+  {
+    type: "collapse",
+    name: "My Courses",
+    key: "my_courses",
+    icon: <Icon fontSize="small">menu_book</Icon>,
+    route: "/dashboard/courses",
     component: <Billing />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "RTL",
-  //   key: "rtl",
-  //   icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-  //   route: "/rtl",
-  //   component: <RTL />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Notifications",
-  //   key: "notifications",
-  //   icon: <Icon fontSize="small">notifications</Icon>,
-  //   route: "/notifications",
-  //   component: <Notifications />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Profile",
-  //   key: "profile",
-  //   icon: <Icon fontSize="small">person</Icon>,
-  //   route: "/profile",
-  //   component: <Profile />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Sign In",
-  //   key: "sign-in",
-  //   icon: <Icon fontSize="small">login</Icon>,
-  //   route: "/authentication/sign-in",
-  //   component: <SignIn />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Sign Up",
-  //   key: "sign-up",
-  //   icon: <Icon fontSize="small">assignment</Icon>,
-  //   route: "/authentication/sign-up",
-  //   component: <SignUp />,
-  // },
-];
+]
 
-export default routes;
