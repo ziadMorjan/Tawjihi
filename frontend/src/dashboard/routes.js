@@ -59,20 +59,54 @@ export const adminRoutes = [
   },
   {
     type: "collapse",
-    name: "Tables",
-    key: "dashboard/tables",
+    name: "الطلاب",
+    key: "dashboard/students",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/dashboard/tables",
+    route: "/dashboard/students",
   },
   {
     type: "collapse",
-    name: "Billing",
-    key: "dashboard/billing",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/dashboard/billing",
-    component: <Billing />,
+    name: "المعلمين",
+    key: "dashboard/teachers",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/teachers",
   },
- 
+  {
+    type: "collapse",
+    name: "طلبات المعلمين",
+    key: "dashboard/teachers-requests",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/teachers-requests",
+  },
+  {
+    type: "collapse",
+    name: "الأفرع",
+    key: "dashboard/branches",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/branches",
+  },
+  {
+    type: "collapse",
+    name: "المواضيع",
+    key: "dashboard/subjects",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/subjects",
+  },
+  {
+    type: "collapse",
+    name: "الدورات",
+    key: "dashboard/courses",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/courses",
+  },
+  {
+    type: "collapse",
+    name: "المدفوعات",
+    key: "dashboard/payments",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dashboard/payments",
+  },
+
 ];
 export const teacherRoutes = [
   {

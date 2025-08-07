@@ -8,7 +8,7 @@
 
 Coded by www.creative-tim.com
 
- =========================================================
+=========================================================
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
@@ -27,64 +27,9 @@ import DashboardNavbar from "../../examples/Navbars/DashboardNavbar";
 import Footer from "../../examples/Footer";
 import DataTable from "../../examples/Tables/DataTable";
 
-// Data
-import authorsTableData from "./data/authorsTableData";
-import projectsTableData from "./data/projectsTableData";
-import MDBadge from "../../components/MDBadge";
 
-function Tables({tableTitle}) {
-  const { columns } = authorsTableData();
+function Tables({ tableTitle, rows, columns, children }) {
 
-  const Job = ({ title, description }) => (
-      <MDBox lineHeight={1} textAlign="left">
-        <MDTypography display="block" variant="caption" color="text" fontWeight="medium">
-          {title}
-        </MDTypography>
-        <MDTypography variant="caption">{description}</MDTypography>
-      </MDBox>
-    );
-
-  const rows = [
-    {
-      author: "محمد صباح",
-      function: <Job title="Manager" description="Organization" />,
-      status: (
-        <MDBox ml={-1}>
-          <MDBadge badgeContent="online" color="success" variant="gradient" size="sm" />
-        </MDBox>
-      ),
-      employed: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          23/04/18
-        </MDTypography>
-      ),
-      action: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
-        </MDTypography>
-      ),
-    },
-     {
-        author: "علي أحمد",
-        function: <Job title="Programator" description="Developer" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            11/01/19
-          </MDTypography>
-        ),
-        action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            Edit
-          </MDTypography>
-        ),
-      },
-    
-  ]
 
   return (
     <DashboardLayout>
@@ -102,8 +47,9 @@ function Tables({tableTitle}) {
               borderRadius="lg"
               coloredShadow="info"
             >
-              <MDTypography variant="h6" color="white">
+              <MDTypography variant="h6" color="white" display="flex" justifyContent="space-between" alignItems="center">
                 {tableTitle}
+                {children}
               </MDTypography>
             </MDBox>
             <MDBox pt={3}>
