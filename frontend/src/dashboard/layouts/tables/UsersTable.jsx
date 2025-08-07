@@ -16,9 +16,12 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
     // State for modal
     const [openModal, setOpenModal] = useState(false);
     const handleOpenModal = () => setOpenModal(true);
-    const handleCloseModal = () => setOpenModal(false);
+    const handleCloseModal = () => {
+        setOpenModal(false)
+        setNameField('');
+        setEmailField('');};
 
-
+    // State for edit modal
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [nameFealed, setNameField] = useState('');
@@ -34,6 +37,8 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
 
     const handleCloseEditModal = () => {
         setSelectedUser(null);
+         setNameField('');
+        setEmailField('');
         setEditModalOpen(false);
     };
 
@@ -97,15 +102,15 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
                 <DialogTitle>إضافة مستخدم جديد</DialogTitle>
                 <DialogContent>
                     {/* Replace this with your actual form */}
-                    <TextField fullWidth label="الاسم" margin="normal" />
-                    <TextField fullWidth label="البريد الإلكتروني" margin="normal" />
-                    <TextField fullWidth label="الدور" margin="normal" />
+                    <TextField fullWidth label="الاسم" margin="normal" value={nameFealed} onChange={(e) => setNameField(e.target.value)} />
+                    <TextField fullWidth label="البريد الإلكتروني" margin="normal" value={emailFealed} onChange={(e) => setEmailField(e.target.value)}/>
+                    <TextField fullWidth label="الدور" margin="normal" disabled value={usersType}/>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseModal}>إلغاء</Button>
                     <Button variant="contained" color="primary" onClick={() => {
                         // Add user logic here
-                        console.log("Adding user...");
+                        console.log("Adding user...", nameFealed, emailFealed, usersType);
                         handleCloseModal();
                     }}>
                         <Typography fontSize='small' fontWeight="medium" color="white">إضافة</Typography>

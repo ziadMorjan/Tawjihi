@@ -93,7 +93,7 @@ export const updateUserFromApi = (id, data) => async (dispatch) => {
             { withCredentials: true });
 
         if (response) {
-            dispatch(updateUser(id));
+            dispatch(updateUser(id, data));
             console.log("User updated successfully");
         } else {
             console.log("Failed to update user");
@@ -104,6 +104,27 @@ export const updateUserFromApi = (id, data) => async (dispatch) => {
 
     } finally {
         dispatch(setUpdateLoading(false));
+    }
+};
+
+export const addUserFromApi = (data) => async (dispatch) => {
+    
+    try {
+        const response = await axios.post(`${API_URL}/users`, data,
+            { withCredentials: true });
+
+        if (response) {
+            dispatch(addUser(data));
+            console.log("User added successfully");
+        } else {
+            console.log("Failed to add user");
+        }
+
+    } catch (error) {
+        console.error("Error adding user:", error);
+
+    } finally {
+       
     }
 };
 
