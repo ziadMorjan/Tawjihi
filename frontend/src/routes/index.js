@@ -22,8 +22,6 @@ import Dashboard from "../dashboard/layouts/dashboard/index.js";
 import Tables from "../dashboard/layouts/tables/index.js";
 import Billing from "../dashboard/layouts/billing/index.js";
 import ProtectedDashboardRoute from "../components/ProtectedRoute/ProtectedDashboardRoute.jsx";
-import RoleProtectedRoute from "../components/ProtectedRoute/RoleProtectedRoute.jsx";
-import UsersTable from "../dashboard/layouts/tables/UsersTable.jsx";
 
 // Lazy loaded pages
 const Main = lazy(() => import("../pages/Main"));
@@ -105,111 +103,15 @@ export const routers = [
         ],
       },
 
-
       {
         path: "dashboard",
         element: <ProtectedDashboardRoute />,
         children: [
-
-        // ------------------------- Admin routes -------------------------
-
-          {
-            index: true,
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <Dashboard />
-              </RoleProtectedRoute>
-          },
-          {
-            path: "students",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <UsersTable usersType={"user"} tableTitle={"جدول الطلاب"}/>
-              </RoleProtectedRoute>
-          },
-          {
-            path: "teachers",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <UsersTable usersType={"teacher"} tableTitle={"جدول المعلمين"}/>
-              </RoleProtectedRoute>
-          },
-          // {
-          //   path: "teachers-requests",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول طلبات انضمام كمعلم"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "branches",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول الأفرع"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "subjects",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول المواضيع"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "courses",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول الدورات"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "payments",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول المدفوعات"} />
-          //     </RoleProtectedRoute>
-          // },
-          
-
-        // ------------------------- Teacher routes -------------------------
-
-          {
-            path: "courses", element:
-              <RoleProtectedRoute allowedRoles={["teacher"]}>
-                <Billing />
-              </RoleProtectedRoute>
-          },
-
+          {index: true, element: <Dashboard />},
+          {path: "tables", element: <Tables /> },
+          {path: "billing",element: <Billing />},
         ]
       },
-
-      // {
-      //   path: "dashboard",
-      //   element: <ProtectedDashboardRoute />,
-      //   children: [
-      //     {
-      //       path: "admin",
-      //       element: <RoleProtectedRoute allowedRoles={["admin"]} />,
-      //       children: [
-
-      //         { index: true, element: <Dashboard /> },
-      //         { path: "tables", element: <Tables tableTitle={"جدول الطلاب"} /> },
-      //         { path: "billing", element: <Billing /> },
-      //         { path: "courses", element: <Billing /> },
-
-      //       ],
-      //     },
-
-      //     {
-      //       path: "teacher",
-      //       element: <RoleProtectedRoute allowedRoles={["teacher"]} />,
-      //       children: [
-      //         { path: "courses", element: <Billing /> },
-      //       ],
-      //     },
-
-      //   ]
-      // },
 
       { path: "*", element: <NotFound /> },
     ],
