@@ -51,7 +51,7 @@ import Icon from "@mui/material/Icon";
 export const adminRoutes = [
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "لوحة التحكم",
     key: "dashboard",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",

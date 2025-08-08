@@ -61,6 +61,7 @@ export const PATH = {
   EditProfile: "edit-profile",
   NotAuth: "not-auth",
   ChangePassword: "change-password",
+  AdminDashboard: "dashboard",
 };
 
 export const routers = [

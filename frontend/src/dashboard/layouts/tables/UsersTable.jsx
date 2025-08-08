@@ -3,10 +3,11 @@ import MDBox from '../../components/MDBox';
 import MDBadge from '../../components/MDBadge';
 import MDTypography from '../../components/MDTypography';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteUserFromApi, getUsersFromApi, updateUserFromApi } from '../../redux/usersSlice';
+import { addUserFromApi, deleteUserFromApi, getUsersFromApi, updateUserFromApi } from '../../redux/usersSlice';
 import Tables from '.';
 import { Icon, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from '@mui/material';
 import MDButton from '../../components/MDButton';
+import { SkeletonLine, SkeletonLineShort } from '../../../components/Loading/style';
 
 function UsersTable({ usersType, tableTitle = "جدول المستخدمين" }) {
 
@@ -16,13 +17,24 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
     // State for modal
     const [openModal, setOpenModal] = useState(false);
     const handleOpenModal = () => setOpenModal(true);
-    const handleCloseModal = () => setOpenModal(false);
+    const handleCloseModal = () => {
+        setNameField('');
+        setEmailField('');
+        setPhoneField('');
+        setPasswordFealed('');
+        setConfermPasswordFealed('');
+        setOpenModal(false)
+    };
 
 
+    // State for edit modal
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [nameFealed, setNameField] = useState('');
     const [emailFealed, setEmailField] = useState('');
+    const [passwordFealed, setPasswordFealed] = useState('');
+    const [confermPasswordFealed, setConfermPasswordFealed] = useState('');
+    const [phoneFealed, setPhoneField] = useState('');
 
 
     const handleEditUser = (user) => {
@@ -34,6 +46,8 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
 
     const handleCloseEditModal = () => {
         setSelectedUser(null);
+        setNameField('');
+        setEmailField('');
         setEditModalOpen(false);
     };
 
@@ -84,6 +98,21 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
         }));
     }, [users, usersType]);
 
+
+    // const loadingRows = useMemo(() => {
+    //     return (
+    //         Array.from({ length: 5 }, () => ({
+    //             name: <SkeletonLine width="100%" />,
+    //             role: <SkeletonLineShort width="100%" />,
+    //             email: <SkeletonLineShort width="100%" />,
+    //             isActive: <SkeletonLineShort width="100%" />,
+    //             updatedAt: <SkeletonLineShort width="100%" />,
+    //             action: <SkeletonLineShort width="100%" />
+    //         }))
+    //     )
+    // },[isLoading]);
+
+
     return (
         <>
             <Tables tableTitle={tableTitle} rows={rows} columns={columns}>
@@ -97,16 +126,29 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
                 <DialogTitle>إضافة مستخدم جديد</DialogTitle>
                 <DialogContent>
                     {/* Replace this with your actual form */}
-                    <TextField fullWidth label="الاسم" margin="normal" />
-                    <TextField fullWidth label="البريد الإلكتروني" margin="normal" />
-                    <TextField fullWidth label="الدور" margin="normal" />
+                    <TextField fullWidth label="الاسم" margin="normal" value={nameFealed} onChange={(e) => setNameField(e.target.value)} />
+                    <TextField fullWidth label="البريد الإلكتروني" margin="normal" value={emailFealed} onChange={(e) => setEmailField(e.target.value)} />
+                    <TextField fullWidth label="رقم الهاتف" margin="normal" value={phoneFealed} onChange={(e) => setPhoneField(e.target.value)} />
+                    <TextField fullWidth label="كلمة المرور" margin="normal" value={passwordFealed} onChange={(e) => setPasswordFealed(e.target.value)} />
+                    <TextField fullWidth label="تأكيد كلمة المرور" margin="normal" value={confermPasswordFealed} onChange={(e) => setConfermPasswordFealed(e.target.value)} />
+                    <TextField fullWidth label="الدور" margin="normal" disabled value={usersType} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseModal}>إلغاء</Button>
                     <Button variant="contained" color="primary" onClick={() => {
                         // Add user logic here
-                        console.log("Adding user...");
+                        dispatch(addUserFromApi({
+                            name: nameFealed,
+                            email: emailFealed,
+                            role: usersType,
+                            phone: phoneFealed,
+                            password: passwordFealed,
+                            confirmPassword: confermPasswordFealed,
+                            isActive: true,
+                            updatedAt: new Date().toISOString(),
+                        }))
                         handleCloseModal();
+                        
                     }}>
                         <Typography fontSize='small' fontWeight="medium" color="white">إضافة</Typography>
                     </Button>
@@ -143,22 +185,13 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
                 <DialogActions>
                     <Button onClick={handleCloseEditModal}>إلغاء</Button>
                     <Button variant="contained" color="primary" onClick={() => {
-                        
-                        dispatch(updateUserFromApi(selectedUser._id, { 
-                            id: selectedUser._id,
+
+                        dispatch(updateUserFromApi({
+                            _id: selectedUser._id,
                             name: nameFealed,
                             email: emailFealed,
-                            role: selectedUser.role,
-                            cart: [],
-                            wishlist: [],
-                            phone: "0567822283",
-                            coverImage: "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/98.jpg",
-                            isActive: selectedUser.isActive,
-                            description: " user for the application",
-                            createdAt: "2025-07-15T05:36:41.619Z",
-                            updatedAt: new Date().toISOString()
                         }));
-                        
+
                         handleCloseEditModal();
                     }}>
                         <Typography fontSize='small' fontWeight="medium" color="white">تحديث</Typography>
