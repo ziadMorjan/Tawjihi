@@ -92,7 +92,11 @@ export const LoginForm = () => {
         });
 
         reset();
-        navigate(PATH.Main);
+        if (storedUser.role === "admin") {
+          navigate(`/${PATH.AdminDashboard}`);
+        } else {
+          navigate(`${PATH.Main}`);
+        }
       } else {
         throw new Error("لم يتم العثور على بيانات المستخدم.");
       }

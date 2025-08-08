@@ -27,6 +27,7 @@ function UsersTable({ usersType, tableTitle = "جدول المستخدمين" })
     };
 
 
+    // State for edit modal
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [nameFealed, setNameField] = useState('');
