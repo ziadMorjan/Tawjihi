@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import axios from 'axios';
 import { API_URL } from '../../config';
+import { toast } from 'react-toastify';
 
 //         _id: "",
 //         name: "",
@@ -14,7 +15,7 @@ export const UsersSlice = createSlice({
     name: "users",
     initialState: {
         users: [],
-        loading: false,
+        isLoading: false,
         deleteLoading: false,
         updateLoading: false,
 
@@ -26,17 +27,19 @@ export const UsersSlice = createSlice({
         addUser: (state, action) => {
             state.users.push(action.payload);
         },
+
         updateUser: (state, action) => {
             const index = state.users.findIndex(user => user._id === action.payload._id);
             if (index !== -1) {
-                state.users[index] = action.payload;
+                state.users[index] = { ...state.users[index], ...action.payload };
             }
         },
+
         deleteUser: (state, action) => {
             state.users = state.users.filter(user => user._id !== action.payload);
         },
         setLoading: (state, action) => {
-            state.loading = action.payload;
+            state.isLoading = action.payload;
         },
         setDeleteLoading: (state, action) => {
             state.deleteLoading = action.payload;
@@ -72,36 +75,54 @@ export const deleteUserFromApi = (id) => async (dispatch) => {
 
         if (response) {
             dispatch(deleteUser(id));
-            console.log("User deleted successfully");
-        } else {
-            console.log("Failed to delete user");
-        }
+            toast.success("تم حذف المستخدم بنجاح");
+        } 
 
     } catch (error) {
-        console.error("Error fetching users:", error);
-
+        toast.success("حدث خطأ أثناء حذف المستخدم");
     } finally {
         dispatch(setDeleteLoading(false));
     }
 };
 
 
-export const updateUserFromApi = (id, data) => async (dispatch) => {
+export const updateUserFromApi = (data) => async (dispatch) => {
     dispatch(setUpdateLoading(true));
     try {
-        const response = await axios.patch(`${API_URL}/users/${id}`, data,
+        const patchData = {
+            name: data.name,
+            email: data.email,  // Add other fields as necessary
+        };
+        const response = await axios.patch(`${API_URL}/users/${data._id}`, { patchData },
             { withCredentials: true });
 
         if (response) {
-            dispatch(updateUser(id));
-            console.log("User updated successfully");
-        } else {
-            console.log("Failed to update user");
+            dispatch(updateUser(data));
+            toast.success("تم تحديث المستخدم بنجاح");
         }
 
     } catch (error) {
-        console.error("Error updating user:", error);
+        toast.success("حدث خطأ أثناء تحديث المستخدم");
+    } finally {
+        dispatch(setUpdateLoading(false));
+    }
+};
 
+
+export const addUserFromApi = (data) => async (dispatch) => {
+    dispatch(setUpdateLoading(true));
+    try {
+        const response = await axios.post(`${API_URL}/users`, data,
+            { withCredentials: true });
+
+        if (response) {
+            dispatch(addUser(data));
+            toast.success("تمت اضافة المستخدم بنجاح");
+        }
+
+    } catch (error) {
+        console.error("Error adding user:", error);
+        toast.error("حدث خطأ أثناء إضافة المستخدم");
     } finally {
         dispatch(setUpdateLoading(false));
     }
