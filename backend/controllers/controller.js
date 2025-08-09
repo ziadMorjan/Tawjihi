@@ -3,23 +3,29 @@ import QueryManipulator from '../utils/QueryManipulator.js';
 import CustomError from '../utils/CustomError.js';
 import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 
-export const getAll = (model) =>
+// getAll: generic fetch that supports filter/sort/select/search/paginate
+export const getAll = (Model) =>
 	asyncErrorHandler(async (req, res) => {
-		const qm = new QueryManipulator(req, model)
-			.filter()
-			.selectFields()
-			.search()
-			.sort()
-			.paginate();
+		// Build query (without pagination) so we can count totalDocs for given filters
+		const qm = new QueryManipulator(req, Model).filter().selectFields().search().sort();
 
+		// Count documents matching filters (before pagination)
+		const filterObj = qm.filterObj || {};
+		const totalDocs = await Model.countDocuments(filterObj);
+
+		// Apply pagination then execute the query
+		qm.paginate();
 		const docs = await qm.query;
+
+		const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+		const limit = req.query.limit ? parseInt(req.query.limit, 10) : docs ? docs.length : 0;
+		const totalPages = limit ? Math.ceil(totalDocs / limit) : 1;
 
 		res.status(200).json({
 			status: 'success',
 			count: docs.length,
-			data: {
-				docs,
-			},
+			pagination: { totalDocs, page, limit, totalPages },
+			data: { docs },
 		});
 	});
 
