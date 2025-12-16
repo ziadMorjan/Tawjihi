@@ -20,10 +20,14 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import App from "../App";
 import Dashboard from "../dashboard/layouts/dashboard/index.js";
 import Tables from "../dashboard/layouts/tables/index.js";
-import Billing from "../dashboard/layouts/billing/index.js";
 import ProtectedDashboardRoute from "../components/ProtectedRoute/ProtectedDashboardRoute.jsx";
 import RoleProtectedRoute from "../components/ProtectedRoute/RoleProtectedRoute.jsx";
 import UsersTable from "../dashboard/layouts/tables/UsersTable.jsx";
+import CoursesDashboard from "../dashboard/layouts/courses";
+import TeacherRequests from "../dashboard/layouts/teacherRequests";
+import BranchesDashboard from "../dashboard/layouts/branches";
+import SubjectsDashboard from "../dashboard/layouts/subjects";
+import PaymentsDashboard from "../dashboard/layouts/payments";
 
 // Lazy loaded pages
 const Main = lazy(() => import("../pages/Main"));
@@ -135,51 +139,44 @@ export const routers = [
                 <UsersTable usersType={"teacher"} tableTitle={"جدول المعلمين"}/>
               </RoleProtectedRoute>
           },
-          // {
-          //   path: "teachers-requests",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول طلبات انضمام كمعلم"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "branches",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول الأفرع"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "subjects",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول المواضيع"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "courses",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول الدورات"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "payments",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول المدفوعات"} />
-          //     </RoleProtectedRoute>
-          // },
+          {
+            path: "teachers-requests",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <TeacherRequests />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "branches",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <BranchesDashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "subjects",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <SubjectsDashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "courses",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin", "teacher"]}>
+                <CoursesDashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "payments",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <PaymentsDashboard />
+              </RoleProtectedRoute>
+          },
           
 
         // ------------------------- Teacher routes -------------------------
-
-          {
-            path: "courses", element:
-              <RoleProtectedRoute allowedRoles={["teacher"]}>
-                <Billing />
-              </RoleProtectedRoute>
-          },
 
         ]
       },

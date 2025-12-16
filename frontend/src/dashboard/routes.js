@@ -37,13 +37,11 @@ Coded by www.creative-tim.com
 
 // Material Dashboard 2 React layouts
 import Dashboard from "./layouts/dashboard";
-import Tables from "./layouts/tables";
-import Billing from "./layouts/billing";
-import RTL from "./layouts/rtl";
-import Notifications from "./layouts/notifications";
-import Profile from "./layouts/profile";
-import SignIn from "./layouts/authentication/sign-in";
-import SignUp from "./layouts/authentication/sign-up";
+import CoursesDashboard from "./layouts/courses";
+import TeacherRequests from "./layouts/teacherRequests";
+import BranchesDashboard from "./layouts/branches";
+import SubjectsDashboard from "./layouts/subjects";
+import PaymentsDashboard from "./layouts/payments";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -77,6 +75,7 @@ export const adminRoutes = [
     key: "dashboard/teachers-requests",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/dashboard/teachers-requests",
+    component: <TeacherRequests />,
   },
   {
     type: "collapse",
@@ -84,6 +83,7 @@ export const adminRoutes = [
     key: "dashboard/branches",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/dashboard/branches",
+    component: <BranchesDashboard />,
   },
   {
     type: "collapse",
@@ -91,6 +91,7 @@ export const adminRoutes = [
     key: "dashboard/subjects",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/dashboard/subjects",
+    component: <SubjectsDashboard />,
   },
   {
     type: "collapse",
@@ -98,6 +99,7 @@ export const adminRoutes = [
     key: "dashboard/courses",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/dashboard/courses",
+    component: <CoursesDashboard />,
   },
   {
     type: "collapse",
@@ -105,6 +107,7 @@ export const adminRoutes = [
     key: "dashboard/payments",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/dashboard/payments",
+    component: <PaymentsDashboard />,
   },
 
 ];
@@ -115,7 +118,6 @@ export const teacherRoutes = [
     key: "my_courses",
     icon: <Icon fontSize="small">menu_book</Icon>,
     route: "/dashboard/courses",
-    component: <Billing />,
+    component: <CoursesDashboard />,
   },
 ]
-
