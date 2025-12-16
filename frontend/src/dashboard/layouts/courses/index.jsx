@@ -128,8 +128,9 @@ const CoursesDashboard = () => {
         payload.append("priceAfterDiscount", Number(formState.priceAfterDiscount));
       }
       payload.append("subject", formState.subject);
-      formState.branches.forEach((branchId) => payload.append("branches", branchId));
-      payload.append("teacher", teacherId);
+      // send branches as a JSON string so backend can consistently parse it
+      payload.append("branches", JSON.stringify(formState.branches));
+      if (teacherId) payload.append("teacher", teacherId);
       if (formState.coverImage) payload.append("coverImage", formState.coverImage);
 
       const res = await axios.post(`${API_URL}/courses`, payload, {
@@ -145,7 +146,8 @@ const CoursesDashboard = () => {
         resetForm();
       }
     } catch (error) {
-      toast.error("Could not create course");
+      const msg = error?.response?.data?.message || "Could not create course";
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

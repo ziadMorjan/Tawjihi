@@ -42,6 +42,7 @@ import TeacherRequests from "./layouts/teacherRequests";
 import BranchesDashboard from "./layouts/branches";
 import SubjectsDashboard from "./layouts/subjects";
 import PaymentsDashboard from "./layouts/payments";
+import LessonsDashboard from "./layouts/lessons";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -119,5 +120,13 @@ export const teacherRoutes = [
     icon: <Icon fontSize="small">menu_book</Icon>,
     route: "/dashboard/courses",
     component: <CoursesDashboard />,
+  },
+  {
+    type: "collapse",
+    name: "Lessons",
+    key: "my_lessons",
+    icon: <Icon fontSize="small">movie</Icon>,
+    route: "/dashboard/lessons",
+    component: <LessonsDashboard />,
   },
 ]

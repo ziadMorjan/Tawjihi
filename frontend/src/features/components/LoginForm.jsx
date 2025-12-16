@@ -94,6 +94,8 @@ export const LoginForm = () => {
         reset();
         if (storedUser.role === "admin") {
           navigate(`/${PATH.AdminDashboard}`);
+        } else if (storedUser.role === "teacher") {
+          navigate(`/${PATH.AdminDashboard}/courses`);
         } else {
           navigate(`${PATH.Main}`);
         }

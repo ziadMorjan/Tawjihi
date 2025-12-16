@@ -28,6 +28,7 @@ import TeacherRequests from "../dashboard/layouts/teacherRequests";
 import BranchesDashboard from "../dashboard/layouts/branches";
 import SubjectsDashboard from "../dashboard/layouts/subjects";
 import PaymentsDashboard from "../dashboard/layouts/payments";
+import LessonsDashboard from "../dashboard/layouts/lessons";
 
 // Lazy loaded pages
 const Main = lazy(() => import("../pages/Main"));
@@ -177,6 +178,14 @@ export const routers = [
           
 
         // ------------------------- Teacher routes -------------------------
+
+          {
+            path: "lessons",
+            element:
+              <RoleProtectedRoute allowedRoles={["teacher"]}>
+                <LessonsDashboard />
+              </RoleProtectedRoute>
+          },
 
         ]
       },
