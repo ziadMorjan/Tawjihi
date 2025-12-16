@@ -10,7 +10,7 @@ const PaymentsDashboard = () => {
   const fetchPayments = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${API_URL}/payments`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/payment`, { withCredentials: true });
       setPayments(res?.data?.data?.docs || []);
     } catch (error) {
       // keep UI quiet; log for debugging

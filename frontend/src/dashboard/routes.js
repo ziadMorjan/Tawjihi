@@ -115,7 +115,7 @@ export const adminRoutes = [
 export const teacherRoutes = [
   {
     type: "collapse",
-    name: "My Courses",
+    name: "دوراتي",
     key: "my_courses",
     icon: <Icon fontSize="small">menu_book</Icon>,
     route: "/dashboard/courses",
@@ -123,7 +123,7 @@ export const teacherRoutes = [
   },
   {
     type: "collapse",
-    name: "Lessons",
+    name: "دروسي",
     key: "my_lessons",
     icon: <Icon fontSize="small">movie</Icon>,
     route: "/dashboard/lessons",

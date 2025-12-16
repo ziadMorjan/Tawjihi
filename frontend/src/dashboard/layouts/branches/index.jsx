@@ -8,6 +8,7 @@ import Tables from "../tables";
 import MDButton from "../../components/MDButton";
 import MDTypography from "../../components/MDTypography";
 import { API_URL } from "../../../config";
+import MDBox from "../../components/MDBox";
 
 const BranchesDashboard = () => {
   const [branches, setBranches] = useState([]);
@@ -123,31 +124,39 @@ const BranchesDashboard = () => {
       </Tables>
 
       <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Add Branch</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Name"
-            margin="normal"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            fullWidth
-            label="Description"
-            margin="normal"
-            multiline
-            minRows={2}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+        <DialogTitle>إضافة فرع</DialogTitle>
+        <DialogContent sx={{ backgroundColor: "#f7f9fc" }}>
+          <MDBox
+            p={2}
+            borderRadius="12px"
+            border="1px solid #e0e6ed"
+            bgcolor="white"
+            boxShadow="0 6px 24px rgba(15, 23, 42, 0.06)"
+          >
+            <TextField
+              fullWidth
+              label="اسم الفرع"
+              margin="normal"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              fullWidth
+              label="الوصف"
+              margin="normal"
+              multiline
+              minRows={2}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </MDBox>
         </DialogContent>
         <DialogActions>
           <MDButton color="secondary" variant="text" onClick={() => setOpenModal(false)}>
-            Close
+            إلغاء
           </MDButton>
           <MDButton color="info" onClick={handleCreate}>
-            Save
+            حفظ
           </MDButton>
         </DialogActions>
       </Dialog>

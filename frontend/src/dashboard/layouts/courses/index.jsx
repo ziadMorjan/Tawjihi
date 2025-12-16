@@ -241,18 +241,28 @@ const CoursesDashboard = () => {
       </Tables>
 
       <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="md">
-        <DialogTitle>Add a new course</DialogTitle>
-        <DialogContent>
-          <MDBox display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={2} my={1}>
+        <DialogTitle>إضافة دورة جديدة</DialogTitle>
+        <DialogContent sx={{ backgroundColor: "#f7f9fc" }}>
+          <MDBox
+            display="grid"
+            gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
+            gap={2.5}
+            my={1}
+            p={2}
+            borderRadius="12px"
+            border="1px solid #e0e6ed"
+            bgcolor="white"
+            boxShadow="0 6px 24px rgba(15, 23, 42, 0.06)"
+          >
             <TextField
-              label="Name"
+              label="اسم الدورة"
               value={formState.name}
               onChange={handleChange("name")}
               fullWidth
               required
             />
             <TextField
-              label="Price"
+              label="السعر"
               type="number"
               value={formState.price}
               onChange={handleChange("price")}
@@ -260,7 +270,7 @@ const CoursesDashboard = () => {
               required
             />
             <TextField
-              label="Discounted price"
+              label="السعر بعد الخصم"
               type="number"
               value={formState.priceAfterDiscount}
               onChange={handleChange("priceAfterDiscount")}
@@ -268,12 +278,12 @@ const CoursesDashboard = () => {
             />
             {isAdmin && (
               <FormControl fullWidth>
-                <InputLabel id="teacher-label">Teacher</InputLabel>
+                <InputLabel id="teacher-label">المعلم</InputLabel>
                 <Select
                   labelId="teacher-label"
                   value={formState.teacher}
                   onChange={handleChange("teacher")}
-                  input={<OutlinedInput label="Teacher" />}
+                  input={<OutlinedInput label="المعلم" />}
                 >
                   {teachers.map((teacher) => (
                     <MenuItem key={teacher._id} value={teacher._id}>
@@ -284,12 +294,12 @@ const CoursesDashboard = () => {
               </FormControl>
             )}
             <FormControl fullWidth>
-              <InputLabel id="subject-label">Subject</InputLabel>
+              <InputLabel id="subject-label">المادة</InputLabel>
               <Select
                 labelId="subject-label"
                 value={formState.subject}
                 onChange={handleChange("subject")}
-                input={<OutlinedInput label="Subject" />}
+                input={<OutlinedInput label="المادة" />}
               >
                 {subjects.map((subject) => (
                   <MenuItem key={subject._id} value={subject._id}>
@@ -299,13 +309,13 @@ const CoursesDashboard = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel id="branches-label">Branches</InputLabel>
+              <InputLabel id="branches-label">الأفرع</InputLabel>
               <Select
                 multiple
                 labelId="branches-label"
                 value={formState.branches}
                 onChange={handleChange("branches")}
-                input={<OutlinedInput label="Branches" />}
+                input={<OutlinedInput label="الأفرع" />}
                 renderValue={(selected) =>
                   branches
                     .filter((branch) => selected.includes(branch._id))
@@ -322,7 +332,7 @@ const CoursesDashboard = () => {
               </Select>
             </FormControl>
             <TextField
-              label="Description"
+              label="وصف الدورة"
               value={formState.description}
               onChange={handleChange("description")}
               fullWidth
@@ -330,7 +340,7 @@ const CoursesDashboard = () => {
               minRows={3}
             />
             <TextField
-              label="Cover image"
+              label="صورة الغلاف"
               type="file"
               inputProps={{ accept: "image/*" }}
               onChange={handleChange("coverImage")}
@@ -340,10 +350,10 @@ const CoursesDashboard = () => {
         </DialogContent>
         <DialogActions>
           <MDButton color="secondary" variant="text" onClick={() => setOpenModal(false)}>
-            Close
+            إلغاء
           </MDButton>
           <MDButton color="info" onClick={handleCreateCourse} disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Create"}
+            {isSubmitting ? "جارٍ الحفظ..." : "حفظ"}
           </MDButton>
         </DialogActions>
       </Dialog>

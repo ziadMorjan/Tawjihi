@@ -198,18 +198,28 @@ const LessonsDashboard = () => {
       <Tables tableTitle="Lessons" rows={displayRows} columns={columns} />
 
       <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="md">
-        <DialogTitle>Add Lesson</DialogTitle>
-        <DialogContent>
-          <MDBox display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={2} my={1}>
+        <DialogTitle>إضافة درس</DialogTitle>
+        <DialogContent sx={{ backgroundColor: "#f7f9fc" }}>
+          <MDBox
+            display="grid"
+            gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
+            gap={2.5}
+            my={1}
+            p={2}
+            borderRadius="12px"
+            border="1px solid #e0e6ed"
+            bgcolor="white"
+            boxShadow="0 6px 24px rgba(15, 23, 42, 0.06)"
+          >
             <TextField
-              label="Name"
+              label="اسم الدرس"
               value={form.name}
               onChange={handleChangeForm("name")}
               fullWidth
               required
             />
             <TextField
-              label="Description"
+              label="الوصف"
               value={form.description}
               onChange={handleChangeForm("description")}
               fullWidth
@@ -218,7 +228,7 @@ const LessonsDashboard = () => {
               required
             />
             <TextField
-              label="Video"
+              label="الفيديو"
               type="file"
               inputProps={{ accept: "video/*" }}
               onChange={handleChangeForm("video")}
@@ -229,10 +239,10 @@ const LessonsDashboard = () => {
         </DialogContent>
         <DialogActions>
           <MDButton color="secondary" variant="text" onClick={() => setOpenModal(false)}>
-            Close
+            إلغاء
           </MDButton>
           <MDButton color="info" onClick={handleCreateLesson} disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Create"}
+            {isSubmitting ? "جارٍ الحفظ..." : "حفظ"}
           </MDButton>
         </DialogActions>
       </Dialog>
