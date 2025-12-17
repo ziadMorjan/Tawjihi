@@ -20,7 +20,7 @@ import { AuthContext } from "../../context/AuthContext";
 import IconButton from "@mui/material/IconButton";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import NightsStayIcon from "@mui/icons-material/NightsStay";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import NotificationsBell from "../NotificationsBell";
 
 export const LogoAndButton = () => {
   const { isAuth, setIsAuth } = useContext(AuthContext);
@@ -38,7 +38,7 @@ export const LogoAndButton = () => {
       <Logo />
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <NotificationsIcon />
+        {isAuth ? <NotificationsBell enabled={isAuth} /> : null}
 
         <IconButton sx={{ color: "var(--color-dark-bg)" }} onClick={toggleTheme} aria-label="toggle theme">
           {theme.mode === "dark" ? (

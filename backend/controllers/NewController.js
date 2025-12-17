@@ -4,17 +4,39 @@ import crypto from 'crypto';
 import sharp from 'sharp';
 import { fileURLToPath } from 'url';
 import New from '../models/New.js';
+import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import CustomError from '../utils/CustomError.js';
 import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
-import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
+import { getAll, getOne, updateOne, deleteOne } from './controller.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const getAllNews = getAll(New);
 
-export const createNew = createOne(New);
+export const createNew = asyncErrorHandler(async (req, res) => {
+	const newDoc = await New.create(req.body);
+
+	const users = await User.find({ role: 'user', isActive: true }).select('_id');
+	const linkPath = '/news';
+	const docs = users.map((u) => ({
+		recipient: u._id,
+		createdBy: req.user?._id,
+		type: 'news',
+		title: `خبر جديد: ${newDoc.title}`,
+		body: newDoc.body?.slice?.(0, 180) || undefined,
+		link: linkPath,
+		news: newDoc._id,
+	}));
+	if (docs.length) await Notification.insertMany(docs, { ordered: false });
+
+	res.status(201).json({
+		status: 'success',
+		data: { newDoc },
+	});
+});
 
 export const getNew = getOne(New, 'new');
 

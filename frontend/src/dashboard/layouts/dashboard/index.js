@@ -15,6 +15,7 @@ Coded by www.creative-tim.com
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 // @mui material components
 import Grid from "@mui/material/Grid";
 
@@ -68,7 +69,7 @@ function Dashboard() {
           paymentsCount: payments.length,
         });
       } catch (error) {
-        console.error("Failed to load dashboard stats", error);
+        toast.error("فشل تحميل إحصائيات لوحة التحكم");
       } finally {
         setLoading(false);
       }

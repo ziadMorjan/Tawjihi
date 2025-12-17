@@ -43,6 +43,7 @@ import BranchesDashboard from "./layouts/branches";
 import SubjectsDashboard from "./layouts/subjects";
 import PaymentsDashboard from "./layouts/payments";
 import LessonsDashboard from "./layouts/lessons";
+import Broadcast from "./layouts/broadcast";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -111,6 +112,14 @@ export const adminRoutes = [
     component: <PaymentsDashboard />,
   },
 
+  {
+    type: "collapse",
+    name: "الإشعارات",
+    key: "dashboard/broadcast",
+    icon: <Icon fontSize="small">notifications</Icon>,
+    route: "/dashboard/broadcast",
+    component: <Broadcast />,
+  },
 ];
 export const teacherRoutes = [
   {
@@ -128,5 +137,13 @@ export const teacherRoutes = [
     icon: <Icon fontSize="small">movie</Icon>,
     route: "/dashboard/lessons",
     component: <LessonsDashboard />,
+  },
+  {
+    type: "collapse",
+    name: "الإشعارات",
+    key: "dashboard/broadcast",
+    icon: <Icon fontSize="small">notifications</Icon>,
+    route: "/dashboard/broadcast",
+    component: <Broadcast />,
   },
 ]

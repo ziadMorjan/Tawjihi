@@ -18,9 +18,19 @@ passport.use(facebookStrategy);
 app.use(i18n.init);
 
 app.use(morgan('dev'));
+const allowedOrigins = [
+	process.env.FRONTEND_URL,
+	'http://localhost:3000',
+	'http://127.0.0.1:3000',
+].filter(Boolean);
+
 app.use(
 	cors({
-		origin: process.env.FRONTEND_URL,
+		origin(origin, cb) {
+			if (!origin) return cb(null, true); // Postman / server-to-server
+			if (allowedOrigins.includes(origin)) return cb(null, true);
+			return cb(new Error(`CORS blocked for origin: ${origin}`));
+		},
 		credentials: true,
 	}),
 );

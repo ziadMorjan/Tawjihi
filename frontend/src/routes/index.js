@@ -29,10 +29,13 @@ import BranchesDashboard from "../dashboard/layouts/branches";
 import SubjectsDashboard from "../dashboard/layouts/subjects";
 import PaymentsDashboard from "../dashboard/layouts/payments";
 import LessonsDashboard from "../dashboard/layouts/lessons";
+import Broadcast from "../dashboard/layouts/broadcast";
 
 // Lazy loaded pages
 const Main = lazy(() => import("../pages/Main"));
 const About = lazy(() => import("../pages/About"));
+const News = lazy(() => import("../pages/News"));
+const Contact = lazy(() => import("../pages/Contact"));
 const Auth = lazy(() => import("../pages/Auth"));
 const OAuthSuccess = lazy(() => import("../features/components/OAuthSuccess"));
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -46,6 +49,8 @@ const VideoPage = lazy(() => import("../pages/CourseOne/VideoPage"));
 export const PATH = {
   Main: "/",
   About: "about",
+  News: "news",
+  Contact: "contact",
   Courses: "courses",
   CoursesOne: "courses/:name/:id",
   VideoLesson: "courses/:name/:id/video/:videoIndex",
@@ -76,6 +81,8 @@ export const routers = [
     children: [
       { index: true, element: <Main /> },
       { path: "about", element: <About /> },
+      { path: "news", element: <News /> },
+      { path: "contact", element: <Contact /> },
       { path: "courses", element: <Courses /> },
       { path: "courses/:name/:id", element: <OneCourse /> },
       { path: "courses/:name/:id/video/:videoIndex", element: <VideoPage /> },
@@ -184,6 +191,13 @@ export const routers = [
             element:
               <RoleProtectedRoute allowedRoles={["teacher"]}>
                 <LessonsDashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "broadcast",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin", "teacher"]}>
+                <Broadcast />
               </RoleProtectedRoute>
           },
 

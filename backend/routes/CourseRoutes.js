@@ -4,7 +4,10 @@ import reviewsRouts from './ReviewRoutes.js';
 
 import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-import { checkCourseBelongToTeacher, normalizeCourseFields } from '../middlewares/courseMiddleware.js';
+import {
+	checkCourseBelongToTeacher,
+	normalizeCourseFields,
+} from '../middlewares/courseMiddleware.js';
 
 import {
 	createCourseValidator,

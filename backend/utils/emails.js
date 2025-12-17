@@ -15,6 +15,6 @@ export const sendEmail = async function (options) {
 		to: options.to,
 		subject: options.subject,
 		text: options.text,
-		html: true,
+		html: options.html,
 	});
 };

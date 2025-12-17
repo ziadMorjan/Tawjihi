@@ -139,6 +139,7 @@ export default function CustomizedMenus() {
       await axios.get(`${API_URL}/auth/logout`, { withCredentials: true })
       setIsAuth(false)
       localStorage.removeItem("user")
+      localStorage.removeItem("token")
       dispatch({ type: Actions.SetWishList, payload: [] })
       dispatch({ type: Actions.SetCartList, payload: [] })
       setIsLogout(true)

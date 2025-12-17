@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import Tables from "../tables";
 import { API_URL } from "../../../config";
+import { toast } from "react-toastify";
 
 const PaymentsDashboard = () => {
   const [payments, setPayments] = useState([]);
@@ -13,8 +14,7 @@ const PaymentsDashboard = () => {
       const res = await axios.get(`${API_URL}/payment`, { withCredentials: true });
       setPayments(res?.data?.data?.docs || []);
     } catch (error) {
-      // keep UI quiet; log for debugging
-      console.error("Failed to load payments", error);
+      toast.error("فشل تحميل المدفوعات");
     } finally {
       setIsLoading(false);
     }
