@@ -79,7 +79,7 @@ export const deleteUserFromApi = (id) => async (dispatch) => {
         } 
 
     } catch (error) {
-        toast.success("حدث خطأ أثناء حذف المستخدم");
+        toast.error("حدث خطأ أثناء حذف المستخدم");
     } finally {
         dispatch(setDeleteLoading(false));
     }
@@ -102,7 +102,7 @@ export const updateUserFromApi = (data) => async (dispatch) => {
         }
 
     } catch (error) {
-        toast.success("حدث خطأ أثناء تحديث المستخدم");
+        toast.error("حدث خطأ أثناء تحديث المستخدم");
     } finally {
         dispatch(setUpdateLoading(false));
     }

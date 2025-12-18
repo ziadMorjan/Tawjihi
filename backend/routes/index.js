@@ -14,6 +14,8 @@ import TeacherReviewRoutes from './TeacherReviewRoutes.js';
 import PaymentRoutes from './PaymentRoutes.js';
 import CommentRoutes from './CommentRoutes.js';
 import defaultRoutes from './DefaultRoute.js';
+import notificationRoutes from './NotificationRoutes.js';
+import contactRoutes from './ContactRoutes.js';
 
 const routes = (app) => {
 	app.use('/api/v1/branches', branchRoutes);
@@ -31,6 +33,8 @@ const routes = (app) => {
 	app.use('/api/v1/teacherReviews', TeacherReviewRoutes);
 	app.use('/api/v1/payment', PaymentRoutes);
 	app.use('/api/v1/comments', CommentRoutes);
+	app.use('/api/v1/notifications', notificationRoutes);
+	app.use('/api/v1/contact', contactRoutes);
 	app.use(defaultRoutes);
 };
 

@@ -4,7 +4,10 @@ import reviewsRouts from './ReviewRoutes.js';
 
 import { protect, allowedTo } from '../middlewares/authMiddleware.js';
 
-import { checkCourseBelongToTeacher } from '../middlewares/courseMiddleware.js';
+import {
+	checkCourseBelongToTeacher,
+	normalizeCourseFields,
+} from '../middlewares/courseMiddleware.js';
 
 import {
 	createCourseValidator,
@@ -34,9 +37,10 @@ router
 	.get(getAllCourses)
 	.post(
 		protect,
-		allowedTo('teacher'),
+		allowedTo('teacher', 'admin'),
 		uploadCourseImage,
 		handleCourseImage,
+		normalizeCourseFields,
 		createCourseValidator,
 		createCourse,
 	);
@@ -46,9 +50,10 @@ router
 	.get(getCourseValidator, getCourse)
 	.patch(
 		protect,
-		allowedTo('teacher'),
+		allowedTo('teacher', 'admin'),
 		uploadCourseImage,
 		handleCourseImage,
+		normalizeCourseFields,
 		updateCourseValidator,
 		checkCourseBelongToTeacher,
 		updateCourse,

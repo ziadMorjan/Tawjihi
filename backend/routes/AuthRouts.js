@@ -18,6 +18,7 @@ import {
 	verifyResetCod,
 	resetPassword,
 	logout,
+	getToken,
 } from '../controllers/AuthController.js';
 
 import { uploadUserFiles, handleUserFiles } from '../controllers/UserController.js';
@@ -64,5 +65,6 @@ router.post('/verifyResetCode', verifyResetCodValidator, verifyResetCod);
 router.patch('/resetPassword', resetPasswordValidator, resetPassword);
 
 router.get('/logout', protect, logout);
+router.get('/token', protect, getToken);
 
 export default router;

@@ -30,6 +30,7 @@ export const sendAuthRes = async function (res, user, statusCode) {
 
 	res.status(statusCode).json({
 		status: 'success',
+		token,
 		user: userToRes,
 	});
 };
@@ -143,5 +144,13 @@ export const logout = (req, res) => {
 	res.status(200).json({
 		status: 'success',
 		message: req.__('auth.logged_out'),
+	});
+};
+
+export const getToken = (req, res) => {
+	const token = createToken(req.user.id);
+	res.status(200).json({
+		status: 'success',
+		token,
 	});
 };

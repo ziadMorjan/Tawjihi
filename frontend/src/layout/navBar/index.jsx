@@ -47,10 +47,10 @@ export const NavBar = () => {
           <Link to={`/${PATH.About}`}>من نحن</Link>
         </li>
         <li>
-          <Link to={PATH.Contact}>تواصل معنا</Link>
+          <Link to={`/${PATH.Contact}`}>تواصل معنا</Link>
         </li>
         <li>
-          <Link to={PATH.News}>اخر الاخبار</Link>
+          <Link to={`/${PATH.News}`}>اخر الاخبار</Link>
         </li>
       </ul>
 

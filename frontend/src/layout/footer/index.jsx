@@ -74,10 +74,10 @@ const Footer = () => {
               <Link to={`/${PATH.Teachers}`}>المعلمين</Link>
             </ListItem>
             <ListItem>
-              <Link to="">اخر الاخبار </Link>
+              <Link to={`/${PATH.News}`}>اخر الاخبار </Link>
             </ListItem>
             <ListItem>
-              <Link to="">تواصل معنا</Link>
+              <Link to={`/${PATH.Contact}`}>تواصل معنا</Link>
             </ListItem>
           </List>
         </Section>
