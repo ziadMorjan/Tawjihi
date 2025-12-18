@@ -2,11 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import sharp from 'sharp';
+import slugify from 'slugify';
 import { fileURLToPath } from 'url'; // 👈 Add this import
 import Course from '../models/Course.js';
+import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
-import { getAll, createOne, getOne, updateOne, deleteOne } from './controller.js';
+import { getAll, getOne, updateOne, deleteOne } from './controller.js';
 
 // --- Recreate __dirname for ES Modules ---
 const __filename = fileURLToPath(import.meta.url); // Gets the file path
@@ -43,7 +46,32 @@ export const handleCourseImage = asyncErrorHandler(async (req, res, next) => {
 
 export const getAllCourses = getAll(Course);
 
-export const createCourse = createOne(Course);
+export const createCourse = asyncErrorHandler(async (req, res) => {
+	if (req.body.name) req.body.slug = slugify(req.body.name);
+
+	const newDoc = await Course.create(req.body);
+
+	const users = await User.find({ role: 'user', isActive: true }).select('_id');
+	const linkPath = `/courses/${newDoc.slug}/${newDoc._id}`;
+	const docs = users.map((u) => ({
+		recipient: u._id,
+		createdBy: req.user?._id,
+		type: 'course',
+		title: `تمت إضافة دورة جديدة: ${newDoc.name}`,
+		body: 'تمت إضافة دورة جديدة على المنصة ويمكنك تسجيل الدخول للاطلاع عليها.',
+		link: linkPath,
+		course: newDoc._id,
+	}));
+
+	if (docs.length) await Notification.insertMany(docs, { ordered: false });
+
+	res.status(201).json({
+		status: 'success',
+		data: {
+			newDoc,
+		},
+	});
+});
 
 export const getCourse = getOne(Course, 'Course');
 

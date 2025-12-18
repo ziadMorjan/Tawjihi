@@ -20,14 +20,22 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import App from "../App";
 import Dashboard from "../dashboard/layouts/dashboard/index.js";
 import Tables from "../dashboard/layouts/tables/index.js";
-import Billing from "../dashboard/layouts/billing/index.js";
 import ProtectedDashboardRoute from "../components/ProtectedRoute/ProtectedDashboardRoute.jsx";
 import RoleProtectedRoute from "../components/ProtectedRoute/RoleProtectedRoute.jsx";
 import UsersTable from "../dashboard/layouts/tables/UsersTable.jsx";
+import CoursesDashboard from "../dashboard/layouts/courses";
+import TeacherRequests from "../dashboard/layouts/teacherRequests";
+import BranchesDashboard from "../dashboard/layouts/branches";
+import SubjectsDashboard from "../dashboard/layouts/subjects";
+import PaymentsDashboard from "../dashboard/layouts/payments";
+import LessonsDashboard from "../dashboard/layouts/lessons";
+import Broadcast from "../dashboard/layouts/broadcast";
 
 // Lazy loaded pages
 const Main = lazy(() => import("../pages/Main"));
 const About = lazy(() => import("../pages/About"));
+const News = lazy(() => import("../pages/News"));
+const Contact = lazy(() => import("../pages/Contact"));
 const Auth = lazy(() => import("../pages/Auth"));
 const OAuthSuccess = lazy(() => import("../features/components/OAuthSuccess"));
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -41,6 +49,8 @@ const VideoPage = lazy(() => import("../pages/CourseOne/VideoPage"));
 export const PATH = {
   Main: "/",
   About: "about",
+  News: "news",
+  Contact: "contact",
   Courses: "courses",
   CoursesOne: "courses/:name/:id",
   VideoLesson: "courses/:name/:id/video/:videoIndex",
@@ -71,6 +81,8 @@ export const routers = [
     children: [
       { index: true, element: <Main /> },
       { path: "about", element: <About /> },
+      { path: "news", element: <News /> },
+      { path: "contact", element: <Contact /> },
       { path: "courses", element: <Courses /> },
       { path: "courses/:name/:id", element: <OneCourse /> },
       { path: "courses/:name/:id/video/:videoIndex", element: <VideoPage /> },
@@ -135,49 +147,57 @@ export const routers = [
                 <UsersTable usersType={"teacher"} tableTitle={"جدول المعلمين"}/>
               </RoleProtectedRoute>
           },
-          // {
-          //   path: "teachers-requests",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول طلبات انضمام كمعلم"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "branches",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول الأفرع"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "subjects",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول المواضيع"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "courses",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول الدورات"} />
-          //     </RoleProtectedRoute>
-          // },
-          // {
-          //   path: "payments",
-          //   element:
-          //     <RoleProtectedRoute allowedRoles={["admin"]}>
-          //       <Tables tableTitle={"جدول المدفوعات"} />
-          //     </RoleProtectedRoute>
-          // },
+          {
+            path: "teachers-requests",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <TeacherRequests />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "branches",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <BranchesDashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "subjects",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <SubjectsDashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "courses",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin", "teacher"]}>
+                <CoursesDashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "payments",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin"]}>
+                <PaymentsDashboard />
+              </RoleProtectedRoute>
+          },
           
 
         // ------------------------- Teacher routes -------------------------
 
           {
-            path: "courses", element:
+            path: "lessons",
+            element:
               <RoleProtectedRoute allowedRoles={["teacher"]}>
-                <Billing />
+                <LessonsDashboard />
+              </RoleProtectedRoute>
+          },
+          {
+            path: "broadcast",
+            element:
+              <RoleProtectedRoute allowedRoles={["admin", "teacher"]}>
+                <Broadcast />
               </RoleProtectedRoute>
           },
 

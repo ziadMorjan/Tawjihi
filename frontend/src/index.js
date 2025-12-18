@@ -10,6 +10,7 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from './global/GlobalStyle';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./utils/axiosSetup";
 
 // Contexts
 import { ThemeContextProvider, ThemeContext } from './context/ThemeContext';

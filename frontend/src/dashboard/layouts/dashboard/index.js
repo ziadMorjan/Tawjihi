@@ -13,6 +13,9 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 // @mui material components
 import Grid from "@mui/material/Grid";
 
@@ -23,19 +26,67 @@ import MDBox from "../../components/MDBox";
 import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "../../examples/Navbars/DashboardNavbar";
 import Footer from "../../examples/Footer";
+import ComplexStatisticsCard from "../../examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import ReportsBarChart from "../../examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "../../examples/Charts/LineCharts/ReportsLineChart";
-import ComplexStatisticsCard from "../../examples/Cards/StatisticsCards/ComplexStatisticsCard";
+import reportsBarChartData from "../dashboard/data/reportsBarChartData";
+import reportsLineChartData from "../dashboard/data/reportsLineChartData";
 
-// Data
-import reportsBarChartData from "./data/reportsBarChartData";
-import reportsLineChartData from "./data/reportsLineChartData";
-
-// Dashboard components
-import Projects from "./components/Projects";
-import OrdersOverview from "./components/OrdersOverview";
+import { API_URL } from "../../../config";
 
 function Dashboard() {
+  const [stats, setStats] = useState({
+    students: 0,
+    teachers: 0,
+    courses: 0,
+    lessons: 0,
+    paymentsTotal: 0,
+    paymentsCount: 0,
+  });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoading(true);
+      try {
+        const [studentsRes, teachersRes, coursesRes, lessonsRes, paymentsRes] = await Promise.all([
+          axios.get(`${API_URL}/users?role=user`, { withCredentials: true }),
+          axios.get(`${API_URL}/users?role=teacher`, { withCredentials: true }),
+          axios.get(`${API_URL}/courses`, { withCredentials: true }),
+          axios.get(`${API_URL}/lessons`, { withCredentials: true }),
+          axios.get(`${API_URL}/payment`, { withCredentials: true }),
+        ]);
+
+        const payments = paymentsRes?.data?.data?.docs || [];
+        const paymentsTotal = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+
+        setStats({
+          students: studentsRes?.data?.data?.docs?.length || 0,
+          teachers: teachersRes?.data?.data?.docs?.length || 0,
+          courses: coursesRes?.data?.data?.docs?.length || 0,
+          lessons: lessonsRes?.data?.data?.docs?.length || 0,
+          paymentsTotal,
+          paymentsCount: payments.length,
+        });
+      } catch (error) {
+        toast.error("فشل تحميل إحصائيات لوحة التحكم");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const cards = [
+    { title: "الطلاب", icon: "groups", color: "info", value: stats.students },
+    { title: "المعلمين", icon: "school", color: "success", value: stats.teachers },
+    { title: "الدورات", icon: "menu_book", color: "primary", value: stats.courses },
+    { title: "الدروس", icon: "movie", color: "warning", value: stats.lessons },
+    { title: "عدد المدفوعات", icon: "receipt_long", color: "secondary", value: stats.paymentsCount },
+    { title: "إجمالي الإيرادات", icon: "payments", color: "dark", value: `${stats.paymentsTotal} ₪` },
+  ];
+
   const { sales, tasks } = reportsLineChartData;
 
   return (
@@ -43,117 +94,50 @@ function Dashboard() {
       <DashboardNavbar />
       <MDBox py={3}>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="dark"
-                icon="weekend"
-                title="Bookings"
-                count={281}
-                percentage={{
-                  color: "success",
-                  amount: "+55%",
-                  label: "than lask week",
-                }}
-              />
-            </MDBox>
+          {cards.map((card) => (
+            <Grid item xs={12} md={6} lg={4} key={card.title}>
+              <MDBox mb={1.5}>
+                <ComplexStatisticsCard
+                  color={card.color}
+                  icon={card.icon}
+                  title={card.title}
+                  count={loading ? "..." : card.value}
+                  percentage={{ color: "success", amount: "", label: "تم التحديث" }}
+                />
+              </MDBox>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Grid container spacing={3} mt={1}>
+          <Grid item xs={12} md={6} lg={4}>
+            <ReportsBarChart
+              color="info"
+              title="نمو المستخدمين"
+              description="اتجاه تسجيلات المستخدمين"
+              date="آخر تحديث"
+              chart={reportsBarChartData}
+            />
           </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                icon="leaderboard"
-                title="Today's Users"
-                count="2,300"
-                percentage={{
-                  color: "success",
-                  amount: "+3%",
-                  label: "than last month",
-                }}
-              />
-            </MDBox>
+          <Grid item xs={12} md={6} lg={4}>
+            <ReportsLineChart
+              color="success"
+              title="مبيعات يومية"
+              description="نسبة تغير الإيرادات اليومية"
+              date="آخر تحديث"
+              chart={sales}
+            />
           </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="success"
-                icon="store"
-                title="Revenue"
-                count="34k"
-                percentage={{
-                  color: "success",
-                  amount: "+1%",
-                  label: "than yesterday",
-                }}
-              />
-            </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="primary"
-                icon="person_add"
-                title="Followers"
-                count="+91"
-                percentage={{
-                  color: "success",
-                  amount: "",
-                  label: "Just updated",
-                }}
-              />
-            </MDBox>
+          <Grid item xs={12} md={6} lg={4}>
+            <ReportsLineChart
+              color="dark"
+              title="مهام مكتملة"
+              description="مؤشر إنجاز العمل"
+              date="آخر تحديث"
+              chart={tasks}
+            />
           </Grid>
         </Grid>
-        <MDBox mt={4.5}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={4}>
-              <MDBox mb={3}>
-                <ReportsBarChart
-                  color="info"
-                  title="website views"
-                  description="Last Campaign Performance"
-                  date="campaign sent 2 days ago"
-                  chart={reportsBarChartData}
-                />
-              </MDBox>
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <MDBox mb={3}>
-                <ReportsLineChart
-                  color="success"
-                  title="daily sales"
-                  description={
-                    <>
-                      (<strong>+15%</strong>) increase in today sales.
-                    </>
-                  }
-                  date="updated 4 min ago"
-                  chart={sales}
-                />
-              </MDBox>
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <MDBox mb={3}>
-                <ReportsLineChart
-                  color="dark"
-                  title="completed tasks"
-                  description="Last Campaign Performance"
-                  date="just updated"
-                  chart={tasks}
-                />
-              </MDBox>
-            </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={8}>
-              <Projects />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <OrdersOverview />
-            </Grid>
-          </Grid>
-        </MDBox>
       </MDBox>
       <Footer />
     </DashboardLayout>

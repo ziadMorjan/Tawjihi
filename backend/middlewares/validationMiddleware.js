@@ -7,9 +7,6 @@ import { asyncErrorHandler } from './errorMiddleware.js';
 export const validationMiddleware = asyncErrorHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		if (process.env.NODE_ENV === 'development')
-			console.error('Validation errors:', errors.array());
-
 		removeLocalFiles(req);
 		const message = errors
 			.array()

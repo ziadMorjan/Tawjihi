@@ -65,6 +65,7 @@ export const LoginForm = () => {
       if (response.data.user) {
         // Save full user object with wishlist and cart to localStorage
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        if (response.data.token) localStorage.setItem("token", response.data.token);
         setIsAuth(true);
 
         const storedUser = response.data.user;
@@ -94,6 +95,8 @@ export const LoginForm = () => {
         reset();
         if (storedUser.role === "admin") {
           navigate(`/${PATH.AdminDashboard}`);
+        } else if (storedUser.role === "teacher") {
+          navigate(`/${PATH.AdminDashboard}/courses`);
         } else {
           navigate(`${PATH.Main}`);
         }
