@@ -65,18 +65,10 @@ src/assets/animations/login.json
 src/components/Animations/AnimatedList.jsx
 src/components/Animations/discover.jsx
 src/components/Animations/RegisterAnimatiom.jsx
-src/components/Buttons/button.jsx
-src/components/Buttons/downloadCv.jsx
-src/components/Buttons/style.js
 src/components/buyButtonAndPriceBadge/index.jsx
 src/components/buyButtonAndPriceBadge/style.js
-src/components/card/courseCard.jsx
-src/components/card/style.js
-src/components/card/teacherCard.jsx
 src/components/cartHeader/index.jsx
 src/components/cartHeader/style.js
-src/components/CheckAndLable/index.jsx
-src/components/CheckAndLable/style.js
 src/components/CommentForm/index.jsx
 src/components/CommentForm/style.js
 src/components/Container/index.jsx
@@ -113,29 +105,19 @@ src/components/modalTeacher/style.js
 src/components/NotificationsBell/index.jsx
 src/components/NoVideos/index.jsx
 src/components/NoVideos/style.js
-src/components/paginations/index.jsx
-src/components/paginations/style.js
 src/components/progress/index.jsx
 src/components/progress/style.js
-src/components/ProtectedRoute/index.jsx
-src/components/ProtectedRoute/ProtectedDashboardRoute.jsx
-src/components/ProtectedRoute/RoleProtectedRoute.jsx
 src/components/ReviewListSection/index.jsx
 src/components/ReviewListSection/style.js
-src/components/search/index.jsx
-src/components/search/style.js
 src/components/Star/index.jsx
 src/components/Star/starRating.jsx
 src/components/typography/index.jsx
 src/components/typography/style.js
 src/components/VideoPlayerWithControls/index.jsx
 src/components/VideoResources/index.jsx
-src/config.js
 src/constant/ACTIONS.js
-src/context/AuthContext.js
 src/context/CommentContext.js
 src/context/DashboardContext.js
-src/context/DataCourses.js
 src/context/LogoutContext.js
 src/context/ModalContext.js
 src/context/NewOldContext.js
@@ -485,6 +467,7 @@ src/features/courses/components/CourseDetails/CourseReviews.jsx
 src/features/courses/components/FiltersPanel/FiltersPanel.styles.js
 src/features/courses/components/FiltersPanel/index.jsx
 src/features/courses/components/Pagination/index.jsx
+src/features/courses/hooks/useCourse.js
 src/features/courses/hooks/useCourseActions.js
 src/features/courses/hooks/useCourses.js
 src/features/courses/hooks/useCoursesFilters.js
@@ -556,13 +539,8 @@ src/shared/components/Input/Input.styles.js
 src/shared/components/layout/MainLayout.jsx
 src/shared/components/Spinner/index.jsx
 src/shared/lib/axiosInstance.js
-src/styles/style.js
-src/utils/axiosSetup.js
 src/utils/convertToObject.js
-src/utils/filterCourses.js
-src/utils/handleFilterChange.js
 src/utils/normlizeArabic.js
-src/utils/pagination.js
 </directory_structure>
 
 <files>
@@ -804,24 +782,23 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 // src/App.js
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './features/auth';
-
 import Home         from './pages/Home';
 import Courses      from './pages/Courses';
-import CourseOne    from './pages/CourseDetails';
 import Login        from './pages/Auth/Login';
 import Register     from './pages/Auth/Register';
 import OAuthSuccess from './pages/Auth/OAuthSuccess';
 
+import CourseDetails    from './pages/CourseDetails';
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/"                         element={<Home />} />
-        <Route path="/courses"                  element={<Courses />} />
-        <Route path="/courses/:id"        element={<CourseOne />} />
-        <Route path="/auth/login"               element={<Login />} />
-        <Route path="/auth/register"            element={<Register />} />
-        <Route path="/oauth-success"            element={<OAuthSuccess />} />
+        <Route path="/"                  element={<Home />} />
+        <Route path="/courses"           element={<Courses />} />
+        <Route path="/courses/:id" element={<CourseDetails />} />
+        <Route path="/auth/login"        element={<Login />} />
+        <Route path="/auth/register"     element={<Register />} />
+        <Route path="/oauth-success"     element={<OAuthSuccess />} />
       </Routes>
     </BrowserRouter>
   );
@@ -1116,86 +1093,6 @@ export const RegisterAnimation = () => {
 };
 </file>
 
-<file path="src/components/Buttons/button.jsx">
-//style
-import { ButtonStyled } from "./style";
-
-export const Button = ({ children, onClick }) => {
-  return (
-    <ButtonStyled type="button" onClick={onClick}>
-      {children}
-    </ButtonStyled>
-  );
-};
-</file>
-
-<file path="src/components/Buttons/downloadCv.jsx">
-//style
-import { StyledDownloadButton } from "./style";
-
-export const DownloadButton = ({ children, onClick, href, download }) => {
-  return (
-    <StyledDownloadButton href={href} onClick={onClick} download={download}>
-      {children}
-    </StyledDownloadButton>
-  );
-};
-</file>
-
-<file path="src/components/Buttons/style.js">
-import styled from "styled-components";
-
-export const ButtonStyled = styled.button`
-background-image: ${({ theme }) => theme.linearGradient};
-  color: #fff;
-  padding: 0.8rem 1.6rem;
-  margin: 20px 0;
-  font-size: 1.1rem;
-  font-weight: 500;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.linkHover};
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 86, 179, 0.3);
-  }
-
-  &:active {
-    transform: translateY(1px);
-    box-shadow: 0 3px 8px rgba(0, 86, 179, 0.2);
-  }
-
-  &:disabled {
-    background-color: #ccc;
-    color: #666;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-  }
-`;
-
-export const StyledDownloadButton = styled(ButtonStyled).attrs({ as: 'a' })`
-text-decoration: none;
-display: inline-block;
-&:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 86, 179, 0.3);
-    color: #fff;
-    text-decoration: none;
-
-  }
-`
-</file>
-
 <file path="src/components/buyButtonAndPriceBadge/index.jsx">
 import { StyledBuyButtonAndPriceBadge } from './style'
 
@@ -1218,967 +1115,6 @@ export const StyledBuyButtonAndPriceBadge = styled.div`
   align-items: center;
   gap: 12px;
 `;
-</file>
-
-<file path="src/components/card/courseCard.jsx">
-//react
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-//axios
-import axios from "axios";
-
-//toastify
-import { toast } from "react-toastify";
-
-//hooks
-import { useCRUD } from "../../hooks/useCRUD";
-//URL
-import { API_URL } from "../../config";
-
-//PATH
-import { PATH } from "../../routes";
-
-//styled
-import {
-  CourseCardContainer,
-  ActionIcons,
-  ActionBtn,
-  ImageContainer,
-  CourseImage,
-  ImageOverlay,
-  CardContent,
-  CourseHeader,
-  CourseInfo,
-  CourseTitle,
-  CourseMeta,
-  MetaItem,
-  TeacherInfo,
-  TeacherDetails,
-  TeacherLabel,
-  TeacherName,
-  CourseDescription,
-  CardFooter,
-  RatingContainer,
-  StarsContainer,
-  RatingText,
-  PriceContainer,
-  FreeBadge,
-  PriceInfo,
-  OldPrice,
-  CurrentPrice,
-} from "./style";
-
-//icons
-import {
-  BookIcon,
-  CartIcon,
-  GraduationCapIcon,
-  HeartIcon,
-  StarIconComponent,
-  UserIcon,
-} from "../Icon/cartAndWishIcon";
-
-export const CourseCard = ({
-  imgSrc,
-  teacherName,
-  name,
-  desc,
-  starIcon = 0,
-  price,
-  priceAfterDiscount,
-  branch,
-  subject,
-  id,
-  item,
-}) => {
-  const {
-    addToWishList,
-    removeFromWishList,
-    isInWishList,
-    addToCartList,
-    removeFromCartList,
-    isInCartList,
-  } = useCRUD();
-
-  const [loadingCart, setLoadingCart] = useState(false);
-  const [loadingWish, setLoadingWish] = useState(false);
-  const navigate = useNavigate();
-
-  const handleClickHeart = async () => {
-    setLoadingWish(true);
-    try {
-      if (isInWishList(id)) {
-        await axios.delete(`${API_URL}/wishlist/${id}`, {
-          withCredentials: true,
-        });
-        removeFromWishList(id);
-        toast.info("تمت إزالة الدورة من قائمة المفضلة");
-      } else {
-        await axios.post(
-          `${API_URL}/wishlist/${id}`,
-          { itemId: id },
-          { withCredentials: true }
-        );
-        addToWishList(item);
-        toast.success("تمت إضافة الدورة إلى قائمة المفضلة");
-      }
-    } catch (e) {
-      console.error("Wishlist error:", e.message);
-      toast.error("حدث خطأ أثناء تحديث قائمة المفضلة");
-    } finally {
-      setLoadingWish(false);
-    }
-  };
-
-  const handleClickCart = async () => {
-    setLoadingCart(true);
-    try {
-      if (isInCartList(id)) {
-        await axios.delete(`${API_URL}/cart/${id}`, { withCredentials: true });
-        removeFromCartList(id);
-        toast.info("تمت إزالة الدورة من السلة");
-      } else {
-        await axios.post(
-          `${API_URL}/cart/${id}`,
-          { itemId: id },
-          { withCredentials: true }
-        );
-        addToCartList(item);
-        toast.success("تمت إضافة الدورة إلى السلة");
-      }
-    } catch (e) {
-      console.error("Cart error:", e.message);
-      toast.error("حدث خطأ أثناء تحديث السلة");
-    } finally {
-      setLoadingCart(false);
-    }
-  };
-
-  const fullStars = Math.floor(starIcon);
-  const hasHalfStar = starIcon % 1 >= 0.5;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-  const renderStars = () => {
-    const stars = [];
-
-    // Full stars
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <StarIconComponent
-          key={`full-${i}`}
-          filled={true}
-          className="star-filled"
-        />
-      );
-    }
-
-    // Half star
-    if (hasHalfStar) {
-      stars.push(
-        <StarIconComponent key="half" half={true} className="star-half" />
-      );
-    }
-
-    // Empty stars
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(
-        <StarIconComponent
-          key={`empty-${i}`}
-          filled={false}
-          className="star-empty"
-        />
-      );
-    }
-
-    return stars;
-  };
-
-  return (
-    <CourseCardContainer>
-      {/* Action Icons */}
-      <ActionIcons>
-        <ActionBtn
-          className={`${isInCartList(id) ? "active" : ""} ${
-            loadingCart ? "loading" : ""
-          }`}
-          onClick={handleClickCart}
-          disabled={loadingCart}
-        >
-          <CartIcon />
-        </ActionBtn>
-        <ActionBtn
-          className={`${isInWishList(id) ? "active wishlist-active" : ""} ${
-            loadingWish ? "loading" : ""
-          }`}
-          onClick={handleClickHeart}
-          disabled={loadingWish}
-        >
-          <HeartIcon filled={isInWishList(id)} />
-        </ActionBtn>
-      </ActionIcons>
-
-      {/* Course Image */}
-      {imgSrc && (
-        <ImageContainer>
-          <CourseImage
-            src={imgSrc || "/placeholder.svg"}
-            alt={`صورة تخص ${name || "الدورة"}`}
-          />
-          <ImageOverlay />
-        </ImageContainer>
-      )}
-
-      <CardContent>
-        {/* Course Header */}
-        <CourseHeader
-          onClick={() => {
-            navigate(`/${PATH.Courses}/${name}/${id}`, { replace: true });
-          }}
-        >
-          <CourseInfo>
-            <CourseTitle>{name}</CourseTitle>
-
-            <CourseMeta>
-              <MetaItem>
-                <BookIcon />
-                <span>المادة: {subject}</span>
-              </MetaItem>
-              <MetaItem>
-                <GraduationCapIcon />
-                <span>{branch}</span>
-              </MetaItem>
-            </CourseMeta>
-          </CourseInfo>
-
-          {/* Teacher Info */}
-          {teacherName && (
-            <TeacherInfo>
-              <TeacherDetails>
-                <UserIcon />
-                <TeacherLabel>المعلم: </TeacherLabel>
-                <TeacherName>{teacherName}</TeacherName>
-              </TeacherDetails>
-            </TeacherInfo>
-          )}
-
-          {/* Description */}
-          {desc && <CourseDescription>{desc}</CourseDescription>}
-        </CourseHeader>
-
-        {/* Footer */}
-        <CardFooter>
-          {/* Rating */}
-          <RatingContainer>
-            <StarsContainer>{renderStars()}</StarsContainer>
-            <RatingText>({starIcon.toFixed(1)})</RatingText>
-          </RatingContainer>
-
-          {/* Price */}
-          {price !== undefined && (
-            <PriceContainer>
-              {price === 0 ? (
-                <FreeBadge>مجاني</FreeBadge>
-              ) : (
-                <PriceInfo>
-                  {priceAfterDiscount ? (
-                    <>
-                      <OldPrice>{price} ₪</OldPrice>
-                      <CurrentPrice>{priceAfterDiscount} ₪</CurrentPrice>
-                    </>
-                  ) : (
-                    <CurrentPrice>{price} ₪</CurrentPrice>
-                  )}
-                </PriceInfo>
-              )}
-            </PriceContainer>
-          )}
-        </CardFooter>
-      </CardContent>
-    </CourseCardContainer>
-  );
-};
-</file>
-
-<file path="src/components/card/style.js">
-import styled, { keyframes } from "styled-components";
-
-// Styled Components
-const CourseCardContainer = styled.div`
-  position: relative;
-  min-width: 30%;
-  overflow: hidden;
-  background: ${props => props.theme.background};
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border: 1px solid ${props => props.theme.border || "#e5e7eb"};
-  margin: 20px 0;
-    &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  }
-
-  @media (max-width: 768px) {
-    max-width: 100%;
-  }
-`;
-
-const ActionIcons = styled.div`
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 10;
-  display: flex;
-  gap: 8px;
-`;
-
-
-// Keyframes
-const pulse = keyframes`
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-`;
-
-
-
-const ActionBtn = styled.button`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    background: white;
-    transform: scale(1.1);
-  }
-
-  &.active {
-    background: #dbeafe;
-    color: #2563eb;
-  }
-
-  &.wishlist-active {
-    background: #fecaca;
-    color: #dc2626;
-  }
-
-  
-  &.loading {
-    animation: ${pulse} 1.5s infinite;
-  }
-`;
-
-const ActionIcon = styled.svg`
-  width: 16px;
-  height: 16px;
-`;
-
-const ImageContainer = styled.div`
-  position: relative;
-  overflow: hidden;
-`;
-
-const CourseImage = styled.img`
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-
-  ${CourseCardContainer}:hover & {
-    transform: scale(1.05);
-  }
-`;
-
-const ImageOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.2), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-
-  ${CourseCardContainer}:hover & {
-    opacity: 1;
-  }
-`;
-
-const CardContent = styled.div`
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  @media (max-width: 768px) {
-    padding: 16px;
-  }
-`;
-
-const CourseHeader = styled.div`
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const CourseInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const CourseTitle = styled.h3`
-  font-size: 20px;
-  font-weight: 700;
-  color: #${props => props.theme.color || "111827"};
-  line-height: 1.3;
-  margin: 0;
-  transition: color 0.2s ease;
-
-  ${CourseHeader}:hover & {
-    color: #2563eb;
-  }
-`;
-
-const CourseMeta = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 8px;
-  }
-`;
-
-const MetaItem = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: #6b7280;
-`;
-
-const MetaIcon = styled.svg`
-  width: 16px;
-  height: 16px;
-`;
-
-const TeacherInfo = styled.div`
-  display: flex;
-  align-items: center;
-  background: ${props => props.theme.background};
-  border-radius: 12px;
-`;
-
-const TeacherAvatar = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const AvatarImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const AvatarPlaceholder = styled.svg`
-  width: 20px;
-  height: 20px;
-  color: #6b7280;
-`;
-
-const TeacherDetails = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  gap: 0 5px;
-`;
-
-const TeacherLabel = styled.p`
-  font-size: 12px;
-  color: #6b7280;
-  margin: 0 0 2px 0;
-`;
-
-const TeacherName = styled.p`
-  font-size: 14px;
-  font-weight: 500;
-  color: #${props => props.theme.color};
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const CourseDescription = styled.p`
-  font-size: 14px;
-  color: #6b7280;
-  line-height: 1.5;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const CardFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 16px;
-  border-top: 1px solid #f3f4f6;
-`;
-
-const RatingContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const StarsContainer = styled.div`
-  display: flex;
-  gap: 2px;
-`;
-
-const StarIcon = styled.svg`
-  width: 16px;
-  height: 16px;
-
-  &.star-filled {
-    color: #fbbf24;
-    fill: currentColor;
-  }
-
-  &.star-half {
-    color: #fbbf24;
-  }
-
-  &.star-empty {
-    color: #d1d5db;
-  }
-`;
-
-const RatingText = styled.span`
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
-`;
-
-const PriceContainer = styled.div`
-  text-align: right;
-`;
-
-const FreeBadge = styled.span`
-  background: #dcfce7;
-  color: #166534;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-`;
-
-const PriceInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const OldPrice = styled.span`
-  font-size: 14px;
-  color: #9ca3af;
-  text-decoration: line-through;
-`;
-
-const CurrentPrice = styled.span`
-  font-size: 18px;
-  font-weight: 700;
-  color: #2563eb;
-`;
-
-
-
-export {
-  CourseCardContainer,
-  ActionIcons,
-  ActionBtn,
-  ActionIcon,
-  ImageContainer,
-  CourseImage,
-  ImageOverlay,
-  CardContent,
-  CourseHeader,
-  CourseInfo,
-  CourseTitle,
-  CourseMeta,
-  MetaItem,
-  MetaIcon,
-  TeacherInfo,
-  TeacherAvatar,
-  AvatarImage,
-  AvatarPlaceholder,
-  TeacherDetails,
-  TeacherLabel,
-  TeacherName,
-  CourseDescription,
-  CardFooter,
-  RatingContainer,
-  StarsContainer,
-  StarIcon,
-  RatingText,
-  PriceContainer,
-  FreeBadge,
-  PriceInfo,
-  OldPrice,
-  CurrentPrice,
-};
-
-
-
-export const Card = styled.div`
-  position: relative;
-  overflow: hidden;
-  background: ${(props) => props.theme.background};
-  border: 1px solid ${(props) => props.theme.border || "#e5e7eb"};
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  margin: 20px auto;
-  cursor: pointer;
-  width: 300px;
-
-  @media (max-width: 767px) {
-    max-width: 100%;
-  }
-
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  }
-
-  &:focus {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-  }
-`;
-
-export const Badge = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-`;
-
-export const BadgeIcon = styled.svg`
-  width: 12px;
-  height: 12px;
-`;
-
-export const CardContentTeacher = styled.div`
-  padding: 32px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  position: relative;
-`;
-
-export const ImageSection = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-`;
-
-export const GlowEffect = styled.div`
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  border-radius: 50%;
-  filter: blur(20px);
-  opacity: 0.05;
-  transform: scale(1.1);
-  transition: opacity 0.3s ease;
-
-  ${Card}:hover & {
-    opacity: 0.1;
-  }
-`;
-
-export const Avatar = styled.div`
-  position: relative;
-  width: 128px;
-  height: 128px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(135deg, #dbeafe, #e0e7ff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 4px solid white;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-
-  ${Card}:hover & {
-    transform: scale(1.05);
-  }
-`;
-
-export const AvatarImageTeacher = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-export const AvatarPlaceholderTeacher = styled.svg`
-  width: 48px;
-  height: 48px;
-  color: #6b7280;
-`;
-
-export const NameSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-`;
-
-export const TeacherNameTeacher = styled.h3`
-  font-size: 24px;
-  font-weight: 700;
-  color: ${(props) => props.theme.color || "#000"};
-  margin: 0;
-  transition: color 0.2s ease;
-
-  ${Card}:hover & {
-    color: #2563eb;
-  }
-`;
-
-export const NameUnderline = styled.div`
-  width: 48px;
-  height: 4px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  border-radius: 2px;
-  transition: width 0.3s ease;
-
-  ${Card}:hover & {
-    width: 80px;
-  }
-`;
-
-export const Description = styled.p`
-  color: #6b7280;
-  line-height: 1.6;
-  margin: 0;
-  padding: 0 8px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-export const RatingSection = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #f3f4f6;
-`;
-
-export const Stars = styled.div`
-  display: flex;
-  gap: 2px;
-`;
-
-export const StarSvg = styled.svg`
-  width: 16px;
-  height: 16px;
-
-  &.star-filled {
-    color: #fbbf24;
-    fill: currentColor;
-  }
-
-  &.star-half {
-    color: #fbbf24;
-  }
-
-  &.star-empty {
-    color: #d1d5db;
-  }
-`;
-
-export const RatingTextTeacher = styled.span`
-  font-size: 14px;
-  font-weight: 500;
-  color: #6b7280;
-`;
-
-export const HoverOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(59, 130, 246, 0.05), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-
-  ${Card}:hover & {
-    opacity: 1;
-  }
-`;
-</file>
-
-<file path="src/components/card/teacherCard.jsx">
-//react
-import { useNavigate } from "react-router-dom";
-
-//style
-import {
-  Card,
-  Badge,
-  BadgeIcon,
-  ImageSection,
-  GlowEffect,
-  Avatar,
-  NameSection,
-  NameUnderline,
-  Description,
-  RatingSection,
-  Stars,
-  HoverOverlay,
-} from "./style";
-
-import {
-  AvatarImageTeacher,
-  AvatarPlaceholderTeacher,
-  CardContentTeacher,
-  RatingTextTeacher,
-  TeacherNameTeacher,
-} from "./style";
-
-//components
-import { StarIcon } from "../Star";
-
-export const TeacherCard = ({
-  imgSrc,
-  name,
-  desc,
-  starIcon = 0,
-  id,
-  badge,
-}) => {
-  const navigate = useNavigate();
-  const fullStars = Math.floor(starIcon);
-  const hasHalfStar = starIcon % 1 >= 0.5;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-  const renderStars = () => {
-    const stars = [];
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<StarIcon key={`full-${i}`} filled={true} />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<StarIcon key="half" half={true} />);
-    }
-
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<StarIcon key={`empty-${i}`} filled={false} />);
-    }
-
-    return stars;
-  };
-
-  const handleClick = () => navigate(`/teachers/${id}`);
-  const handleKeyDown = (e) =>
-    (e.key === "Enter" || e.key === " ") && handleClick();
-
-  return (
-    <Card
-      onClick={handleClick}
-      tabIndex={0}
-      role="button"
-      onKeyDown={handleKeyDown}
-    >
-      {badge && (
-        <Badge>
-          <BadgeIcon
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="12" cy="8" r="7" />
-            <polyline points="8.21,13.89 7,23 12,20 17,23 15.79,13.88" />
-          </BadgeIcon>
-          {badge}
-        </Badge>
-      )}
-
-      <CardContentTeacher>
-        {imgSrc !== undefined && imgSrc !== null ? (
-          <ImageSection>
-            <GlowEffect />
-            <Avatar>
-              {imgSrc ? (
-                <AvatarImageTeacher
-                  src={imgSrc}
-                  alt={`صورة تخص ${name || "المعلم"}`}
-                />
-              ) : (
-                <AvatarPlaceholderTeacher
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </AvatarPlaceholderTeacher>
-              )}
-            </Avatar>
-          </ImageSection>
-        ) : null}{" "}
-        <NameSection>
-          <TeacherNameTeacher>{name}</TeacherNameTeacher>
-          <NameUnderline />
-        </NameSection>
-        {desc && <Description>{desc}</Description>}
-        <RatingSection>
-          <Stars>{renderStars()}</Stars>
-          <RatingTextTeacher>({starIcon.toFixed(1)})</RatingTextTeacher>
-        </RatingSection>
-        <HoverOverlay />
-      </CardContentTeacher>
-    </Card>
-  );
-};
 </file>
 
 <file path="src/components/cartHeader/index.jsx">
@@ -2209,99 +1145,6 @@ export const StyledCartHeader = styled.div`
         color: var(--link-color);
     }
   `
-</file>
-
-<file path="src/components/CheckAndLable/index.jsx">
-// style
-import {
-  CheckAndLabelContainer,
-  CheckAndLabelWrapper,
-  HiddenCheckBox,
-  StyledLabel,
-} from "./style";
-
-
-
-export const CheckAndLabel = ({
-  text,
-  id,
-  onChange,
-  defaultChecked = false,
-}) => {
-  return (
-    <CheckAndLabelContainer>
-      <CheckAndLabelWrapper>
-        <HiddenCheckBox
-          type="checkbox"
-          id={id}
-          onChange={onChange}
-          defaultChecked={defaultChecked}
-        />
-        <StyledLabel htmlFor={id}>{text}</StyledLabel>
-      </CheckAndLabelWrapper>
-    </CheckAndLabelContainer>
-  );
-};
-</file>
-
-<file path="src/components/CheckAndLable/style.js">
-// style.js
-import styled from "styled-components";
-
-// Hide the native checkbox
-export const HiddenCheckBox = styled.input`
-  display: none;
-
-  &:checked + label::before {
-    background:${props => props.theme.linearGradient};
-    border-color: ${props => props.theme.checkBorder};
-  }
-
-`;
-
-export const StyledLabel = styled.label`
-  font-size: 16px;
-  cursor: pointer;
-  user-select: none;
-  position: relative;
-  padding-left: 24px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    right: -25px;
-    top: 2px;
-    width: 16px;
-    height: 16px;
-    border: 2px solid ${props => props.theme.checkBorder};
-    border-radius: 4px;
-    transition: all 0.2s ease;
-  }
-
-`;
-
-export const CheckAndLabelWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: 4px;
-  transition: background 0.2s ease;
-
-  &:hover {
-    color : ${props => props.theme.checkBorder};
-  }
-`;
-    
-
-export const CheckAndLabelContainer = styled.div`
-  width: 100%;
-
-  &.active {
-    background-color: #eef6ff;
-    color : ${props => props.theme.checkBorder};
-    border: 1px solid ${props => props.theme.checkBorder};
-  }
-`;
 </file>
 
 <file path="src/components/CommentForm/index.jsx">
@@ -4687,133 +3530,6 @@ export const StyledNoVideos = styled.h2`
 `;
 </file>
 
-<file path="src/components/paginations/index.jsx">
-import { PaginationButton, PaginationContainer, PaginationWrapper } from "./style"
-
-function Pagination({ setCurrentPage, currentPage, totalPages }) {
-  return (
-    <PaginationWrapper>
-      <PaginationContainer>
-        <PaginationButton
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15,18 9,12 15,6" />
-          </svg>
-        </PaginationButton>
-
-        {Array.from({ length: totalPages }, (_, index) => (
-          <PaginationButton
-            key={index}
-            onClick={() => setCurrentPage(index + 1)}
-            $active={index + 1 === currentPage}
-          >
-            {index + 1}
-          </PaginationButton>
-        ))}
-
-        <PaginationButton
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="9,18 15,12 9,6" />
-          </svg>
-        </PaginationButton>
-      </PaginationContainer>
-    </PaginationWrapper>
-  )
-}
-
-export default Pagination
-</file>
-
-<file path="src/components/paginations/style.js">
-import styled from "styled-components"
-
-// Wrapper for pagination container (centers horizontally)
-export const PaginationWrapper = styled.div`
-  display: block;
-  margin: auto;
-`
-
-// Container for pagination buttons with responsive gap
-export const PaginationContainer = styled.div`
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 20px 0;
-  flex-wrap: wrap;
-
-  @media (max-width: 768px) {
-    gap: 6px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 4px;
-  }
-`
-
-// Pagination button styles
-export const PaginationButton = styled.button`
-  min-width: 36px;
-  height: 36px;
-  padding: 0 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: ${({ theme }) => theme.checkBorder};
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  svg {
-    transform: none;
-  }
-
-  // Hover style applies only when not disabled and not active
-  &:hover:not(:disabled) {
-    background-color: #f0f0f0;
-    opacity: 0.5;
-  }
-
-  // Active button styles, controlled by $active prop
-  ${({ $active, theme }) =>
-    $active &&
-    `
-      background-color: ${theme.checkBorder};
-      color: #f0f0f0;
-      border-color: ${theme.checkBorder};
-      cursor: default;
-      pointer-events: none;
-  `}
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 768px) {
-    min-width: 32px;
-    height: 32px;
-    padding: 0 10px;
-    font-size: 13px;
-  }
-
-  @media (max-width: 480px) {
-    min-width: 28px;
-    height: 28px;
-    padding: 0 8px;
-    font-size: 12px;
-  }
-`
-</file>
-
 <file path="src/components/progress/index.jsx">
 //react
 import { ProgressWrapper } from "./style";
@@ -4846,70 +3562,6 @@ border-radius: 8px;
     
 }
 `
-</file>
-
-<file path="src/components/ProtectedRoute/index.jsx">
-import { Navigate, Outlet } from "react-router-dom";
-import { PATH } from "../../routes";
-
-const ProtectedRoute = () => {
-  const user = localStorage.getItem("user");
-
-  return user ? <Outlet /> : <Navigate to={`/${PATH.NotAuth}`} replace />;
-};
-
-export default ProtectedRoute;
-</file>
-
-<file path="src/components/ProtectedRoute/ProtectedDashboardRoute.jsx">
-import { useEffect } from "react";
-import { PATH } from "../../routes";
-import { Navigate, Outlet } from "react-router-dom";
-import DashboardApp from "../../dashboard/App";
-import { setLayout, useMaterialUIController } from "../../dashboard/context";
-
-const ProtectedDashboardRoute = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const role = user?.role;
-
-    const [controller, dispatch] = useMaterialUIController();
-
-    useEffect(() => {
-        setLayout(dispatch, "dashboard"); // 👈 هذا مهم جداً
-    }, []);
-
-    if (!user || (role !== "admin" && role !== "teacher")) {
-        return <Navigate to={`/${PATH.NotAuth}`} replace />;
-    }
-
-    return (
-        <DashboardApp role={role}>
-            <Outlet />
-        </DashboardApp>
-    );
-};
-
-export default ProtectedDashboardRoute;
-</file>
-
-<file path="src/components/ProtectedRoute/RoleProtectedRoute.jsx">
-import { Navigate, Outlet } from "react-router-dom";
-import { PATH } from "../../routes";
-
-// Props: allowedRoles (array), children (JSX)
-const RoleProtectedRoute = ({ allowedRoles, children }) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const role = user?.role;
-
-    if (!user || !allowedRoles.includes(role)) {
-        // Redirect unauthorized users to /unauthorized page
-        return <Navigate to={`/${PATH.NotAuth}`} replace />;
-    }
-
-    return children; // allow access
-};
-
-export default RoleProtectedRoute;
 </file>
 
 <file path="src/components/ReviewListSection/index.jsx">
@@ -5202,206 +3854,6 @@ export const ReviewActions = styled.div`
     cursor: pointer;
   }
    `
-</file>
-
-<file path="src/components/search/index.jsx">
-//react
-import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-// Style
-import {
-  WrapperSearch,
-  InputBar,
-  SvgICon,
-  SuggestionBox,
-  SuggestionItem,
-} from "./style";
-
-// Context
-import { SearchContext } from "../../context/SearchContext";
-
-// Routes
-import { PATH } from "../../routes";
-
-// Sample static data (replace with API if needed)
-const allCourses = [
-  "الكيمياء",
-  "الفيزياء",
-  "الرياضيات",
-  "اللغة العربية",
-  "اللغة الإنجليزية",
-  "العلوم الحياتية",
-  "العلوم العامة",
-  "التاريخ",
-  "البرمجة الأساسية",
-];
-
-const SearchBar = () => {
-  const navigate = useNavigate();
-  const { search, setSearch } = useContext(SearchContext);
-  const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    if (value.length > 1) {
-      const filtered = allCourses.filter((course) =>
-        course.toLowerCase().includes(value.toLowerCase())
-      );
-      setSuggestions(filtered);
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-      setSuggestions([]);
-    }
-  };
-
-  const handleSearch = () => {
-    if (search.trim() !== "") {
-      navigate(`/${PATH.Courses}`);
-      setShowSuggestions(false);
-    }
-  };
-
-  const handleSelectSuggestion = (value) => {
-    setSearch(value);
-    setShowSuggestions(false);
-    navigate(`/${PATH.Courses}`);
-  };
-
-  return (
-    <WrapperSearch style={{ position: "relative" }}>
-      <InputBar
-        type="text"
-        value={search}
-        placeholder="ابحث عن الدورة"
-        onChange={handleChange}
-        onFocus={() => search && setShowSuggestions(true)}
-        onClick={() => setTimeout(() => setShowSuggestions(false), 150)}
-      />
-
-      <SvgICon
-        className="iconBar"
-        focusable="false"
-        viewBox="0 0 24 24"
-        tabIndex="-1"
-        title="Search"
-        onClick={handleSearch}
-      >
-        <path
-          fill="${props => props.theme.checkBorder};
-"
-          d="M15.5 14h-.79l-.28-.27C15.41 12.59 
-          16 11.11 16 9.5 16 5.91 13.09 3 
-          9.5 3S3 5.91 3 9.5 5.91 16 
-          9.5 16c1.61 0 3.09-.59 
-          4.23-1.57l.27.28v.79l5 4.99L20.49 
-          19zm-6 0C7.01 14 5 11.99 
-          5 9.5S7.01 5 9.5 5 
-          14 7.01 14 9.5 11.99 14 9.5 14"
-        />
-      </SvgICon>
-
-      {showSuggestions && suggestions.length > 0 && (
-        <SuggestionBox>
-          {suggestions.map((s, index) => (
-            <SuggestionItem
-              key={index}
-              onClick={() => handleSelectSuggestion(s)}
-            >
-              {s}
-            </SuggestionItem>
-          ))}
-        </SuggestionBox>
-      )}
-    </WrapperSearch>
-  );
-};
-
-export default SearchBar;
-</file>
-
-<file path="src/components/search/style.js">
-import styled from "styled-components";
-
-export const WrapperSearch = styled.div`
-  background-color: transparent;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 100px 0px;
-
-`;
-
-export const SvgICon = styled.svg`
-  width: 40px;
-  height: 50px;
-  outline: none;
-  cursor: pointer;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-  background-color: #fff;
-  fill: ${props => props.theme.checkBorder};
-;
-    transition: all 0.5s linear;
-
-  &.iconBar {
-    /* optional additional styles */
-  }
-`;
-
-export const InputBar = styled.input`
-  width: 60%;
-  height: 50px;
-  border: none;
-  outline: none;
-  font-size: 20px;
-  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  padding: 0px 15px;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-    transition: all 0.5s linear;
-
-  &::placeholder {
-    font-size: 18px;
-  }
-
-  @media (max-width: 768px) {
-    width: 80%;    
-  }
-`;
-
-export const SuggestionBox = styled.ul`
-  position: absolute;
-  top: 110%; /* places it just below the input */
-  right: 20%; /* aligns to the right of the input */
-  width: 50%; /* or use a fixed width like 300px */
-  background: white;
-    color : ${props => props.theme.checkBorder};
-  border-top: none;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 99;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`;
-
-export const SuggestionItem = styled.li`
-  padding: 10px 16px;
-  width: 100%;
-  cursor: pointer;
-  transition: background 0.2s;
-  text-align: start;
-
-  &:hover {
-    background-color: #f1f5f9;
-  }
-`;
 </file>
 
 <file path="src/components/Star/index.jsx">
@@ -5711,11 +4163,6 @@ const VideoResources = ({ resources = [] }) => {
 export default VideoResources;
 </file>
 
-<file path="src/config.js">
-// export const API_URL = "http://localhost:5000/api/v1";
-export const API_URL = "https://tawjihi-cboq.onrender.com/api/v1";
-</file>
-
 <file path="src/constant/ACTIONS.js">
 export const Actions = {
     //Wish List Actions
@@ -5727,26 +4174,6 @@ export const Actions = {
     AddToCartList: "addToCartList",
     RemoveFromCartList: "removeFromCartList",
 };
-</file>
-
-<file path="src/context/AuthContext.js">
-//react
-import { createContext, useState } from "react";
-
-export const AuthContext = createContext();
-
-
-export const AuthProvider = ({ children }) => {
-
-    // Global Data
-    const [isAuth, setIsAuth] = useState(false);
-    return (
-        // Provider Context
-        <AuthContext.Provider value={{ isAuth, setIsAuth }}>
-            {children}
-        </AuthContext.Provider>
-    );
-}
 </file>
 
 <file path="src/context/CommentContext.js">
@@ -6035,26 +4462,6 @@ export const CommentsProvider = ({ children }) => {
 
 // Hook to use in any component
 export const useComments = () => useContext(CommentsContext);
-</file>
-
-<file path="src/context/DataCourses.js">
-//react
-import { createContext, useState } from "react";
-
-export const DataCourses = createContext();
-
-export const DataCoursesProvider = ({ children }) => {
-
-  // Global Data
-  const [dataCourses, setDataCourses] = useState([]);
-
-  return (
-    // Provider Context
-    <DataCourses.Provider value={{ dataCourses, setDataCourses }}>
-      {children}
-    </DataCourses.Provider>
-  );
-};
 </file>
 
 <file path="src/context/LogoutContext.js">
@@ -29436,6 +27843,8 @@ export const lightTheme = {
     // Borders
     border:       colors.gray[200],
     borderStrong: colors.gray[300],
+
+    heroBg: colors.gray[900],
   },
 
   typography,
@@ -29615,10 +28024,16 @@ export const authApi = {
     return data;
   },
 
-  register: async (userData) => {
-    const { data } = await axiosInstance.post('/auth/signup', userData);
-    return data;
-  },
+// register يدعم FormData
+register: async (userData) => {
+  const isFormData = userData instanceof FormData;
+  const { data } = await axiosInstance.post('/auth/signup', userData, {
+    headers: isFormData
+      ? { 'Content-Type': 'multipart/form-data' }
+      : { 'Content-Type': 'application/json' },
+  });
+  return data;
+},
 
   // 🟡 هنا التغيير — مش /auth/me
   // الـ backend يقرأ الـ token من الـ cookie تلقائياً
@@ -29742,13 +28157,15 @@ export function AuthProvider({ children }) {
   });
 
   // Register mutation
-  const registerMutation = useMutation({
-    mutationFn: authApi.register,
-    onSuccess: (data) => {
-      // نفس الـ structure
+const registerMutation = useMutation({
+  mutationFn: authApi.register,
+  onSuccess: (data) => {
+    // لو teacher — ما في user يرجع
+    if (data?.user) {
       queryClient.setQueryData(AUTH_QUERY_KEY, data.user);
-    },
-  });
+    }
+  },
+});
 
   const value = {
     // البيانات
@@ -30830,24 +29247,24 @@ export const VerificationCode = () => {
 // src/features/courses/api/coursesApi.js
 import { axiosInstance } from '../../../shared/lib/axiosInstance';
 
+// الـ backend يرجع { status, data: { docs, ... } } أو { status, data: [...] }
+// نحتاج نصلح كل الـ functions
+
 export const coursesApi = {
   getAll: async (params) => {
     const { data } = await axiosInstance.get('/courses', { params });
-    return data.data.docs;
+    // backend يرجع { status: 'success', data: { docs: [...] } }
+    return data;
   },
 
   getById: async (id) => {
     const { data } = await axiosInstance.get(`/courses/${id}`);
-    return data.data.docs;
+    return data;
   },
 
-  // ✅ Cart — الـ routes الصحيحة من CartRouts.js
-  // GET    /cart
-  // POST   /cart/:courseId
-  // DELETE /cart/:courseId
-  // DELETE /cart  (clear)
   getCart: async () => {
     const { data } = await axiosInstance.get('/cart');
+    // backend يرجع { status: 'success', cart: { courses: [...] } }
     return data;
   },
 
@@ -30861,12 +29278,9 @@ export const coursesApi = {
     return data;
   },
 
-  // ✅ Wishlist — من wishlistRoute.js
-  // GET    /wishlist
-  // POST   /wishlist/:courseId
-  // DELETE /wishlist/:courseId
   getWishlist: async () => {
     const { data } = await axiosInstance.get('/wishlist');
+    // backend يرجع { status: 'success', wishlist: [...] }  
     return data;
   },
 
@@ -31087,11 +29501,11 @@ export function CourseCardSkeleton() {
 
 <file path="src/features/courses/components/CourseCard/index.jsx">
 // src/features/courses/components/CourseCard/index.jsx
-import { useNavigate } from 'react-router-dom';
-import { Heart, ShoppingCart, User, BookOpen } from 'lucide-react';
-import { useCourseActions } from '../../hooks/useCourseActions';
-import { StarRating } from './StarRating';
-import { Badge } from '../../../../shared/components';
+import { useNavigate } from "react-router-dom";
+import { Heart, ShoppingCart, User, BookOpen } from "lucide-react";
+import { useCourseActions } from "../../hooks/useCourseActions";
+import { StarRating } from "./StarRating";
+import { Badge } from "../../../../shared/components";
 import {
   CardWrapper,
   ImageWrapper,
@@ -31106,11 +29520,12 @@ import {
   PriceWrapper,
   CurrentPrice,
   OldPrice,
-} from './CourseCard.styles';
+} from "./CourseCard.styles";
 
 export function CourseCard({ course }) {
   const navigate = useNavigate();
-  const { isInCart, isInWishlist, toggleCart, toggleWishlist } = useCourseActions();
+  const { isInCart, isInWishlist, toggleCart, toggleWishlist } =
+    useCourseActions();
 
   // 🟡 [تحسين] destructuring هنا بدل ما نمرر 10 props منفصلة
   const {
@@ -31126,27 +29541,29 @@ export function CourseCard({ course }) {
     branches = [],
   } = course;
 
+
+  const courseId = _id ?? course.id;
+
   const handleCardClick = () => {
-    navigate(`/courses/${_id}`);
+    navigate(`/courses/${courseId}`);
   };
 
   const handleCartClick = (e) => {
     // 🟡 نوقف الـ event عشان ما يفتح صفحة الكورس
     e.stopPropagation();
-    toggleCart(_id);
+    toggleCart(courseId);
   };
 
   const handleWishlistClick = (e) => {
     e.stopPropagation();
-    toggleWishlist(_id);
+    toggleWishlist(courseId);
   };
 
   return (
     <CardWrapper onClick={handleCardClick} role="article">
-
       <ImageWrapper>
         <CourseImage
-          src={img || '/assets/img/logo.png'}
+          src={img || "/assets/img/logo.png"}
           alt={name}
           loading="lazy"
         />
@@ -31154,27 +29571,30 @@ export function CourseCard({ course }) {
         <ActionButtons>
           <ActionBtn
             onClick={handleCartClick}
-            $active={isInCart(_id)}
-            aria-label={isInCart(_id) ? 'إزالة من السلة' : 'إضافة للسلة'}
+            $active={isInCart(courseId)}
+            aria-label={isInCart(courseId) ? "إزالة من السلة" : "إضافة للسلة"}
           >
             <ShoppingCart size={16} />
           </ActionBtn>
 
           <ActionBtn
             onClick={handleWishlistClick}
-            $active={isInWishlist(_id)}
-            aria-label={isInWishlist(_id) ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
+            $active={isInWishlist(courseId)}
+            aria-label={
+              isInWishlist(courseId) ? "إزالة من المفضلة" : "إضافة للمفضلة"
+            }
           >
-            <Heart size={16} fill={isInWishlist(_id) ? 'currentColor' : 'none'} />
+            <Heart
+              size={16}
+              fill={isInWishlist(courseId) ? "currentColor" : "none"}
+            />
           </ActionBtn>
         </ActionButtons>
       </ImageWrapper>
 
       <CardBody>
         <CourseMeta>
-          {subject?.name && (
-            <Badge variant="primary">{subject.name}</Badge>
-          )}
+          {subject?.name && <Badge variant="primary">{subject.name}</Badge>}
           {branches[0]?.name && (
             <Badge variant="gray">{branches[0].name}</Badge>
           )}
@@ -31197,12 +29617,8 @@ export function CourseCard({ course }) {
               <Badge variant="success">مجاني</Badge>
             ) : (
               <>
-                <CurrentPrice>
-                  {priceAfterDiscount ?? price} ₪
-                </CurrentPrice>
-                {priceAfterDiscount && (
-                  <OldPrice>{price} ₪</OldPrice>
-                )}
+                <CurrentPrice>{priceAfterDiscount ?? price} ₪</CurrentPrice>
+                {priceAfterDiscount && <OldPrice>{price} ₪</OldPrice>}
               </>
             )}
           </PriceWrapper>
@@ -31214,7 +29630,6 @@ export function CourseCard({ course }) {
           )}
         </CardFooter>
       </CardBody>
-
     </CardWrapper>
   );
 }
@@ -31478,6 +29893,7 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
 </file>
 
 <file path="src/features/courses/components/CourseDetails/CourseDetails.styles.js">
+// src/features/courses/components/CourseDetails/CourseDetails.styles.js
 import styled from 'styled-components';
 
 export const PageWrapper = styled.div`
@@ -31485,9 +29901,8 @@ export const PageWrapper = styled.div`
   min-height: 100vh;
 `;
 
-// Hero — الجزء العلوي الداكن
 export const HeroSection = styled.div`
-  background: ${({ theme }) => theme.colors.gray[900]};
+  background: ${({ theme }) => theme.colors.textPrimary};
   padding: ${({ theme }) => `${theme.spacing[12]} ${theme.spacing[6]}`};
   color: white;
 
@@ -31581,7 +29996,6 @@ export const TeacherName = styled.span`
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 `;
 
-// Sticky Purchase Card
 export const PurchaseCard = styled.div`
   background: ${({ theme }) => theme.colors.bgPrimary};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
@@ -31642,7 +30056,6 @@ export const DiscountBadge = styled.span`
   border-radius: ${({ theme }) => theme.borderRadius.md};
 `;
 
-// Main Content Area
 export const ContentArea = styled.div`
   max-width: 1280px;
   margin: 0 auto;
@@ -32162,13 +30575,27 @@ export function Pagination({ currentPage, totalPages, onPageChange }) {
 }
 </file>
 
+<file path="src/features/courses/hooks/useCourse.js">
+import { useQuery } from '@tanstack/react-query';
+import { coursesApi } from '../api/coursesApi';
+
+export function useCourse(id) {
+  return useQuery({
+    queryKey: ['courses', id],
+    queryFn: () => coursesApi.getById(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    select: (data) => {
+      // backend يرجع { status, data: { course } } أو { status, data: {...} }
+      return data?.data?.course ?? data?.data ?? data;
+    },
+  });
+}
+</file>
+
 <file path="src/features/courses/hooks/useCourseActions.js">
 // src/features/courses/hooks/useCourseActions.js
-//
-// 🔴 [مشكلة في الكود القديم] منطق الـ cart والـ wishlist كان مكرر
-// في كل component يستخدمهم — CourseCard, Wishlist, CartList
-// الحل: hook واحد يحمل كل المنطق
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { coursesApi } from '../api/coursesApi';
@@ -32178,45 +30605,45 @@ export const CART_QUERY_KEY     = ['cart'];
 export const WISHLIST_QUERY_KEY = ['wishlist'];
 
 export function useCourseActions() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
-    const { user } = useAuth(); 
 
-
-  // جلب الـ cart والـ wishlist مرة واحدة — كل الكروت تستفيد من نفس الـ cache
   const { data: cartItems = [] } = useQuery({
     queryKey: CART_QUERY_KEY,
     queryFn: async () => {
       const data = await coursesApi.getCart();
-      return data.cart ?? [];
+      // backend: { status, cart: { courses: [...] } }
+      return data?.cart?.courses ?? [];
     },
-    // 🟡 لو المستخدم مش logged in، الـ request سيفشل بـ 401
-    // الـ interceptor في axiosInstance سيتعامل معها
+    enabled: !!user,
     retry: false,
-        enabled: !!user,
-
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const { data: wishlistItems = [] } = useQuery({
     queryKey: WISHLIST_QUERY_KEY,
     queryFn: async () => {
       const data = await coursesApi.getWishlist();
-      return data.wishlist ?? [];
+      // backend: { status, wishlist: [...] } — wishlist موجود في الـ user object
+      return data?.wishlist ?? data?.data?.wishlist ?? [];
     },
+    enabled: !!user,
     retry: false,
-        enabled: !!user,
-
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
-  // Helpers — بدل ما كل component يعمل .find بنفسه
-  const isInCart     = (courseId) => cartItems.some(item => item._id === courseId);
-  const isInWishlist = (courseId) => wishlistItems.some(item => item._id === courseId);
+  const isInCart     = (courseId) => cartItems.some(item =>
+    (item._id ?? item) === courseId
+  );
+  const isInWishlist = (courseId) => wishlistItems.some(item =>
+    (item._id ?? item) === courseId
+  );
 
-  // Cart mutations
   const addToCartMutation = useMutation({
     mutationFn: coursesApi.addToCart,
     onSuccess: () => {
-      // 🟡 [تحسين] بدل ما نحدث الـ state يدوياً،
-      // نعمل invalidate للـ cache وTanStack Query يجيب البيانات الجديدة
       queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
       toast.success('تمت الإضافة إلى السلة');
     },
@@ -32225,18 +30652,16 @@ export function useCourseActions() {
 
   const removeFromCartMutation = useMutation({
     mutationFn: coursesApi.removeFromCart,
-    // 🟡 [تحسين] Optimistic update — نحذف من الـ UI فوراً
-    // بدون ما ننتظر الـ server، لو فشل نرجع للحالة القديمة
     onMutate: async (courseId) => {
       await queryClient.cancelQueries({ queryKey: CART_QUERY_KEY });
-      const previousCart = queryClient.getQueryData(CART_QUERY_KEY);
+      const prev = queryClient.getQueryData(CART_QUERY_KEY);
       queryClient.setQueryData(CART_QUERY_KEY, (old = []) =>
-        old.filter(item => item._id !== courseId)
+        old.filter(item => (item._id ?? item) !== courseId)
       );
-      return { previousCart };
+      return { prev };
     },
-    onError: (err, courseId, context) => {
-      queryClient.setQueryData(CART_QUERY_KEY, context.previousCart);
+    onError: (err, id, ctx) => {
+      queryClient.setQueryData(CART_QUERY_KEY, ctx.prev);
       toast.error('حدث خطأ، حاول مجدداً');
     },
     onSettled: () => {
@@ -32245,7 +30670,6 @@ export function useCourseActions() {
     },
   });
 
-  // Wishlist mutations
   const addToWishlistMutation = useMutation({
     mutationFn: coursesApi.addToWishlist,
     onSuccess: () => {
@@ -32259,14 +30683,14 @@ export function useCourseActions() {
     mutationFn: coursesApi.removeFromWishlist,
     onMutate: async (courseId) => {
       await queryClient.cancelQueries({ queryKey: WISHLIST_QUERY_KEY });
-      const previousWishlist = queryClient.getQueryData(WISHLIST_QUERY_KEY);
+      const prev = queryClient.getQueryData(WISHLIST_QUERY_KEY);
       queryClient.setQueryData(WISHLIST_QUERY_KEY, (old = []) =>
-        old.filter(item => item._id !== courseId)
+        old.filter(item => (item._id ?? item) !== courseId)
       );
-      return { previousWishlist };
+      return { prev };
     },
-    onError: (err, courseId, context) => {
-      queryClient.setQueryData(WISHLIST_QUERY_KEY, context.previousWishlist);
+    onError: (err, id, ctx) => {
+      queryClient.setQueryData(WISHLIST_QUERY_KEY, ctx.prev);
       toast.error('حدث خطأ، حاول مجدداً');
     },
     onSettled: () => {
@@ -32275,35 +30699,24 @@ export function useCourseActions() {
     },
   });
 
-  // Actions — الـ component يستدعي هذه فقط، مش يعرف عن المنطق الداخلي
   const toggleCart = (courseId) => {
-    if (isInCart(courseId)) {
-      removeFromCartMutation.mutate(courseId);
-    } else {
-      addToCartMutation.mutate(courseId);
-    }
+    if (!user) { toast.info('سجّل دخولك أولاً'); return; }
+    isInCart(courseId)
+      ? removeFromCartMutation.mutate(courseId)
+      : addToCartMutation.mutate(courseId);
   };
 
   const toggleWishlist = (courseId) => {
-    if (isInWishlist(courseId)) {
-      removeFromWishlistMutation.mutate(courseId);
-    } else {
-      addToWishlistMutation.mutate(courseId);
-    }
+    if (!user) { toast.info('سجّل دخولك أولاً'); return; }
+    isInWishlist(courseId)
+      ? removeFromWishlistMutation.mutate(courseId)
+      : addToWishlistMutation.mutate(courseId);
   };
 
   return {
-    // State
-    cartItems,
-    wishlistItems,
-    isInCart,
-    isInWishlist,
-
-    // Actions
-    toggleCart,
-    toggleWishlist,
-
-    // Loading states
+    cartItems, wishlistItems,
+    isInCart, isInWishlist,
+    toggleCart, toggleWishlist,
     isCartLoading:     addToCartMutation.isPending || removeFromCartMutation.isPending,
     isWishlistLoading: addToWishlistMutation.isPending || removeFromWishlistMutation.isPending,
   };
@@ -32311,18 +30724,23 @@ export function useCourseActions() {
 </file>
 
 <file path="src/features/courses/hooks/useCourses.js">
-// src/features/courses/hooks/useCourse.js
+// src/features/courses/hooks/useCourses.js
 import { useQuery } from '@tanstack/react-query';
 import { coursesApi } from '../api/coursesApi';
 
-export default function useCourse(id) {
+export const COURSES_QUERY_KEY = ['courses'];
+
+export default function useCourses(params = {}) {
   return useQuery({
-    queryKey: ['courses',id],
-    queryFn:  () => coursesApi.getById(id),
+    queryKey: [...COURSES_QUERY_KEY, params],
+    queryFn: () => coursesApi.getAll(params),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
     select: (data) => {
-      return data?.data ?? data?.course ?? data;
+      // backend يرجع { status, data: { docs: [...] } }
+      const courses = data?.data?.docs ?? data?.data ?? data?.courses ?? data;
+      return Array.isArray(courses) ? courses : [];
     },
   });
 }
@@ -32403,8 +30821,10 @@ import { useAuth } from '../../auth';
 import { toast } from 'react-toastify';
 
 const enrollmentApi = {
-  getMyEnrollments: async () => {
-    const { data } = await axiosInstance.get('/enrollments/myEnrollments');
+  getMyEnrollments: async (userId) => {
+    const { data } = await axiosInstance.get('/enrollments', {
+      params: { user: userId }
+    });
     return data;
   },
 
@@ -32426,8 +30846,8 @@ export function useEnrollment(courseId) {
   // جلب كل الكورسات اللي اشتراها المستخدم
   const { data: enrollmentsData } = useQuery({
     queryKey: ENROLLMENTS_QUERY_KEY,
-    queryFn:  enrollmentApi.getMyEnrollments,
-    enabled:  !!user,
+    queryFn: enrollmentApi.getMyEnrollments,
+    enabled: !!user,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     select: (data) => data?.data ?? data?.enrollments ?? data,
@@ -32457,8 +30877,8 @@ export function useEnrollment(courseId) {
   return {
     isEnrolled,
     enrollments,
-    checkout:           checkoutMutation.mutate,
-    isCheckoutLoading:  checkoutMutation.isPending,
+    checkout: checkoutMutation.mutate,
+    isCheckoutLoading: checkoutMutation.isPending,
   };
 }
 </file>
@@ -32503,6 +30923,8 @@ export function useBranches() {
 export { CourseCard }         from './components/CourseCard';
 export { CourseCardSkeleton } from './components/CourseCard/CourseCardSkeleton';
 export { useCourseActions }   from './hooks/useCourseActions';
+export { useCourses }         from './hooks/useCourses';
+export { useCourse }          from './hooks/useCourse'; 
 export { coursesApi }         from './api/coursesApi';
 </file>
 
@@ -32991,17 +31413,15 @@ ul {
 </file>
 
 <file path="src/index.js">
-// src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import { AppProviders } from './providers/providers';
-import { BrowserRouter } from 'react-router-dom';
+import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AppProviders>
-        <App />
+      <App />
     </AppProviders>
   </React.StrictMode>
 );
@@ -34469,6 +32889,9 @@ export default Auth;
 
 <file path="src/pages/Auth/Login/index.jsx">
 // src/pages/Auth/Login/index.jsx
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
@@ -34480,80 +32903,75 @@ import {
   Divider, OAuthButton, FooterText, ErrorBanner,
 } from '../components/AuthLayout.styles';
 
+const schema = yup.object({
+  email: yup
+    .string()
+    .email('البريد الإلكتروني غير صحيح')
+    .required('البريد الإلكتروني مطلوب'),
+  password: yup
+    .string()
+    .min(8, 'كلمة المرور 8 أحرف على الأقل')
+    .required('كلمة المرور مطلوبة'),
+});
+
 export default function Login() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { login, isLoginLoading, loginError } = useAuth();
-
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-
-  // 🟡 بعد الـ login نرجع للصفحة اللي كان رايح عليها
-  // لو ما في صفحة محددة نروح للـ home
   const from = location.state?.from?.pathname || '/';
 
-  const handleChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (formData) => {
     try {
       await login(formData);
       navigate(from, { replace: true });
     } catch {
-      // الـ error بيتعامل معه في AuthContext
+      // error يظهر من loginError
     }
   };
 
-  // استخرج رسالة الخطأ من الـ response
-  const errorMessage = loginError?.response?.data?.message
-    ?? loginError?.message
-    ?? null;
+  const errorMessage = loginError?.response?.data?.message ?? loginError?.message ?? null;
 
   return (
     <AuthLayout
       panelTitle="مرحباً بعودتك"
-      panelSubtitle="سجّل دخولك للوصول إلى كورساتك ومتابعة مسيرتك التعليمية"
+      panelSubtitle="سجّل دخولك للوصول إلى كورساتك"
     >
       <FormHeader>
         <FormTitle>تسجيل الدخول</FormTitle>
         <FormSubtitle>أدخل بياناتك للمتابعة</FormSubtitle>
       </FormHeader>
 
-      {errorMessage && (
-        <ErrorBanner>{errorMessage}</ErrorBanner>
-      )}
+      {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+      >
         <Input
           id="email"
-          name="email"
           type="email"
           label="البريد الإلكتروني"
           placeholder="example@email.com"
-          value={formData.email}
-          onChange={handleChange}
           leftIcon={<Mail size={18} />}
-          required
+          error={errors.email?.message}
           dir="ltr"
+          {...register('email')}
         />
 
         <Input
           id="password"
-          name="password"
           type={showPassword ? 'text' : 'password'}
           label="كلمة المرور"
           placeholder="••••••••"
-          value={formData.password}
-          onChange={handleChange}
           leftIcon={<Lock size={18} />}
+          error={errors.password?.message}
           rightIcon={
             <button
               type="button"
@@ -34563,28 +32981,20 @@ export default function Login() {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           }
-          required
+          {...register('password')}
         />
 
         <div style={{ textAlign: 'left' }}>
           <button
             type="button"
             onClick={() => navigate('/auth/forgot-password')}
-            style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: '14px', color: '#2563EB',
-            }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#2563EB' }}
           >
             نسيت كلمة المرور؟
           </button>
         </div>
 
-        <Button
-          type="submit"
-          fullWidth
-          isLoading={isLoginLoading}
-          size="lg"
-        >
+        <Button type="submit" fullWidth isLoading={isLoginLoading} size="lg">
           تسجيل الدخول
         </Button>
       </form>
@@ -34593,13 +33003,9 @@ export default function Login() {
 
       <OAuthButton
         type="button"
-        onClick={() => {
-          window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
-        }}
+        onClick={() => { window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`; }}
       >
-        <img src="/assets/img/google.svg" alt="Google" width={20} height={20}
-          onError={(e) => { e.target.style.display = 'none'; }}
-        />
+        <img src="/assets/img/google.png" alt="Google" width={20} height={20} />
         المتابعة عبر Google
       </OAuthButton>
 
@@ -34616,9 +33022,12 @@ export default function Login() {
 
 <file path="src/pages/Auth/Register/index.jsx">
 // src/pages/Auth/Register/index.jsx
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, User, Phone } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
 import { useAuth } from '../../../features/auth';
 import { AuthLayout } from '../components/AuthLayout';
 import { Button, Input, Badge } from '../../../shared/components';
@@ -34627,56 +33036,82 @@ import {
   Divider, OAuthButton, FooterText, ErrorBanner,
 } from '../components/AuthLayout.styles';
 
+// Schema الطالب
+const studentSchema = yup.object({
+  name:            yup.string().required('الاسم مطلوب'),
+  email:           yup.string().email('بريد غير صحيح').required('البريد مطلوب'),
+  phone:           yup.string().required('الهاتف مطلوب'),
+  password:        yup.string().min(8, '8 أحرف على الأقل').required('كلمة المرور مطلوبة'),
+  confirmPassword: yup.string()
+    .oneOf([yup.ref('password')], 'كلمات المرور غير متطابقة')
+    .required('تأكيد كلمة المرور مطلوب'),
+});
+
+// Schema المعلم — يضيف CV
+const teacherSchema = studentSchema.shape({
+  cv: yup.mixed().required('السيرة الذاتية مطلوبة للمعلمين'),
+});
+
 export default function Register() {
   const navigate = useNavigate();
-  const { register, isRegisterLoading, registerError } = useAuth();
+  const { register: registerUser, isRegisterLoading, registerError } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState('user');
+  const [cvFileName, setCvFileName] = useState('');
 
-  const [showPassword, setShowPassword]   = useState(false);
-  const [selectedRole, setSelectedRole]   = useState('user');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    role: 'user',
-  });
+  const schema = selectedRole === 'teacher' ? teacherSchema : studentSchema;
 
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    reset,
+  } = useForm({ resolver: yupResolver(schema) });
 
   const handleRoleChange = (role) => {
     setSelectedRole(role);
-    setFormData(prev => ({ ...prev, role }));
+    reset();
+    setCvFileName('');
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleCvChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setValue('cv', file);
+      setCvFileName(file.name);
+    }
+  };
+
+  const onSubmit = async (formData) => {
     try {
-      await register(formData);
-      // لو teacher — الـ backend بيرجع رسالة بدون user
-      // نروح للـ login مع رسالة
+      // 🟡 لو معلم نرسل FormData عشان يدعم رفع الـ CV
       if (selectedRole === 'teacher') {
+        const fd = new FormData();
+        Object.keys(formData).forEach(key => {
+          if (key !== 'cv') fd.append(key, formData[key]);
+        });
+        fd.append('cv', formData.cv);
+        fd.append('role', 'teacher');
+        await registerUser(fd);
         navigate('/auth/login', {
           state: { message: 'تم إرسال طلبك، انتظر موافقة الإدارة' }
         });
       } else {
+        await registerUser({ ...formData, role: 'user' });
         navigate('/');
       }
     } catch {
-      // الـ error في AuthContext
+      // error في registerError
     }
   };
 
-  const errorMessage = registerError?.response?.data?.message
-    ?? registerError?.message
-    ?? null;
+  const errorMessage = registerError?.response?.data?.message ?? registerError?.message ?? null;
 
   return (
     <AuthLayout
       panelTitle="انضم إلى توجيهي"
-      panelSubtitle="آلاف الطلاب يدرسون معنا كل يوم، ابدأ رحلتك التعليمية الآن"
+      panelSubtitle="آلاف الطلاب يدرسون معنا كل يوم"
     >
       <FormHeader>
         <FormTitle>إنشاء حساب جديد</FormTitle>
@@ -34684,27 +33119,21 @@ export default function Register() {
       </FormHeader>
 
       {/* Role Selector */}
-      <div style={{ display: 'flex', gap: '8px' }}>
-        {[
-          { value: 'user',    label: 'طالب'  },
-          { value: 'teacher', label: 'معلم'  },
-        ].map(({ value, label }) => (
+      <div style={{ display: 'flex', gap: 8 }}>
+        {[{ value: 'user', label: 'طالب' }, { value: 'teacher', label: 'معلم' }].map(({ value, label }) => (
           <button
             key={value}
             type="button"
             onClick={() => handleRoleChange(value)}
             style={{
-              flex: 1,
-              padding: '10px',
-              borderRadius: '8px',
+              flex: 1, padding: '10px',
+              borderRadius: 8,
               border: `2px solid ${selectedRole === value ? '#1B4FD8' : '#E2E8F0'}`,
               background: selectedRole === value ? '#EFF6FF' : 'white',
               color: selectedRole === value ? '#1B4FD8' : '#475569',
-              fontFamily: 'inherit',
-              fontSize: '14px',
+              fontFamily: 'inherit', fontSize: 14,
               fontWeight: selectedRole === value ? 600 : 400,
               cursor: 'pointer',
-              transition: 'all 0.15s ease',
             }}
           >
             {label}
@@ -34712,95 +33141,100 @@ export default function Register() {
         ))}
       </div>
 
-      {/* Teacher Notice */}
       {selectedRole === 'teacher' && (
-        <Badge variant="warning">
-          طلب المعلم يحتاج موافقة الإدارة قبل التفعيل
-        </Badge>
+        <Badge variant="warning">طلب المعلم يحتاج موافقة الإدارة قبل التفعيل</Badge>
       )}
 
-      {errorMessage && (
-        <ErrorBanner>{errorMessage}</ErrorBanner>
-      )}
+      {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+      >
         <Input
-          id="name"
-          name="name"
-          type="text"
-          label="الاسم الكامل"
-          placeholder="محمد أحمد"
-          value={formData.name}
-          onChange={handleChange}
+          id="name" type="text"
+          label="الاسم الكامل" placeholder="محمد أحمد"
           leftIcon={<User size={18} />}
-          required
+          error={errors.name?.message}
+          {...register('name')}
         />
 
         <Input
-          id="email"
-          name="email"
-          type="email"
-          label="البريد الإلكتروني"
-          placeholder="example@email.com"
-          value={formData.email}
-          onChange={handleChange}
+          id="email" type="email"
+          label="البريد الإلكتروني" placeholder="example@email.com"
           leftIcon={<Mail size={18} />}
-          required
+          error={errors.email?.message}
           dir="ltr"
+          {...register('email')}
         />
 
         <Input
-          id="phone"
-          name="phone"
-          type="tel"
-          label="رقم الهاتف"
-          placeholder="0599123456"
-          value={formData.phone}
-          onChange={handleChange}
+          id="phone" type="tel"
+          label="رقم الهاتف" placeholder="0599123456"
           leftIcon={<Phone size={18} />}
-          required
+          error={errors.phone?.message}
           dir="ltr"
+          {...register('phone')}
         />
 
         <Input
           id="password"
-          name="password"
           type={showPassword ? 'text' : 'password'}
-          label="كلمة المرور"
-          placeholder="8 أحرف على الأقل"
-          value={formData.password}
-          onChange={handleChange}
+          label="كلمة المرور" placeholder="8 أحرف على الأقل"
           leftIcon={<Lock size={18} />}
+          error={errors.password?.message}
           rightIcon={
-            <button
-              type="button"
-              onClick={() => setShowPassword(p => !p)}
-              style={{ cursor: 'pointer', display: 'flex', background: 'none', border: 'none', color: 'inherit' }}
-            >
+            <button type="button" onClick={() => setShowPassword(p => !p)}
+              style={{ cursor: 'pointer', display: 'flex', background: 'none', border: 'none', color: 'inherit' }}>
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           }
-          required
+          {...register('password')}
         />
 
         <Input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          label="تأكيد كلمة المرور"
-          placeholder="••••••••"
-          value={formData.confirmPassword}
-          onChange={handleChange}
+          id="confirmPassword" type="password"
+          label="تأكيد كلمة المرور" placeholder="••••••••"
           leftIcon={<Lock size={18} />}
-          required
+          error={errors.confirmPassword?.message}
+          {...register('confirmPassword')}
         />
 
-        <Button
-          type="submit"
-          fullWidth
-          isLoading={isRegisterLoading}
-          size="lg"
-        >
+        {/* CV Upload — للمعلم فقط */}
+        {selectedRole === 'teacher' && (
+          <div>
+            <label
+              htmlFor="cv-upload"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '12px 16px',
+                border: `1.5px dashed ${errors.cv ? '#DC2626' : '#CBD5E1'}`,
+                borderRadius: 12,
+                cursor: 'pointer',
+                background: '#F8FAFC',
+                color: '#475569',
+                fontSize: 14,
+              }}
+            >
+              <Upload size={18} />
+              {cvFileName || 'رفع السيرة الذاتية (PDF)'}
+            </label>
+            <input
+              id="cv-upload"
+              type="file"
+              accept=".pdf"
+              onChange={handleCvChange}
+              style={{ display: 'none' }}
+            />
+            {errors.cv && (
+              <span style={{ fontSize: 12, color: '#DC2626', marginTop: 4, display: 'block' }}>
+                {errors.cv.message}
+              </span>
+            )}
+          </div>
+        )}
+
+        <Button type="submit" fullWidth isLoading={isRegisterLoading} size="lg">
           إنشاء الحساب
         </Button>
       </form>
@@ -34809,18 +33243,14 @@ export default function Register() {
 
       <OAuthButton
         type="button"
-        onClick={() => {
-          window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
-        }}
+        onClick={() => { window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`; }}
       >
-        <img src="/assets/img/google.svg" alt="Google" width={20} height={20}
-          onError={(e) => { e.target.style.display = 'none'; }}
-        />
+        <img src="/assets/img/google.png" alt="Google" width={20} height={20} />
         التسجيل عبر Google
       </OAuthButton>
 
       <FooterText>
-        لديك حساب بالفعل؟{' '}
+        لديك حساب؟{' '}
         <button type="button" onClick={() => navigate('/auth/login')}>
           تسجيل الدخول
         </button>
@@ -35190,9 +33620,8 @@ export const Submit = styled.button`
 <file path="src/pages/CourseDetails/index.jsx">
 // src/pages/CourseOne/index.jsx
 import { useParams, useNavigate } from 'react-router-dom';
-import { Users, Star, BookOpen, User } from 'lucide-react';
 import { Button, Badge, Spinner } from '../../shared/components';
-import  useCourse         from '../../features//courses/hooks/useCourses';
+import  {useCourse}         from '../../features//courses/hooks/useCourse';
 import { useEnrollment }    from '../../features/courses/hooks/useEnrollment';
 import { useCourseActions } from '../../features/courses/hooks/useCourseActions';
 import { StarRating }       from '../../features/courses/components/CourseCard/StarRating';
@@ -35209,14 +33638,18 @@ import {
   ContentArea, MainContent, Section, SectionTitle, SectionText,
 } from '../../features/courses/components/CourseDetails/CourseDetails.styles';
 import {MainLayout} from "../../shared/components/layout/MainLayout"
-export default function CourseOne() {
-  const { id }     = useParams();
+import { Users, Star, BookOpen, User, Heart, ShoppingCart } from 'lucide-react';
+
+export default function CourseDetails() {
+  const { id } = useParams();
   const navigate   = useNavigate();
   const { user }   = useAuth();
+
 
   const { data: course, isLoading, isError } = useCourse(id);
   const { isEnrolled, checkout, isCheckoutLoading } = useEnrollment(id);
   const { isInCart, isInWishlist, toggleCart, toggleWishlist } = useCourseActions();
+
 
   if (isLoading) {
     return (
@@ -35246,6 +33679,8 @@ export default function CourseOne() {
     teacher, subject, branches = [],
     studentsCount = 0,
   } = course;
+
+  const courseId = _id ?? course.id ?? id; // id من useParams كـ fallback
 
   const discountPercent = price > 0 && priceAfterDiscount
     ? Math.round((1 - priceAfterDiscount / price) * 100)
@@ -35323,7 +33758,7 @@ export default function CourseOne() {
                     <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>المعلم</div>
                     <TeacherName
                       style={{ cursor: 'pointer' }}
-                      onClick={() => navigate(`/teachers/${teacher._id}`)}
+                      onClick={() => navigate(`/teachers/${teacher.courseId}`)}
                     >
                       {teacher.name}
                     </TeacherName>
@@ -35379,26 +33814,47 @@ export default function CourseOne() {
                 </Button>
 
                 {/* Cart & Wishlist — فقط لو مش enrolled */}
-                {!isEnrolled && (
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <Button
-                      variant="secondary"
-                      fullWidth
-                      size="sm"
-                      onClick={() => toggleCart(_id)}
-                    >
-                      {isInCart(_id) ? 'إزالة من السلة' : 'أضف للسلة'}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleWishlist(_id)}
-                    >
-                      {isInWishlist(_id) ? '❤️' : '🤍'}
-                    </Button>
-                  </div>
-                )}
+            {!isEnrolled && (
+  <div style={{ display: 'flex', gap: 8 }}>
 
+    {/* زر السلة */}
+    <Button
+      fullWidth
+      size="sm"
+      variant={isInCart(courseId) ? 'primary' : 'secondary'}
+      onClick={() => toggleCart(courseId)}
+      leftIcon={<ShoppingCart size={16} />}
+    >
+      {isInCart(courseId) ? 'إزالة من السلة' : 'أضف للسلة'}
+    </Button>
+
+    {/* زر المفضلة */}
+    <button
+      onClick={() => toggleWishlist(courseId)}
+      aria-label={isInWishlist(courseId) ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
+      style={{
+        width: 42,
+        height: 42,
+        borderRadius: 10,
+        border: `1.5px solid ${isInWishlist(courseId) ? '#DC2626' : '#E2E8F0'}`,
+        background: isInWishlist(courseId) ? '#FEF2F2' : 'white',
+        color: isInWishlist(courseId) ? '#DC2626' : '#94A3B8',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        transition: 'all 0.15s ease',
+        flexShrink: 0,
+      }}
+    >
+      <Heart
+        size={18}
+        fill={isInWishlist(courseId) ? 'currentColor' : 'none'}
+      />
+    </button>
+
+  </div>
+)}
                 {/* ما يتضمنه الكورس */}
                 <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
                   <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: 'var(--text-primary)' }}>
@@ -35426,12 +33882,12 @@ export default function CourseOne() {
 
             {/* Curriculum */}
             <Section>
-              <CourseCurriculum courseId={_id} isEnrolled={isEnrolled} />
+              <CourseCurriculum courseId={courseId} isEnrolled={isEnrolled} />
             </Section>
 
             {/* Reviews */}
             <Section>
-              <CourseReviews courseId={_id} />
+              <CourseReviews courseId={courseId} />
             </Section>
 
           </MainContent>
@@ -40977,52 +39433,40 @@ export { Spinner } from './Spinner';
 
 <file path="src/shared/components/Input/index.jsx">
 // src/shared/components/Input/index.jsx
+import { forwardRef } from 'react';
 import {
-  InputWrapper,
-  Label,
-  InputContainer,
-  StyledInput,
-  IconWrapper,
-  ErrorMessage,
-  HelperText,
+  InputWrapper, Label, InputContainer,
+  StyledInput, IconWrapper, ErrorMessage, HelperText,
 } from './Input.styles';
 
-export function Input({
-  label,
-  error,
-  helperText,
-  leftIcon,
-  rightIcon,
-  id,
-  ...props
-}) {
+export const Input = forwardRef(function Input({
+  label, error, helperText,
+  leftIcon, rightIcon, id, ...props
+}, ref) {
   return (
     <InputWrapper>
       {label && <Label htmlFor={id}>{label}</Label>}
 
       <InputContainer>
-        {leftIcon && (
-          <IconWrapper $position="left">{leftIcon}</IconWrapper>
-        )}
+        {leftIcon && <IconWrapper $position="left">{leftIcon}</IconWrapper>}
 
         <StyledInput
           id={id}
+          ref={ref}          // ← هذا هو الإصلاح
           $hasError={!!error}
           $hasLeftIcon={!!leftIcon}
           $hasRightIcon={!!rightIcon}
           {...props}
         />
 
-        {rightIcon && (
-          <IconWrapper $position="right">{rightIcon}</IconWrapper>
-        )}
+        {rightIcon && <IconWrapper $position="right">{rightIcon}</IconWrapper>}
       </InputContainer>
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
       {helperText && !error && <HelperText>{helperText}</HelperText>}
     </InputWrapper>
   );
-}
+});
 </file>
 
 <file path="src/shared/components/Input/Input.styles.js">
@@ -41213,170 +39657,10 @@ axiosInstance.interceptors.response.use(
 );
 </file>
 
-<file path="src/styles/style.js">
-//global style 
-import styled from "styled-components";
-
-export const WrapperNav = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-  background-color: var(--color-background); 
-  padding: 0.5rem 1rem;
-  ${(props) => props.theme ? `background-color : ${props.theme.background};
-    color : ${props.theme.color}` : ''}
-`;
-
-export const WrapperElementFlexCenter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-`;
-
-export const WrapperElementFlexSpace = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  justify-content: space-between;
-  width: 100%;
-
-  @media (max-width: 767px) {
-    justify-content: space-around;
-  align-items: start;
-  }
-`;
-</file>
-
-<file path="src/utils/axiosSetup.js">
-import axios from "axios";
-import { API_URL } from "../config";
-
-axios.defaults.withCredentials = true;
-
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && !config.headers?.Authorization) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    };
-  }
-  return config;
-});
-
-(async () => {
-  try {
-    const hasUser = Boolean(localStorage.getItem("user"));
-    const hasToken = Boolean(localStorage.getItem("token"));
-    if (hasUser && !hasToken) {
-      const res = await axios.get(`${API_URL}/auth/token`);
-      if (res?.data?.token) localStorage.setItem("token", res.data.token);
-    }
-  } catch {
-    // ignore: fallback to cookies if available
-  }
-})();
-</file>
-
 <file path="src/utils/convertToObject.js">
 //function to convert a JSON string to an object
 //This function takes a JSON string and converts it to an object
 export const convertToObj = (str) => JSON.parse(str)
-</file>
-
-<file path="src/utils/filterCourses.js">
-import { normalizeArabic } from "./normlizeArabic";
-
-export const matchName = (course, filterNames) => {
-    if (filterNames.length === 0) return true;
-
-    const courseName = normalizeArabic((course.name || "").toLowerCase());
-    return filterNames.some((name) =>
-        courseName.includes(normalizeArabic(name.toLowerCase()))
-    );
-};
-
-export const matchBranch = (course, filterBranches) => {
-    if (filterBranches.length === 0) return true;
-
-    const courseBranches = (course.branches || []).map((b) =>
-        normalizeArabic(b.name.toLowerCase())
-    );
-    return filterBranches.some((branch) =>
-        courseBranches.includes(normalizeArabic(branch.toLowerCase()))
-    );
-};
-
-export const matchSubject = (course, filterSubjects) => {
-    if (filterSubjects.length === 0) return true;
-
-    const subject = normalizeArabic(
-        course.subject?.name?.toLowerCase() || ""
-    );
-    return filterSubjects.some((s) =>
-        subject.includes(normalizeArabic(s.toLowerCase()))
-    );
-};
-
-export const matchPrice = (course, filterPrices) => {
-    if (filterPrices.length === 0) return true;
-
-    return filterPrices.some((priceFilter) => {
-        if (priceFilter === "free") return course.price === 0;
-        return course.price <= parseInt(priceFilter, 10);
-    });
-};
-
-export const matchSearch = (course, searchText) => {
-    if (!searchText) return true;
-
-    const courseName = normalizeArabic((course.name || "").toLowerCase());
-    return courseName.includes(normalizeArabic(searchText.toLowerCase()));
-};
-
-export const filterCourses = (courses, filters, searchText) => {
-    return courses.filter((course) => {
-        return (
-            matchName(course, filters.names) &&
-            matchBranch(course, filters.branches) &&
-            matchSubject(course, filters.subjects) &&
-            matchPrice(course, filters.prices) &&
-            matchSearch(course, searchText)
-        );
-    });
-};
-</file>
-
-<file path="src/utils/handleFilterChange.js">
-/**
- * Updates filters object based on checkbox changes.
- * @param {object} filters - current filters state
- * @param {string} id - filter id in the format "type-value"
- * @param {boolean} isChecked - checkbox checked state
- * @returns {object} updated filters state
- */
-export const updateFilters = (filters, id, isChecked) => {
-    const [type, value] = id.split("-");
-    const updated = { ...filters };
-
-    if (type === "branch") {
-        updated.branches = isChecked
-            ? [...filters.branches, value]
-            : filters.branches.filter(v => v !== value);
-    } else if (type === "subject") {
-        updated.subjects = isChecked
-            ? [...filters.subjects, value]
-            : filters.subjects.filter(v => v !== value);
-    } else if (type === "price") {
-        updated.prices = isChecked
-            ? [...filters.prices, value]
-            : filters.prices.filter(v => v !== value);
-    }
-
-    return updated;
-};
 </file>
 
 <file path="src/utils/normlizeArabic.js">
@@ -41384,29 +39668,6 @@ export const updateFilters = (filters, id, isChecked) => {
 export const normalizeArabic = (str) => {
   if (!str) return "";
   return str.startsWith("ال") ? str.slice(2) : str;
-};
-</file>
-
-<file path="src/utils/pagination.js">
-/**
- * Paginate an array of items.
- * @param {Array} items - The array of items to paginate.
- * @param {number} currentPage - Current active page (1-based).
- * @param {number} itemsPerPage - Number of items per page.
- * @returns {{currentItems: Array, totalPages: number, indexOfFirstItem: number, indexOfLastItem: number}}
- */
-export const paginate = (items, currentPage, itemsPerPage) => {
-    const totalPages = Math.ceil(items.length / itemsPerPage);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
-
-    return {
-        currentItems,
-        totalPages,
-        indexOfFirstItem,
-        indexOfLastItem,
-    };
 };
 </file>
 
