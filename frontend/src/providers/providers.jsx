@@ -1,9 +1,10 @@
-import { ThemeProvider } from 'styled-components';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { GlobalStyle, lightTheme } from '../design-system';
-import { AuthProvider } from '../features/auth';
-
+import { ThemeProvider } from "styled-components";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { GlobalStyle, lightTheme } from "../design-system";
+import { AuthProvider } from "../features/auth";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -20,6 +21,7 @@ export function AppProviders({ children }) {
       <ThemeProvider theme={lightTheme}>
         <GlobalStyle />
         <AuthProvider>
+          <ToastContainer position="bottom-left" rtl={true} autoClose={3000} />
           {children}
         </AuthProvider>
       </ThemeProvider>

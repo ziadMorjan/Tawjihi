@@ -34,6 +34,8 @@ export const lightTheme = {
     // Borders
     border:       colors.gray[200],
     borderStrong: colors.gray[300],
+
+    heroBg: colors.gray[900],
   },
 
   typography,

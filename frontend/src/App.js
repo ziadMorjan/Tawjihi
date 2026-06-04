@@ -1,20 +1,24 @@
-import { Outlet } from "react-router-dom";
-import { Suspense } from "react";
-import Loading from "./components/Loading";
-import DashboardApp from "./dashboard/App";
-import { MaterialUIControllerProvider } from "./dashboard/context";
+// src/App.js
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ProtectedRoute } from './features/auth';
+import Home         from './pages/Home';
+import Courses      from './pages/Courses';
+import Login        from './pages/Auth/Login';
+import Register     from './pages/Auth/Register';
+import OAuthSuccess from './pages/Auth/OAuthSuccess';
 
-function App() {
-  
+import CourseDetails    from './pages/CourseDetails';
+export default function App() {
   return (
-    <Suspense fallback={<Loading />}>
-      <Outlet />
-      
-      {/* <MaterialUIControllerProvider>
-        <DashboardApp />
-      </MaterialUIControllerProvider> */}
-    </Suspense>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/"                  element={<Home />} />
+        <Route path="/courses"           element={<Courses />} />
+        <Route path="/courses/:id" element={<CourseDetails />} />
+        <Route path="/auth/login"        element={<Login />} />
+        <Route path="/auth/register"     element={<Register />} />
+        <Route path="/oauth-success"     element={<OAuthSuccess />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

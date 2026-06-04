@@ -1,168 +1,269 @@
-// react
-import { useState, useMemo, useContext, useEffect } from "react";
+// src/pages/Courses/index.jsx
+import { useState } from "react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
+import styled from "styled-components";
+import { FiltersPanel } from "../../features/courses/components/FiltersPanel";
+import { Pagination } from "../../features/courses/components/Pagination";
+import { useCoursesFilters } from "../../features/courses/hooks/useCoursesFilters";
+import { Input, Badge } from "../../shared/components";
+import { MainLayout } from "../../shared/components/layout/MainLayout";
+import { CoursesGrid } from "../../components/CoursesGrid";
+import  useCourses from '../../features/courses/hooks/useCourses'
+/* ─── Layout ─── */
+const PageWrapper = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[6]}`};
 
-// style
-import { CoursesPageWraper } from "./style";
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[4]}`};
+  }
+`;
 
-// layout components
-import SideBar from "../../layout/sideBar";
-import { NavBar } from "../../layout/navBar";
+const PageHeader = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
+`;
 
-// components
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { Containers } from "../../components/Container";
-import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
-import { CourseCard } from "../../components/card/courseCard";
-import Paginations from "../../components/paginations";
-import { ModalTeacher } from "../../components/modalTeacher";
+const PageTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
+`;
 
-// hooks
-import { useApi } from "../../hooks/useApi";
+const PageSubtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
 
-// URL
-import { API_URL } from "../../config";
+const TopBar = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
 
-// MUI Library
-import { Typography } from "@mui/material";
-import { WrapperCards } from "../Main/style";
+  ${({ theme }) => theme.media.maxSm} {
+    flex-wrap: wrap;
+  }
+`;
 
-// context
-import { DataCourses } from "../../context/DataCourses";
-import { NewOldContext } from "../../context/NewOldContext";
-import { SearchContext } from "../../context/SearchContext";
+const SearchWrapper = styled.div`
+  flex: 1;
+  min-width: 200px;
+`;
 
-// utils function
-import { filterCourses } from "../../utils/filterCourses";
-import { paginate } from "../../utils/pagination";
-import { updateFilters } from "../../utils/handleFilterChange";
+const MobileFilterBtn = styled.button`
+  display: none;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-family: ${({ theme }) => theme.typography.fontFamily.base};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  cursor: pointer;
+  white-space: nowrap;
+  transition: ${({ theme }) => theme.transitions.fast};
 
-// toast
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+  ${({ theme }) => theme.media.maxMd} {
+    display: flex;
+  }
 
-const Courses = () => {
-  const {
-    data: fetchedCourses = [],
-    isLoading,
-    error,
-  } = useApi(`${API_URL}/courses/`);
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
 
-  const { dataCourses, setDataCourses } = useContext(DataCourses);
-  const { isNew } = useContext(NewOldContext);
-  const { search, setSearch } = useContext(SearchContext);
+const ContentGrid = styled.div`
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: ${({ theme }) => theme.spacing[8]};
+  align-items: start;
 
-  useEffect(() => {
-    if (fetchedCourses.length > 0) {
-      setDataCourses(fetchedCourses);
-    }
-  }, [fetchedCourses, setDataCourses]);
+  ${({ theme }) => theme.media.maxMd} {
+    grid-template-columns: 1fr;
+  }
+`;
 
-  const [filters, setFilters] = useState({
-    names: [],
-    branches: [],
-    subjects: [],
-    prices: [],
-  });
+const ResultsMeta = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
 
-  const courseNames = useMemo(() => {
-    const names = dataCourses.map((course) => course.name);
-    return [...new Set(names)];
-  }, [dataCourses]);
+const ResultsCount = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textMuted};
 
-  const handleFilterChange = (id, isChecked) => {
-    setFilters((prev) => updateFilters(prev, id, isChecked));
-    setSearch("");
+  strong {
+    color: ${({ theme }) => theme.colors.textPrimary};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  }
+`;
+
+const ActiveFilters = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  flex-wrap: wrap;
+`;
+
+/* ─── Component ─── */
+export default function Courses() {
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+
+  const { filters, setFilter, setPage, clearFilters, hasActiveFilters } =
+    useCoursesFilters();
+
+  // 🟡 نبني الـ params اللي بنرسلها للـ backend
+  const queryParams = {
+    ...(filters.keyword && { keyword: filters.keyword }),
+    ...(filters.subject && { subject: filters.subject }),
+    ...(filters.branch && { branch: filters.branch }),
+    sort: filters.sort,
+    page: filters.page,
+    limit: filters.limit,
   };
 
-  const filteredCourses = useMemo(() => {
-    return filterCourses(dataCourses, filters, search);
-  }, [dataCourses, filters, search]);
+  const { data, isLoading, isError } = useCourses(queryParams);
 
-  const finalCourses = useMemo(() => {
-    return isNew === "new"
-      ? [...filteredCourses]
-      : [...filteredCourses].reverse();
-  }, [filteredCourses, isNew]);
+  // 🟡 نتعامل مع الـ response — backend يرجع { courses, pagination } أو array
+  const courses = Array.isArray(data)
+    ? data
+    : (data?.courses ?? data?.data ?? []);
+  const pagination = data?.pagination ?? null;
+  const totalPages = pagination?.totalPages ?? 1;
+  const totalItems = pagination?.totalItems ?? courses.length;
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  // Search مع debounce بسيط
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
 
-  const { currentItems, totalPages } = paginate(
-    finalCourses,
-    currentPage,
-    itemsPerPage
-  );
+    // نطبق الـ search بعد 500ms من آخر كتابة
+    clearTimeout(window._searchTimeout);
+    window._searchTimeout = setTimeout(() => {
+      setFilter("keyword", value);
+    }, 500);
+  };
 
   return (
-    <>
-      <ToastContainer />
-      <ModalTeacher isopen="true" />
-      <CoursesPageWraper>
-        <div>
-          <LogoAndButton />
-          <NavBar />
+    <MainLayout>
+      <PageWrapper>
+        <PageHeader>
+          <PageTitle>جميع الكورسات</PageTitle>
+          <PageSubtitle>
+            اكتشف كورساتنا الشاملة لجميع مواد التوجيهي
+          </PageSubtitle>
+        </PageHeader>
 
-          <Containers>
-            <FilterMenuItem
-              currentPage={currentPage}
-              totalPages={totalPages}
-              order={true}
+        {/* Search + Mobile Filter Toggle */}
+        <TopBar>
+          <SearchWrapper>
+            <Input
+              placeholder="ابحث عن كورس..."
+              value={searchInput}
+              onChange={handleSearchChange}
+              leftIcon={<Search size={18} />}
+            />
+          </SearchWrapper>
+
+          <MobileFilterBtn onClick={() => setMobileFiltersOpen(true)}>
+            <SlidersHorizontal size={16} />
+            فلترة
+            {hasActiveFilters && (
+              <Badge
+                variant="primary"
+                style={{ padding: "0 6px", minWidth: 18 }}
+              >
+                !
+              </Badge>
+            )}
+          </MobileFilterBtn>
+        </TopBar>
+
+        <ContentGrid>
+          {/* Filters Sidebar */}
+          <FiltersPanel
+            filters={filters}
+            setFilter={setFilter}
+            clearFilters={clearFilters}
+            hasActiveFilters={hasActiveFilters}
+            mobileOpen={mobileFiltersOpen}
+          />
+
+          {/* Mobile Overlay Close */}
+          {mobileFiltersOpen && (
+            <div
+              onClick={() => setMobileFiltersOpen(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.5)",
+                zIndex: 199,
+                display: "none",
+              }}
+            />
+          )}
+
+          {/* Results */}
+          <div>
+            <ResultsMeta>
+              <ResultsCount>
+                {isLoading ? (
+                  "جارٍ التحميل..."
+                ) : (
+                  <>
+                    عُثر على <strong>{totalItems}</strong> كورس
+                  </>
+                )}
+              </ResultsCount>
+
+              {/* Active Filter Badges */}
+              {hasActiveFilters && (
+                <ActiveFilters>
+                  {filters.keyword && (
+                    <Badge
+                      variant="primary"
+                      icon={
+                        <X
+                          size={12}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            setSearchInput("");
+                            setFilter("keyword", "");
+                          }}
+                        />
+                      }
+                    >
+                      {filters.keyword}
+                    </Badge>
+                  )}
+                </ActiveFilters>
+              )}
+            </ResultsMeta>
+
+            <CoursesGrid
+              courses={courses}
+              isLoading={isLoading}
+              isError={isError}
             />
 
-            <div style={{ display: "flex" }}>
-              <SideBar
-                courseNames={courseNames}
-                onFilterChange={handleFilterChange}
-              />
-
-              <div style={{ width: "80%" }}>
-                {isLoading ? (
-                  <WrapperCards>
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <CardSkeleton key={i} />
-                    ))}
-                  </WrapperCards>
-                ) : error ? (
-                  <Typography color="error">فشل تحميل الدورات</Typography>
-                ) : finalCourses.length === 0 ? (
-                  <Typography variant="body1">لا توجد دورات مطابقة.</Typography>
-                ) : (
-                  <WrapperCards>
-                    {currentItems.map((item) => (
-                      <CourseCard
-                        key={item._id}
-                        item={item}
-                        id={item._id}
-                        imgSrc={item.img || "/assets/img/logo.png"}
-                        name={item.name}
-                        starIcon={item.averageRating}
-                        price={item.price}
-                        priceAfterDiscount={item.priceAfterDiscount}
-                        teacherName={item.teacher?.name}
-                        teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                        branch={item.branches.map((b) => b.name).join(" | ")}
-                        subject={item.subject?.name}
-                      />
-                    ))}
-                  </WrapperCards>
-                )}
-              </div>
-            </div>
-
-            {totalPages > 1 && (
-              <Paginations
-                currentPage={currentPage}
-                totalPages={totalPages}
-                setCurrentPage={setCurrentPage}
-              />
-            )}
-          </Containers>
-        </div>
-      </CoursesPageWraper>
-    </>
+            <Pagination
+              currentPage={filters.page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
+        </ContentGrid>
+      </PageWrapper>
+    </MainLayout>
   );
-};
-
-export default Courses;
+}

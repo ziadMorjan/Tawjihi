@@ -1,53 +1,55 @@
 // src/features/auth/api/authApi.js
-
-import { axiosInstance } from "../../../shared/lib/axiosInstance";
-
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
 
 export const authApi = {
-  // تسجيل الدخول
   login: async (credentials) => {
     const { data } = await axiosInstance.post('/auth/login', credentials);
     return data;
   },
 
-  // التسجيل
-  register: async (userData) => {
-    const { data } = await axiosInstance.post('/auth/register', userData);
-    return data;
-  },
+// register يدعم FormData
+register: async (userData) => {
+  const isFormData = userData instanceof FormData;
+  const { data } = await axiosInstance.post('/auth/signup', userData, {
+    headers: isFormData
+      ? { 'Content-Type': 'multipart/form-data' }
+      : { 'Content-Type': 'application/json' },
+  });
+  return data;
+},
 
-  // تسجيل الخروج
-  logout: async () => {
-    await axiosInstance.post('/auth/logout');
-  },
-
-
+  // 🟡 هنا التغيير — مش /auth/me
+  // الـ backend يقرأ الـ token من الـ cookie تلقائياً
   getMe: async () => {
-    const { data } = await axiosInstance.get('/auth/me');
+    const { data } = await axiosInstance.get('/users/me');
     return data;
   },
 
-  // OAuth
+  // GET /auth/logout وليس POST
+  logout: async () => {
+    await axiosInstance.get('/auth/logout');
+  },
+
   googleAuth: () => {
     window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
   },
 
-  // نسيت كلمة المرور
   forgotPassword: async (email) => {
-    const { data } = await axiosInstance.post('/auth/forgot-password', { email });
+    const { data } = await axiosInstance.post('/auth/forgetPassword', { email });
     return data;
   },
 
-  resetPassword: async ({ token, newPassword }) => {
-    const { data } = await axiosInstance.post('/auth/reset-password', {
-      token,
+  verifyResetCode: async (resetCode) => {
+    const { data } = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
+    return data;
+  },
+
+  resetPassword: async ({ email, newPassword, newConfirmPassword }) => {
+    const { data } = await axiosInstance.patch('/auth/resetPassword', {
+      email,
       newPassword,
+      newConfirmPassword,
     });
-    return data;
-  },
-
-  verifyEmail: async (code) => {
-    const { data } = await axiosInstance.post('/auth/verify', { code });
     return data;
   },
 };

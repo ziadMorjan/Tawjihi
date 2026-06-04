@@ -1,36 +1,41 @@
 // src/features/auth/context/AuthContext.jsx
 
-import { createContext, useContext } from 'react';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { authApi } from '../api/authApi';
+import { createContext, useContext } from "react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { authApi } from "../api/authApi";
 
 const AuthContext = createContext(null);
 
 // Query key ثابت — نستخدمه في أي مكان نحتاج نعمل invalidate
-export const AUTH_QUERY_KEY = ['auth', 'user'];
+export const AUTH_QUERY_KEY = ["auth", "user"];
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
 
   // 🟡 [تحسين] بدل localStorage، نستخدم TanStack Query
   // يعمل cache للبيانات، ويتحقق منها عند الحاجة
-  const {
-    data: user,
-    isLoading,
-  } = useQuery({
+  // src/features/auth/context/AuthContext.jsx
+  const { data: user, isLoading } = useQuery({
     queryKey: AUTH_QUERY_KEY,
-    queryFn: authApi.getMe,
-    // لو فشل الـ request يعني المستخدم مش logged in — هذا طبيعي
+    queryFn: async () => {
+      const data = await authApi.getMe();
+      return data.data ?? data;
+    },
     retry: false,
-    // البيانات تبقى fresh لمدة 10 دقائق
-    staleTime: 10 * 60 * 1000,
+    staleTime: Infinity, // 🔴 لا تعتبرها قديمة أبداً
+    gcTime: Infinity, // لا تمسح الـ cache
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
   });
 
+  
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      // بعد الـ login نحدث الـ cache مباشرة بدون request جديد
+      // الـ backend يرجع { status, token, user }
       queryClient.setQueryData(AUTH_QUERY_KEY, data.user);
     },
   });
@@ -41,17 +46,20 @@ export function AuthProvider({ children }) {
     onSuccess: () => {
       // امسح كل الـ cache — مش بس بيانات المستخدم
       queryClient.clear();
-      localStorage.removeItem('user');
+      localStorage.removeItem("user");
     },
   });
 
   // Register mutation
-  const registerMutation = useMutation({
-    mutationFn: authApi.register,
-    onSuccess: (data) => {
+const registerMutation = useMutation({
+  mutationFn: authApi.register,
+  onSuccess: (data) => {
+    // لو teacher — ما في user يرجع
+    if (data?.user) {
       queryClient.setQueryData(AUTH_QUERY_KEY, data.user);
-    },
-  });
+    }
+  },
+});
 
   const value = {
     // البيانات
@@ -60,29 +68,25 @@ export function AuthProvider({ children }) {
     isLoading,
 
     // الـ role checks — بدل ما كل component يعمل if/else
-    isStudent: user?.role === 'user',
-    isTeacher: user?.role === 'teacher',
-    isAdmin:   user?.role === 'admin',
+    isStudent: user?.role === "user",
+    isTeacher: user?.role === "teacher",
+    isAdmin: user?.role === "admin",
 
     // الـ actions
-    login:    loginMutation.mutateAsync,
-    logout:   logoutMutation.mutate,
+    login: loginMutation.mutateAsync,
+    logout: logoutMutation.mutate,
     register: registerMutation.mutateAsync,
 
     // الـ states
-    isLoginLoading:    loginMutation.isPending,
-    isLogoutLoading:   logoutMutation.isPending,
+    isLoginLoading: loginMutation.isPending,
+    isLogoutLoading: logoutMutation.isPending,
     isRegisterLoading: registerMutation.isPending,
 
-    loginError:    loginMutation.error,
+    loginError: loginMutation.error,
     registerError: registerMutation.error,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // [تحسين] Custom hook بدل useContext مباشرة
@@ -90,7 +94,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth يجب استخدامه داخل AuthProvider');
+    throw new Error("useAuth يجب استخدامه داخل AuthProvider");
   }
   return context;
 }

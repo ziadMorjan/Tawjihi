@@ -10,7 +10,7 @@ import { ForgetPassword } from "../features/components/ForgetPassword";
 import { VerificationCode } from "../features/components/VerificationCode";
 import { ResetPassword } from "../features/components/ResetPassword";
 import TeacherProfile from "../pages/TeacherProfile";
-import OneCourse from "../pages/CourseOne";
+import OneCourse from "../pages/CourseDetails/index.js";
 import MyCourses from "../pages/MyCourses";
 import UserProfile from "../pages/MyProfile";
 import EditProfile from "../pages/MyProfile/EditProfile";
@@ -44,7 +44,7 @@ const Courses = lazy(() => import("../pages/Courses"));
 const Teachers = lazy(() => import("../pages/Teachers"));
 const WishList = lazy(() => import("../pages/Wishlist"));
 const CartList = lazy(() => import("../pages/CartList"));
-const VideoPage = lazy(() => import("../pages/CourseOne/VideoPage"));
+const VideoPage = lazy(() => import("../pages/CourseDetails/VideoPage.jsx"));
 
 export const PATH = {
   Main: "/",
