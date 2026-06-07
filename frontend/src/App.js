@@ -1,23 +1,38 @@
 // src/App.js
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './features/auth';
-import Home         from './pages/Home';
-import Courses      from './pages/Courses';
-import Login        from './pages/Auth/Login';
-import Register     from './pages/Auth/Register';
-import OAuthSuccess from './pages/Auth/OAuthSuccess';
 
-import CourseDetails    from './pages/CourseDetails';
+// Pages
+import Home        from './pages/Home';
+import Courses     from './pages/Courses';
+import CourseDetails from './pages/CourseDetails';
+import Login       from './pages/Auth/Login';
+import Register    from './pages/Auth/Register';
+import OAuthSuccess from './pages/Auth/OAuthSuccess';
+import CartList    from './pages/CartList';
+import Wishlist    from './pages/Wishlist';
+import MyCourses   from './pages/MyCourses';
+import NotFound    from './pages/NotFound';
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/"                  element={<Home />} />
-        <Route path="/courses"           element={<Courses />} />
-        <Route path="/courses/:id" element={<CourseDetails />} />
-        <Route path="/auth/login"        element={<Login />} />
-        <Route path="/auth/register"     element={<Register />} />
-        <Route path="/oauth-success"     element={<OAuthSuccess />} />
+        {/* Public */}
+        <Route path="/"                element={<Home />} />
+        <Route path="/courses"         element={<Courses />} />
+        <Route path="/courses/:id"     element={<CourseDetails />} />
+        <Route path="/auth/login"      element={<Login />} />
+        <Route path="/auth/register"   element={<Register />} />
+        <Route path="/oauth-success"   element={<OAuthSuccess />} />
+
+        {/* Protected */}
+        <Route path="/cart"            element={<ProtectedRoute><CartList /></ProtectedRoute>} />
+        <Route path="/wishlist"        element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+        <Route path="/user/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

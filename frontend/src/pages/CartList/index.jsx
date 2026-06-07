@@ -1,130 +1,185 @@
-//react
-import { useEffect, useState } from "react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, Trash2, Tag } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { MainLayout } from '../../shared/components/layout/MainLayout';
+import { Button, Input, Badge, Spinner } from '../../shared/components';
+import { StarRating } from '../../features/courses/components/CourseCard/StarRating';
+import { useCart } from '../../features/cart';
+import { useCartActions } from '../../features/cart';
+import {
+  PageWrapper, PageTitle, CartGrid, CartItems,
+  CartItem, ItemImage, ItemInfo, ItemTitle,
+  ItemTeacher, ItemPrice, RemoveBtn,
+  SummaryCard, SummaryTitle, SummaryRow,
+  CouponRow, EmptyState, EmptyTitle, EmptyText,
+} from './CartList.styles';
 
-//components
-import { CourseCard } from "../../components/card/courseCard";
-import { Containers } from "../../components/Container";
+export default function CartList() {
+  const navigate = useNavigate();
+  const { cartItems, totalPrice, totalPriceAfterDiscount, isLoading } = useCart();
+  const {
+    removeFromCart, clearCart, applyCoupon, checkout,
+    isRemoveLoading, isClearLoading, isCouponLoading, isCheckoutLoading,
+    couponError,
+  } = useCartActions();
 
-//axios
-import axios from "axios";
-//URL
-import { API_URL } from "../../config";
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { NavBar } from "../../layout/navBar";
-import { ModalTeacher } from "../../components/modalTeacher";
-import { CartHeader } from "../../components/cartHeader";
+  const [couponCode, setCouponCode] = useState('');
 
-//toast
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
+  const finalPrice = totalPriceAfterDiscount ?? totalPrice;
+  const discount   = totalPriceAfterDiscount
+    ? totalPrice - totalPriceAfterDiscount
+    : 0;
 
-const CartList = () => {
-  // const { cart, setCartList } = useCRUD();
-  const [cart, setCartList] = useState([]);
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageWrapper>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
+            <Spinner size="lg" />
+          </div>
+        </PageWrapper>
+      </MainLayout>
+    );
+  }
 
-  const [paymentLoading, setPaymentLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await axios.get(`${API_URL}/cart`, {
-          withCredentials: true,
-        });
-        setCartList(res.data.cart.courses);
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getData();
-  }, []);
-
-  const handlePayment = async () => {
-    if (cart.length !== 0) {
-      try {
-        setPaymentLoading(true);
-
-        const course_ids = cart.map((item) => item._id);
-        const res = await axios.post(
-          `${API_URL}/payment/create-checkout-session`,
-          { ids: course_ids },
-          {
-            withCredentials: true,
-          }
-        );
-        window.location.href = res.data.sessionUrl;
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setPaymentLoading(false);
-      }
-    }
-  };
+  if (!cartItems.length) {
+    return (
+      <MainLayout>
+        <PageWrapper>
+          <EmptyState>
+            <ShoppingCart size={64} />
+            <EmptyTitle>سلتك فارغة</EmptyTitle>
+            <EmptyText>لم تضف أي كورسات بعد</EmptyText>
+            <Button onClick={() => navigate('/courses')}>تصفح الكورسات</Button>
+          </EmptyState>
+        </PageWrapper>
+      </MainLayout>
+    );
+  }
 
   return (
-    <div>
-      <ToastContainer />
+    <MainLayout>
+      <PageWrapper>
+        <PageTitle>
+          سلة المشتريات
+          <Badge variant="primary" style={{ marginRight: 12, fontSize: 14 }}>
+            {cartItems.length} كورس
+          </Badge>
+        </PageTitle>
 
-      <LogoAndButton />
-      <NavBar />
-      <ModalTeacher />
+        <CartGrid>
+          <CartItems>
+            {cartItems.map((course) => {
+              const id      = course?._id ?? course;
+              const name    = course?.name ?? 'كورس';
+              const img     = course?.img  ?? '/assets/img/logo.png';
+              const price   = course?.priceAfterDiscount ?? course?.price ?? 0;
+              const teacher = course?.teacher;
+              const rating  = course?.averageRating ?? 0;
 
-      <Containers>
-        <CartHeader>
-          <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
+              return (
+                <CartItem key={id}>
+                  <ItemImage onClick={() => navigate(`/courses/${id}`)}>
+                    <img src={img} alt={name} loading="lazy" />
+                  </ItemImage>
 
-          <LoginAndRegisterButton
-            fontSize={18}
-            onClick={handlePayment}
-            isDisabled={paymentLoading || cart.length === 0}
-          >
-            {paymentLoading ? (
-              <span
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                  <ItemInfo>
+                    <ItemTitle onClick={() => navigate(`/courses/${id}`)}>
+                      {name}
+                    </ItemTitle>
+                    {teacher?.name && <ItemTeacher>{teacher.name}</ItemTeacher>}
+                    {rating > 0 && <StarRating rating={rating} />}
+                    <ItemPrice>
+                      {price === 0
+                        ? <Badge variant="success">مجاني</Badge>
+                        : `${price} ₪`
+                      }
+                    </ItemPrice>
+                  </ItemInfo>
+
+                  <RemoveBtn
+                    onClick={() => removeFromCart(id)}
+                    disabled={isRemoveLoading}
+                  >
+                    <Trash2 size={14} />
+                    حذف
+                  </RemoveBtn>
+                </CartItem>
+              );
+            })}
+
+            {cartItems.length > 1 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => clearCart()}
+                isLoading={isClearLoading}
+                style={{ alignSelf: 'flex-start', color: '#DC2626' }}
               >
-                <span className="spinner" /> جاري المعالجة...
-              </span>
-            ) : (
-              "شراء الكل"
+                تفريغ السلة
+              </Button>
             )}
-          </LoginAndRegisterButton>
-        </CartHeader>
+          </CartItems>
 
-        <div
-          className="cart-grid"
-          style={{ display: "flex", flexWrap: "wrap" }}
-        >
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
-          ) : cart.length === 0 ? (
-            <p style={{ textAlign: "center", width: "100%" }}>لا توجد عناصر.</p>
-          ) : (
-            cart.map((item) => (
-              <CourseCard
-                key={item._id}
-                item={item}
-                id={item._id}
-                imgSrc={item.img || "/assets/img/logo.png"}
-                name={item.name}
-                starIcon={item.averageRating}
-                price={item.price}
-                priceAfterDiscount={item.priceAfterDiscount}
-                teacherName={item.teacher?.name}
-                teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                branch={item.branches.map((b) => b.name).join(" | ")}
-                subject={item.subject?.name}
+          <SummaryCard>
+            <SummaryTitle>ملخص الطلب</SummaryTitle>
+
+            <SummaryRow>
+              <span>سعر الكورسات ({cartItems.length})</span>
+              <span>{totalPrice} ₪</span>
+            </SummaryRow>
+
+            {discount > 0 && (
+              <SummaryRow>
+                <span>الخصم</span>
+                <span style={{ color: '#16A34A' }}>-{discount.toFixed(2)} ₪</span>
+              </SummaryRow>
+            )}
+
+            <SummaryRow className="total">
+              <span>الإجمالي</span>
+              <span>{finalPrice.toFixed(2)} ₪</span>
+            </SummaryRow>
+
+            <CouponRow>
+              <Input
+                placeholder="كود الخصم"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                leftIcon={<Tag size={16} />}
+                error={couponError?.response?.data?.message}
               />
-            ))
-          )}
-        </div>
-      </Containers>
-    </div>
-  );
-};
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => applyCoupon(couponCode)}
+                isLoading={isCouponLoading}
+                disabled={!couponCode.trim()}
+                style={{ flexShrink: 0 }}
+              >
+                تطبيق
+              </Button>
+            </CouponRow>
 
-export default CartList;
+            <Button
+              fullWidth
+              size="lg"
+              isLoading={isCheckoutLoading}
+              onClick={() => {
+                const ids = cartItems.map((item) => item?._id ?? item);
+                checkout(ids);
+              }}
+            >
+              إتمام الشراء — {finalPrice.toFixed(2)} ₪
+            </Button>
+
+            <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', margin: 0 }}>
+              دفع آمن عبر Stripe
+            </p>
+          </SummaryCard>
+        </CartGrid>
+      </PageWrapper>
+    </MainLayout>
+  );
+}

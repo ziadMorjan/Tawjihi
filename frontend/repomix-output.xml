@@ -448,6 +448,10 @@ src/features/auth/context/AuthContext.jsx
 src/features/auth/hooks/useAuth.js
 src/features/auth/hooks/useAuthQuery.js
 src/features/auth/index.js
+src/features/cart/api/cartApi.js
+src/features/cart/hooks/useCart.js
+src/features/cart/hooks/useCartActions.js
+src/features/cart/index.js
 src/features/components/ForgetPassword.jsx
 src/features/components/LoginForm.jsx
 src/features/components/OAuthSuccess.jsx
@@ -474,6 +478,13 @@ src/features/courses/hooks/useCoursesFilters.js
 src/features/courses/hooks/useEnrollment.js
 src/features/courses/hooks/useFiltersData.js
 src/features/courses/index.js
+src/features/enrollments/api/enrollmentsApi.js
+src/features/enrollments/hooks/useMyEnrollments.js
+src/features/enrollments/index.js
+src/features/wishlist/api/wishlistApi.js
+src/features/wishlist/hooks/useWishlist.js
+src/features/wishlist/hooks/useWishlistActions.js
+src/features/wishlist/index.js
 src/hooks/useApi.jsx
 src/hooks/useCRUD.jsx
 src/hooks/useNotifications.jsx
@@ -496,8 +507,8 @@ src/pages/Auth/Login/index.jsx
 src/pages/Auth/OAuthSuccess/index.jsx
 src/pages/Auth/Register/index.jsx
 src/pages/Auth/style.js
+src/pages/CartList/CartList.styles.js
 src/pages/CartList/index.jsx
-src/pages/CartList/style.js
 src/pages/Contact/index.jsx
 src/pages/Contact/style.js
 src/pages/CourseDetails/index.jsx
@@ -782,23 +793,38 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 // src/App.js
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './features/auth';
-import Home         from './pages/Home';
-import Courses      from './pages/Courses';
-import Login        from './pages/Auth/Login';
-import Register     from './pages/Auth/Register';
-import OAuthSuccess from './pages/Auth/OAuthSuccess';
 
-import CourseDetails    from './pages/CourseDetails';
+// Pages
+import Home        from './pages/Home';
+import Courses     from './pages/Courses';
+import CourseDetails from './pages/CourseDetails';
+import Login       from './pages/Auth/Login';
+import Register    from './pages/Auth/Register';
+import OAuthSuccess from './pages/Auth/OAuthSuccess';
+import CartList    from './pages/CartList';
+import Wishlist    from './pages/Wishlist';
+import MyCourses   from './pages/MyCourses';
+import NotFound    from './pages/NotFound';
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/"                  element={<Home />} />
-        <Route path="/courses"           element={<Courses />} />
-        <Route path="/courses/:id" element={<CourseDetails />} />
-        <Route path="/auth/login"        element={<Login />} />
-        <Route path="/auth/register"     element={<Register />} />
-        <Route path="/oauth-success"     element={<OAuthSuccess />} />
+        {/* Public */}
+        <Route path="/"                element={<Home />} />
+        <Route path="/courses"         element={<Courses />} />
+        <Route path="/courses/:id"     element={<CourseDetails />} />
+        <Route path="/auth/login"      element={<Login />} />
+        <Route path="/auth/register"   element={<Register />} />
+        <Route path="/oauth-success"   element={<OAuthSuccess />} />
+
+        {/* Protected */}
+        <Route path="/cart"            element={<ProtectedRoute><CartList /></ProtectedRoute>} />
+        <Route path="/wishlist"        element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+        <Route path="/user/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
@@ -1678,67 +1704,81 @@ export const CourseIconWrapper = styled.div`
 
 <file path="src/components/Layout/Navbar/index.jsx">
 // src/shared/components/Layout/Navbar/index.jsx
-import { useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart } from 'lucide-react';
-import { useAuth } from '../../../features/auth';
-import {useCourseActions} from "../../../features/courses/hooks/useCourseActions"
-import {Button} from "../../../shared/components/Button"
+import { useNavigate, useLocation } from "react-router-dom";
+import { ShoppingCart } from "lucide-react";
+import { useAuth } from "../../../features/auth";
+import { useCourseActions } from "../../../features/courses/hooks/useCourseActions";
+import { Button } from "../../../shared/components/Button";
 import {
-  NavWrapper, NavInner, Logo, NavLinks,
-  NavLink, NavActions, CartBtn, CartCount, UserAvatar,
-} from './Navbar.styles';
+  NavWrapper,
+  NavInner,
+  Logo,
+  NavLinks,
+  NavLink,
+  NavActions,
+  CartBtn,
+  CartCount,
+  UserAvatar,
+} from "./Navbar.styles";
 
 export function Navbar() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const { cartItems } = useCourseActions();
 
   const links = [
-    { label: 'الرئيسية',  path: '/'        },
-    { label: 'الكورسات',  path: '/courses'  },
-    { label: 'المعلمون',  path: '/teachers' },
+    { label: "الرئيسية", path: "/" },
+    { label: "الكورسات", path: "/courses" },
+    { label: "المعلمون", path: "/teachers" },
   ];
 
   // أول حرف من الاسم للـ avatar
-  const initials = user?.name?.charAt(0) ?? '؟';
+  const initials = user?.name?.charAt(0) ?? "؟";
 
   return (
     <NavWrapper>
       <NavInner>
-
-        <Logo onClick={() => navigate('/')}>
+        <Logo onClick={() => navigate("/")}>
           <img src="/assets/img/logo.png" alt="Tawjihi" />
           <span>توجيهي</span>
         </Logo>
 
         <NavLinks>
-          {links.map(link => (
+          {links.map((link) => (
             <NavLink
               key={link.path}
               onClick={() => navigate(link.path)}
-              className={location.pathname === link.path ? 'active' : ''}
+              className={location.pathname === link.path ? "active" : ""}
             >
               {link.label}
             </NavLink>
           ))}
+                        {isAuthenticated && (
+                <NavLink
+                  onClick={() => navigate("/user/my-courses")}
+                  className={
+                    location.pathname === "/user/my-courses" ? "active" : ""
+                  }
+                >
+                  كورساتي
+                </NavLink>
+              )}
         </NavLinks>
 
         <NavActions>
           {isAuthenticated ? (
             <>
-              <CartBtn onClick={() => navigate('/cart')} aria-label="السلة">
+              <CartBtn onClick={() => navigate("/cart")} aria-label="السلة">
                 <ShoppingCart size={20} />
                 {cartItems.length > 0 && (
                   <CartCount>{cartItems.length}</CartCount>
                 )}
               </CartBtn>
 
-              <UserAvatar onClick={() => navigate('/profile')}>
-                {user?.img
-                  ? <img src={user.img} alt={user.name} />
-                  : initials
-                }
+
+              <UserAvatar onClick={() => navigate("/profile")}>
+                {user?.img ? <img src={user.img} alt={user.name} /> : initials}
               </UserAvatar>
             </>
           ) : (
@@ -1746,21 +1786,20 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/auth/login')}
+                onClick={() => navigate("/auth/login")}
               >
                 تسجيل الدخول
               </Button>
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => navigate('/auth/register')}
+                onClick={() => navigate("/auth/register")}
               >
                 إنشاء حساب
               </Button>
             </>
           )}
         </NavActions>
-
       </NavInner>
     </NavWrapper>
   );
@@ -28215,6 +28254,189 @@ export { ProtectedRoute } from './components/ProtectedRoute';
 export { authApi } from './api/authApi';
 </file>
 
+<file path="src/features/cart/api/cartApi.js">
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
+
+export const cartApi = {
+  // GET /cart → { status, cart: { _id, courses: [...], totalPrice, totalPriceAfterDiscount } }
+  getCart: async () => {
+    const { data } = await axiosInstance.get('/cart');
+    return data;
+  },
+
+  addToCart: async (courseId) => {
+    const { data } = await axiosInstance.post(`/cart/${courseId}`);
+    return data;
+  },
+
+  removeFromCart: async (courseId) => {
+    const { data } = await axiosInstance.delete(`/cart/${courseId}`);
+    return data;
+  },
+
+  clearCart: async () => {
+    const { data } = await axiosInstance.delete('/cart');
+    return data;
+  },
+
+  applyCoupon: async (coupon) => {
+    const { data } = await axiosInstance.post('/cart/applyCoupon', { coupon });
+    return data;
+  },
+
+  checkout: async (courseIds) => {
+    const { data } = await axiosInstance.post('/payment/create-checkout-session', {
+      ids: courseIds,
+    });
+    return data;
+  },
+};
+</file>
+
+<file path="src/features/cart/hooks/useCart.js">
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../../auth';
+import { cartApi } from '../api/cartApi';
+
+export const CART_QUERY_KEY = ['cart'];
+
+export function useCart() {
+  const { user } = useAuth();
+
+  const { data, isLoading } = useQuery({
+    queryKey: CART_QUERY_KEY,
+    queryFn: async () => {
+      const res = await cartApi.getCart();
+      // backend: { status, cart: { courses: [...], totalPrice } }
+      return res?.cart ?? null;
+    },
+    enabled: !!user,
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  return {
+    cart: data ?? null,
+    // courses هنا IDs فقط — نحتاج populate لاحقاً
+    cartItems:  data?.courses  ?? [],
+    totalPrice: data?.totalPrice ?? 0,
+    totalPriceAfterDiscount: data?.totalPriceAfterDiscount ?? null,
+    isLoading,
+  };
+}
+</file>
+
+<file path="src/features/cart/hooks/useCartActions.js">
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { cartApi } from '../api/cartApi';
+import { CART_QUERY_KEY } from './useCart';
+
+export function useCartActions() {
+  const queryClient = useQueryClient();
+
+  const invalidateCart = () =>
+    queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
+
+  const addMutation = useMutation({
+    mutationFn: cartApi.addToCart,
+    onSuccess: () => {
+      invalidateCart();
+      toast.success('تمت الإضافة إلى السلة');
+    },
+    onError: () => toast.error('حدث خطأ، حاول مجدداً'),
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: cartApi.removeFromCart,
+    onMutate: async (courseId) => {
+      await queryClient.cancelQueries({ queryKey: CART_QUERY_KEY });
+      const prev = queryClient.getQueryData(CART_QUERY_KEY);
+      queryClient.setQueryData(CART_QUERY_KEY, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          courses: old.courses.filter(
+            (id) => (id?._id ?? id) !== courseId
+          ),
+        };
+      });
+      return { prev };
+    },
+    onError: (err, id, ctx) => {
+      queryClient.setQueryData(CART_QUERY_KEY, ctx.prev);
+      toast.error('حدث خطأ، حاول مجدداً');
+    },
+    onSettled: () => {
+      invalidateCart();
+      toast.info('تمت الإزالة من السلة');
+    },
+  });
+
+  const clearMutation = useMutation({
+    mutationFn: cartApi.clearCart,
+    onSuccess: () => {
+      invalidateCart();
+      toast.info('تم تفريغ السلة');
+    },
+  });
+
+  // Apply Coupon
+  const couponMutation = useMutation({
+    mutationFn: cartApi.applyCoupon,
+    onSuccess: (data) => {
+      invalidateCart();
+      const saved = data?.cart?.totalPrice - data?.cart?.totalPriceAfterDiscount;
+      if (saved > 0) toast.success(`تم تطبيق الكوبون — وفّرت ${saved.toFixed(2)} ₪`);
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message ?? 'كوبون غير صالح');
+    },
+  });
+
+  // Checkout
+  const checkoutMutation = useMutation({
+    mutationFn: cartApi.checkout,
+    onSuccess: (data) => {
+      if (data?.sessionUrl) window.location.href = data.sessionUrl;
+    },
+    onError: () => toast.error('حدث خطأ أثناء الدفع، حاول مجدداً'),
+  });
+
+
+  const toggleCart = (courseId) => {
+    const cartData = queryClient.getQueryData(CART_QUERY_KEY);
+    const courses = cartData?.courses ?? [];
+
+    const inCart = courses.some((id) => (id?._id ?? id) === courseId);
+    inCart ? removeMutation.mutate(courseId) : addMutation.mutate(courseId)
+
+  };
+
+  return {
+    toggleCart,
+    addToCart: addMutation.mutate,
+    removeFromCart: removeMutation.mutate,
+    clearCart: clearMutation.mutate,
+    applyCoupon: couponMutation.mutate,
+    checkout: checkoutMutation.mutate,
+    isAddLoading: addMutation.isPending,
+    isRemoveLoading: removeMutation.isPending,
+    isClearLoading: clearMutation.isPending,
+    isCouponLoading: couponMutation.isPending,
+    isCheckoutLoading: checkoutMutation.isPending,
+    couponError: couponMutation.error,
+  };
+}
+</file>
+
+<file path="src/features/cart/index.js">
+export { cartApi }        from './api/cartApi';
+export { useCart, CART_QUERY_KEY } from './hooks/useCart';
+export { useCartActions } from './hooks/useCartActions';
+</file>
+
 <file path="src/features/components/ForgetPassword.jsx">
 // React
 import { useState } from "react";
@@ -29542,7 +29764,7 @@ export function CourseCard({ course }) {
   } = course;
 
 
-  const courseId = _id ?? course.id;
+  const courseId = _id ?? course.id ?? course._id;
 
   const handleCardClick = () => {
     navigate(`/courses/${courseId}`);
@@ -29706,13 +29928,17 @@ export function StarRating({ rating = 0, showText = true }) {
 </file>
 
 <file path="src/features/courses/components/CourseDetails/CourseCurriculum.jsx">
-// src/features/courses/components/CourseDetails/CourseCurriculum.jsx
 import { useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, ChevronUp, PlayCircle, Lock, Clock } from 'lucide-react';
+import { ChevronDown, ChevronUp, PlayCircle, Lock, Clock, BookOpen } from 'lucide-react';
 import { axiosInstance } from '../../../../shared/lib/axiosInstance';
-import { useAuth } from '../../../auth';
+import { SectionHeader, SectionIcon, SectionTitle } from './CourseDetails.styles';
+
+const shimmer = keyframes`
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+`;
 
 const fetchLessons = async (courseId) => {
   const { data } = await axiosInstance.get('/lessons', {
@@ -29721,17 +29947,10 @@ const fetchLessons = async (courseId) => {
   return data;
 };
 
-const Wrapper = styled.div`
+const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
 const LessonItem = styled.div`
@@ -29739,34 +29958,34 @@ const LessonItem = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing[3]};
   padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  transition: ${({ theme }) => theme.transitions.fast};
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
   cursor: ${({ $clickable }) => $clickable ? 'pointer' : 'default'};
 
   &:hover {
     background: ${({ $clickable, theme }) =>
-      $clickable ? theme.colors.bgSecondary : theme.colors.bgPrimary
-    };
+      $clickable ? theme.colors.bgTertiary : theme.colors.bgSecondary};
     border-color: ${({ $clickable, theme }) =>
-      $clickable ? theme.colors.borderStrong : theme.colors.border
-    };
+      $clickable ? theme.colors.primary + '30' : 'transparent'};
+    ${({ $clickable }) => $clickable && 'padding-right: 20px;'};
   }
 `;
 
 const LessonNumber = styled.span`
-  min-width: 28px;
-  height: 28px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: ${({ theme }) => theme.colors.bgTertiary};
+  min-width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.colors.bgPrimary};
   color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  font-size: 11px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const LessonInfo = styled.div`
@@ -29778,28 +29997,29 @@ const LessonInfo = styled.div`
 
 const LessonTitle = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  font-weight: 500;
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
 const LessonMeta = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-size: 11px;
   color: ${({ theme }) => theme.colors.textMuted};
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[1]};
+  gap: 4px;
 `;
 
 const ShowMoreBtn = styled.button`
   padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  border-radius: 12px;
+  border: 1px dashed ${({ theme }) => theme.colors.border};
   background: transparent;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${({ theme }) => theme.colors.primary};
   font-family: ${({ theme }) => theme.typography.fontFamily.base};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: 600;
   cursor: pointer;
-  transition: ${({ theme }) => theme.transitions.fast};
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29807,19 +30027,32 @@ const ShowMoreBtn = styled.button`
   width: 100%;
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary} + '60';
+    background: ${({ theme }) => theme.colors.primaryLight};
   }
 `;
 
+const Skeleton = styled.div`
+  height: 58px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: ${shimmer} 1.5s infinite;
+`;
+
+const Count = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
 export function CourseCurriculum({ courseId, isEnrolled }) {
-  const { user } = useAuth();
   const [showAll, setShowAll] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ['lessons', courseId],
-    queryFn:  () => fetchLessons(courseId),
-    enabled:  !!courseId,
+    queryFn: () => fetchLessons(courseId),
+    enabled: !!courseId,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     select: (data) => data?.data ?? data?.lessons ?? data,
@@ -29830,16 +30063,15 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
 
   if (isLoading) {
     return (
-      <Wrapper>
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} style={{
-            height: 60,
-            borderRadius: 12,
-            background: 'var(--skeleton-bg, #F1F5F9)',
-            animation: 'pulse 1.5s infinite',
-          }} />
-        ))}
-      </Wrapper>
+      <div>
+        <SectionHeader>
+          <SectionIcon><BookOpen size={16} /></SectionIcon>
+          <SectionTitle>محتوى الكورس</SectionTitle>
+        </SectionHeader>
+        <Content>
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} />)}
+        </Content>
+      </div>
     );
   }
 
@@ -29847,38 +30079,40 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
 
   return (
     <div>
-      <SectionTitle>محتوى الكورس ({lessons.length} درس)</SectionTitle>
-      <Wrapper>
+      <SectionHeader>
+        <SectionIcon><BookOpen size={16} /></SectionIcon>
+        <SectionTitle>محتوى الكورس</SectionTitle>
+        <Count>({lessons.length} درس)</Count>
+      </SectionHeader>
+
+      <Content>
         {visibleLessons.map((lesson, index) => {
-          const canAccess = isEnrolled || !!user?.role === 'admin';
+          const canAccess = isEnrolled;
 
           return (
-            <LessonItem
-              key={lesson._id}
-              $clickable={canAccess}
-            >
-              <LessonNumber>{index + 1}</LessonNumber>
+            <LessonItem key={lesson._id} $clickable={canAccess}>
+              <LessonNumber>{String(index + 1).padStart(2, '0')}</LessonNumber>
 
               <LessonInfo>
                 <LessonTitle>{lesson.title ?? lesson.name}</LessonTitle>
                 {lesson.duration && (
                   <LessonMeta>
-                    <Clock size={12} />
+                    <Clock size={11} />
                     {Math.round(lesson.duration / 60)} دقيقة
                   </LessonMeta>
                 )}
               </LessonInfo>
 
               {canAccess
-                ? <PlayCircle size={20} color="#2563EB" />
-                : <Lock size={16} color="#94A3B8" />
+                ? <PlayCircle size={18} color="#2563EB" />
+                : <Lock size={15} color="#94A3B8" />
               }
             </LessonItem>
           );
         })}
 
         {lessons.length > 5 && (
-          <ShowMoreBtn onClick={() => setShowAll(p => !p)}>
+          <ShowMoreBtn onClick={() => setShowAll((p) => !p)}>
             {showAll ? (
               <><ChevronUp size={16} /> عرض أقل</>
             ) : (
@@ -29886,14 +30120,13 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
             )}
           </ShowMoreBtn>
         )}
-      </Wrapper>
+      </Content>
     </div>
   );
 }
 </file>
 
 <file path="src/features/courses/components/CourseDetails/CourseDetails.styles.js">
-// src/features/courses/components/CourseDetails/CourseDetails.styles.js
 import styled from 'styled-components';
 
 export const PageWrapper = styled.div`
@@ -29902,22 +30135,35 @@ export const PageWrapper = styled.div`
 `;
 
 export const HeroSection = styled.div`
-  background: ${({ theme }) => theme.colors.textPrimary};
-  padding: ${({ theme }) => `${theme.spacing[12]} ${theme.spacing[6]}`};
-  color: white;
+  background: linear-gradient(160deg, #0B1120 0%, #162044 50%, #1A1B4B 100%);
+  position: relative;
+  overflow: hidden;
+  padding: ${({ theme }) => `${theme.spacing[16]} ${theme.spacing[6]} ${theme.spacing[12]}`};
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 0% 30%, rgba(37, 99, 235, 0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 100% 70%, rgba(139, 92, 246, 0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
 
   ${({ theme }) => theme.media.maxMd} {
-    padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[4]}`};
+    padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[4]} ${theme.spacing[8]}`};
   }
 `;
 
 export const HeroInner = styled.div`
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 1fr 380px;
   gap: ${({ theme }) => theme.spacing[12]};
   align-items: start;
+  position: relative;
+  z-index: 1;
 
   ${({ theme }) => theme.media.maxMd} {
     grid-template-columns: 1fr;
@@ -29927,7 +30173,7 @@ export const HeroInner = styled.div`
 export const HeroContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[4]};
+  gap: ${({ theme }) => theme.spacing[5]};
 `;
 
 export const CourseMeta = styled.div`
@@ -29938,71 +30184,103 @@ export const CourseMeta = styled.div`
 `;
 
 export const CourseTitle = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
   color: white;
-  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
-
-  ${({ theme }) => theme.media.maxMd} {
-    font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  }
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 `;
 
 export const CourseDescription = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: rgba(255,255,255,0.8);
-  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
-  max-width: 680px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.8;
+  max-width: 640px;
 `;
 
 export const StatsRow = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[6]};
+  gap: ${({ theme }) => theme.spacing[3]};
   flex-wrap: wrap;
 `;
 
 export const StatItem = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[2]};
+  gap: 6px;
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(4px);
 
-  svg { color: rgba(255,255,255,0.9); }
+  svg { opacity: 0.9; }
 `;
 
 export const TeacherInfo = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[3]};
+  background: rgba(255, 255, 255, 0.05);
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  width: fit-content;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
 `;
 
 export const TeacherAvatar = styled.div`
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: ${({ theme }) => theme.colors.primaryLight};
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
   overflow: hidden;
   flex-shrink: 0;
-  border: 2px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
 
   img { width: 100%; height: 100%; object-fit: cover; }
 `;
 
 export const TeacherName = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: rgba(255,255,255,0.9);
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+`;
+
+export const TeacherLabel = styled.div`
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+  letter-spacing: 0.3px;
 `;
 
 export const PurchaseCard = styled.div`
   background: ${({ theme }) => theme.colors.bgPrimary};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: ${({ theme }) => theme.shadows.xl};
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
   position: sticky;
-  top: 80px;
+  top: 88px;
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow:
+      0 30px 60px -12px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
 
   ${({ theme }) => theme.media.maxMd} {
     position: static;
@@ -30011,15 +30289,46 @@ export const PurchaseCard = styled.div`
 `;
 
 export const CardImage = styled.div`
-  aspect-ratio: 16/9;
+  aspect-ratio: 16 / 9;
   background: ${({ theme }) => theme.colors.bgTertiary};
   overflow: hidden;
+  position: relative;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.5s ease;
   }
+
+  ${PurchaseCard}:hover & img {
+    transform: scale(1.04);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.15));
+    pointer-events: none;
+  }
+`;
+
+export const CardBadge = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: ${({ $variant }) =>
+    $variant === 'free'
+      ? 'linear-gradient(135deg, #16A34A, #15803D)'
+      : 'linear-gradient(135deg, #2563EB, #7C3AED)'};
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  z-index: 2;
+  letter-spacing: 0.3px;
 `;
 
 export const CardBody = styled.div`
@@ -30033,12 +30342,14 @@ export const PriceRow = styled.div`
   display: flex;
   align-items: baseline;
   gap: ${({ theme }) => theme.spacing[3]};
+  flex-wrap: wrap;
 `;
 
 export const CurrentPrice = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: 1.75rem;
+  font-weight: 800;
   color: ${({ theme }) => theme.colors.textPrimary};
+  letter-spacing: -0.02em;
 `;
 
 export const OldPrice = styled.span`
@@ -30048,20 +30359,60 @@ export const OldPrice = styled.span`
 `;
 
 export const DiscountBadge = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  font-size: 11px;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.success};
   background: ${({ theme }) => theme.colors.successLight};
-  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
+  padding: 3px 8px;
+  border-radius: 6px;
+`;
+
+export const Divider = styled.div`
+  height: 1px;
+  background: ${({ theme }) => theme.colors.border};
+  margin: ${({ theme }) => theme.spacing[1]} 0;
+`;
+
+export const IncludesLabel = styled.p`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  letter-spacing: 0.3px;
+`;
+
+export const ActionRow = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[2]};
+  margin-top: ${({ theme }) => theme.spacing[1]};
+`;
+
+export const WishlistBtn = styled.button`
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1.5px solid ${({ $active, theme }) => $active ? '#E11D48' : theme.colors.border};
+  background: ${({ $active }) => $active ? '#FFF1F2' : 'transparent'};
+  color: ${({ $active }) => $active ? '#E11D48' : '#94A3B8'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: ${({ $active }) => $active ? '#E11D48' : '#2563EB'};
+    color: ${({ $active }) => $active ? '#E11D48' : '#2563EB'};
+    background: ${({ $active }) => $active ? '#FFF1F2' : '#EFF6FF'};
+  }
 `;
 
 export const ContentArea = styled.div`
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[6]}`};
+  padding: ${({ theme }) => `${theme.spacing[12]} ${theme.spacing[6]}`};
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 1fr 380px;
   gap: ${({ theme }) => theme.spacing[12]};
   align-items: start;
 
@@ -30077,36 +30428,75 @@ export const MainContent = styled.div`
   gap: ${({ theme }) => theme.spacing[10]};
 `;
 
-export const Section = styled.div`
+export const Section = styled.section`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[4]};
+  gap: ${({ theme }) => theme.spacing[5]};
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border-radius: 16px;
+  padding: ${({ theme }) => theme.spacing[6]};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+`;
+
+export const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  padding-bottom: ${({ theme }) => theme.spacing[4]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const SectionIcon = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: ${({ theme }) => theme.colors.primaryLight};
+  color: ${({ theme }) => theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 `;
 
 export const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.textPrimary};
-  padding-bottom: ${({ theme }) => theme.spacing[3]};
-  border-bottom: 2px solid ${({ theme }) => theme.colors.border};
 `;
 
 export const SectionText = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  line-height: 1.8;
+`;
+
+export const LoadingWrapper = styled.div`
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ErrorWrapper = styled.div`
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  color: ${({ theme }) => theme.colors.textMuted};
 `;
 </file>
 
 <file path="src/features/courses/components/CourseDetails/CourseIncludes.jsx">
-// src/features/courses/components/CourseDetails/CourseIncludes.jsx
 import styled from 'styled-components';
 import { PlayCircle, BookOpen, Award, Infinity, Monitor } from 'lucide-react';
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: ${({ theme }) => theme.spacing[2]};
 
   ${({ theme }) => theme.media.maxSm} {
     grid-template-columns: 1fr;
@@ -30116,9 +30506,10 @@ const Grid = styled.div`
 const Item = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  gap: ${({ theme }) => theme.spacing[2]};
+  font-size: 12px;
   color: ${({ theme }) => theme.colors.textSecondary};
+  padding: 4px 0;
 
   svg {
     color: ${({ theme }) => theme.colors.primary};
@@ -30126,21 +30517,21 @@ const Item = styled.div`
   }
 `;
 
-export function CourseIncludes({ lessonsCount = 0 }) {
-  const items = [
-    { icon: <PlayCircle size={18} />, text: `${lessonsCount} درس فيديو`     },
-    { icon: <Infinity    size={18} />, text: 'وصول مدى الحياة'             },
-    { icon: <Monitor     size={18} />, text: 'متاح على جميع الأجهزة'       },
-    { icon: <Award       size={18} />, text: 'شهادة إتمام'                 },
-    { icon: <BookOpen    size={18} />, text: 'موارد قابلة للتحميل'         },
-  ];
+const items = [
+  { icon: PlayCircle, text: (n) => `${n} درس فيديو` },
+  { icon: Infinity, text: () => 'وصول مدى الحياة' },
+  { icon: Monitor, text: () => 'متاح على جميع الأجهزة' },
+  { icon: Award, text: () => 'شهادة إتمام' },
+  { icon: BookOpen, text: () => 'موارد قابلة للتحميل' },
+];
 
+export function CourseIncludes({ lessonsCount = 0 }) {
   return (
     <Grid>
-      {items.map((item, i) => (
+      {items.map(({ icon: Icon, text }, i) => (
         <Item key={i}>
-          {item.icon}
-          {item.text}
+          <Icon size={15} />
+          {text(lessonsCount)}
         </Item>
       ))}
     </Grid>
@@ -30149,12 +30540,13 @@ export function CourseIncludes({ lessonsCount = 0 }) {
 </file>
 
 <file path="src/features/courses/components/CourseDetails/CourseReviews.jsx">
-// src/features/courses/components/CourseDetails/CourseReviews.jsx
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '../../../../shared/lib/axiosInstance';
 import { StarRating } from '../CourseCard/StarRating';
 import { Spinner } from '../../../../shared/components';
+import { MessageSquare, User } from 'lucide-react';
+import { SectionHeader, SectionIcon, SectionTitle } from './CourseDetails.styles';
 
 const fetchReviews = async (courseId) => {
   const { data } = await axiosInstance.get('/reviews', {
@@ -30163,17 +30555,25 @@ const fetchReviews = async (courseId) => {
   return data;
 };
 
-const Wrapper    = styled.div`display: flex; flex-direction: column; gap: ${({ theme }) => theme.spacing[4]};`;
-const SectionTitle = styled.h2`font-size: ${({ theme }) => theme.typography.fontSize.xl}; font-weight: ${({ theme }) => theme.typography.fontWeight.bold}; color: ${({ theme }) => theme.colors.textPrimary}; margin-bottom: ${({ theme }) => theme.spacing[4]};`;
-
-const ReviewCard = styled.div`
-  padding: ${({ theme }) => theme.spacing[5]};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  background: ${({ theme }) => theme.colors.bgPrimary};
+const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+const ReviewCard = styled.div`
+  padding: ${({ theme }) => theme.spacing[4]};
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[3]};
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.borderStrong};
+  }
 `;
 
 const ReviewHeader = styled.div`
@@ -30183,43 +30583,61 @@ const ReviewHeader = styled.div`
 `;
 
 const Avatar = styled.div`
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: ${({ theme }) => theme.colors.primaryLight};
+  background: linear-gradient(135deg, #EFF6FF, #F5F3FF);
   color: ${({ theme }) => theme.colors.primary};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: 700;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
   flex-shrink: 0;
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const ReviewerName = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
 const ReviewText = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  line-height: 1.7;
+  margin: 0;
 `;
 
-const EmptyMsg = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textMuted};
+const EmptyMsg = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
   text-align: center;
   padding: ${({ theme }) => theme.spacing[8]};
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.bgSecondary};
+
+  svg {
+    color: ${({ theme }) => theme.colors.borderStrong};
+  }
+`;
+
+const Count = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textMuted};
 `;
 
 export function CourseReviews({ courseId }) {
   const { data, isLoading } = useQuery({
     queryKey: ['reviews', courseId],
-    queryFn:  () => fetchReviews(courseId),
-    enabled:  !!courseId,
+    queryFn: () => fetchReviews(courseId),
+    enabled: !!courseId,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     select: (data) => data?.data ?? data?.reviews ?? data,
@@ -30229,33 +30647,38 @@ export function CourseReviews({ courseId }) {
 
   return (
     <div>
-      <SectionTitle>تقييمات الطلاب ({reviews.length})</SectionTitle>
+      <SectionHeader>
+        <SectionIcon><MessageSquare size={16} /></SectionIcon>
+        <SectionTitle>تقييمات الطلاب</SectionTitle>
+        <Count>({reviews.length})</Count>
+      </SectionHeader>
 
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '32px' }}>
           <Spinner size="md" />
         </div>
       ) : reviews.length === 0 ? (
-        <EmptyMsg>لا توجد تقييمات بعد — كن أول من يقيّم هذا الكورس!</EmptyMsg>
+        <EmptyMsg>
+          <MessageSquare size={28} />
+          لا توجد تقييمات بعد — كن أول من يقيّم هذا الكورس!
+        </EmptyMsg>
       ) : (
-        <Wrapper>
-          {reviews.map(review => (
+        <Content>
+          {reviews.map((review) => (
             <ReviewCard key={review._id}>
               <ReviewHeader>
                 <Avatar>
-                  {review.user?.name?.charAt(0) ?? '؟'}
+                  {review.user?.name?.charAt(0) ?? <User size={16} />}
                 </Avatar>
                 <div>
                   <ReviewerName>{review.user?.name ?? 'مجهول'}</ReviewerName>
                   <StarRating rating={review.rating} showText={false} />
                 </div>
               </ReviewHeader>
-              {review.review && (
-                <ReviewText>{review.review}</ReviewText>
-              )}
+              {review.review && <ReviewText>{review.review}</ReviewText>}
             </ReviewCard>
           ))}
-        </Wrapper>
+        </Content>
       )}
     </div>
   );
@@ -30596,129 +31019,31 @@ export function useCourse(id) {
 
 <file path="src/features/courses/hooks/useCourseActions.js">
 // src/features/courses/hooks/useCourseActions.js
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
-import { coursesApi } from '../api/coursesApi';
-import { useAuth } from '../../auth';
-
-export const CART_QUERY_KEY     = ['cart'];
-export const WISHLIST_QUERY_KEY = ['wishlist'];
+import { useCart, useCartActions } from "../../cart";
+import { useWishlist, useWishlistActions } from "../../wishlist";
 
 export function useCourseActions() {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
+  const { cartItems = [], isLoading: cartLoading } = useCart();
+  const { wishlistIds = [], isLoading: wishlistLoading } = useWishlist();
+  
+  const { toggleCart } = useCartActions();
+  const { toggleWishlist } = useWishlistActions();
 
-  const { data: cartItems = [] } = useQuery({
-    queryKey: CART_QUERY_KEY,
-    queryFn: async () => {
-      const data = await coursesApi.getCart();
-      // backend: { status, cart: { courses: [...] } }
-      return data?.cart?.courses ?? [];
-    },
-    enabled: !!user,
-    retry: false,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
+  const isInCart = (courseId) =>
+    cartItems.some((item) => (item?._id ?? item) === courseId);
 
-  const { data: wishlistItems = [] } = useQuery({
-    queryKey: WISHLIST_QUERY_KEY,
-    queryFn: async () => {
-      const data = await coursesApi.getWishlist();
-      // backend: { status, wishlist: [...] } — wishlist موجود في الـ user object
-      return data?.wishlist ?? data?.data?.wishlist ?? [];
-    },
-    enabled: !!user,
-    retry: false,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
-
-  const isInCart     = (courseId) => cartItems.some(item =>
-    (item._id ?? item) === courseId
-  );
-  const isInWishlist = (courseId) => wishlistItems.some(item =>
-    (item._id ?? item) === courseId
-  );
-
-  const addToCartMutation = useMutation({
-    mutationFn: coursesApi.addToCart,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
-      toast.success('تمت الإضافة إلى السلة');
-    },
-    onError: () => toast.error('حدث خطأ، حاول مجدداً'),
-  });
-
-  const removeFromCartMutation = useMutation({
-    mutationFn: coursesApi.removeFromCart,
-    onMutate: async (courseId) => {
-      await queryClient.cancelQueries({ queryKey: CART_QUERY_KEY });
-      const prev = queryClient.getQueryData(CART_QUERY_KEY);
-      queryClient.setQueryData(CART_QUERY_KEY, (old = []) =>
-        old.filter(item => (item._id ?? item) !== courseId)
-      );
-      return { prev };
-    },
-    onError: (err, id, ctx) => {
-      queryClient.setQueryData(CART_QUERY_KEY, ctx.prev);
-      toast.error('حدث خطأ، حاول مجدداً');
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
-      toast.info('تمت الإزالة من السلة');
-    },
-  });
-
-  const addToWishlistMutation = useMutation({
-    mutationFn: coursesApi.addToWishlist,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: WISHLIST_QUERY_KEY });
-      toast.success('تمت الإضافة إلى المفضلة');
-    },
-    onError: () => toast.error('حدث خطأ، حاول مجدداً'),
-  });
-
-  const removeFromWishlistMutation = useMutation({
-    mutationFn: coursesApi.removeFromWishlist,
-    onMutate: async (courseId) => {
-      await queryClient.cancelQueries({ queryKey: WISHLIST_QUERY_KEY });
-      const prev = queryClient.getQueryData(WISHLIST_QUERY_KEY);
-      queryClient.setQueryData(WISHLIST_QUERY_KEY, (old = []) =>
-        old.filter(item => (item._id ?? item) !== courseId)
-      );
-      return { prev };
-    },
-    onError: (err, id, ctx) => {
-      queryClient.setQueryData(WISHLIST_QUERY_KEY, ctx.prev);
-      toast.error('حدث خطأ، حاول مجدداً');
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: WISHLIST_QUERY_KEY });
-      toast.info('تمت الإزالة من المفضلة');
-    },
-  });
-
-  const toggleCart = (courseId) => {
-    if (!user) { toast.info('سجّل دخولك أولاً'); return; }
-    isInCart(courseId)
-      ? removeFromCartMutation.mutate(courseId)
-      : addToCartMutation.mutate(courseId);
-  };
-
-  const toggleWishlist = (courseId) => {
-    if (!user) { toast.info('سجّل دخولك أولاً'); return; }
-    isInWishlist(courseId)
-      ? removeFromWishlistMutation.mutate(courseId)
-      : addToWishlistMutation.mutate(courseId);
-  };
+  const isInWishlist = (courseId) =>
+    wishlistIds.some((id) => (id?._id ?? id) === courseId);
 
   return {
-    cartItems, wishlistItems,
-    isInCart, isInWishlist,
-    toggleCart, toggleWishlist,
-    isCartLoading:     addToCartMutation.isPending || removeFromCartMutation.isPending,
-    isWishlistLoading: addToWishlistMutation.isPending || removeFromWishlistMutation.isPending,
+    cartItems,
+    wishlistIds,
+    isInCart,
+    isInWishlist,
+    toggleCart,
+    toggleWishlist,
+    isCartLoading: cartLoading,
+    isWishlistLoading: wishlistLoading,
   };
 }
 </file>
@@ -30926,6 +31251,217 @@ export { useCourseActions }   from './hooks/useCourseActions';
 export { useCourses }         from './hooks/useCourses';
 export { useCourse }          from './hooks/useCourse'; 
 export { coursesApi }         from './api/coursesApi';
+</file>
+
+<file path="src/features/enrollments/api/enrollmentsApi.js">
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
+
+export const enrollmentsApi = {
+  // GET /enrollments?user=:userId
+  // → { status, count, pagination, data: { docs: [...] } }
+  getMyEnrollments: async (userId) => {
+    const { data } = await axiosInstance.get('/enrollments', {
+      params: { user: userId },
+    });
+    return data;
+  },
+
+  isEnrolled: async (userId, courseId) => {
+    const { data } = await axiosInstance.get('/enrollments', {
+      params: { user: userId, course: courseId },
+    });
+    return (data?.data?.docs ?? []).length > 0;
+  },
+};
+</file>
+
+<file path="src/features/enrollments/hooks/useMyEnrollments.js">
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../../auth';
+import { enrollmentsApi } from '../api/enrollmentsApi';
+
+export const ENROLLMENTS_QUERY_KEY = ['enrollments', 'my'];
+
+export function useMyEnrollments() {
+  const { user } = useAuth();
+  console.log('useMyEnrollments user:', user);
+
+  const { data, isLoading } = useQuery({
+    queryKey: [...ENROLLMENTS_QUERY_KEY, user?._id],
+    queryFn: () => enrollmentsApi.getMyEnrollments(user._id),
+    enabled: !!user?._id,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    select: (data) => data?.data?.docs ?? [],
+  });
+
+  const isEnrolled = (courseId) =>
+    (data ?? []).some(
+      (e) => (e.course?._id ?? e.course) === courseId
+    );
+
+  return {
+    enrollments: data ?? [],
+    isEnrolled,
+    isLoading,
+  };
+}
+</file>
+
+<file path="src/features/enrollments/index.js">
+export { enrollmentsApi }               from './api/enrollmentsApi';
+export { useMyEnrollments, ENROLLMENTS_QUERY_KEY } from './hooks/useMyEnrollments';
+</file>
+
+<file path="src/features/wishlist/api/wishlistApi.js">
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
+
+export const wishlistApi = {
+  // GET /wishlist → { status, wishlist: [courseId, ...] }
+  getWishlist: async () => {
+    const { data } = await axiosInstance.get('/wishlist');
+    return data;
+  },
+
+  addToWishlist: async (courseId) => {
+    const { data } = await axiosInstance.post(`/wishlist/${courseId}`);
+    return data;
+  },
+
+  removeFromWishlist: async (courseId) => {
+    const { data } = await axiosInstance.delete(`/wishlist/${courseId}`);
+    return data;
+  },
+};
+</file>
+
+<file path="src/features/wishlist/hooks/useWishlist.js">
+// src/features/wishlist/hooks/useWishlist.js
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../../auth';
+import { wishlistApi } from '../api/wishlistApi';
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
+
+export const WISHLIST_QUERY_KEY = ['wishlist'];
+
+export function useWishlist() {
+  const { user } = useAuth();
+
+  // 1. جلب الـ IDs
+  const { data: wishlistIds = [], isLoading: isIdsLoading } = useQuery({
+    queryKey: WISHLIST_QUERY_KEY,
+    queryFn: async () => {
+      const res = await wishlistApi.getWishlist();
+      return res?.wishlist ?? [];
+    },
+    enabled: !!user,
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  // 2. جلب تفاصيل الكورسات بناءً على الـ IDs الصافية
+  const { data: courses = [], isLoading: isCoursesLoading, isSuccess: isCoursesSuccess } = useQuery({
+    queryKey: ['wishlist-courses', wishlistIds],
+    queryFn: async () => {
+      if (!wishlistIds.length) return [];
+      
+      const promises = wishlistIds.map((item) => {
+        // تأمين الحصول على الـ ID الصافي سواء كان الـ item نص أو كائن
+        const actualId = item?._id ?? item; 
+        
+        return axiosInstance
+          .get(`/courses/${actualId}`)
+          .then((res) => res.data?.data?.doc ?? res.data?.data ?? null)
+          .catch(() => null);
+      });
+      
+      const results = await Promise.all(promises);
+      return results.filter(Boolean); // يحذف أي قيم null ناتجة عن فشل الإرسال
+    },
+    enabled: wishlistIds.length > 0,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const isInWishlist = (courseId) =>
+    wishlistIds.some((id) => (id?._id ?? id) === courseId);
+
+  return {
+    wishlistIds,
+    courses,
+    isInWishlist,
+    isIdsLoading,
+    isCoursesLoading,
+    isCoursesSuccess,
+    isLoading: isIdsLoading || isCoursesLoading,
+  };
+}
+</file>
+
+<file path="src/features/wishlist/hooks/useWishlistActions.js">
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { wishlistApi } from '../api/wishlistApi';
+import { WISHLIST_QUERY_KEY } from './useWishlist';
+import { useAuth } from '../../auth';
+
+export function useWishlistActions() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const invalidateWishlist = () =>
+    queryClient.invalidateQueries({ queryKey: WISHLIST_QUERY_KEY });
+
+  const addMutation = useMutation({
+    mutationFn: wishlistApi.addToWishlist,
+    onSuccess: () => {
+      invalidateWishlist();
+      toast.success('تمت الإضافة إلى المفضلة');
+    },
+    onError: () => toast.error('حدث خطأ، حاول مجدداً'),
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: wishlistApi.removeFromWishlist,
+    onMutate: async (courseId) => {
+      await queryClient.cancelQueries({ queryKey: WISHLIST_QUERY_KEY });
+      const prev = queryClient.getQueryData(WISHLIST_QUERY_KEY);
+      queryClient.setQueryData(WISHLIST_QUERY_KEY, (old = []) =>
+        old.filter((id) => (id?._id ?? id) !== courseId)
+      );
+      return { prev };
+    },
+    onError: (err, id, ctx) => {
+      queryClient.setQueryData(WISHLIST_QUERY_KEY, ctx.prev);
+      toast.error('حدث خطأ، حاول مجدداً');
+    },
+    onSettled: () => {
+      invalidateWishlist();
+      toast.info('تمت الإزالة من المفضلة');
+    },
+  });
+
+  const toggleWishlist = (courseId) => {
+    if (!user) { toast.info('سجّل دخولك أولاً'); return; }
+    const ids = queryClient.getQueryData(WISHLIST_QUERY_KEY) ?? [];
+    const inWishlist = ids.some((id) => (id?._id ?? id) === courseId);
+    inWishlist
+      ? removeMutation.mutate(courseId)
+      : addMutation.mutate(courseId);
+  };
+
+  return {
+    toggleWishlist,
+    isLoading: addMutation.isPending || removeMutation.isPending,
+  };
+}
+</file>
+
+<file path="src/features/wishlist/index.js">
+export { wishlistApi }           from './api/wishlistApi';
+export { useWishlist, WISHLIST_QUERY_KEY } from './hooks/useWishlist';
+export { useWishlistActions }    from './hooks/useWishlistActions';
 </file>
 
 <file path="src/hooks/useApi.jsx">
@@ -33345,137 +33881,368 @@ export const StyledNavLink = styled(Link)`
 `;
 </file>
 
+<file path="src/pages/CartList/CartList.styles.js">
+import styled from 'styled-components';
+
+export const PageWrapper = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[6]}`};
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[4]}`};
+  }
+`;
+
+export const PageTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
+  display: flex;
+  align-items: center;
+`;
+
+export const CartGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: ${({ theme }) => theme.spacing[8]};
+  align-items: start;
+  ${({ theme }) => theme.media.maxMd} { grid-template-columns: 1fr; }
+`;
+
+export const CartItems = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const CartItem = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  transition: ${({ theme }) => theme.transitions.fast};
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.borderStrong};
+    box-shadow: ${({ theme }) => theme.shadows.sm};
+  }
+  ${({ theme }) => theme.media.maxSm} { flex-direction: column; }
+`;
+
+export const ItemImage = styled.div`
+  width: 120px;
+  aspect-ratio: 16/9;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  overflow: hidden;
+  flex-shrink: 0;
+  background: ${({ theme }) => theme.colors.bgTertiary};
+  cursor: pointer;
+  img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+  &:hover img { transform: scale(1.05); }
+  ${({ theme }) => theme.media.maxSm} { width: 100%; }
+`;
+
+export const ItemInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
+
+export const ItemTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  cursor: pointer;
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+  &:hover { color: ${({ theme }) => theme.colors.primary}; }
+`;
+
+export const ItemTeacher = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+export const ItemPrice = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-top: auto;
+`;
+
+export const RemoveBtn = styled.button`
+  align-self: flex-start;
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background: transparent;
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-family: ${({ theme }) => theme.typography.fontFamily.base};
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
+  white-space: nowrap;
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.danger};
+    color: ${({ theme }) => theme.colors.danger};
+    background: ${({ theme }) => theme.colors.dangerLight};
+  }
+`;
+
+export const SummaryCard = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[6]};
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const SummaryTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  padding-bottom: ${({ theme }) => theme.spacing[4]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const SummaryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  &.total {
+    font-size: ${({ theme }) => theme.typography.fontSize.lg};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+    color: ${({ theme }) => theme.colors.textPrimary};
+    padding-top: ${({ theme }) => theme.spacing[4]};
+    border-top: 1px solid ${({ theme }) => theme.colors.border};
+    margin-top: ${({ theme }) => theme.spacing[2]};
+  }
+`;
+
+export const CouponRow = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
+
+export const EmptyState = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  svg { color: ${({ theme }) => theme.colors.textMuted}; }
+`;
+
+export const EmptyTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+export const EmptyText = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+</file>
+
 <file path="src/pages/CartList/index.jsx">
-//react
-import { useEffect, useState } from "react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, Trash2, Tag } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { MainLayout } from '../../shared/components/layout/MainLayout';
+import { Button, Input, Badge, Spinner } from '../../shared/components';
+import { StarRating } from '../../features/courses/components/CourseCard/StarRating';
+import { useCart } from '../../features/cart';
+import { useCartActions } from '../../features/cart';
+import {
+  PageWrapper, PageTitle, CartGrid, CartItems,
+  CartItem, ItemImage, ItemInfo, ItemTitle,
+  ItemTeacher, ItemPrice, RemoveBtn,
+  SummaryCard, SummaryTitle, SummaryRow,
+  CouponRow, EmptyState, EmptyTitle, EmptyText,
+} from './CartList.styles';
 
-//components
-import { CourseCard } from "../../components/card/courseCard";
-import { Containers } from "../../components/Container";
+export default function CartList() {
+  const navigate = useNavigate();
+  const { cartItems, totalPrice, totalPriceAfterDiscount, isLoading } = useCart();
+  const {
+    removeFromCart, clearCart, applyCoupon, checkout,
+    isRemoveLoading, isClearLoading, isCouponLoading, isCheckoutLoading,
+    couponError,
+  } = useCartActions();
 
-//axios
-import axios from "axios";
-//URL
-import { API_URL } from "../../config";
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { NavBar } from "../../layout/navBar";
-import { ModalTeacher } from "../../components/modalTeacher";
-import { CartHeader } from "../../components/cartHeader";
+  const [couponCode, setCouponCode] = useState('');
 
-//toast
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { LoginAndRegisterButton } from "../../components/loginButtonAndRegister";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
+  const finalPrice = totalPriceAfterDiscount ?? totalPrice;
+  const discount   = totalPriceAfterDiscount
+    ? totalPrice - totalPriceAfterDiscount
+    : 0;
 
-const CartList = () => {
-  // const { cart, setCartList } = useCRUD();
-  const [cart, setCartList] = useState([]);
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageWrapper>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
+            <Spinner size="lg" />
+          </div>
+        </PageWrapper>
+      </MainLayout>
+    );
+  }
 
-  const [paymentLoading, setPaymentLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await axios.get(`${API_URL}/cart`, {
-          withCredentials: true,
-        });
-        setCartList(res.data.cart.courses);
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getData();
-  }, []);
-
-  const handlePayment = async () => {
-    if (cart.length !== 0) {
-      try {
-        setPaymentLoading(true);
-
-        const course_ids = cart.map((item) => item._id);
-        const res = await axios.post(
-          `${API_URL}/payment/create-checkout-session`,
-          { ids: course_ids },
-          {
-            withCredentials: true,
-          }
-        );
-        window.location.href = res.data.sessionUrl;
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setPaymentLoading(false);
-      }
-    }
-  };
+  if (!cartItems.length) {
+    return (
+      <MainLayout>
+        <PageWrapper>
+          <EmptyState>
+            <ShoppingCart size={64} />
+            <EmptyTitle>سلتك فارغة</EmptyTitle>
+            <EmptyText>لم تضف أي كورسات بعد</EmptyText>
+            <Button onClick={() => navigate('/courses')}>تصفح الكورسات</Button>
+          </EmptyState>
+        </PageWrapper>
+      </MainLayout>
+    );
+  }
 
   return (
-    <div>
-      <ToastContainer />
+    <MainLayout>
+      <PageWrapper>
+        <PageTitle>
+          سلة المشتريات
+          <Badge variant="primary" style={{ marginRight: 12, fontSize: 14 }}>
+            {cartItems.length} كورس
+          </Badge>
+        </PageTitle>
 
-      <LogoAndButton />
-      <NavBar />
-      <ModalTeacher />
+        <CartGrid>
+          <CartItems>
+            {cartItems.map((course) => {
+              const id      = course?._id ?? course;
+              const name    = course?.name ?? 'كورس';
+              const img     = course?.img  ?? '/assets/img/logo.png';
+              const price   = course?.priceAfterDiscount ?? course?.price ?? 0;
+              const teacher = course?.teacher;
+              const rating  = course?.averageRating ?? 0;
 
-      <Containers>
-        <CartHeader>
-          <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة السلة</h2>
+              return (
+                <CartItem key={id}>
+                  <ItemImage onClick={() => navigate(`/courses/${id}`)}>
+                    <img src={img} alt={name} loading="lazy" />
+                  </ItemImage>
 
-          <LoginAndRegisterButton
-            fontSize={18}
-            onClick={handlePayment}
-            isDisabled={paymentLoading || cart.length === 0}
-          >
-            {paymentLoading ? (
-              <span
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                  <ItemInfo>
+                    <ItemTitle onClick={() => navigate(`/courses/${id}`)}>
+                      {name}
+                    </ItemTitle>
+                    {teacher?.name && <ItemTeacher>{teacher.name}</ItemTeacher>}
+                    {rating > 0 && <StarRating rating={rating} />}
+                    <ItemPrice>
+                      {price === 0
+                        ? <Badge variant="success">مجاني</Badge>
+                        : `${price} ₪`
+                      }
+                    </ItemPrice>
+                  </ItemInfo>
+
+                  <RemoveBtn
+                    onClick={() => removeFromCart(id)}
+                    disabled={isRemoveLoading}
+                  >
+                    <Trash2 size={14} />
+                    حذف
+                  </RemoveBtn>
+                </CartItem>
+              );
+            })}
+
+            {cartItems.length > 1 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => clearCart()}
+                isLoading={isClearLoading}
+                style={{ alignSelf: 'flex-start', color: '#DC2626' }}
               >
-                <span className="spinner" /> جاري المعالجة...
-              </span>
-            ) : (
-              "شراء الكل"
+                تفريغ السلة
+              </Button>
             )}
-          </LoginAndRegisterButton>
-        </CartHeader>
+          </CartItems>
 
-        <div
-          className="cart-grid"
-          style={{ display: "flex", flexWrap: "wrap" }}
-        >
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
-          ) : cart.length === 0 ? (
-            <p style={{ textAlign: "center", width: "100%" }}>لا توجد عناصر.</p>
-          ) : (
-            cart.map((item) => (
-              <CourseCard
-                key={item._id}
-                item={item}
-                id={item._id}
-                imgSrc={item.img || "/assets/img/logo.png"}
-                name={item.name}
-                starIcon={item.averageRating}
-                price={item.price}
-                priceAfterDiscount={item.priceAfterDiscount}
-                teacherName={item.teacher?.name}
-                teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                branch={item.branches.map((b) => b.name).join(" | ")}
-                subject={item.subject?.name}
+          <SummaryCard>
+            <SummaryTitle>ملخص الطلب</SummaryTitle>
+
+            <SummaryRow>
+              <span>سعر الكورسات ({cartItems.length})</span>
+              <span>{totalPrice} ₪</span>
+            </SummaryRow>
+
+            {discount > 0 && (
+              <SummaryRow>
+                <span>الخصم</span>
+                <span style={{ color: '#16A34A' }}>-{discount.toFixed(2)} ₪</span>
+              </SummaryRow>
+            )}
+
+            <SummaryRow className="total">
+              <span>الإجمالي</span>
+              <span>{finalPrice.toFixed(2)} ₪</span>
+            </SummaryRow>
+
+            <CouponRow>
+              <Input
+                placeholder="كود الخصم"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                leftIcon={<Tag size={16} />}
+                error={couponError?.response?.data?.message}
               />
-            ))
-          )}
-        </div>
-      </Containers>
-    </div>
-  );
-};
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => applyCoupon(couponCode)}
+                isLoading={isCouponLoading}
+                disabled={!couponCode.trim()}
+                style={{ flexShrink: 0 }}
+              >
+                تطبيق
+              </Button>
+            </CouponRow>
 
-export default CartList;
+            <Button
+              fullWidth
+              size="lg"
+              isLoading={isCheckoutLoading}
+              onClick={() => {
+                const ids = cartItems.map((item) => item?._id ?? item);
+                checkout(ids);
+              }}
+            >
+              إتمام الشراء — {finalPrice.toFixed(2)} ₪
+            </Button>
+
+            <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', margin: 0 }}>
+              دفع آمن عبر Stripe
+            </p>
+          </SummaryCard>
+        </CartGrid>
+      </PageWrapper>
+    </MainLayout>
+  );
+}
 </file>
 
 <file path="src/pages/Contact/index.jsx">
@@ -35391,104 +36158,206 @@ export const WrapperCards = styled.div`
 </file>
 
 <file path="src/pages/MyCourses/index.jsx">
-//react
-import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, PlayCircle, Clock } from 'lucide-react';
+import styled from 'styled-components';
+import { MainLayout } from '../../shared/components/layout/MainLayout';
+import { Button, Badge } from '../../shared/components';
+import { CourseCardSkeleton } from '../../features/courses/components/CourseCard/CourseCardSkeleton';
+import { useMyEnrollments } from '../../features/enrollments';
 
-//components
-import { CourseCard } from "../../components/card/courseCard";
+const PageWrapper = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[6]}`};
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[4]}`};
+  }
+`;
 
-//axios
-import axios from "axios";
-//URL
-import { API_URL } from "../../config";
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { NavBar } from "../../layout/navBar";
-//MUI library
+const PageTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
 
-//toast
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Containers } from "../../components/Container";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: ${({ theme }) => theme.spacing[6]};
+`;
 
-const MyCourses = () => {
-  // Get user data from localStorage
-  const userData = JSON.parse(localStorage.getItem("user"));
-  const userId = userData?._id;
+const EnrolledCard = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  overflow: hidden;
+  transition: ${({ theme }) => theme.transitions.normal};
+  cursor: pointer;
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: ${({ theme }) => theme.shadows.lg};
+    transform: translateY(-2px);
+  }
+`;
 
-  const [myCourses, setMyCourses] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+const Thumbnail = styled.div`
+  position: relative;
+  aspect-ratio: 16/9;
+  background: ${({ theme }) => theme.colors.bgTertiary};
+  overflow: hidden;
+  img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+  ${EnrolledCard}:hover img { transform: scale(1.04); }
+`;
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await axios.get(`${API_URL}/enrollments?user=${userId}`, {
-          withCredentials: true,
-        });
+const PlayOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: ${({ theme }) => theme.transitions.fast};
+  ${EnrolledCard}:hover & { opacity: 1; }
+  svg { color: white; }
+`;
 
-        if (res) {
-          setMyCourses(res.data.data.docs);
-        }
+const CardContent = styled.div`
+  padding: ${({ theme }) => theme.spacing[4]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
 
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false);
-      }
+const CourseTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
 
-    };
-    getData();
-  }, []);
+const TeacherName = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const CardFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: ${({ theme }) => theme.spacing[2]};
+  padding-top: ${({ theme }) => theme.spacing[3]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const EnrolledDate = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  svg { color: ${({ theme }) => theme.colors.textMuted}; }
+`;
+
+export default function MyCourses() {
+  const navigate = useNavigate();
+  const { enrollments, isLoading } = useMyEnrollments();
 
   return (
-    <div>
-      <ToastContainer />
+    <MainLayout>
+      <PageWrapper>
+        <PageTitle>
+          <BookOpen size={28} color="#1B4FD8" />
+          كورساتي
+          {enrollments.length > 0 && (
+            <Badge variant="primary">{enrollments.length} كورس</Badge>
+          )}
+        </PageTitle>
 
-      <LogoAndButton />
-      <NavBar />
-      <Containers>
-        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة دوراتي</h2>
+        {isLoading ? (
+          <Grid>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CourseCardSkeleton key={i} />
+            ))}
+          </Grid>
+        ) : enrollments.length === 0 ? (
+          <EmptyState>
+            <BookOpen size={64} />
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A' }}>
+              لم تسجل في أي كورس بعد
+            </h2>
+            <p style={{ color: '#475569' }}>ابدأ رحلتك التعليمية الآن</p>
+            <Button onClick={() => navigate('/courses')}>تصفح الكورسات</Button>
+          </EmptyState>
+        ) : (
+          <Grid>
+            {enrollments.map((enrollment) => {
+              const course = enrollment?.course;
+              if (!course) return null;
 
-        <div
-          className="myCourses-grid"
-          style={{ display: "flex", flexWrap: "wrap" }}
-        >
+              const courseId    = course._id ?? course;
+              const enrolledAt  = enrollment?.createdAt
+                ? new Date(enrollment.createdAt).toLocaleDateString('ar-EG')
+                : null;
 
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+              return (
+                <EnrolledCard
+                  key={enrollment._id}
+                  onClick={() => navigate(`/learn/${courseId}`)}
+                >
+                  <Thumbnail>
+                    <img
+                      src={course.img || '/assets/img/logo.png'}
+                      alt={course.name}
+                      loading="lazy"
+                    />
+                    <PlayOverlay>
+                      <PlayCircle size={48} />
+                    </PlayOverlay>
+                  </Thumbnail>
 
-          ) : myCourses.length === 0 ? (
-            <p style={{ textAlign: "center", width: "100%" }}>لا توجد عناصر.</p>
-            
-          ) : (
-            myCourses?.map((item) => (
-              <CourseCard
-                key={item.course._id}
-                item={item.course}
-                id={item.course._id}
-                imgSrc={item.course.img || "/assets/img/logo.png"}
-                name={item.course.name}
-                starIcon={item.course.averageRating}
-                price={item.course.price}
-                priceAfterDiscount={item.course.priceAfterDiscount}
-                teacherName={item.course.teacher?.name}
-                teacherImg={item.course.teacher?.img || "/assets/img/logo.png"}
-                branch={item.course.branches.map((b) => b.name).join(" | ")}
-                subject={item.course.subject?.name}
-              />
-            ))
-          )
-          }
-
-        </div>
-        
-      </Containers>
-    </div>
+                  <CardContent>
+                    <CourseTitle>{course.name}</CourseTitle>
+                    {course.teacher?.name && (
+                      <TeacherName>{course.teacher.name}</TeacherName>
+                    )}
+                    <CardFooter>
+                      <Badge variant="success">مسجّل</Badge>
+                      {enrolledAt && (
+                        <EnrolledDate>
+                          <Clock size={12} />
+                          {enrolledAt}
+                        </EnrolledDate>
+                      )}
+                    </CardFooter>
+                  </CardContent>
+                </EnrolledCard>
+              );
+            })}
+          </Grid>
+        )}
+      </PageWrapper>
+    </MainLayout>
   );
-};
-
-export default MyCourses;
+}
 </file>
 
 <file path="src/pages/MyProfile/changePassword.jsx">
@@ -38799,98 +39668,110 @@ export const StyledTeachersPage = styled.div`
 </file>
 
 <file path="src/pages/Wishlist/index.jsx">
-//react
-import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Heart } from 'lucide-react';
+import styled from 'styled-components';
+import { MainLayout } from '../../shared/components/layout/MainLayout';
+import { Button, Badge } from '../../shared/components';
+import { CourseCard } from '../../features/courses/components/CourseCard';
+import { CourseCardSkeleton } from '../../features/courses/components/CourseCard/CourseCardSkeleton';
+import { useWishlist } from '../../features/wishlist';
 
-//hooks
-import { useCRUD } from "../../hooks/useCRUD";
+const PageWrapper = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[6]}`};
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[4]}`};
+  }
+`;
 
-//components
-import {CourseCard } from "../../components/card/courseCard";
-import { Containers } from "../../components/Container";
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
 
-//axios
-import axios from "axios";
-//URL
-import { API_URL } from "../../config";
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { NavBar } from "../../layout/navBar";
-//MUI library
+const PageTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
 
-//toast
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: ${({ theme }) => theme.spacing[6]};
+`;
 
-const WishList = () => {
-  const { wishlist, setWishList } = useCRUD(); // ✅ استخدم wishList الصحيح
-  const [isLoading, setIsLoading] = useState(false);
+const EmptyState = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  svg { color: ${({ theme }) => theme.colors.textMuted}; }
+`;
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setIsLoading(true)
-        const res = await axios.get(`${API_URL}/wishlist`, {
-          withCredentials: true,
-        });
-        setWishList(res.data.wishlist);
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false)
-      }
-    };
-    getData();
-  }, []);
+export default function Wishlist() {
+  const navigate = useNavigate();
+  const { wishlistIds, courses, isLoading, isCoursesSuccess } = useWishlist();
+
+  // تحديد ما إذا كانت القائمة فارغة بعد انتهاء التحميل
+  const isEmpty = wishlistIds.length === 0 || (isCoursesSuccess && courses.length === 0);
 
   return (
-    <div>
-      <ToastContainer />
+    <MainLayout>
+      <PageWrapper>
+        {/* الهيدر يعرض دائماً طالما الصفحة ليست فارغة */}
+        {!isEmpty && (
+          <Header>
+            <PageTitle>
+              <Heart size={28} color="#DC2626" fill="#DC2626" />
+              المفضلة
+              {!isLoading && <Badge variant="danger">{courses.length}</Badge>}
+            </PageTitle>
 
-      <LogoAndButton />
-      <NavBar />
-      <Containers>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/courses')}>
+              تصفح المزيد
+            </Button>
+          </Header>
+        )}
 
-        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة المفضلة</h2>
-
-        <div
-          className="wishlist-grid"
-          style={{ display: "flex", flexWrap: "wrap" }}
-        >
-
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
-
-          ) : wishlist.length === 0 ? (
-            <p style={{ textAlign: "center" , width: "100%" }}>لا توجد عناصر.</p>
-
-          ) : (
-            wishlist.map((item) => (
-              <CourseCard
-                key={item._id}
-                item={item}
-                id={item._id}
-                imgSrc={item.img || "/assets/img/logo.png"}
-                name={item.name}
-                starIcon={item.averageRating}
-                price={item.price}
-                priceAfterDiscount={item.priceAfterDiscount}
-                teacherName={item.teacher?.name}
-                teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                branch={item.branches.map((b) => b.name).join(" | ")}
-                subject={item.subject?.name}
-              />
-            ))
-          )
-          }
-        </div>
-
-      </Containers>
-    </div>
+        {/* دمج منطق عرض المحتوى في مكان واحد */}
+        {isLoading ? (
+          <Grid>
+            {Array.from({ length: wishlistIds.length || 3 }).map((_, i) => (
+              <CourseCardSkeleton key={i} />
+            ))}
+          </Grid>
+        ) : isEmpty ? (
+          <EmptyState>
+            <Heart size={64} />
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A' }}>
+              قائمة المفضلة فارغة
+            </h2>
+            <p style={{ color: '#475569' }}>أضف كورسات للمفضلة لتجدها هنا بسهولة</p>
+            <Button onClick={() => navigate('/courses')}>تصفح الكورسات</Button>
+          </EmptyState>
+        ) : (
+          <Grid>
+            {courses.map((course) => (
+              <CourseCard key={course._id} course={course} />
+            ))}
+          </Grid>
+        )}
+      </PageWrapper>
+    </MainLayout>
   );
-};
-
-export default WishList;
+}
 </file>
 
 <file path="src/providers/providers.jsx">

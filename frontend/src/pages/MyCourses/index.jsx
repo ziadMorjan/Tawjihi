@@ -1,98 +1,200 @@
-//react
-import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, PlayCircle, Clock } from 'lucide-react';
+import styled from 'styled-components';
+import { MainLayout } from '../../shared/components/layout/MainLayout';
+import { Button, Badge } from '../../shared/components';
+import { CourseCardSkeleton } from '../../features/courses/components/CourseCard/CourseCardSkeleton';
+import { useMyEnrollments } from '../../features/enrollments';
 
-//components
-import { CourseCard } from "../../components/card/courseCard";
+const PageWrapper = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[6]}`};
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[4]}`};
+  }
+`;
 
-//axios
-import axios from "axios";
-//URL
-import { API_URL } from "../../config";
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { NavBar } from "../../layout/navBar";
-//MUI library
+const PageTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
 
-//toast
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Containers } from "../../components/Container";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: ${({ theme }) => theme.spacing[6]};
+`;
 
-const MyCourses = () => {
-  // Get user data from localStorage
-  const userData = JSON.parse(localStorage.getItem("user"));
-  const userId = userData?._id;
+const EnrolledCard = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  overflow: hidden;
+  transition: ${({ theme }) => theme.transitions.normal};
+  cursor: pointer;
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: ${({ theme }) => theme.shadows.lg};
+    transform: translateY(-2px);
+  }
+`;
 
-  const [myCourses, setMyCourses] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+const Thumbnail = styled.div`
+  position: relative;
+  aspect-ratio: 16/9;
+  background: ${({ theme }) => theme.colors.bgTertiary};
+  overflow: hidden;
+  img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+  ${EnrolledCard}:hover img { transform: scale(1.04); }
+`;
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await axios.get(`${API_URL}/enrollments?user=${userId}`, {
-          withCredentials: true,
-        });
+const PlayOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: ${({ theme }) => theme.transitions.fast};
+  ${EnrolledCard}:hover & { opacity: 1; }
+  svg { color: white; }
+`;
 
-        if (res) {
-          setMyCourses(res.data.data.docs);
-        }
+const CardContent = styled.div`
+  padding: ${({ theme }) => theme.spacing[4]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
 
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false);
-      }
+const CourseTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
 
-    };
-    getData();
-  }, []);
+const TeacherName = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const CardFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: ${({ theme }) => theme.spacing[2]};
+  padding-top: ${({ theme }) => theme.spacing[3]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const EnrolledDate = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  svg { color: ${({ theme }) => theme.colors.textMuted}; }
+`;
+
+export default function MyCourses() {
+  const navigate = useNavigate();
+  const { enrollments, isLoading } = useMyEnrollments();
 
   return (
-    <div>
-      <ToastContainer />
+    <MainLayout>
+      <PageWrapper>
+        <PageTitle>
+          <BookOpen size={28} color="#1B4FD8" />
+          كورساتي
+          {enrollments.length > 0 && (
+            <Badge variant="primary">{enrollments.length} كورس</Badge>
+          )}
+        </PageTitle>
 
-      <LogoAndButton />
-      <NavBar />
-      <Containers>
-        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة دوراتي</h2>
+        {isLoading ? (
+          <Grid>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CourseCardSkeleton key={i} />
+            ))}
+          </Grid>
+        ) : enrollments.length === 0 ? (
+          <EmptyState>
+            <BookOpen size={64} />
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A' }}>
+              لم تسجل في أي كورس بعد
+            </h2>
+            <p style={{ color: '#475569' }}>ابدأ رحلتك التعليمية الآن</p>
+            <Button onClick={() => navigate('/courses')}>تصفح الكورسات</Button>
+          </EmptyState>
+        ) : (
+          <Grid>
+            {enrollments.map((enrollment) => {
+              const course = enrollment?.course;
+              if (!course) return null;
 
-        <div
-          className="myCourses-grid"
-          style={{ display: "flex", flexWrap: "wrap" }}
-        >
+              const courseId    = course._id ?? course;
+              const enrolledAt  = enrollment?.createdAt
+                ? new Date(enrollment.createdAt).toLocaleDateString('ar-EG')
+                : null;
 
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+              return (
+                <EnrolledCard
+                  key={enrollment._id}
+                  onClick={() => navigate(`/learn/${courseId}`)}
+                >
+                  <Thumbnail>
+                    <img
+                      src={course.img || '/assets/img/logo.png'}
+                      alt={course.name}
+                      loading="lazy"
+                    />
+                    <PlayOverlay>
+                      <PlayCircle size={48} />
+                    </PlayOverlay>
+                  </Thumbnail>
 
-          ) : myCourses.length === 0 ? (
-            <p style={{ textAlign: "center", width: "100%" }}>لا توجد عناصر.</p>
-            
-          ) : (
-            myCourses?.map((item) => (
-              <CourseCard
-                key={item.course._id}
-                item={item.course}
-                id={item.course._id}
-                imgSrc={item.course.img || "/assets/img/logo.png"}
-                name={item.course.name}
-                starIcon={item.course.averageRating}
-                price={item.course.price}
-                priceAfterDiscount={item.course.priceAfterDiscount}
-                teacherName={item.course.teacher?.name}
-                teacherImg={item.course.teacher?.img || "/assets/img/logo.png"}
-                branch={item.course.branches.map((b) => b.name).join(" | ")}
-                subject={item.course.subject?.name}
-              />
-            ))
-          )
-          }
-
-        </div>
-        
-      </Containers>
-    </div>
+                  <CardContent>
+                    <CourseTitle>{course.name}</CourseTitle>
+                    {course.teacher?.name && (
+                      <TeacherName>{course.teacher.name}</TeacherName>
+                    )}
+                    <CardFooter>
+                      <Badge variant="success">مسجّل</Badge>
+                      {enrolledAt && (
+                        <EnrolledDate>
+                          <Clock size={12} />
+                          {enrolledAt}
+                        </EnrolledDate>
+                      )}
+                    </CardFooter>
+                  </CardContent>
+                </EnrolledCard>
+              );
+            })}
+          </Grid>
+        )}
+      </PageWrapper>
+    </MainLayout>
   );
-};
-
-export default MyCourses;
+}

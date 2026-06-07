@@ -40,7 +40,7 @@ export function CourseCard({ course }) {
   } = course;
 
 
-  const courseId = _id ?? course.id;
+  const courseId = _id ?? course.id ?? course._id;
 
   const handleCardClick = () => {
     navigate(`/courses/${courseId}`);

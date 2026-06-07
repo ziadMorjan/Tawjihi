@@ -2,7 +2,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Badge, Spinner } from '../../shared/components';
 import  {useCourse}         from '../../features//courses/hooks/useCourse';
-import { useEnrollment }    from '../../features/courses/hooks/useEnrollment';
 import { useCourseActions } from '../../features/courses/hooks/useCourseActions';
 import { StarRating }       from '../../features/courses/components/CourseCard/StarRating';
 import { CourseCurriculum } from '../../features/courses/components/CourseDetails/CourseCurriculum';
@@ -19,6 +18,8 @@ import {
 } from '../../features/courses/components/CourseDetails/CourseDetails.styles';
 import {MainLayout} from "../../shared/components/layout/MainLayout"
 import { Users, Star, BookOpen, User, Heart, ShoppingCart } from 'lucide-react';
+import { useMyEnrollments } from '../../features/enrollments/hooks/useMyEnrollments';
+import { useCourseCheckout } from '../../features/courses/hooks/useCourseCheckout';
 
 export default function CourseDetails() {
   const { id } = useParams();
@@ -27,7 +28,8 @@ export default function CourseDetails() {
 
 
   const { data: course, isLoading, isError } = useCourse(id);
-  const { isEnrolled, checkout, isCheckoutLoading } = useEnrollment(id);
+  const { isEnrolled } = useMyEnrollments();
+  const { checkout, isCheckoutLoading } = useCourseCheckout(id);
   const { isInCart, isInWishlist, toggleCart, toggleWishlist } = useCourseActions();
 
 
