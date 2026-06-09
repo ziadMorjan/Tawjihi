@@ -5,36 +5,24 @@ export const PageWrapper = styled.div`
   min-height: 100vh;
 `;
 
+/* ─── Hero ─── */
 export const HeroSection = styled.div`
-  background: linear-gradient(160deg, #0B1120 0%, #162044 50%, #1A1B4B 100%);
-  position: relative;
-  overflow: hidden;
-  padding: ${({ theme }) => `${theme.spacing[16]} ${theme.spacing[6]} ${theme.spacing[12]}`};
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 70% 50% at 0% 30%, rgba(37, 99, 235, 0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 100% 70%, rgba(139, 92, 246, 0.10) 0%, transparent 70%);
-    pointer-events: none;
-  }
+  background: ${({ theme }) => theme.colors.textPrimary};
+  padding: ${({ theme }) => `${theme.spacing[16]} ${theme.spacing[6]}`};
+  direction: rtl;  
 
   ${({ theme }) => theme.media.maxMd} {
-    padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[4]} ${theme.spacing[8]}`};
+    padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[4]}`};
   }
 `;
 
 export const HeroInner = styled.div`
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 380px;
+grid-template-columns: 1fr 380px;
   gap: ${({ theme }) => theme.spacing[12]};
   align-items: start;
-  position: relative;
-  z-index: 1;
 
   ${({ theme }) => theme.media.maxMd} {
     grid-template-columns: 1fr;
@@ -45,6 +33,7 @@ export const HeroContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[5]};
+  padding-top: ${({ theme }) => theme.spacing[4]};
 `;
 
 export const CourseMeta = styled.div`
@@ -55,103 +44,98 @@ export const CourseMeta = styled.div`
 `;
 
 export const CourseTitle = styled.h1`
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  font-weight: 800;
+  font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: white;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+
+  ${({ theme }) => theme.media.maxMd} {
+    font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  }
 `;
 
 export const CourseDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.8;
-  max-width: 640px;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: rgba(255,255,255,0.75);
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  max-width: 600px;
 `;
 
 export const StatsRow = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: ${({ theme }) => theme.spacing[6]};
   flex-wrap: wrap;
+  padding: ${({ theme }) => `${theme.spacing[4]} 0`};
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 `;
 
 export const StatItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(4px);
-
-  svg { opacity: 0.9; }
+  color: rgba(255,255,255,0.75);
+  svg { flex-shrink: 0; }
 `;
 
 export const TeacherInfo = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[3]};
-  background: rgba(255, 255, 255, 0.05);
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: rgba(255,255,255,0.08);
   border-radius: ${({ theme }) => theme.borderRadius.xl};
-  border: 1px solid rgba(255, 255, 255, 0.06);
   width: fit-content;
-  transition: all 0.25s ease;
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255,255,255,0.12);
   }
 `;
 
 export const TeacherAvatar = styled.div`
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  background: ${({ theme }) => theme.colors.primaryLight};
   overflow: hidden;
   flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
 
   img { width: 100%; height: 100%; object-fit: cover; }
 `;
 
+export const TeacherMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+export const TeacherLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: rgba(255,255,255,0.5);
+`;
+
 export const TeacherName = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: rgba(255,255,255,0.9);
 `;
 
-export const TeacherLabel = styled.div`
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
-  font-weight: 500;
-  letter-spacing: 0.3px;
-`;
-
+/* ─── Purchase Card ─── */
 export const PurchaseCard = styled.div`
   background: ${({ theme }) => theme.colors.bgPrimary};
-  border-radius: 16px;
+  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
   overflow: hidden;
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.3);
   position: sticky;
-  top: 88px;
-  transition: box-shadow 0.3s ease;
-
-  &:hover {
-    box-shadow:
-      0 30px 60px -12px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(255, 255, 255, 0.08);
-  }
+  top: 80px;
 
   ${({ theme }) => theme.media.maxMd} {
     position: static;
@@ -160,7 +144,7 @@ export const PurchaseCard = styled.div`
 `;
 
 export const CardImage = styled.div`
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16/9;
   background: ${({ theme }) => theme.colors.bgTertiary};
   overflow: hidden;
   position: relative;
@@ -169,37 +153,12 @@ export const CardImage = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.4s ease;
   }
 
-  ${PurchaseCard}:hover & img {
-    transform: scale(1.04);
+  &:hover img {
+    transform: scale(1.03);
   }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.15));
-    pointer-events: none;
-  }
-`;
-
-export const CardBadge = styled.div`
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: ${({ $variant }) =>
-    $variant === 'free'
-      ? 'linear-gradient(135deg, #16A34A, #15803D)'
-      : 'linear-gradient(135deg, #2563EB, #7C3AED)'};
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
-  z-index: 2;
-  letter-spacing: 0.3px;
 `;
 
 export const CardBody = styled.div`
@@ -213,14 +172,12 @@ export const PriceRow = styled.div`
   display: flex;
   align-items: baseline;
   gap: ${({ theme }) => theme.spacing[3]};
-  flex-wrap: wrap;
 `;
 
 export const CurrentPrice = styled.span`
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  letter-spacing: -0.02em;
 `;
 
 export const OldPrice = styled.span`
@@ -230,56 +187,22 @@ export const OldPrice = styled.span`
 `;
 
 export const DiscountBadge = styled.span`
-  font-size: 11px;
-  font-weight: 700;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: ${({ theme }) => theme.colors.success};
   background: ${({ theme }) => theme.colors.successLight};
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
 `;
 
 export const Divider = styled.div`
   height: 1px;
   background: ${({ theme }) => theme.colors.border};
-  margin: ${({ theme }) => theme.spacing[1]} 0;
 `;
 
-export const IncludesLabel = styled.p`
-  font-size: 12px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  letter-spacing: 0.3px;
-`;
-
-export const ActionRow = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[2]};
-  margin-top: ${({ theme }) => theme.spacing[1]};
-`;
-
-export const WishlistBtn = styled.button`
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  border: 1.5px solid ${({ $active, theme }) => $active ? '#E11D48' : theme.colors.border};
-  background: ${({ $active }) => $active ? '#FFF1F2' : 'transparent'};
-  color: ${({ $active }) => $active ? '#E11D48' : '#94A3B8'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-
-  &:hover {
-    border-color: ${({ $active }) => $active ? '#E11D48' : '#2563EB'};
-    color: ${({ $active }) => $active ? '#E11D48' : '#2563EB'};
-    background: ${({ $active }) => $active ? '#FFF1F2' : '#EFF6FF'};
-  }
-`;
-
+/* ─── Content Area ─── */
 export const ContentArea = styled.div`
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: ${({ theme }) => `${theme.spacing[12]} ${theme.spacing[6]}`};
   display: grid;
@@ -296,65 +219,115 @@ export const ContentArea = styled.div`
 export const MainContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[10]};
+  gap: ${({ theme }) => theme.spacing[8]};
 `;
 
-export const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[5]};
+export const Section = styled.div`
   background: ${({ theme }) => theme.colors.bgPrimary};
-  border-radius: 16px;
-  padding: ${({ theme }) => theme.spacing[6]};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-`;
-
-export const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  padding-bottom: ${({ theme }) => theme.spacing[4]};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-export const SectionIcon = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: ${({ theme }) => theme.colors.primaryLight};
-  color: ${({ theme }) => theme.colors.primary};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[6]};
 `;
 
 export const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: 700;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  padding-bottom: ${({ theme }) => theme.spacing[4]};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const SectionText = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.8;
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
 `;
 
-export const LoadingWrapper = styled.div`
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-export const ErrorWrapper = styled.div`
-  min-height: 60vh;
+/* ─── Sidebar Sticky ─── */
+export const SidebarSticky = styled.div`
+  position: sticky;
+  top: 80px;
   display: flex;
   flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+
+  ${({ theme }) => theme.media.maxMd} {
+    display: none;
+  }
+`;
+
+export const InstructorCard = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[5]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const InstructorTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textMuted};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+export const InstructorInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  cursor: pointer;
+
+  &:hover h4 {
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+export const InstructorAvatar = styled.div`
+  width: 52px;
+  height: 52px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  background: ${({ theme }) => theme.colors.primaryLight};
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid ${({ theme }) => theme.colors.border};
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing[4]};
-  color: ${({ theme }) => theme.colors.textMuted};
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+`;
+
+export const InstructorName = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  transition: ${({ theme }) => theme.transitions.fast};
+`;
+
+export const InstructorRole = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+
+
+export const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  padding-bottom: ${({ theme }) => theme.spacing[4]};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const SectionIcon = styled.span`
+  font-size: 20px;
+  line-height: 1;
 `;

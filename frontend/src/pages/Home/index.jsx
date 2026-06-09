@@ -1,11 +1,11 @@
 // src/pages/Home/index.jsx
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Users, Award } from 'lucide-react';
-import  useCourses   from '../../features/courses/hooks/useCourses';
-import { Button, Badge } from '../../shared/components';
-import {MainLayout} from "../../shared/components/layout/MainLayout"
-import { CoursesGrid } from "../../components/CoursesGrid"
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, BookOpen, Users, Award } from "lucide-react";
+import useCourses from "../../features/courses/hooks/useCourses";
+import { Button, Badge } from "../../shared/components";
+import { MainLayout } from "../../shared/components/layout/MainLayout";
+import { CoursesGrid } from "../../components/CoursesGrid";
 /* ────────── Hero ────────── */
 const HeroSection = styled.section`
   background: ${({ theme }) => theme.colors.bgPrimary};
@@ -38,7 +38,7 @@ const HeroContent = styled.div`
 `;
 
 const HeroTitle = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
   line-height: ${({ theme }) => theme.typography.lineHeight.tight};
@@ -48,7 +48,7 @@ const HeroTitle = styled.h1`
   }
 
   ${({ theme }) => theme.media.maxMd} {
-    font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+    font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   }
 `;
 
@@ -103,7 +103,7 @@ const StatLabel = styled.span`
 `;
 
 const HeroImage = styled.div`
-  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  border-radius: ${({ theme }) => theme.borderRadius["2xl"]};
   overflow: hidden;
   aspect-ratio: 4/3;
   background: ${({ theme }) => theme.colors.bgTertiary};
@@ -145,7 +145,7 @@ const SectionHeader = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
@@ -160,15 +160,11 @@ const SectionSubtitle = styled.p`
 export default function Home() {
   const navigate = useNavigate();
 
-  // جلب آخر 8 كورسات للصفحة الرئيسية
   const { data, isLoading, isError } = useCourses({ limit: 8 });
 
-  // 🟡 نتعامل مع كلا الحالتين — backend يرجع array مباشرة أو { courses: [] }
-  const courses = Array.isArray(data) ? data : data?.courses ?? [];
-
+  const courses = data?.data?.docs ?? data?.data ?? [];
   return (
     <MainLayout>
-
       {/* Hero */}
       <HeroSection>
         <HeroInner>
@@ -191,7 +187,7 @@ export default function Home() {
             <HeroActions>
               <Button
                 size="lg"
-                onClick={() => navigate('/courses')}
+                onClick={() => navigate("/courses")}
                 rightIcon={<ArrowLeft size={18} />}
               >
                 تصفح الكورسات
@@ -199,7 +195,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="secondary"
-                onClick={() => navigate('/auth/register')}
+                onClick={() => navigate("/auth/register")}
               >
                 ابدأ مجاناً
               </Button>
@@ -240,7 +236,7 @@ export default function Home() {
             variant="ghost"
             size="sm"
             rightIcon={<ArrowLeft size={16} />}
-            onClick={() => navigate('/courses')}
+            onClick={() => navigate("/courses")}
           >
             عرض الكل
           </Button>
@@ -252,7 +248,6 @@ export default function Home() {
           isError={isError}
         />
       </Section>
-
     </MainLayout>
   );
 }

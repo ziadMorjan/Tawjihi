@@ -473,9 +473,9 @@ src/features/courses/components/FiltersPanel/index.jsx
 src/features/courses/components/Pagination/index.jsx
 src/features/courses/hooks/useCourse.js
 src/features/courses/hooks/useCourseActions.js
+src/features/courses/hooks/useCourseCheckout.js
 src/features/courses/hooks/useCourses.js
 src/features/courses/hooks/useCoursesFilters.js
-src/features/courses/hooks/useEnrollment.js
 src/features/courses/hooks/useFiltersData.js
 src/features/courses/index.js
 src/features/enrollments/api/enrollmentsApi.js
@@ -28143,104 +28143,84 @@ export function ProtectedRoute({ children, allowedRoles }) {
 </file>
 
 <file path="src/features/auth/context/AuthContext.jsx">
-// src/features/auth/context/AuthContext.jsx
-
-import { createContext, useContext } from "react";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { authApi } from "../api/authApi";
+import { createContext, useContext } from 'react';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { authApi } from '../api/authApi';
 
 const AuthContext = createContext(null);
-
-// Query key ثابت — نستخدمه في أي مكان نحتاج نعمل invalidate
-export const AUTH_QUERY_KEY = ["auth", "user"];
+export const AUTH_QUERY_KEY = ['auth', 'user'];
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
 
-  // 🟡 [تحسين] بدل localStorage، نستخدم TanStack Query
-  // يعمل cache للبيانات، ويتحقق منها عند الحاجة
-  // src/features/auth/context/AuthContext.jsx
   const { data: user, isLoading } = useQuery({
     queryKey: AUTH_QUERY_KEY,
     queryFn: async () => {
       const data = await authApi.getMe();
-      return data.data ?? data;
+      return data?.data ?? data?.user ?? data;
     },
     retry: false,
-    staleTime: Infinity, // 🔴 لا تعتبرها قديمة أبداً
-    gcTime: Infinity, // لا تمسح الـ cache
+    // 🔴 هذا هو السبب — Infinity يعني ما يعيد الطلب أبداً
+    // بعد الـ refresh الـ cache فاضي → يطلب من جديد → الـ cookie موجودة → ينجح
+    staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,  // ← يجلب عند كل mount
     refetchOnReconnect: false,
-    refetchInterval: false,
   });
 
-  
-  // Login mutation
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      // الـ backend يرجع { status, token, user }
-      queryClient.setQueryData(AUTH_QUERY_KEY, data.user);
+      const userData = data?.user ?? data?.data?.user ?? data;
+      queryClient.setQueryData(AUTH_QUERY_KEY, userData);
     },
   });
 
-  // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      // امسح كل الـ cache — مش بس بيانات المستخدم
       queryClient.clear();
-      localStorage.removeItem("user");
     },
   });
 
-  // Register mutation
-const registerMutation = useMutation({
-  mutationFn: authApi.register,
-  onSuccess: (data) => {
-    // لو teacher — ما في user يرجع
-    if (data?.user) {
-      queryClient.setQueryData(AUTH_QUERY_KEY, data.user);
-    }
-  },
-});
+  const registerMutation = useMutation({
+    mutationFn: authApi.register,
+    onSuccess: (data) => {
+      const userData = data?.user ?? data?.data?.user;
+      if (userData) queryClient.setQueryData(AUTH_QUERY_KEY, userData);
+    },
+  });
 
   const value = {
-    // البيانات
-    user: user ?? null,
+    user:            user ?? null,
     isAuthenticated: !!user,
     isLoading,
+    isStudent: user?.role === 'user',
+    isTeacher: user?.role === 'teacher',
+    isAdmin:   user?.role === 'admin',
 
-    // الـ role checks — بدل ما كل component يعمل if/else
-    isStudent: user?.role === "user",
-    isTeacher: user?.role === "teacher",
-    isAdmin: user?.role === "admin",
-
-    // الـ actions
-    login: loginMutation.mutateAsync,
-    logout: logoutMutation.mutate,
+    login:    loginMutation.mutateAsync,
+    logout:   logoutMutation.mutate,
     register: registerMutation.mutateAsync,
 
-    // الـ states
-    isLoginLoading: loginMutation.isPending,
-    isLogoutLoading: logoutMutation.isPending,
+    isLoginLoading:    loginMutation.isPending,
+    isLogoutLoading:   logoutMutation.isPending,
     isRegisterLoading: registerMutation.isPending,
 
-    loginError: loginMutation.error,
+    loginError:    loginMutation.error,
     registerError: registerMutation.error,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-// [تحسين] Custom hook بدل useContext مباشرة
-// لو نسيت تحط AuthProvider فوق، يعطيك error واضح
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth يجب استخدامه داخل AuthProvider");
-  }
+  if (!context) throw new Error('useAuth يجب استخدامه داخل AuthProvider');
   return context;
 }
 </file>
@@ -30134,36 +30114,24 @@ export const PageWrapper = styled.div`
   min-height: 100vh;
 `;
 
+/* ─── Hero ─── */
 export const HeroSection = styled.div`
-  background: linear-gradient(160deg, #0B1120 0%, #162044 50%, #1A1B4B 100%);
-  position: relative;
-  overflow: hidden;
-  padding: ${({ theme }) => `${theme.spacing[16]} ${theme.spacing[6]} ${theme.spacing[12]}`};
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 70% 50% at 0% 30%, rgba(37, 99, 235, 0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 100% 70%, rgba(139, 92, 246, 0.10) 0%, transparent 70%);
-    pointer-events: none;
-  }
+  background: ${({ theme }) => theme.colors.textPrimary};
+  padding: ${({ theme }) => `${theme.spacing[16]} ${theme.spacing[6]}`};
+  direction: rtl;  
 
   ${({ theme }) => theme.media.maxMd} {
-    padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[4]} ${theme.spacing[8]}`};
+    padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[4]}`};
   }
 `;
 
 export const HeroInner = styled.div`
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 380px;
+grid-template-columns: 1fr 380px;
   gap: ${({ theme }) => theme.spacing[12]};
   align-items: start;
-  position: relative;
-  z-index: 1;
 
   ${({ theme }) => theme.media.maxMd} {
     grid-template-columns: 1fr;
@@ -30174,6 +30142,7 @@ export const HeroContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[5]};
+  padding-top: ${({ theme }) => theme.spacing[4]};
 `;
 
 export const CourseMeta = styled.div`
@@ -30184,103 +30153,98 @@ export const CourseMeta = styled.div`
 `;
 
 export const CourseTitle = styled.h1`
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  font-weight: 800;
+  font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: white;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+
+  ${({ theme }) => theme.media.maxMd} {
+    font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  }
 `;
 
 export const CourseDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.8;
-  max-width: 640px;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: rgba(255,255,255,0.75);
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  max-width: 600px;
 `;
 
 export const StatsRow = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: ${({ theme }) => theme.spacing[6]};
   flex-wrap: wrap;
+  padding: ${({ theme }) => `${theme.spacing[4]} 0`};
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 `;
 
 export const StatItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(4px);
-
-  svg { opacity: 0.9; }
+  color: rgba(255,255,255,0.75);
+  svg { flex-shrink: 0; }
 `;
 
 export const TeacherInfo = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[3]};
-  background: rgba(255, 255, 255, 0.05);
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: rgba(255,255,255,0.08);
   border-radius: ${({ theme }) => theme.borderRadius.xl};
-  border: 1px solid rgba(255, 255, 255, 0.06);
   width: fit-content;
-  transition: all 0.25s ease;
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255,255,255,0.12);
   }
 `;
 
 export const TeacherAvatar = styled.div`
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  background: ${({ theme }) => theme.colors.primaryLight};
   overflow: hidden;
   flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
 
   img { width: 100%; height: 100%; object-fit: cover; }
 `;
 
+export const TeacherMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+export const TeacherLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: rgba(255,255,255,0.5);
+`;
+
 export const TeacherName = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: rgba(255,255,255,0.9);
 `;
 
-export const TeacherLabel = styled.div`
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
-  font-weight: 500;
-  letter-spacing: 0.3px;
-`;
-
+/* ─── Purchase Card ─── */
 export const PurchaseCard = styled.div`
   background: ${({ theme }) => theme.colors.bgPrimary};
-  border-radius: 16px;
+  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
   overflow: hidden;
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.3);
   position: sticky;
-  top: 88px;
-  transition: box-shadow 0.3s ease;
-
-  &:hover {
-    box-shadow:
-      0 30px 60px -12px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(255, 255, 255, 0.08);
-  }
+  top: 80px;
 
   ${({ theme }) => theme.media.maxMd} {
     position: static;
@@ -30289,7 +30253,7 @@ export const PurchaseCard = styled.div`
 `;
 
 export const CardImage = styled.div`
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16/9;
   background: ${({ theme }) => theme.colors.bgTertiary};
   overflow: hidden;
   position: relative;
@@ -30298,37 +30262,12 @@ export const CardImage = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.4s ease;
   }
 
-  ${PurchaseCard}:hover & img {
-    transform: scale(1.04);
+  &:hover img {
+    transform: scale(1.03);
   }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.15));
-    pointer-events: none;
-  }
-`;
-
-export const CardBadge = styled.div`
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: ${({ $variant }) =>
-    $variant === 'free'
-      ? 'linear-gradient(135deg, #16A34A, #15803D)'
-      : 'linear-gradient(135deg, #2563EB, #7C3AED)'};
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
-  z-index: 2;
-  letter-spacing: 0.3px;
 `;
 
 export const CardBody = styled.div`
@@ -30342,14 +30281,12 @@ export const PriceRow = styled.div`
   display: flex;
   align-items: baseline;
   gap: ${({ theme }) => theme.spacing[3]};
-  flex-wrap: wrap;
 `;
 
 export const CurrentPrice = styled.span`
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  letter-spacing: -0.02em;
 `;
 
 export const OldPrice = styled.span`
@@ -30359,56 +30296,22 @@ export const OldPrice = styled.span`
 `;
 
 export const DiscountBadge = styled.span`
-  font-size: 11px;
-  font-weight: 700;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: ${({ theme }) => theme.colors.success};
   background: ${({ theme }) => theme.colors.successLight};
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
 `;
 
 export const Divider = styled.div`
   height: 1px;
   background: ${({ theme }) => theme.colors.border};
-  margin: ${({ theme }) => theme.spacing[1]} 0;
 `;
 
-export const IncludesLabel = styled.p`
-  font-size: 12px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  letter-spacing: 0.3px;
-`;
-
-export const ActionRow = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[2]};
-  margin-top: ${({ theme }) => theme.spacing[1]};
-`;
-
-export const WishlistBtn = styled.button`
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  border: 1.5px solid ${({ $active, theme }) => $active ? '#E11D48' : theme.colors.border};
-  background: ${({ $active }) => $active ? '#FFF1F2' : 'transparent'};
-  color: ${({ $active }) => $active ? '#E11D48' : '#94A3B8'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-
-  &:hover {
-    border-color: ${({ $active }) => $active ? '#E11D48' : '#2563EB'};
-    color: ${({ $active }) => $active ? '#E11D48' : '#2563EB'};
-    background: ${({ $active }) => $active ? '#FFF1F2' : '#EFF6FF'};
-  }
-`;
-
+/* ─── Content Area ─── */
 export const ContentArea = styled.div`
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: ${({ theme }) => `${theme.spacing[12]} ${theme.spacing[6]}`};
   display: grid;
@@ -30425,67 +30328,117 @@ export const ContentArea = styled.div`
 export const MainContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[10]};
+  gap: ${({ theme }) => theme.spacing[8]};
 `;
 
-export const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[5]};
+export const Section = styled.div`
   background: ${({ theme }) => theme.colors.bgPrimary};
-  border-radius: 16px;
-  padding: ${({ theme }) => theme.spacing[6]};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-`;
-
-export const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  padding-bottom: ${({ theme }) => theme.spacing[4]};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-export const SectionIcon = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: ${({ theme }) => theme.colors.primaryLight};
-  color: ${({ theme }) => theme.colors.primary};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[6]};
 `;
 
 export const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: 700;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  padding-bottom: ${({ theme }) => theme.spacing[4]};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const SectionText = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.8;
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
 `;
 
-export const LoadingWrapper = styled.div`
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-export const ErrorWrapper = styled.div`
-  min-height: 60vh;
+/* ─── Sidebar Sticky ─── */
+export const SidebarSticky = styled.div`
+  position: sticky;
+  top: 80px;
   display: flex;
   flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+
+  ${({ theme }) => theme.media.maxMd} {
+    display: none;
+  }
+`;
+
+export const InstructorCard = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[5]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const InstructorTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textMuted};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+export const InstructorInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  cursor: pointer;
+
+  &:hover h4 {
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+export const InstructorAvatar = styled.div`
+  width: 52px;
+  height: 52px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  background: ${({ theme }) => theme.colors.primaryLight};
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid ${({ theme }) => theme.colors.border};
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing[4]};
-  color: ${({ theme }) => theme.colors.textMuted};
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+`;
+
+export const InstructorName = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  transition: ${({ theme }) => theme.transitions.fast};
+`;
+
+export const InstructorRole = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+
+
+export const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  padding-bottom: ${({ theme }) => theme.spacing[4]};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const SectionIcon = styled.span`
+  font-size: 20px;
+  line-height: 1;
 `;
 </file>
 
@@ -31002,6 +30955,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }) {
 import { useQuery } from '@tanstack/react-query';
 import { coursesApi } from '../api/coursesApi';
 
+// src/features/courses/hooks/useCourse.js
 export function useCourse(id) {
   return useQuery({
     queryKey: ['courses', id],
@@ -31010,8 +30964,15 @@ export function useCourse(id) {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     select: (data) => {
-      // backend يرجع { status, data: { course } } أو { status, data: {...} }
-      return data?.data?.course ?? data?.data ?? data;
+      // جرب كل الاحتمالات
+      const course = data?.data?.doc
+        ?? data?.data?.course
+        ?? data?.data
+        ?? data?.course
+        ?? data;
+      console.log('course data:', course); // احذفه بعد التأكد
+      return course;
+      
     },
   });
 }
@@ -31048,6 +31009,33 @@ export function useCourseActions() {
 }
 </file>
 
+<file path="src/features/courses/hooks/useCourseCheckout.js">
+// src/features/courses/hooks/useCourseCheckout.js
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { enrollmentsApi } from '../../enrollments/api/enrollmentsApi';
+
+export function useCourseCheckout(courseId) {
+  const checkoutMutation = useMutation({
+    mutationFn: () => enrollmentsApi.createCheckoutSession(courseId),
+    onSuccess: (data) => {
+      // التوجيه لصفحة الدفع Stripe بأمان
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    },
+    onError: () => {
+      toast.error('حدث خطأ أثناء الانتقال لبوابة الدفع، حاول مجدداً');
+    },
+  });
+
+  return {
+    checkout: checkoutMutation.mutate,
+    isCheckoutLoading: checkoutMutation.isPending,
+  };
+}
+</file>
+
 <file path="src/features/courses/hooks/useCourses.js">
 // src/features/courses/hooks/useCourses.js
 import { useQuery } from '@tanstack/react-query';
@@ -31062,11 +31050,6 @@ export default function useCourses(params = {}) {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    select: (data) => {
-      // backend يرجع { status, data: { docs: [...] } }
-      const courses = data?.data?.docs ?? data?.data ?? data?.courses ?? data;
-      return Array.isArray(courses) ? courses : [];
-    },
   });
 }
 </file>
@@ -31086,12 +31069,12 @@ export function useCoursesFilters() {
 
   // قراءة القيم الحالية من الـ URL
   const filters = {
-    keyword:  searchParams.get('keyword')  || '',
-    subject:  searchParams.get('subject')  || '',
-    branch:   searchParams.get('branch')   || '',
-    sort:     searchParams.get('sort')     || '-createdAt',
-    page:     parseInt(searchParams.get('page') || '1', 10),
-    limit:    12,
+    keyword: searchParams.get('keyword') || '',
+    subject: searchParams.get('subject') || '',
+    branch: searchParams.get('branch') || '',
+    sort: searchParams.get('sort') || '-createdAt',
+    page: parseInt(searchParams.get('page') || '1', 10),
+    limit: 8,
   };
 
   // تحديث param واحد مع إعادة الـ page للأول
@@ -31115,8 +31098,11 @@ export function useCoursesFilters() {
       next.set('page', String(page));
       return next;
     });
+    // 🟡 scroll للأعلى عند تغيير الصفحة
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [setSearchParams]);
 
+  
   const clearFilters = useCallback(() => {
     setSearchParams({});
   }, [setSearchParams]);
@@ -31124,7 +31110,7 @@ export function useCoursesFilters() {
   const hasActiveFilters = !!(
     filters.keyword ||
     filters.subject ||
-    filters.branch  ||
+    filters.branch ||
     filters.sort !== '-createdAt'
   );
 
@@ -31134,76 +31120,6 @@ export function useCoursesFilters() {
     setPage,
     clearFilters,
     hasActiveFilters,
-  };
-}
-</file>
-
-<file path="src/features/courses/hooks/useEnrollment.js">
-// src/features/courses/hooks/useEnrollment.js
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '../../../shared/lib/axiosInstance';
-import { useAuth } from '../../auth';
-import { toast } from 'react-toastify';
-
-const enrollmentApi = {
-  getMyEnrollments: async (userId) => {
-    const { data } = await axiosInstance.get('/enrollments', {
-      params: { user: userId }
-    });
-    return data;
-  },
-
-  createCheckoutSession: async (courseId) => {
-    const { data } = await axiosInstance.post(
-      '/payment/create-checkout-session',
-      { courseId }
-    );
-    return data;
-  },
-};
-
-export const ENROLLMENTS_QUERY_KEY = ['enrollments', 'my'];
-
-export function useEnrollment(courseId) {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-
-  // جلب كل الكورسات اللي اشتراها المستخدم
-  const { data: enrollmentsData } = useQuery({
-    queryKey: ENROLLMENTS_QUERY_KEY,
-    queryFn: enrollmentApi.getMyEnrollments,
-    enabled: !!user,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    select: (data) => data?.data ?? data?.enrollments ?? data,
-  });
-
-  const enrollments = Array.isArray(enrollmentsData)
-    ? enrollmentsData
-    : [];
-
-  // هل مسجل في هذا الكورس؟
-  const isEnrolled = enrollments.some(
-    e => e.course?._id === courseId || e.course === courseId
-  );
-
-  // Mutation للدفع
-  const checkoutMutation = useMutation({
-    mutationFn: () => enrollmentApi.createCheckoutSession(courseId),
-    onSuccess: (data) => {
-      // الـ backend يرجع Stripe checkout URL
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    },
-    onError: () => toast.error('حدث خطأ، حاول مجدداً'),
-  });
-
-  return {
-    isEnrolled,
-    enrollments,
-    checkout: checkoutMutation.mutate,
-    isCheckoutLoading: checkoutMutation.isPending,
   };
 }
 </file>
@@ -31254,11 +31170,11 @@ export { coursesApi }         from './api/coursesApi';
 </file>
 
 <file path="src/features/enrollments/api/enrollmentsApi.js">
+// src/features/enrollments/api/enrollmentsApi.js
 import { axiosInstance } from '../../../shared/lib/axiosInstance';
 
 export const enrollmentsApi = {
-  // GET /enrollments?user=:userId
-  // → { status, count, pagination, data: { docs: [...] } }
+  // 1. جلب الكورسات المشترك بها المستخدم
   getMyEnrollments: async (userId) => {
     const { data } = await axiosInstance.get('/enrollments', {
       params: { user: userId },
@@ -31266,11 +31182,20 @@ export const enrollmentsApi = {
     return data;
   },
 
+  // 2. فحص كورس محدد (إذا لزم الأمر مستقبلاً)
   isEnrolled: async (userId, courseId) => {
     const { data } = await axiosInstance.get('/enrollments', {
       params: { user: userId, course: courseId },
     });
     return (data?.data?.docs ?? []).length > 0;
+  },
+
+  // 3. دالة الدفع التي كانت ضائعة في الملف القديم (تم نقلها هنا)
+  createCheckoutSession: async (courseId) => {
+    const { data } = await axiosInstance.post('/payment/create-checkout-session', {
+      courseId,
+    });
+    return data;
   },
 };
 </file>
@@ -31278,33 +31203,40 @@ export const enrollmentsApi = {
 <file path="src/features/enrollments/hooks/useMyEnrollments.js">
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../auth';
-import { enrollmentsApi } from '../api/enrollmentsApi';
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
 
 export const ENROLLMENTS_QUERY_KEY = ['enrollments', 'my'];
 
+const fetchMyEnrollments = async (userId) => {
+  const { data } = await axiosInstance.get('/enrollments', {
+    params: { user: userId },
+  });
+  // backend: { status, data: { docs: [...] } }
+  return data?.data?.docs ?? [];
+};
+
 export function useMyEnrollments() {
   const { user } = useAuth();
-  console.log('useMyEnrollments user:', user);
 
-  const { data, isLoading } = useQuery({
+  const { data: enrollments = [], isLoading } = useQuery({
     queryKey: [...ENROLLMENTS_QUERY_KEY, user?._id],
-    queryFn: () => enrollmentsApi.getMyEnrollments(user._id),
+    queryFn: () => fetchMyEnrollments(user._id),
     enabled: !!user?._id,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    select: (data) => data?.data?.docs ?? [],
   });
 
-  const isEnrolled = (courseId) =>
-    (data ?? []).some(
-      (e) => (e.course?._id ?? e.course) === courseId
-    );
-
-  return {
-    enrollments: data ?? [],
-    isEnrolled,
-    isLoading,
+  // 🔴 المشكلة كانت هنا — المقارنة غلط
+  // enrollment.course قد يكون object أو string ID
+  const isEnrolled = (courseId) => {
+    if (!courseId) return false;
+    return enrollments.some((e) => {
+      const enrolledCourseId = e?.course?._id ?? e?.course ?? e;
+      return String(enrolledCourseId) === String(courseId);
+    });
   };
+
+  return { enrollments, isEnrolled, isLoading };
 }
 </file>
 
@@ -34385,100 +34317,259 @@ export const Submit = styled.button`
 </file>
 
 <file path="src/pages/CourseDetails/index.jsx">
-// src/pages/CourseOne/index.jsx
-import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Badge, Spinner } from '../../shared/components';
-import  {useCourse}         from '../../features//courses/hooks/useCourse';
-import { useEnrollment }    from '../../features/courses/hooks/useEnrollment';
-import { useCourseActions } from '../../features/courses/hooks/useCourseActions';
-import { StarRating }       from '../../features/courses/components/CourseCard/StarRating';
-import { CourseCurriculum } from '../../features/courses/components/CourseDetails/CourseCurriculum';
-import { CourseIncludes }   from '../../features/courses/components/CourseDetails/CourseIncludes';
-import { CourseReviews }    from '../../features/courses/components/CourseDetails/CourseReviews';
-import { useAuth }          from '../../features/auth';
+import { useParams, useNavigate } from "react-router-dom";
 import {
-  PageWrapper, HeroSection, HeroInner, HeroContent,
-  CourseMeta, CourseTitle, CourseDescription, StatsRow,
-  StatItem, TeacherInfo, TeacherAvatar, TeacherName,
-  PurchaseCard, CardImage, CardBody, PriceRow,
-  CurrentPrice, OldPrice, DiscountBadge,
-  ContentArea, MainContent, Section, SectionTitle, SectionText,
-} from '../../features/courses/components/CourseDetails/CourseDetails.styles';
-import {MainLayout} from "../../shared/components/layout/MainLayout"
-import { Users, Star, BookOpen, User, Heart, ShoppingCart } from 'lucide-react';
+  Users,
+  Star,
+  User,
+  Heart,
+  ShoppingCart,
+  BookOpen,
+  Award,
+} from "lucide-react";
+import { Button, Badge, Spinner } from "../../shared/components";
+import { useCourse } from "../../features/courses/hooks/useCourse";
+import { useCourseActions } from "../../features/courses/hooks/useCourseActions";
+import { StarRating } from "../../features/courses/components/CourseCard/StarRating";
+import { CourseCurriculum } from "../../features/courses/components/CourseDetails/CourseCurriculum";
+import { CourseIncludes } from "../../features/courses/components/CourseDetails/CourseIncludes";
+import { CourseReviews } from "../../features/courses/components/CourseDetails/CourseReviews";
+import { useAuth } from "../../features/auth";
+import { useMyEnrollments } from "../../features/enrollments/hooks/useMyEnrollments";
+import { useCourseCheckout } from "../../features/courses/hooks/useCourseCheckout";
+import { MainLayout } from "../../shared/components/layout/MainLayout";
+import {
+  PageWrapper,
+  HeroSection,
+  HeroInner,
+  HeroContent,
+  CourseMeta,
+  CourseTitle,
+  CourseDescription,
+  StatsRow,
+  StatItem,
+  TeacherInfo,
+  TeacherAvatar,
+  TeacherMeta,
+  TeacherLabel,
+  TeacherName,
+  PurchaseCard,
+  CardImage,
+  CardBody,
+  PriceRow,
+  CurrentPrice,
+  OldPrice,
+  DiscountBadge,
+  Divider,
+  ContentArea,
+  MainContent,
+  Section,
+  SectionTitle,
+  SectionText,
+  SidebarSticky,
+  InstructorCard,
+  InstructorTitle,
+  InstructorInfo,
+  InstructorAvatar,
+  InstructorName,
+  InstructorRole,
+} from "../../features/courses/components/CourseDetails/CourseDetails.styles";
 
 export default function CourseDetails() {
   const { id } = useParams();
-  const navigate   = useNavigate();
-  const { user }   = useAuth();
-
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data: course, isLoading, isError } = useCourse(id);
-  const { isEnrolled, checkout, isCheckoutLoading } = useEnrollment(id);
-  const { isInCart, isInWishlist, toggleCart, toggleWishlist } = useCourseActions();
+  const { isEnrolled } = useMyEnrollments();
+  const { checkout, isCheckoutLoading } = useCourseCheckout(id);
+  const { isInCart, isInWishlist, toggleCart, toggleWishlist } =
+    useCourseActions();
 
-
+  /* ─── Loading ─── */
   if (isLoading) {
     return (
       <MainLayout>
-        <div style={{ height: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          style={{
+            height: "80vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Spinner size="lg" />
         </div>
       </MainLayout>
     );
   }
 
+  /* ─── Error ─── */
   if (isError || !course) {
     return (
       <MainLayout>
-        <div style={{ height: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <p>حدث خطأ في تحميل الكورس</p>
-          <Button onClick={() => navigate('/courses')}>العودة للكورسات</Button>
+        <div
+          style={{
+            height: "60vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 16,
+          }}
+        >
+          <p style={{ color: "#475569" }}>حدث خطأ في تحميل الكورس</p>
+          <Button onClick={() => navigate("/courses")}>العودة للكورسات</Button>
         </div>
       </MainLayout>
     );
   }
 
   const {
-    _id, name, description, img,
-    price = 0, priceAfterDiscount,
-    averageRating = 0, reviewsQuantity = 0,
-    teacher, subject, branches = [],
+    _id,
+    name,
+    description,
+    img,
+    price = 0,
+    priceAfterDiscount,
+    averageRating = 0,
+    reviewsQuantity = 0,
+    teacher,
+    subject,
+    branches = [],
     studentsCount = 0,
+    lessonsCount = 0,
   } = course;
 
-  const courseId = _id ?? course.id ?? id; // id من useParams كـ fallback
+  const courseId = _id ?? course.id ?? id;
 
-  const discountPercent = price > 0 && priceAfterDiscount
-    ? Math.round((1 - priceAfterDiscount / price) * 100)
-    : 0;
+  const discountPercent =
+    price > 0 && priceAfterDiscount
+      ? Math.round((1 - priceAfterDiscount / price) * 100)
+      : 0;
 
   const handleMainAction = () => {
-    if (isEnrolled) {
-      navigate(`/learn/${id}`);
+    if (isEnrolled(courseId)) {
+      navigate(`/learn/${courseId}`);
       return;
     }
     if (!user) {
-      navigate('/auth/login', { state: { from: { pathname: `/courses/${id}` } } });
+      navigate("/auth/login", {
+        state: { from: { pathname: `/courses/${courseId}` } },
+      });
       return;
     }
-    if (price === 0) {
-      // كورس مجاني — enrollment مباشر
-      checkout();
-    } else {
-      checkout();
-    }
+    checkout();
   };
+
+  const enrolled = isEnrolled(courseId);
+
+  /* ─── Purchase Card Content (reused in hero + sidebar) ─── */
+  const PurchaseCardContent = (
+    <CardBody>
+      {/* Price */}
+      <PriceRow>
+        {price === 0 ? (
+          <Badge
+            variant="success"
+            style={{ fontSize: 18, padding: "8px 20px" }}
+          >
+            مجاني تماماً
+          </Badge>
+        ) : (
+          <>
+            <CurrentPrice>{priceAfterDiscount ?? price} ₪</CurrentPrice>
+            {priceAfterDiscount && (
+              <>
+                <OldPrice>{price} ₪</OldPrice>
+                {discountPercent > 0 && (
+                  <DiscountBadge>خصم {discountPercent}%</DiscountBadge>
+                )}
+              </>
+            )}
+          </>
+        )}
+      </PriceRow>
+
+      {/* CTA */}
+      <Button
+        fullWidth
+        size="lg"
+        isLoading={isCheckoutLoading}
+        onClick={handleMainAction}
+        variant={enrolled ? "secondary" : "primary"}
+      >
+        {enrolled
+          ? "متابعة التعلم"
+          : price === 0
+            ? "ابدأ مجاناً"
+            : "اشترِ الآن"}
+      </Button>
+
+      {/* Cart & Wishlist */}
+      {!enrolled && (
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            fullWidth
+            size="sm"
+            variant={isInCart(courseId) ? "primary" : "secondary"}
+            onClick={() => toggleCart(courseId)}
+            leftIcon={<ShoppingCart size={16} />}
+          >
+            {isInCart(courseId) ? "إزالة من السلة" : "أضف للسلة"}
+          </Button>
+          <button
+            onClick={() => toggleWishlist(courseId)}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 8,
+              flexShrink: 0,
+              border: `1.5px solid ${isInWishlist(courseId) ? "#DC2626" : "#E2E8F0"}`,
+              background: isInWishlist(courseId) ? "#FEF2F2" : "white",
+              color: isInWishlist(courseId) ? "#DC2626" : "#94A3B8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <Heart
+              size={16}
+              fill={isInWishlist(courseId) ? "currentColor" : "none"}
+            />
+          </button>
+        </div>
+      )}
+
+      <Divider />
+
+      {/* Includes */}
+      <div>
+        <p
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            marginBottom: 12,
+            color: "#0F172A",
+          }}
+        >
+          يتضمن هذا الكورس:
+        </p>
+        <CourseIncludes lessonsCount={lessonsCount} />
+      </div>
+    </CardBody>
+  );
 
   return (
     <MainLayout>
       <PageWrapper>
-
-        {/* Hero */}
+        {/* ─── Hero ─── */}
         <HeroSection>
           <HeroInner>
             <HeroContent>
-
+              {/* Badges */}
               <CourseMeta>
                 {subject?.name && (
                   <Badge variant="primary">{subject.name}</Badge>
@@ -34486,184 +34577,123 @@ export default function CourseDetails() {
                 {branches[0]?.name && (
                   <Badge variant="gray">{branches[0].name}</Badge>
                 )}
+                {averageRating > 0 && (
+                  <Badge variant="warning" icon={<Award size={12} />}>
+                    {averageRating.toFixed(1)} تقييم
+                  </Badge>
+                )}
               </CourseMeta>
 
+              {/* Title */}
               <CourseTitle>{name}</CourseTitle>
 
-              <CourseDescription>
-                {description?.slice(0, 200)}
-                {description?.length > 200 ? '...' : ''}
-              </CourseDescription>
+              {/* Description */}
+              {description && (
+                <CourseDescription>
+                  {description.length > 180
+                    ? `${description.slice(0, 180)}...`
+                    : description}
+                </CourseDescription>
+              )}
 
+              {/* Stats */}
               <StatsRow>
                 {averageRating > 0 && (
                   <StatItem>
-                    <Star size={16} fill="#F59E0B" color="#F59E0B" />
-                    <span style={{ color: '#F59E0B', fontWeight: 600 }}>
+                    <Star size={15} fill="#F59E0B" color="#F59E0B" />
+                    <strong style={{ color: "#F59E0B" }}>
                       {averageRating.toFixed(1)}
-                    </span>
+                    </strong>
                     <span>({reviewsQuantity} تقييم)</span>
                   </StatItem>
                 )}
                 {studentsCount > 0 && (
                   <StatItem>
-                    <Users size={16} />
-                    {studentsCount} طالب
+                    <Users size={15} />
+                    <span>{studentsCount.toLocaleString()} طالب</span>
+                  </StatItem>
+                )}
+                {lessonsCount > 0 && (
+                  <StatItem>
+                    <BookOpen size={15} />
+                    <span>{lessonsCount} درس</span>
                   </StatItem>
                 )}
               </StatsRow>
 
+              {/* Teacher */}
               {teacher && (
-                <TeacherInfo>
+                <TeacherInfo
+                  onClick={() => navigate(`/teachers/${teacher._id}`)}
+                >
                   <TeacherAvatar>
-                    {teacher.coverImage
-                      ? <img src={teacher.coverImage} alt={teacher.name} />
-                      : <User size={20} color="#2563EB" style={{ margin: 'auto' }} />
-                    }
+                    {teacher.coverImage ? (
+                      <img src={teacher.coverImage} alt={teacher.name} />
+                    ) : (
+                      <User size={20} color="#2563EB" />
+                    )}
                   </TeacherAvatar>
-                  <div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>المعلم</div>
-                    <TeacherName
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => navigate(`/teachers/${teacher.courseId}`)}
-                    >
-                      {teacher.name}
-                    </TeacherName>
-                  </div>
+                  <TeacherMeta>
+                    <TeacherLabel>يُدرّسه</TeacherLabel>
+                    <TeacherName>{teacher.name}</TeacherName>
+                  </TeacherMeta>
                 </TeacherInfo>
               )}
-
             </HeroContent>
 
-            {/* Purchase Card — Desktop */}
+            {/* Purchase Card — Hero */}
             <PurchaseCard>
               <CardImage>
-                <img src={img || '/assets/img/logo.png'} alt={name} />
+                <img src={img || "/assets/img/logo.png"} alt={name} />
               </CardImage>
-
-              <CardBody>
-                <PriceRow>
-                  {price === 0 ? (
-                    <Badge variant="success" style={{ fontSize: 20, padding: '8px 16px' }}>
-                      مجاني
-                    </Badge>
-                  ) : (
-                    <>
-                      <CurrentPrice>
-                        {priceAfterDiscount ?? price} ₪
-                      </CurrentPrice>
-                      {priceAfterDiscount && (
-                        <>
-                          <OldPrice>{price} ₪</OldPrice>
-                          {discountPercent > 0 && (
-                            <DiscountBadge>خصم {discountPercent}%</DiscountBadge>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                </PriceRow>
-
-                {/* Main CTA */}
-                <Button
-                  fullWidth
-                  size="lg"
-                  isLoading={isCheckoutLoading}
-                  onClick={handleMainAction}
-                  variant={isEnrolled ? 'secondary' : 'primary'}
-                >
-                  {isEnrolled
-                    ? 'متابعة التعلم'
-                    : price === 0
-                    ? 'ابدأ مجاناً'
-                    : 'اشترِ الآن'
-                  }
-                </Button>
-
-                {/* Cart & Wishlist — فقط لو مش enrolled */}
-            {!isEnrolled && (
-  <div style={{ display: 'flex', gap: 8 }}>
-
-    {/* زر السلة */}
-    <Button
-      fullWidth
-      size="sm"
-      variant={isInCart(courseId) ? 'primary' : 'secondary'}
-      onClick={() => toggleCart(courseId)}
-      leftIcon={<ShoppingCart size={16} />}
-    >
-      {isInCart(courseId) ? 'إزالة من السلة' : 'أضف للسلة'}
-    </Button>
-
-    {/* زر المفضلة */}
-    <button
-      onClick={() => toggleWishlist(courseId)}
-      aria-label={isInWishlist(courseId) ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
-      style={{
-        width: 42,
-        height: 42,
-        borderRadius: 10,
-        border: `1.5px solid ${isInWishlist(courseId) ? '#DC2626' : '#E2E8F0'}`,
-        background: isInWishlist(courseId) ? '#FEF2F2' : 'white',
-        color: isInWishlist(courseId) ? '#DC2626' : '#94A3B8',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        transition: 'all 0.15s ease',
-        flexShrink: 0,
-      }}
-    >
-      <Heart
-        size={18}
-        fill={isInWishlist(courseId) ? 'currentColor' : 'none'}
-      />
-    </button>
-
-  </div>
-)}
-                {/* ما يتضمنه الكورس */}
-                <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: 'var(--text-primary)' }}>
-                    يتضمن هذا الكورس:
-                  </p>
-                  <CourseIncludes lessonsCount={course.lessonsCount ?? 0} />
-                </div>
-
-              </CardBody>
+              {PurchaseCardContent}
             </PurchaseCard>
           </HeroInner>
         </HeroSection>
 
-        {/* Main Content */}
+        {/* ─── Content ─── */}
         <ContentArea>
           <MainContent>
-
-            {/* Description */}
             {description && (
               <Section>
-                <SectionTitle>عن الكورس</SectionTitle>
+                <SectionTitle>
+                  <BookOpen size={20} color="#1B4FD8" />
+                  عن الكورس
+                </SectionTitle>
                 <SectionText>{description}</SectionText>
               </Section>
             )}
-
-            {/* Curriculum */}
             <Section>
-              <CourseCurriculum courseId={courseId} isEnrolled={isEnrolled} />
+              <CourseCurriculum courseId={courseId} isEnrolled={enrolled} />
             </Section>
-
-            {/* Reviews */}
             <Section>
               <CourseReviews courseId={courseId} />
             </Section>
-
           </MainContent>
 
-          {/* Purchase Card — Mobile (تظهر تحت المحتوى) */}
-          <div style={{ display: 'none' }} className="mobile-purchase-card">
-            {/* نفس الـ PurchaseCard — سنتعامل معها بـ CSS */}
-          </div>
-
+          {/* Sidebar — بس Instructor، مش Purchase Card */}
+          <SidebarSticky>
+            {teacher && (
+              <InstructorCard>
+                <InstructorTitle>المعلم</InstructorTitle>
+                <InstructorInfo
+                  onClick={() => navigate(`/teachers/${teacher._id}`)}
+                >
+                  <InstructorAvatar>
+                    {teacher.coverImage ? (
+                      <img src={teacher.coverImage} alt={teacher.name} />
+                    ) : (
+                      <User size={22} color="#2563EB" />
+                    )}
+                  </InstructorAvatar>
+                  <div>
+                    <InstructorName>{teacher.name}</InstructorName>
+                    <InstructorRole>معلم معتمد</InstructorRole>
+                  </div>
+                </InstructorInfo>
+              </InstructorCard>
+            )}
+          </SidebarSticky>
         </ContentArea>
       </PageWrapper>
     </MainLayout>
@@ -35377,15 +35407,12 @@ export default function Courses() {
     limit: filters.limit,
   };
 
-  const { data, isLoading, isError } = useCourses(queryParams);
+const { data: rawData, isLoading, isError } = useCourses(queryParams);
 
   // 🟡 نتعامل مع الـ response — backend يرجع { courses, pagination } أو array
-  const courses = Array.isArray(data)
-    ? data
-    : (data?.courses ?? data?.data ?? []);
-  const pagination = data?.pagination ?? null;
-  const totalPages = pagination?.totalPages ?? 1;
-  const totalItems = pagination?.totalItems ?? courses.length;
+const courses    = rawData?.data?.docs ?? rawData?.data ?? [];
+const totalPages = rawData?.pagination?.totalPages ?? rawData?.data?.pagination?.totalPages ?? 1;
+const totalItems = rawData?.pagination?.totalResults ?? courses.length;
 
   // Search مع debounce بسيط
   const handleSearchChange = (e) => {

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { coursesApi } from '../api/coursesApi';
 
+// src/features/courses/hooks/useCourse.js
 export function useCourse(id) {
   return useQuery({
     queryKey: ['courses', id],
@@ -9,8 +10,15 @@ export function useCourse(id) {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     select: (data) => {
-      // backend يرجع { status, data: { course } } أو { status, data: {...} }
-      return data?.data?.course ?? data?.data ?? data;
+      // جرب كل الاحتمالات
+      const course = data?.data?.doc
+        ?? data?.data?.course
+        ?? data?.data
+        ?? data?.course
+        ?? data;
+      console.log('course data:', course); // احذفه بعد التأكد
+      return course;
+      
     },
   });
 }

@@ -12,12 +12,12 @@ export function useCoursesFilters() {
 
   // قراءة القيم الحالية من الـ URL
   const filters = {
-    keyword:  searchParams.get('keyword')  || '',
-    subject:  searchParams.get('subject')  || '',
-    branch:   searchParams.get('branch')   || '',
-    sort:     searchParams.get('sort')     || '-createdAt',
-    page:     parseInt(searchParams.get('page') || '1', 10),
-    limit:    12,
+    keyword: searchParams.get('keyword') || '',
+    subject: searchParams.get('subject') || '',
+    branch: searchParams.get('branch') || '',
+    sort: searchParams.get('sort') || '-createdAt',
+    page: parseInt(searchParams.get('page') || '1', 10),
+    limit: 9,
   };
 
   // تحديث param واحد مع إعادة الـ page للأول
@@ -41,8 +41,11 @@ export function useCoursesFilters() {
       next.set('page', String(page));
       return next;
     });
+    // 🟡 scroll للأعلى عند تغيير الصفحة
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [setSearchParams]);
 
+  
   const clearFilters = useCallback(() => {
     setSearchParams({});
   }, [setSearchParams]);
@@ -50,7 +53,7 @@ export function useCoursesFilters() {
   const hasActiveFilters = !!(
     filters.keyword ||
     filters.subject ||
-    filters.branch  ||
+    filters.branch ||
     filters.sort !== '-createdAt'
   );
 

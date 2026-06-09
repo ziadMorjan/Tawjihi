@@ -132,15 +132,11 @@ export default function Courses() {
     limit: filters.limit,
   };
 
-  const { data, isLoading, isError } = useCourses(queryParams);
+const { data: rawData, isLoading, isError } = useCourses(queryParams);
 
-  // 🟡 نتعامل مع الـ response — backend يرجع { courses, pagination } أو array
-  const courses = Array.isArray(data)
-    ? data
-    : (data?.courses ?? data?.data ?? []);
-  const pagination = data?.pagination ?? null;
-  const totalPages = pagination?.totalPages ?? 1;
-  const totalItems = pagination?.totalItems ?? courses.length;
+const courses    = rawData?.data?.docs ?? rawData?.data ?? [];
+const totalPages = rawData?.pagination?.totalPages ?? rawData?.data?.pagination?.totalPages ?? 1;
+const totalItems = rawData?.pagination?.totalResults ?? courses.length;
 
   // Search مع debounce بسيط
   const handleSearchChange = (e) => {

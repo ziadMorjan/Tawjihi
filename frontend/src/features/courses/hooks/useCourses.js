@@ -11,10 +11,5 @@ export default function useCourses(params = {}) {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    select: (data) => {
-      // backend يرجع { status, data: { docs: [...] } }
-      const courses = data?.data?.docs ?? data?.data ?? data?.courses ?? data;
-      return Array.isArray(courses) ? courses : [];
-    },
   });
 }

@@ -1,100 +1,80 @@
-// src/features/auth/context/AuthContext.jsx
-
-import { createContext, useContext } from "react";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { authApi } from "../api/authApi";
+import { createContext, useContext } from 'react';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { authApi } from '../api/authApi';
 
 const AuthContext = createContext(null);
-
-// Query key ثابت — نستخدمه في أي مكان نحتاج نعمل invalidate
-export const AUTH_QUERY_KEY = ["auth", "user"];
+export const AUTH_QUERY_KEY = ['auth', 'user'];
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
 
-  // 🟡 [تحسين] بدل localStorage، نستخدم TanStack Query
-  // يعمل cache للبيانات، ويتحقق منها عند الحاجة
-  // src/features/auth/context/AuthContext.jsx
   const { data: user, isLoading } = useQuery({
     queryKey: AUTH_QUERY_KEY,
     queryFn: async () => {
       const data = await authApi.getMe();
-      return data.data ?? data;
+      return data?.data ?? data?.user ?? data;
     },
     retry: false,
-    staleTime: Infinity, // 🔴 لا تعتبرها قديمة أبداً
-    gcTime: Infinity, // لا تمسح الـ cache
+    // 🔴 هذا هو السبب — Infinity يعني ما يعيد الطلب أبداً
+    // بعد الـ refresh الـ cache فاضي → يطلب من جديد → الـ cookie موجودة → ينجح
+    staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,  // ← يجلب عند كل mount
     refetchOnReconnect: false,
-    refetchInterval: false,
   });
 
-  
-  // Login mutation
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      // الـ backend يرجع { status, token, user }
-      queryClient.setQueryData(AUTH_QUERY_KEY, data.user);
+      const userData = data?.user ?? data?.data?.user ?? data;
+      queryClient.setQueryData(AUTH_QUERY_KEY, userData);
     },
   });
 
-  // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      // امسح كل الـ cache — مش بس بيانات المستخدم
       queryClient.clear();
-      localStorage.removeItem("user");
     },
   });
 
-  // Register mutation
-const registerMutation = useMutation({
-  mutationFn: authApi.register,
-  onSuccess: (data) => {
-    // لو teacher — ما في user يرجع
-    if (data?.user) {
-      queryClient.setQueryData(AUTH_QUERY_KEY, data.user);
-    }
-  },
-});
+  const registerMutation = useMutation({
+    mutationFn: authApi.register,
+    onSuccess: (data) => {
+      const userData = data?.user ?? data?.data?.user;
+      if (userData) queryClient.setQueryData(AUTH_QUERY_KEY, userData);
+    },
+  });
 
   const value = {
-    // البيانات
-    user: user ?? null,
+    user:            user ?? null,
     isAuthenticated: !!user,
     isLoading,
+    isStudent: user?.role === 'user',
+    isTeacher: user?.role === 'teacher',
+    isAdmin:   user?.role === 'admin',
 
-    // الـ role checks — بدل ما كل component يعمل if/else
-    isStudent: user?.role === "user",
-    isTeacher: user?.role === "teacher",
-    isAdmin: user?.role === "admin",
-
-    // الـ actions
-    login: loginMutation.mutateAsync,
-    logout: logoutMutation.mutate,
+    login:    loginMutation.mutateAsync,
+    logout:   logoutMutation.mutate,
     register: registerMutation.mutateAsync,
 
-    // الـ states
-    isLoginLoading: loginMutation.isPending,
-    isLogoutLoading: logoutMutation.isPending,
+    isLoginLoading:    loginMutation.isPending,
+    isLogoutLoading:   logoutMutation.isPending,
     isRegisterLoading: registerMutation.isPending,
 
-    loginError: loginMutation.error,
+    loginError:    loginMutation.error,
     registerError: registerMutation.error,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-// [تحسين] Custom hook بدل useContext مباشرة
-// لو نسيت تحط AuthProvider فوق، يعطيك error واضح
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth يجب استخدامه داخل AuthProvider");
-  }
+  if (!context) throw new Error('useAuth يجب استخدامه داخل AuthProvider');
   return context;
 }

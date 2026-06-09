@@ -1,99 +1,256 @@
-// src/pages/CourseOne/index.jsx
-import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Badge, Spinner } from '../../shared/components';
-import  {useCourse}         from '../../features//courses/hooks/useCourse';
-import { useCourseActions } from '../../features/courses/hooks/useCourseActions';
-import { StarRating }       from '../../features/courses/components/CourseCard/StarRating';
-import { CourseCurriculum } from '../../features/courses/components/CourseDetails/CourseCurriculum';
-import { CourseIncludes }   from '../../features/courses/components/CourseDetails/CourseIncludes';
-import { CourseReviews }    from '../../features/courses/components/CourseDetails/CourseReviews';
-import { useAuth }          from '../../features/auth';
+import { useParams, useNavigate } from "react-router-dom";
 import {
-  PageWrapper, HeroSection, HeroInner, HeroContent,
-  CourseMeta, CourseTitle, CourseDescription, StatsRow,
-  StatItem, TeacherInfo, TeacherAvatar, TeacherName,
-  PurchaseCard, CardImage, CardBody, PriceRow,
-  CurrentPrice, OldPrice, DiscountBadge,
-  ContentArea, MainContent, Section, SectionTitle, SectionText,
-} from '../../features/courses/components/CourseDetails/CourseDetails.styles';
-import {MainLayout} from "../../shared/components/layout/MainLayout"
-import { Users, Star, BookOpen, User, Heart, ShoppingCart } from 'lucide-react';
-import { useMyEnrollments } from '../../features/enrollments/hooks/useMyEnrollments';
-import { useCourseCheckout } from '../../features/courses/hooks/useCourseCheckout';
+  Users,
+  Star,
+  User,
+  Heart,
+  ShoppingCart,
+  BookOpen,
+  Award,
+} from "lucide-react";
+import { Button, Badge, Spinner } from "../../shared/components";
+import { useCourse } from "../../features/courses/hooks/useCourse";
+import { useCourseActions } from "../../features/courses/hooks/useCourseActions";
+import { StarRating } from "../../features/courses/components/CourseCard/StarRating";
+import { CourseCurriculum } from "../../features/courses/components/CourseDetails/CourseCurriculum";
+import { CourseIncludes } from "../../features/courses/components/CourseDetails/CourseIncludes";
+import { CourseReviews } from "../../features/courses/components/CourseDetails/CourseReviews";
+import { useAuth } from "../../features/auth";
+import { useMyEnrollments } from "../../features/enrollments/hooks/useMyEnrollments";
+import { useCourseCheckout } from "../../features/courses/hooks/useCourseCheckout";
+import { MainLayout } from "../../shared/components/layout/MainLayout";
+import {
+  PageWrapper,
+  HeroSection,
+  HeroInner,
+  HeroContent,
+  CourseMeta,
+  CourseTitle,
+  CourseDescription,
+  StatsRow,
+  StatItem,
+  TeacherInfo,
+  TeacherAvatar,
+  TeacherMeta,
+  TeacherLabel,
+  TeacherName,
+  PurchaseCard,
+  CardImage,
+  CardBody,
+  PriceRow,
+  CurrentPrice,
+  OldPrice,
+  DiscountBadge,
+  Divider,
+  ContentArea,
+  MainContent,
+  Section,
+  SectionTitle,
+  SectionText,
+  SidebarSticky,
+  InstructorCard,
+  InstructorTitle,
+  InstructorInfo,
+  InstructorAvatar,
+  InstructorName,
+  InstructorRole,
+} from "../../features/courses/components/CourseDetails/CourseDetails.styles";
 
 export default function CourseDetails() {
   const { id } = useParams();
-  const navigate   = useNavigate();
-  const { user }   = useAuth();
-
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data: course, isLoading, isError } = useCourse(id);
   const { isEnrolled } = useMyEnrollments();
   const { checkout, isCheckoutLoading } = useCourseCheckout(id);
-  const { isInCart, isInWishlist, toggleCart, toggleWishlist } = useCourseActions();
+  const { isInCart, isInWishlist, toggleCart, toggleWishlist } =
+    useCourseActions();
 
-
+  /* ─── Loading ─── */
   if (isLoading) {
     return (
       <MainLayout>
-        <div style={{ height: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          style={{
+            height: "80vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Spinner size="lg" />
         </div>
       </MainLayout>
     );
   }
 
+  /* ─── Error ─── */
   if (isError || !course) {
     return (
       <MainLayout>
-        <div style={{ height: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <p>حدث خطأ في تحميل الكورس</p>
-          <Button onClick={() => navigate('/courses')}>العودة للكورسات</Button>
+        <div
+          style={{
+            height: "60vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 16,
+          }}
+        >
+          <p style={{ color: "#475569" }}>حدث خطأ في تحميل الكورس</p>
+          <Button onClick={() => navigate("/courses")}>العودة للكورسات</Button>
         </div>
       </MainLayout>
     );
   }
 
   const {
-    _id, name, description, img,
-    price = 0, priceAfterDiscount,
-    averageRating = 0, reviewsQuantity = 0,
-    teacher, subject, branches = [],
+    _id,
+    name,
+    description,
+    img,
+    price = 0,
+    priceAfterDiscount,
+    averageRating = 0,
+    reviewsQuantity = 0,
+    teacher,
+    subject,
+    branches = [],
     studentsCount = 0,
+    lessonsCount = 0,
   } = course;
 
-  const courseId = _id ?? course.id ?? id; // id من useParams كـ fallback
+  const courseId = _id ?? course.id ?? id;
 
-  const discountPercent = price > 0 && priceAfterDiscount
-    ? Math.round((1 - priceAfterDiscount / price) * 100)
-    : 0;
+  const discountPercent =
+    price > 0 && priceAfterDiscount
+      ? Math.round((1 - priceAfterDiscount / price) * 100)
+      : 0;
 
   const handleMainAction = () => {
-    if (isEnrolled) {
-      navigate(`/learn/${id}`);
+    if (isEnrolled(courseId)) {
+      navigate(`/learn/${courseId}`);
       return;
     }
     if (!user) {
-      navigate('/auth/login', { state: { from: { pathname: `/courses/${id}` } } });
+      navigate("/auth/login", {
+        state: { from: { pathname: `/courses/${courseId}` } },
+      });
       return;
     }
-    if (price === 0) {
-      // كورس مجاني — enrollment مباشر
-      checkout();
-    } else {
-      checkout();
-    }
+    checkout();
   };
+
+  const enrolled = isEnrolled(courseId);
+
+  /* ─── Purchase Card Content (reused in hero + sidebar) ─── */
+  const PurchaseCardContent = (
+    <CardBody>
+      {/* Price */}
+      <PriceRow>
+        {price === 0 ? (
+          <Badge
+            variant="success"
+            style={{ fontSize: 18, padding: "8px 20px" }}
+          >
+            مجاني تماماً
+          </Badge>
+        ) : (
+          <>
+            <CurrentPrice>{priceAfterDiscount ?? price} ₪</CurrentPrice>
+            {priceAfterDiscount && (
+              <>
+                <OldPrice>{price} ₪</OldPrice>
+                {discountPercent > 0 && (
+                  <DiscountBadge>خصم {discountPercent}%</DiscountBadge>
+                )}
+              </>
+            )}
+          </>
+        )}
+      </PriceRow>
+
+      {/* CTA */}
+      <Button
+        fullWidth
+        size="lg"
+        isLoading={isCheckoutLoading}
+        onClick={handleMainAction}
+        variant={enrolled ? "secondary" : "primary"}
+      >
+        {enrolled
+          ? "متابعة التعلم"
+          : price === 0
+            ? "ابدأ مجاناً"
+            : "اشترِ الآن"}
+      </Button>
+
+      {/* Cart & Wishlist */}
+      {!enrolled && (
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            fullWidth
+            size="sm"
+            variant={isInCart(courseId) ? "primary" : "secondary"}
+            onClick={() => toggleCart(courseId)}
+            leftIcon={<ShoppingCart size={16} />}
+          >
+            {isInCart(courseId) ? "إزالة من السلة" : "أضف للسلة"}
+          </Button>
+          <button
+            onClick={() => toggleWishlist(courseId)}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 8,
+              flexShrink: 0,
+              border: `1.5px solid ${isInWishlist(courseId) ? "#DC2626" : "#E2E8F0"}`,
+              background: isInWishlist(courseId) ? "#FEF2F2" : "white",
+              color: isInWishlist(courseId) ? "#DC2626" : "#94A3B8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <Heart
+              size={16}
+              fill={isInWishlist(courseId) ? "currentColor" : "none"}
+            />
+          </button>
+        </div>
+      )}
+
+      <Divider />
+
+      {/* Includes */}
+      <div>
+        <p
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            marginBottom: 12,
+            color: "#0F172A",
+          }}
+        >
+          يتضمن هذا الكورس:
+        </p>
+        <CourseIncludes lessonsCount={lessonsCount} />
+      </div>
+    </CardBody>
+  );
 
   return (
     <MainLayout>
       <PageWrapper>
-
-        {/* Hero */}
+        {/* ─── Hero ─── */}
         <HeroSection>
           <HeroInner>
             <HeroContent>
-
+              {/* Badges */}
               <CourseMeta>
                 {subject?.name && (
                   <Badge variant="primary">{subject.name}</Badge>
@@ -101,184 +258,123 @@ export default function CourseDetails() {
                 {branches[0]?.name && (
                   <Badge variant="gray">{branches[0].name}</Badge>
                 )}
+                {averageRating > 0 && (
+                  <Badge variant="warning" icon={<Award size={12} />}>
+                    {averageRating.toFixed(1)} تقييم
+                  </Badge>
+                )}
               </CourseMeta>
 
+              {/* Title */}
               <CourseTitle>{name}</CourseTitle>
 
-              <CourseDescription>
-                {description?.slice(0, 200)}
-                {description?.length > 200 ? '...' : ''}
-              </CourseDescription>
+              {/* Description */}
+              {description && (
+                <CourseDescription>
+                  {description.length > 180
+                    ? `${description.slice(0, 180)}...`
+                    : description}
+                </CourseDescription>
+              )}
 
+              {/* Stats */}
               <StatsRow>
                 {averageRating > 0 && (
                   <StatItem>
-                    <Star size={16} fill="#F59E0B" color="#F59E0B" />
-                    <span style={{ color: '#F59E0B', fontWeight: 600 }}>
+                    <Star size={15} fill="#F59E0B" color="#F59E0B" />
+                    <strong style={{ color: "#F59E0B" }}>
                       {averageRating.toFixed(1)}
-                    </span>
+                    </strong>
                     <span>({reviewsQuantity} تقييم)</span>
                   </StatItem>
                 )}
                 {studentsCount > 0 && (
                   <StatItem>
-                    <Users size={16} />
-                    {studentsCount} طالب
+                    <Users size={15} />
+                    <span>{studentsCount.toLocaleString()} طالب</span>
+                  </StatItem>
+                )}
+                {lessonsCount > 0 && (
+                  <StatItem>
+                    <BookOpen size={15} />
+                    <span>{lessonsCount} درس</span>
                   </StatItem>
                 )}
               </StatsRow>
 
+              {/* Teacher */}
               {teacher && (
-                <TeacherInfo>
+                <TeacherInfo
+                  onClick={() => navigate(`/teachers/${teacher._id}`)}
+                >
                   <TeacherAvatar>
-                    {teacher.coverImage
-                      ? <img src={teacher.coverImage} alt={teacher.name} />
-                      : <User size={20} color="#2563EB" style={{ margin: 'auto' }} />
-                    }
+                    {teacher.coverImage ? (
+                      <img src={teacher.coverImage} alt={teacher.name} />
+                    ) : (
+                      <User size={20} color="#2563EB" />
+                    )}
                   </TeacherAvatar>
-                  <div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>المعلم</div>
-                    <TeacherName
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => navigate(`/teachers/${teacher.courseId}`)}
-                    >
-                      {teacher.name}
-                    </TeacherName>
-                  </div>
+                  <TeacherMeta>
+                    <TeacherLabel>يُدرّسه</TeacherLabel>
+                    <TeacherName>{teacher.name}</TeacherName>
+                  </TeacherMeta>
                 </TeacherInfo>
               )}
-
             </HeroContent>
 
-            {/* Purchase Card — Desktop */}
+            {/* Purchase Card — Hero */}
             <PurchaseCard>
               <CardImage>
-                <img src={img || '/assets/img/logo.png'} alt={name} />
+                <img src={img || "/assets/img/logo.png"} alt={name} />
               </CardImage>
-
-              <CardBody>
-                <PriceRow>
-                  {price === 0 ? (
-                    <Badge variant="success" style={{ fontSize: 20, padding: '8px 16px' }}>
-                      مجاني
-                    </Badge>
-                  ) : (
-                    <>
-                      <CurrentPrice>
-                        {priceAfterDiscount ?? price} ₪
-                      </CurrentPrice>
-                      {priceAfterDiscount && (
-                        <>
-                          <OldPrice>{price} ₪</OldPrice>
-                          {discountPercent > 0 && (
-                            <DiscountBadge>خصم {discountPercent}%</DiscountBadge>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                </PriceRow>
-
-                {/* Main CTA */}
-                <Button
-                  fullWidth
-                  size="lg"
-                  isLoading={isCheckoutLoading}
-                  onClick={handleMainAction}
-                  variant={isEnrolled ? 'secondary' : 'primary'}
-                >
-                  {isEnrolled
-                    ? 'متابعة التعلم'
-                    : price === 0
-                    ? 'ابدأ مجاناً'
-                    : 'اشترِ الآن'
-                  }
-                </Button>
-
-                {/* Cart & Wishlist — فقط لو مش enrolled */}
-            {!isEnrolled && (
-  <div style={{ display: 'flex', gap: 8 }}>
-
-    {/* زر السلة */}
-    <Button
-      fullWidth
-      size="sm"
-      variant={isInCart(courseId) ? 'primary' : 'secondary'}
-      onClick={() => toggleCart(courseId)}
-      leftIcon={<ShoppingCart size={16} />}
-    >
-      {isInCart(courseId) ? 'إزالة من السلة' : 'أضف للسلة'}
-    </Button>
-
-    {/* زر المفضلة */}
-    <button
-      onClick={() => toggleWishlist(courseId)}
-      aria-label={isInWishlist(courseId) ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
-      style={{
-        width: 42,
-        height: 42,
-        borderRadius: 10,
-        border: `1.5px solid ${isInWishlist(courseId) ? '#DC2626' : '#E2E8F0'}`,
-        background: isInWishlist(courseId) ? '#FEF2F2' : 'white',
-        color: isInWishlist(courseId) ? '#DC2626' : '#94A3B8',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        transition: 'all 0.15s ease',
-        flexShrink: 0,
-      }}
-    >
-      <Heart
-        size={18}
-        fill={isInWishlist(courseId) ? 'currentColor' : 'none'}
-      />
-    </button>
-
-  </div>
-)}
-                {/* ما يتضمنه الكورس */}
-                <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: 'var(--text-primary)' }}>
-                    يتضمن هذا الكورس:
-                  </p>
-                  <CourseIncludes lessonsCount={course.lessonsCount ?? 0} />
-                </div>
-
-              </CardBody>
+              {PurchaseCardContent}
             </PurchaseCard>
           </HeroInner>
         </HeroSection>
 
-        {/* Main Content */}
+        {/* ─── Content ─── */}
         <ContentArea>
           <MainContent>
-
-            {/* Description */}
             {description && (
               <Section>
-                <SectionTitle>عن الكورس</SectionTitle>
+                <SectionTitle>
+                  <BookOpen size={20} color="#1B4FD8" />
+                  عن الكورس
+                </SectionTitle>
                 <SectionText>{description}</SectionText>
               </Section>
             )}
-
-            {/* Curriculum */}
             <Section>
-              <CourseCurriculum courseId={courseId} isEnrolled={isEnrolled} />
+              <CourseCurriculum courseId={courseId} isEnrolled={enrolled} />
             </Section>
-
-            {/* Reviews */}
             <Section>
               <CourseReviews courseId={courseId} />
             </Section>
-
           </MainContent>
 
-          {/* Purchase Card — Mobile (تظهر تحت المحتوى) */}
-          <div style={{ display: 'none' }} className="mobile-purchase-card">
-            {/* نفس الـ PurchaseCard — سنتعامل معها بـ CSS */}
-          </div>
-
+          {/* Sidebar — بس Instructor، مش Purchase Card */}
+          <SidebarSticky>
+            {teacher && (
+              <InstructorCard>
+                <InstructorTitle>المعلم</InstructorTitle>
+                <InstructorInfo
+                  onClick={() => navigate(`/teachers/${teacher._id}`)}
+                >
+                  <InstructorAvatar>
+                    {teacher.coverImage ? (
+                      <img src={teacher.coverImage} alt={teacher.name} />
+                    ) : (
+                      <User size={22} color="#2563EB" />
+                    )}
+                  </InstructorAvatar>
+                  <div>
+                    <InstructorName>{teacher.name}</InstructorName>
+                    <InstructorRole>معلم معتمد</InstructorRole>
+                  </div>
+                </InstructorInfo>
+              </InstructorCard>
+            )}
+          </SidebarSticky>
         </ContentArea>
       </PageWrapper>
     </MainLayout>
