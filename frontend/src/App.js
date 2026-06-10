@@ -3,34 +3,43 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './features/auth';
 
 // Pages
-import Home        from './pages/Home';
-import Courses     from './pages/Courses';
+import Home from './pages/Home';
+import Courses from './pages/Courses';
 import CourseDetails from './pages/CourseDetails';
-import Login       from './pages/Auth/Login';
-import Register    from './pages/Auth/Register';
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
 import OAuthSuccess from './pages/Auth/OAuthSuccess';
-import CartList    from './pages/CartList';
-import Wishlist    from './pages/Wishlist';
-import MyCourses   from './pages/MyCourses';
-import NotFound    from './pages/NotFound';
+import CartList from './pages/CartList';
+import Wishlist from './pages/Wishlist';
+import MyCourses from './pages/MyCourses';
+import NotFound from './pages/NotFound';
+import VideoPage from './pages/VideoPage';
+
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public */}
-        <Route path="/"                element={<Home />} />
-        <Route path="/courses"         element={<Courses />} />
-        <Route path="/courses/:id"     element={<CourseDetails />} />
-        <Route path="/auth/login"      element={<Login />} />
-        <Route path="/auth/register"   element={<Register />} />
-        <Route path="/oauth-success"   element={<OAuthSuccess />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/courses/:id" element={<CourseDetails />} />
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="/oauth-success" element={<OAuthSuccess />} />
 
         {/* Protected */}
-        <Route path="/cart"            element={<ProtectedRoute><CartList /></ProtectedRoute>} />
-        <Route path="/wishlist"        element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+        <Route path="/cart" element={<ProtectedRoute><CartList /></ProtectedRoute>} />
+        <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
         <Route path="/user/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
-
+        <Route
+          path="/learn/:id"
+          element={
+            <ProtectedRoute>
+              <VideoPage />
+            </ProtectedRoute>
+          }
+        />
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>

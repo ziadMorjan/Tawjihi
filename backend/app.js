@@ -19,24 +19,24 @@ app.use(i18n.init);
 
 app.use(morgan('dev'));
 const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
+	process.env.FRONTEND_URL,
+	'http://localhost:3000',
+	'http://127.0.0.1:3000',
 ].filter(Boolean);
 
 app.use(
-    cors({
-        origin(origin, cb) {
-            if (!origin) return cb(null, true); // Postman / server-to-server
-            if (allowedOrigins.includes(origin)) return cb(null, true);
-            return cb(new Error(`CORS blocked for origin: ${origin}`));
-        },
-        credentials: true,
-    }),
+	cors({
+		origin(origin, cb) {
+			if (!origin) return cb(null, true); // Postman / server-to-server
+			if (allowedOrigins.includes(origin)) return cb(null, true);
+			return cb(new Error(`CORS blocked for origin: ${origin}`));
+		},
+		credentials: true,
+	}),
 );
 
+// في app.js، يجب أن يكون هذا السطر قبل app.use(express.json())
 app.post('/api/v1/webhook', express.raw({ type: 'application/json' }), webhook);
-
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

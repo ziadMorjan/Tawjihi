@@ -481,6 +481,13 @@ src/features/courses/index.js
 src/features/enrollments/api/enrollmentsApi.js
 src/features/enrollments/hooks/useMyEnrollments.js
 src/features/enrollments/index.js
+src/features/lessons/api/lessonsApi.js
+src/features/lessons/hooks/useLessons.js
+src/features/lessons/index.js
+src/features/reviews/api/reviewsApi.js
+src/features/reviews/hooks/useAddReview.js
+src/features/reviews/hooks/useReviews.js
+src/features/reviews/index.js
 src/features/wishlist/api/wishlistApi.js
 src/features/wishlist/hooks/useWishlist.js
 src/features/wishlist/hooks/useWishlistActions.js
@@ -513,7 +520,6 @@ src/pages/Contact/index.jsx
 src/pages/Contact/style.js
 src/pages/CourseDetails/index.jsx
 src/pages/CourseDetails/style.js
-src/pages/CourseDetails/VideoPage.jsx
 src/pages/Courses/index.jsx
 src/pages/Courses/style.js
 src/pages/Home/index.jsx
@@ -535,6 +541,8 @@ src/pages/TeacherProfile/index.jsx
 src/pages/TeacherProfile/style.js
 src/pages/Teachers/index.jsx
 src/pages/Teachers/style.js
+src/pages/VideoPage/index.jsx
+src/pages/VideoPage/VideoPage.styles.js
 src/pages/Wishlist/index.jsx
 src/pages/Wishlist/style.js
 src/providers/providers.jsx
@@ -795,34 +803,43 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './features/auth';
 
 // Pages
-import Home        from './pages/Home';
-import Courses     from './pages/Courses';
+import Home from './pages/Home';
+import Courses from './pages/Courses';
 import CourseDetails from './pages/CourseDetails';
-import Login       from './pages/Auth/Login';
-import Register    from './pages/Auth/Register';
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
 import OAuthSuccess from './pages/Auth/OAuthSuccess';
-import CartList    from './pages/CartList';
-import Wishlist    from './pages/Wishlist';
-import MyCourses   from './pages/MyCourses';
-import NotFound    from './pages/NotFound';
+import CartList from './pages/CartList';
+import Wishlist from './pages/Wishlist';
+import MyCourses from './pages/MyCourses';
+import NotFound from './pages/NotFound';
+import VideoPage from './pages/VideoPage';
+
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public */}
-        <Route path="/"                element={<Home />} />
-        <Route path="/courses"         element={<Courses />} />
-        <Route path="/courses/:id"     element={<CourseDetails />} />
-        <Route path="/auth/login"      element={<Login />} />
-        <Route path="/auth/register"   element={<Register />} />
-        <Route path="/oauth-success"   element={<OAuthSuccess />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/courses/:id" element={<CourseDetails />} />
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="/oauth-success" element={<OAuthSuccess />} />
 
         {/* Protected */}
-        <Route path="/cart"            element={<ProtectedRoute><CartList /></ProtectedRoute>} />
-        <Route path="/wishlist"        element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+        <Route path="/cart" element={<ProtectedRoute><CartList /></ProtectedRoute>} />
+        <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
         <Route path="/user/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
-
+        <Route
+          path="/learn/:id"
+          element={
+            <ProtectedRoute>
+              <VideoPage />
+            </ProtectedRoute>
+          }
+        />
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -29908,12 +29925,24 @@ export function StarRating({ rating = 0, showText = true }) {
 </file>
 
 <file path="src/features/courses/components/CourseDetails/CourseCurriculum.jsx">
-import { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, ChevronUp, PlayCircle, Lock, Clock, BookOpen } from 'lucide-react';
-import { axiosInstance } from '../../../../shared/lib/axiosInstance';
-import { SectionHeader, SectionIcon, SectionTitle } from './CourseDetails.styles';
+import { useState } from "react";
+import styled, { keyframes } from "styled-components";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ChevronDown,
+  ChevronUp,
+  PlayCircle,
+  Lock,
+  Clock,
+  BookOpen,
+} from "lucide-react";
+import { axiosInstance } from "../../../../shared/lib/axiosInstance";
+import {
+  SectionHeader,
+  SectionIcon,
+  SectionTitle,
+} from "./CourseDetails.styles";
+import { useNavigate } from "react-router-dom";
 
 const shimmer = keyframes`
   0% { background-position: 200% 0; }
@@ -29921,7 +29950,7 @@ const shimmer = keyframes`
 `;
 
 const fetchLessons = async (courseId) => {
-  const { data } = await axiosInstance.get('/lessons', {
+  const { data } = await axiosInstance.get("/lessons", {
     params: { course: courseId },
   });
   return data;
@@ -29942,14 +29971,14 @@ const LessonItem = styled.div`
   background: ${({ theme }) => theme.colors.bgSecondary};
   border: 1px solid transparent;
   transition: all 0.2s ease;
-  cursor: ${({ $clickable }) => $clickable ? 'pointer' : 'default'};
+  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
 
   &:hover {
     background: ${({ $clickable, theme }) =>
       $clickable ? theme.colors.bgTertiary : theme.colors.bgSecondary};
     border-color: ${({ $clickable, theme }) =>
-      $clickable ? theme.colors.primary + '30' : 'transparent'};
-    ${({ $clickable }) => $clickable && 'padding-right: 20px;'};
+      $clickable ? theme.colors.primary + "30" : "transparent"};
+    ${({ $clickable }) => $clickable && "padding-right: 20px;"};
   }
 `;
 
@@ -30007,7 +30036,7 @@ const ShowMoreBtn = styled.button`
   width: 100%;
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary} + '60';
+    border-color: ${({ theme }) => theme.colors.primary} + "60";
     background: ${({ theme }) => theme.colors.primaryLight};
   }
 `;
@@ -30015,7 +30044,7 @@ const ShowMoreBtn = styled.button`
 const Skeleton = styled.div`
   height: 58px;
   border-radius: 12px;
-  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
   animation: ${shimmer} 1.5s infinite;
 `;
@@ -30028,9 +30057,9 @@ const Count = styled.span`
 
 export function CourseCurriculum({ courseId, isEnrolled }) {
   const [showAll, setShowAll] = useState(false);
-
+  const navigate = useNavigate();
   const { data, isLoading } = useQuery({
-    queryKey: ['lessons', courseId],
+    queryKey: ["lessons", courseId],
     queryFn: () => fetchLessons(courseId),
     enabled: !!courseId,
     staleTime: 5 * 60 * 1000,
@@ -30045,11 +30074,15 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
     return (
       <div>
         <SectionHeader>
-          <SectionIcon><BookOpen size={16} /></SectionIcon>
+          <SectionIcon>
+            <BookOpen size={16} />
+          </SectionIcon>
           <SectionTitle>محتوى الكورس</SectionTitle>
         </SectionHeader>
         <Content>
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} />)}
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} />
+          ))}
         </Content>
       </div>
     );
@@ -30060,7 +30093,9 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
   return (
     <div>
       <SectionHeader>
-        <SectionIcon><BookOpen size={16} /></SectionIcon>
+        <SectionIcon>
+          <BookOpen size={16} />
+        </SectionIcon>
         <SectionTitle>محتوى الكورس</SectionTitle>
         <Count>({lessons.length} درس)</Count>
       </SectionHeader>
@@ -30070,8 +30105,17 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
           const canAccess = isEnrolled;
 
           return (
-            <LessonItem key={lesson._id} $clickable={canAccess}>
-              <LessonNumber>{String(index + 1).padStart(2, '0')}</LessonNumber>
+            <LessonItem
+              key={lesson._id}
+              $clickable={canAccess}
+              onClick={() => {
+                if (!canAccess) return;
+                navigate(`/learn/${courseId}`, {
+                  state: { startIndex: index },
+                });
+              }}
+            >
+              <LessonNumber>{String(index + 1).padStart(2, "0")}</LessonNumber>
 
               <LessonInfo>
                 <LessonTitle>{lesson.title ?? lesson.name}</LessonTitle>
@@ -30083,10 +30127,11 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
                 )}
               </LessonInfo>
 
-              {canAccess
-                ? <PlayCircle size={18} color="#2563EB" />
-                : <Lock size={15} color="#94A3B8" />
-              }
+              {canAccess ? (
+                <PlayCircle size={18} color="#2563EB" />
+              ) : (
+                <Lock size={15} color="#94A3B8" />
+              )}
             </LessonItem>
           );
         })}
@@ -30094,9 +30139,13 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
         {lessons.length > 5 && (
           <ShowMoreBtn onClick={() => setShowAll((p) => !p)}>
             {showAll ? (
-              <><ChevronUp size={16} /> عرض أقل</>
+              <>
+                <ChevronUp size={16} /> عرض أقل
+              </>
             ) : (
-              <><ChevronDown size={16} /> عرض {lessons.length - 5} دروس إضافية</>
+              <>
+                <ChevronDown size={16} /> عرض {lessons.length - 5} دروس إضافية
+              </>
             )}
           </ShowMoreBtn>
         )}
@@ -31074,7 +31123,7 @@ export function useCoursesFilters() {
     branch: searchParams.get('branch') || '',
     sort: searchParams.get('sort') || '-createdAt',
     page: parseInt(searchParams.get('page') || '1', 10),
-    limit: 8,
+    limit: 9,
   };
 
   // تحديث param واحد مع إعادة الـ page للأول
@@ -31243,6 +31292,115 @@ export function useMyEnrollments() {
 <file path="src/features/enrollments/index.js">
 export { enrollmentsApi }               from './api/enrollmentsApi';
 export { useMyEnrollments, ENROLLMENTS_QUERY_KEY } from './hooks/useMyEnrollments';
+</file>
+
+<file path="src/features/lessons/api/lessonsApi.js">
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
+
+export const lessonsApi = {
+  // GET /lessons?course=:courseId
+  getByCourse: async (courseId) => {
+    const { data } = await axiosInstance.get('/lessons', {
+      params: { course: courseId },
+    });
+    return data;
+  },
+};
+</file>
+
+<file path="src/features/lessons/hooks/useLessons.js">
+import { useQuery } from '@tanstack/react-query';
+import { lessonsApi } from '../api/lessonsApi';
+
+export const LESSONS_QUERY_KEY = ['lessons'];
+
+export function useLessons(courseId) {
+  return useQuery({
+    queryKey: [...LESSONS_QUERY_KEY, courseId],
+    queryFn: () => lessonsApi.getByCourse(courseId),
+    enabled: !!courseId,
+    staleTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    select: (data) => data?.data?.docs ?? data?.data ?? data?.lessons ?? [],
+  });
+}
+</file>
+
+<file path="src/features/lessons/index.js">
+export { lessonsApi }  from './api/lessonsApi';
+export { useLessons }  from './hooks/useLessons';
+</file>
+
+<file path="src/features/reviews/api/reviewsApi.js">
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
+
+export const reviewsApi = {
+  // GET /reviews?lesson=:lessonId
+  getByLesson: async (lessonId) => {
+    const { data } = await axiosInstance.get('/reviews', {
+      params: { lesson: lessonId },
+    });
+    return data;
+  },
+
+  // POST /reviews
+  addReview: async ({ lessonId, rating, review }) => {
+    const { data } = await axiosInstance.post('/reviews', {
+      lesson: lessonId,
+      rating,
+      review,
+    });
+    return data;
+  },
+};
+</file>
+
+<file path="src/features/reviews/hooks/useAddReview.js">
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { reviewsApi } from '../api/reviewsApi';
+import { REVIEWS_QUERY_KEY } from './useReviews';
+
+export function useAddReview(lessonId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: reviewsApi.addReview,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...REVIEWS_QUERY_KEY, lessonId],
+      });
+      toast.success('تم إضافة تعليقك بنجاح');
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message ?? 'حدث خطأ، حاول مجدداً');
+    },
+  });
+}
+</file>
+
+<file path="src/features/reviews/hooks/useReviews.js">
+import { useQuery } from '@tanstack/react-query';
+import { reviewsApi } from '../api/reviewsApi';
+
+export const REVIEWS_QUERY_KEY = ['reviews', 'lesson'];
+
+export function useReviews(lessonId) {
+  return useQuery({
+    queryKey: [...REVIEWS_QUERY_KEY, lessonId],
+    queryFn: () => reviewsApi.getByLesson(lessonId),
+    enabled: !!lessonId,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    select: (data) => data?.data?.docs ?? data?.data ?? data?.reviews ?? [],
+  });
+}
+</file>
+
+<file path="src/features/reviews/index.js">
+export { reviewsApi }   from './api/reviewsApi';
+export { useReviews }   from './hooks/useReviews';
+export { useAddReview } from './hooks/useAddReview';
 </file>
 
 <file path="src/features/wishlist/api/wishlistApi.js">
@@ -35047,231 +35205,6 @@ export const Container = styled.div`
 export const AboutCourseDiv = styled(StyledCourseWrapper)``
 </file>
 
-<file path="src/pages/CourseDetails/VideoPage.jsx">
-"use client"
-
-import { useEffect, useState } from "react"
-import { useLocation, useParams, useNavigate } from "react-router-dom"
-import { LogoAndButton } from "../../components/LogoAndButton"
-import { ModalTeacher } from "../../components/modalTeacher"
-import AnimatedList from "../../components/Animations/AnimatedList"
-import VideoPlayerWithControls from "../../components/VideoPlayerWithControls"
-import ReviewListSection from "../../components/ReviewListSection"
-import CommentForm from "../../components/CommentForm"
-import { Containers } from "../../components/Container"
-import VideoResources from "../../components/VideoResources"
-import { NavBar } from "../../layout/navBar"
-import {
-  VideoWrapper,
-  PlayerContainer,
-  ListContainer,
-  ReviewSection,
-  LoadingWrapper,
-  VideoHeader,
-  VideoTitle,
-  VideoMeta,
-  NavigationHint,
-  VideoContent,
-  PlayerSection,
-  PlaylistSection,
-  SectionTitle,
-  VideoCounter,
-  EnrollmentMessage,
-  NoContentWrapper,
-} from "./style"
-import NoVideos from "../../components/NoVideos"
-import { API_URL } from "../../config"
-import axios from "axios"
-import Loading from "../../components/Loading"
-import { useForm } from "react-hook-form"
-
-const VideoPage = () => {
-  // States
-  const [enrollmentCourses, setEnrollmentCourses] = useState([])
-  const [isloading, setIsloading] = useState(false)
-
-  const { name, id, videoIndex } = useParams()
-  const navigate = useNavigate()
-  const { state } = useLocation()
-
-  const items = Array.isArray(state?.items) ? state.items : []
-  const currentIndex = Number(videoIndex) >= 0 && items[videoIndex] ? Number(videoIndex) : 0
-  const selectedVideo = items[currentIndex] || {}
-
-
-  const handleVideoSelect = (item, index) => {
-    navigate(`/courses/${name}/${id}/video/${index}`, { state: { items } })
-  }
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-
-
-
-  useEffect(() => {
-    if (!items.length) return
-
-    const handleKey = (e) => {
-      if (e.key === "ArrowRight") {
-        const next = (currentIndex + 1) % items.length
-        handleVideoSelect(items[next], next)
-      } else if (e.key === "ArrowLeft") {
-        const prev = (currentIndex - 1 + items.length) % items.length
-        handleVideoSelect(items[prev], prev)
-      }
-    }
-
-    window.addEventListener("keydown", handleKey)
-    return () => window.removeEventListener("keydown", handleKey)
-  }, [currentIndex, items])
-
-  // Fetch enrolled courses
-  useEffect(() => {
-    const getEnrolledCourses = async () => {
-      try {
-        setIsloading(true)
-        const userData = JSON.parse(localStorage.getItem("user"))
-        const enrollmentsRes = await axios.get(`${API_URL}/enrollments?user=${userData._id}`, {
-          withCredentials: true,
-        })
-        if (enrollmentsRes) {
-          setEnrollmentCourses(enrollmentsRes.data.data.docs)
-        }
-      } catch (e) {
-        console.error("Error fetching enrolled courses:", e)
-      } finally {
-        setIsloading(false)
-      }
-    }
-    getEnrolledCourses()
-  }, [])
-
-  // check if the user is enrolled in the course
-  const isEnrolled = enrollmentCourses.some((enrolled) => enrolled?.course._id === id)
-
-  if (isloading) {
-    return (
-      <>
-        <Containers>
-          <Loading />
-        </Containers>
-      </>
-    )
-  }
-
-  if (!isEnrolled) {
-    return (
-      <>
-        <LogoAndButton />
-        <NavBar />
-        <ModalTeacher />
-        <Containers>
-          <NoContentWrapper>
-            <EnrollmentMessage>
-              <div className="icon">🔒</div>
-              <h3>غير مسجل في الدورة</h3>
-              <p>لا يمكنك مشاهدة هذا الفيديو، لأنك لم تشترك في هذه الدورة</p>
-              <button onClick={() => navigate(`/courses/${name}/${id}`)}>العودة إلى صفحة الدورة</button>
-            </EnrollmentMessage>
-          </NoContentWrapper>
-        </Containers>
-      </>
-    )
-  }
-
-  if (items.length === 0) {
-    return (
-      <>
-        <LogoAndButton />
-        <NavBar />
-        <ModalTeacher />
-        <Containers>
-          <NoContentWrapper>
-            <NoVideos>
-              <div className="icon">📹</div>
-              <h3>لا توجد فيديوهات</h3>
-              <p>لا توجد فيديوهات متاحة لعرضها في هذه الدورة حالياً</p>
-            </NoVideos>
-          </NoContentWrapper>
-        </Containers>
-      </>
-    )
-  }
-
-  return (
-    <>
-      <LogoAndButton />
-      <NavBar />
-      <ModalTeacher />
-
-      <Containers>
-        <VideoHeader>
-          <div>
-            <VideoTitle>{selectedVideo.title || `الدرس ${currentIndex + 1}`}</VideoTitle>
-            <VideoMeta>
-              <VideoCounter>
-                الدرس {currentIndex + 1} من {items.length}
-              </VideoCounter>
-              <span>•</span>
-              <span>{selectedVideo.duration || "غير محدد"}</span>
-            </VideoMeta>
-          </div>
-          <NavigationHint>استخدم الأسهم ← → للتنقل بين الدروس</NavigationHint>
-        </VideoHeader>
-
-        <VideoContent>
-          <VideoWrapper>
-            <PlayerSection>
-              <PlayerContainer>
-                <VideoPlayerWithControls
-                  video={selectedVideo}
-                  currentIndex={currentIndex}
-                  items={items}
-                  onVideoSelect={handleVideoSelect}
-                />
-              </PlayerContainer>
-
-              {selectedVideo.resources && selectedVideo.resources.length > 0 && (
-                <VideoResources resources={selectedVideo.resources} />
-              )}
-            </PlayerSection>
-
-            <PlaylistSection>
-              <SectionTitle>قائمة الدروس</SectionTitle>
-              <ListContainer>
-                <AnimatedList
-                  items={items}
-                  onItemSelect={handleVideoSelect}
-                  selectedIndex={currentIndex}
-                  showGradients
-                  enableArrowNavigation
-                  displayScrollbar
-                />
-              </ListContainer>
-            </PlaylistSection>
-          </VideoWrapper>
-        </VideoContent>
-
-        <ReviewSection>
-          <SectionTitle>التعليقات والمراجعات</SectionTitle>
-          <ReviewListSection lessonId={selectedVideo._id} from={'videoPage'} />
-          <CommentForm
-            lessonId={selectedVideo._id}
-            from={'videoPage'}
-            />
-        </ReviewSection>
-      </Containers>
-    </>
-  )
-}
-
-export default VideoPage
-</file>
-
 <file path="src/pages/Courses/index.jsx">
 // src/pages/Courses/index.jsx
 import { useState } from "react";
@@ -35409,7 +35342,6 @@ export default function Courses() {
 
 const { data: rawData, isLoading, isError } = useCourses(queryParams);
 
-  // 🟡 نتعامل مع الـ response — backend يرجع { courses, pagination } أو array
 const courses    = rawData?.data?.docs ?? rawData?.data ?? [];
 const totalPages = rawData?.pagination?.totalPages ?? rawData?.data?.pagination?.totalPages ?? 1;
 const totalItems = rawData?.pagination?.totalResults ?? courses.length;
@@ -35562,13 +35494,13 @@ export const CoursesPageWraper = styled.div`
 
 <file path="src/pages/Home/index.jsx">
 // src/pages/Home/index.jsx
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Users, Award } from 'lucide-react';
-import  useCourses   from '../../features/courses/hooks/useCourses';
-import { Button, Badge } from '../../shared/components';
-import {MainLayout} from "../../shared/components/layout/MainLayout"
-import { CoursesGrid } from "../../components/CoursesGrid"
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, BookOpen, Users, Award } from "lucide-react";
+import useCourses from "../../features/courses/hooks/useCourses";
+import { Button, Badge } from "../../shared/components";
+import { MainLayout } from "../../shared/components/layout/MainLayout";
+import { CoursesGrid } from "../../components/CoursesGrid";
 /* ────────── Hero ────────── */
 const HeroSection = styled.section`
   background: ${({ theme }) => theme.colors.bgPrimary};
@@ -35601,7 +35533,7 @@ const HeroContent = styled.div`
 `;
 
 const HeroTitle = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
   line-height: ${({ theme }) => theme.typography.lineHeight.tight};
@@ -35611,7 +35543,7 @@ const HeroTitle = styled.h1`
   }
 
   ${({ theme }) => theme.media.maxMd} {
-    font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+    font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   }
 `;
 
@@ -35666,7 +35598,7 @@ const StatLabel = styled.span`
 `;
 
 const HeroImage = styled.div`
-  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  border-radius: ${({ theme }) => theme.borderRadius["2xl"]};
   overflow: hidden;
   aspect-ratio: 4/3;
   background: ${({ theme }) => theme.colors.bgTertiary};
@@ -35708,7 +35640,7 @@ const SectionHeader = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
@@ -35723,15 +35655,11 @@ const SectionSubtitle = styled.p`
 export default function Home() {
   const navigate = useNavigate();
 
-  // جلب آخر 8 كورسات للصفحة الرئيسية
   const { data, isLoading, isError } = useCourses({ limit: 8 });
 
-  // 🟡 نتعامل مع كلا الحالتين — backend يرجع array مباشرة أو { courses: [] }
-  const courses = Array.isArray(data) ? data : data?.courses ?? [];
-
+  const courses = data?.data?.docs ?? data?.data ?? [];
   return (
     <MainLayout>
-
       {/* Hero */}
       <HeroSection>
         <HeroInner>
@@ -35754,7 +35682,7 @@ export default function Home() {
             <HeroActions>
               <Button
                 size="lg"
-                onClick={() => navigate('/courses')}
+                onClick={() => navigate("/courses")}
                 rightIcon={<ArrowLeft size={18} />}
               >
                 تصفح الكورسات
@@ -35762,7 +35690,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="secondary"
-                onClick={() => navigate('/auth/register')}
+                onClick={() => navigate("/auth/register")}
               >
                 ابدأ مجاناً
               </Button>
@@ -35803,7 +35731,7 @@ export default function Home() {
             variant="ghost"
             size="sm"
             rightIcon={<ArrowLeft size={16} />}
-            onClick={() => navigate('/courses')}
+            onClick={() => navigate("/courses")}
           >
             عرض الكل
           </Button>
@@ -35815,7 +35743,6 @@ export default function Home() {
           isError={isError}
         />
       </Section>
-
     </MainLayout>
   );
 }
@@ -39690,6 +39617,801 @@ export const StyledTeachersPage = styled.div`
       padding: 6px 12px;
       font-size: 12px;
     }
+  }
+`;
+</file>
+
+<file path="src/pages/VideoPage/index.jsx">
+// src/pages/VideoPage/index.jsx
+import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import {
+  ChevronRight,
+  ChevronLeft,
+  Clock,
+  PlayCircle,
+  Lock,
+  MessageSquare,
+  Star,
+} from "lucide-react";
+import { useAuth } from "../../features/auth";
+import { useMyEnrollments } from "../../features/enrollments/hooks/useMyEnrollments";
+import { useLessons } from "../../features/lessons";
+import { useReviews, useAddReview } from "../../features/reviews";
+import { MainLayout } from "../../shared/components/layout/MainLayout";
+import { Button, Input, Spinner, Badge } from "../../shared/components";
+import { StarRating } from "../../features/courses/components/CourseCard/StarRating";
+import {
+  PageWrapper,
+  VideoHeader,
+  HeaderLeft,
+  VideoTitle,
+  VideoMeta,
+  NavHint,
+  ContentWrapper,
+  PlayerSection,
+  PlayerWrapper,
+  NoVideoPlaceholder,
+  PlaylistWrapper,
+  PlaylistHeader,
+  PlaylistTitle,
+  PlaylistCount,
+  PlaylistScroll,
+  LessonItem,
+  LessonNumber,
+  LessonInfo,
+  LessonTitle,
+  LessonDuration,
+  NavButtons,
+  ReviewsSection,
+  ReviewsTitle,
+  ReviewCard,
+  ReviewHeader,
+  ReviewAvatar,
+  ReviewerName,
+  ReviewText,
+  AddReviewForm,
+  EmptyState,
+} from "./VideoPage.styles";
+
+const reviewSchema = yup.object({
+  rating: yup.number().min(1).max(5).required("التقييم مطلوب"),
+  review: yup.string().min(3, "التعليق قصير جداً").required("التعليق مطلوب"),
+});
+
+export default function VideoPage() {
+  const { id } = useParams(); // course id
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const videoRef = useRef(null);
+
+  // State
+  const { state } = useLocation();
+
+  const [currentIndex, setCurrentIndex] = useState(state?.startIndex ?? 0);
+  // Data
+  const { isEnrolled, isLoading: enrollLoading } = useMyEnrollments();
+  const { data: lessons = [], isLoading: lessonsLoading } = useLessons(id);
+
+  const currentLesson = lessons[currentIndex] ?? null;
+
+  const { data: reviews = [], isLoading: reviewsLoading } = useReviews(
+    currentLesson?._id,
+  );
+  const addReviewMutation = useAddReview(currentLesson?._id);
+
+  // Review form
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(reviewSchema) });
+
+  const ratingValue = watch("rating") ?? 0;
+
+  // Keyboard navigation — من الكود القديم
+  useEffect(() => {
+    if (!lessons.length) return;
+
+    const handleKey = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+        return;
+      if (e.key === "ArrowRight") {
+        setCurrentIndex((prev) => (prev + 1) % lessons.length);
+      } else if (e.key === "ArrowLeft") {
+        setCurrentIndex((prev) => (prev - 1 + lessons.length) % lessons.length);
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [lessons.length]);
+
+  // Auto scroll playlist item للدرس الحالي
+  useEffect(() => {
+    const el = document.getElementById(`lesson-${currentIndex}`);
+    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [currentIndex]);
+
+  // Reset video عند تغيير الدرس
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load();
+      videoRef.current.play().catch(() => {});
+    }
+  }, [currentLesson?._id]);
+
+  // Submit review
+  const onSubmitReview = async (data) => {
+    await addReviewMutation.mutateAsync({
+      lessonId: currentLesson._id,
+      ...data,
+    });
+    reset();
+  };
+
+  // Loading
+  if (enrollLoading || lessonsLoading) {
+    return (
+      <MainLayout>
+        <div
+          style={{
+            height: "80vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Spinner size="lg" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Not enrolled
+  if (!isEnrolled(id)) {
+    return (
+      <MainLayout>
+        <EmptyState>
+          <Lock size={56} color="#94A3B8" />
+          <h3>غير مسجل في الدورة</h3>
+          <p>يجب الاشتراك في هذه الدورة لمشاهدة الفيديوهات</p>
+          <Button onClick={() => navigate(`/courses/${id}`)}>
+            العودة لصفحة الكورس
+          </Button>
+        </EmptyState>
+      </MainLayout>
+    );
+  }
+
+  // No lessons
+  if (!lessons.length) {
+    return (
+      <MainLayout>
+        <EmptyState>
+          <PlayCircle size={56} color="#94A3B8" />
+          <h3>لا توجد دروس بعد</h3>
+          <p>لم يُضف المعلم دروساً لهذا الكورس حتى الآن</p>
+          <Button variant="secondary" onClick={() => navigate(-1)}>
+            رجوع
+          </Button>
+        </EmptyState>
+      </MainLayout>
+    );
+  }
+
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex < lessons.length - 1;
+
+  return (
+    <MainLayout>
+      <PageWrapper>
+        {/* Header */}
+        <VideoHeader>
+          <HeaderLeft>
+            <VideoTitle>
+              {currentLesson?.title ??
+                currentLesson?.name ??
+                `الدرس ${currentIndex + 1}`}
+            </VideoTitle>
+            <VideoMeta>
+              <Badge variant="primary">
+                {currentIndex + 1} / {lessons.length}
+              </Badge>
+              {currentLesson?.duration && (
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <Clock size={13} />
+                  {Math.round(currentLesson.duration / 60)} دقيقة
+                </span>
+              )}
+            </VideoMeta>
+          </HeaderLeft>
+
+          <NavHint>استخدم الأسهم ← → للتنقل بين الدروس</NavHint>
+        </VideoHeader>
+
+        {/* Content */}
+        <ContentWrapper>
+          {/* Player + Reviews */}
+          <PlayerSection>
+            {/* Video Player */}
+            {currentLesson?.video ? (
+              <PlayerWrapper>
+                <video
+                  ref={videoRef}
+                  controls
+                  controlsList="nodownload"
+                  onContextMenu={(e) => e.preventDefault()}
+                >
+                  <source src={currentLesson.video} type="video/mp4" />
+                  متصفحك لا يدعم تشغيل الفيديو
+                </video>
+              </PlayerWrapper>
+            ) : (
+              <NoVideoPlaceholder>
+                <PlayCircle size={48} />
+                <p style={{ margin: 0, fontSize: 14 }}>
+                  لا يوجد فيديو لهذا الدرس
+                </p>
+              </NoVideoPlaceholder>
+            )}
+
+            {/* Prev / Next */}
+            <NavButtons>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={!hasPrev}
+                onClick={() => setCurrentIndex((p) => p - 1)}
+                leftIcon={<ChevronRight size={16} />}
+              >
+                الدرس السابق
+              </Button>
+
+              <span style={{ fontSize: 13, color: "#94A3B8" }}>
+                {currentIndex + 1} من {lessons.length}
+              </span>
+
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={!hasNext}
+                onClick={() => setCurrentIndex((p) => p + 1)}
+                rightIcon={<ChevronLeft size={16} />}
+              >
+                الدرس التالي
+              </Button>
+            </NavButtons>
+
+            {/* Reviews */}
+            <ReviewsSection>
+              <ReviewsTitle>
+                <MessageSquare size={18} style={{ marginLeft: 8 }} />
+                التعليقات ({reviews.length})
+              </ReviewsTitle>
+
+              {/* Add Review — للمسجلين فقط */}
+              {user && (
+                <AddReviewForm>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: "#0F172A",
+                    }}
+                  >
+                    أضف تعليقك
+                  </p>
+
+                  {/* Star Rating */}
+                  <div style={{ display: "flex", gap: 4 }}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setValue("rating", star)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 2,
+                        }}
+                      >
+                        <Star
+                          size={22}
+                          fill={star <= ratingValue ? "#F59E0B" : "none"}
+                          color={star <= ratingValue ? "#F59E0B" : "#CBD5E1"}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  {errors.rating && (
+                    <span style={{ fontSize: 12, color: "#DC2626" }}>
+                      {errors.rating.message}
+                    </span>
+                  )}
+
+                  <textarea
+                    {...register("review")}
+                    placeholder="اكتب تعليقك هنا..."
+                    rows={3}
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      border: `1.5px solid ${errors.review ? "#DC2626" : "#E2E8F0"}`,
+                      borderRadius: 10,
+                      fontFamily: "inherit",
+                      fontSize: 14,
+                      resize: "vertical",
+                      outline: "none",
+                      direction: "rtl",
+                    }}
+                  />
+                  {errors.review && (
+                    <span style={{ fontSize: 12, color: "#DC2626" }}>
+                      {errors.review.message}
+                    </span>
+                  )}
+
+                  <Button
+                    size="sm"
+                    onClick={handleSubmit(onSubmitReview)}
+                    isLoading={addReviewMutation.isPending}
+                    style={{ alignSelf: "flex-start" }}
+                  >
+                    إرسال التعليق
+                  </Button>
+                </AddReviewForm>
+              )}
+
+              {/* Reviews List */}
+              {reviewsLoading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: 24,
+                  }}
+                >
+                  <Spinner size="md" />
+                </div>
+              ) : reviews.length === 0 ? (
+                <p
+                  style={{
+                    textAlign: "center",
+                    color: "#94A3B8",
+                    fontSize: 14,
+                    margin: "16px 0",
+                  }}
+                >
+                  لا توجد تعليقات بعد — كن أول من يعلّق!
+                </p>
+              ) : (
+                reviews.map((review) => (
+                  <ReviewCard key={review._id}>
+                    <ReviewHeader>
+                      <ReviewAvatar>
+                        {review.user?.name?.charAt(0) ?? "؟"}
+                      </ReviewAvatar>
+                      <div style={{ flex: 1 }}>
+                        <ReviewerName>
+                          {review.user?.name ?? "مجهول"}
+                        </ReviewerName>
+                        {review.rating && (
+                          <StarRating rating={review.rating} showText={false} />
+                        )}
+                      </div>
+                    </ReviewHeader>
+                    {review.review && <ReviewText>{review.review}</ReviewText>}
+                  </ReviewCard>
+                ))
+              )}
+            </ReviewsSection>
+          </PlayerSection>
+
+          {/* Playlist */}
+          <PlaylistWrapper>
+            <PlaylistHeader>
+              <PlaylistTitle>قائمة الدروس</PlaylistTitle>
+              <PlaylistCount>{lessons.length} درس</PlaylistCount>
+            </PlaylistHeader>
+
+            <PlaylistScroll>
+              {lessons.map((lesson, index) => {
+                const isActive = index === currentIndex;
+                return (
+                  <LessonItem
+                    key={lesson._id}
+                    id={`lesson-${index}`}
+                    $active={isActive}
+                    onClick={() => setCurrentIndex(index)}
+                  >
+                    <LessonNumber $active={isActive}>
+                      {isActive ? (
+                        <PlayCircle size={14} />
+                      ) : (
+                        String(index + 1).padStart(2, "0")
+                      )}
+                    </LessonNumber>
+
+                    <LessonInfo>
+                      <LessonTitle $active={isActive}>
+                        {lesson.title ?? lesson.name}
+                      </LessonTitle>
+                      {lesson.duration && (
+                        <LessonDuration>
+                          <Clock size={11} />
+                          {Math.round(lesson.duration / 60)} دقيقة
+                        </LessonDuration>
+                      )}
+                    </LessonInfo>
+                  </LessonItem>
+                );
+              })}
+            </PlaylistScroll>
+          </PlaylistWrapper>
+        </ContentWrapper>
+      </PageWrapper>
+    </MainLayout>
+  );
+}
+</file>
+
+<file path="src/pages/VideoPage/VideoPage.styles.js">
+import styled, { css } from 'styled-components';
+
+export const PageWrapper = styled.div`
+  min-height: 100vh;
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  display: flex;
+  flex-direction: column;
+`;
+
+/* ─── Header ─── */
+export const VideoHeader = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[6]}`};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[4]};
+  flex-wrap: wrap;
+
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  }
+`;
+
+export const HeaderLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[1]};
+`;
+
+export const VideoTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin: 0;
+
+  ${({ theme }) => theme.media.maxMd} {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+  }
+`;
+
+export const VideoMeta = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+export const NavHint = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  background: ${({ theme }) => theme.colors.bgTertiary};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[3]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+
+  ${({ theme }) => theme.media.maxSm} {
+    display: none;
+  }
+`;
+
+/* ─── Main Layout ─── */
+export const ContentWrapper = styled.div`
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing[6]};
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: ${({ theme }) => theme.spacing[6]};
+  align-items: start;
+
+  ${({ theme }) => theme.media.maxMd} {
+    grid-template-columns: 1fr;
+    padding: ${({ theme }) => theme.spacing[4]};
+  }
+`;
+
+export const PlayerSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[6]};
+`;
+
+/* ─── Video Player ─── */
+export const PlayerWrapper = styled.div`
+  background: #000;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  position: relative;
+
+  video {
+    width: 100%;
+    height: 100%;
+    outline: none;
+  }
+`;
+
+export const NoVideoPlaceholder = styled.div`
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: ${({ theme }) => theme.colors.bgTertiary};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+/* ─── Playlist ─── */
+export const PlaylistWrapper = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  overflow: hidden;
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+
+  ${({ theme }) => theme.media.maxMd} {
+    position: static;
+    max-height: 400px;
+  }
+`;
+
+export const PlaylistHeader = styled.div`
+  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[5]}`};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+`;
+
+export const PlaylistTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin: 0;
+`;
+
+export const PlaylistCount = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  background: ${({ theme }) => theme.colors.bgTertiary};
+  padding: ${({ theme }) => `2px ${theme.spacing[2]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+`;
+
+export const PlaylistScroll = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: ${({ theme }) => theme.spacing[2]};
+
+  /* Scrollbar */
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.border};
+    border-radius: 999px;
+  }
+`;
+
+export const LessonItem = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[3]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
+  text-align: right;
+  font-family: ${({ theme }) => theme.typography.fontFamily.base};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.bgSecondary};
+  }
+
+  ${({ $active, theme }) => $active && css`
+    background: ${theme.colors.primaryLight};
+    &:hover { background: ${theme.colors.primaryLight}; }
+  `}
+`;
+
+export const LessonNumber = styled.span`
+  min-width: 28px;
+  height: 28px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background: ${({ $active, theme }) =>
+    $active ? theme.colors.primary : theme.colors.bgTertiary
+  };
+  color: ${({ $active, theme }) =>
+    $active ? 'white' : theme.colors.textMuted
+  };
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: ${({ theme }) => theme.transitions.fast};
+`;
+
+export const LessonInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+`;
+
+export const LessonTitle = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ $active, theme }) =>
+    $active ? theme.typography.fontWeight.semibold : theme.typography.fontWeight.regular
+  };
+  color: ${({ $active, theme }) =>
+    $active ? theme.colors.primary : theme.colors.textPrimary
+  };
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const LessonDuration = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+/* ─── Nav Buttons ─── */
+export const NavButtons = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[3]};
+
+  ${({ theme }) => theme.media.maxSm} {
+    flex-direction: column;
+  }
+`;
+
+/* ─── Reviews ─── */
+export const ReviewsSection = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[6]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[5]};
+`;
+
+export const ReviewsTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  padding-bottom: ${({ theme }) => theme.spacing[4]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  margin: 0;
+`;
+
+export const ReviewCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+`;
+
+export const ReviewHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+export const ReviewAvatar = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  background: ${({ theme }) => theme.colors.primaryLight};
+  color: ${({ theme }) => theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  flex-shrink: 0;
+`;
+
+export const ReviewerName = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+export const ReviewText = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  margin: 0;
+`;
+
+export const AddReviewForm = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[3]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  border: 1px dashed ${({ theme }) => theme.colors.border};
+`;
+
+/* ─── Empty / Error States ─── */
+export const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => `${theme.spacing[16]} ${theme.spacing[6]}`};
+  text-align: center;
+
+  h3 {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+    color: ${({ theme }) => theme.colors.textPrimary};
+    margin: 0;
+  }
+
+  p {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+    color: ${({ theme }) => theme.colors.textSecondary};
+    margin: 0;
   }
 `;
 </file>

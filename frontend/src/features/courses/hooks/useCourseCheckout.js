@@ -7,9 +7,8 @@ export function useCourseCheckout(courseId) {
   const checkoutMutation = useMutation({
     mutationFn: () => enrollmentsApi.createCheckoutSession(courseId),
     onSuccess: (data) => {
-      // التوجيه لصفحة الدفع Stripe بأمان
-      if (data?.url) {
-        window.location.href = data.url;
+      if (data?.sessionUrl) {
+        window.location.href = data.sessionUrl;
       }
     },
     onError: () => {

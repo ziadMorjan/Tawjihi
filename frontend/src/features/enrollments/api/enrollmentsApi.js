@@ -21,7 +21,7 @@ export const enrollmentsApi = {
   // 3. دالة الدفع التي كانت ضائعة في الملف القديم (تم نقلها هنا)
   createCheckoutSession: async (courseId) => {
     const { data } = await axiosInstance.post('/payment/create-checkout-session', {
-      courseId,
+      ids: [courseId],
     });
     return data;
   },

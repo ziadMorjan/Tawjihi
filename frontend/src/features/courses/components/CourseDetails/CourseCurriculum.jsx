@@ -1,9 +1,21 @@
-import { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, ChevronUp, PlayCircle, Lock, Clock, BookOpen } from 'lucide-react';
-import { axiosInstance } from '../../../../shared/lib/axiosInstance';
-import { SectionHeader, SectionIcon, SectionTitle } from './CourseDetails.styles';
+import { useState } from "react";
+import styled, { keyframes } from "styled-components";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ChevronDown,
+  ChevronUp,
+  PlayCircle,
+  Lock,
+  Clock,
+  BookOpen,
+} from "lucide-react";
+import { axiosInstance } from "../../../../shared/lib/axiosInstance";
+import {
+  SectionHeader,
+  SectionIcon,
+  SectionTitle,
+} from "./CourseDetails.styles";
+import { useNavigate } from "react-router-dom";
 
 const shimmer = keyframes`
   0% { background-position: 200% 0; }
@@ -11,7 +23,7 @@ const shimmer = keyframes`
 `;
 
 const fetchLessons = async (courseId) => {
-  const { data } = await axiosInstance.get('/lessons', {
+  const { data } = await axiosInstance.get("/lessons", {
     params: { course: courseId },
   });
   return data;
@@ -32,14 +44,14 @@ const LessonItem = styled.div`
   background: ${({ theme }) => theme.colors.bgSecondary};
   border: 1px solid transparent;
   transition: all 0.2s ease;
-  cursor: ${({ $clickable }) => $clickable ? 'pointer' : 'default'};
+  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
 
   &:hover {
     background: ${({ $clickable, theme }) =>
       $clickable ? theme.colors.bgTertiary : theme.colors.bgSecondary};
     border-color: ${({ $clickable, theme }) =>
-      $clickable ? theme.colors.primary + '30' : 'transparent'};
-    ${({ $clickable }) => $clickable && 'padding-right: 20px;'};
+      $clickable ? theme.colors.primary + "30" : "transparent"};
+    ${({ $clickable }) => $clickable && "padding-right: 20px;"};
   }
 `;
 
@@ -97,7 +109,7 @@ const ShowMoreBtn = styled.button`
   width: 100%;
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary} + '60';
+    border-color: ${({ theme }) => theme.colors.primary} + "60";
     background: ${({ theme }) => theme.colors.primaryLight};
   }
 `;
@@ -105,7 +117,7 @@ const ShowMoreBtn = styled.button`
 const Skeleton = styled.div`
   height: 58px;
   border-radius: 12px;
-  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
   animation: ${shimmer} 1.5s infinite;
 `;
@@ -118,9 +130,9 @@ const Count = styled.span`
 
 export function CourseCurriculum({ courseId, isEnrolled }) {
   const [showAll, setShowAll] = useState(false);
-
+  const navigate = useNavigate();
   const { data, isLoading } = useQuery({
-    queryKey: ['lessons', courseId],
+    queryKey: ["lessons", courseId],
     queryFn: () => fetchLessons(courseId),
     enabled: !!courseId,
     staleTime: 5 * 60 * 1000,
@@ -135,11 +147,15 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
     return (
       <div>
         <SectionHeader>
-          <SectionIcon><BookOpen size={16} /></SectionIcon>
+          <SectionIcon>
+            <BookOpen size={16} />
+          </SectionIcon>
           <SectionTitle>محتوى الكورس</SectionTitle>
         </SectionHeader>
         <Content>
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} />)}
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} />
+          ))}
         </Content>
       </div>
     );
@@ -150,7 +166,9 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
   return (
     <div>
       <SectionHeader>
-        <SectionIcon><BookOpen size={16} /></SectionIcon>
+        <SectionIcon>
+          <BookOpen size={16} />
+        </SectionIcon>
         <SectionTitle>محتوى الكورس</SectionTitle>
         <Count>({lessons.length} درس)</Count>
       </SectionHeader>
@@ -160,8 +178,17 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
           const canAccess = isEnrolled;
 
           return (
-            <LessonItem key={lesson._id} $clickable={canAccess}>
-              <LessonNumber>{String(index + 1).padStart(2, '0')}</LessonNumber>
+            <LessonItem
+              key={lesson._id}
+              $clickable={canAccess}
+              onClick={() => {
+                if (!canAccess) return;
+                navigate(`/learn/${courseId}`, {
+                  state: { startIndex: index },
+                });
+              }}
+            >
+              <LessonNumber>{String(index + 1).padStart(2, "0")}</LessonNumber>
 
               <LessonInfo>
                 <LessonTitle>{lesson.title ?? lesson.name}</LessonTitle>
@@ -173,10 +200,11 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
                 )}
               </LessonInfo>
 
-              {canAccess
-                ? <PlayCircle size={18} color="#2563EB" />
-                : <Lock size={15} color="#94A3B8" />
-              }
+              {canAccess ? (
+                <PlayCircle size={18} color="#2563EB" />
+              ) : (
+                <Lock size={15} color="#94A3B8" />
+              )}
             </LessonItem>
           );
         })}
@@ -184,9 +212,13 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
         {lessons.length > 5 && (
           <ShowMoreBtn onClick={() => setShowAll((p) => !p)}>
             {showAll ? (
-              <><ChevronUp size={16} /> عرض أقل</>
+              <>
+                <ChevronUp size={16} /> عرض أقل
+              </>
             ) : (
-              <><ChevronDown size={16} /> عرض {lessons.length - 5} دروس إضافية</>
+              <>
+                <ChevronDown size={16} /> عرض {lessons.length - 5} دروس إضافية
+              </>
             )}
           </ShowMoreBtn>
         )}

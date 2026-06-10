@@ -46,30 +46,34 @@ export const createCheckoutSession = asyncErrorHandler(async (req, res) => {
 });
 
 export const webhook = asyncErrorHandler(async (req, res) => {
+	console.log('🔥 طلب جديد وصل للـ Webhook!'); // أضف هذا السطر في أول سطر في الدالة
 	const sig = req.headers['stripe-signature'];
 	let event;
 
 	try {
 		event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+		// إضافة هذا السطر لرؤية نوع الحدث في الـ Terminal
+		console.log('✅ Webhook Event Received:', event.type);
 	} catch (err) {
-		const errorMessage = i18n.__(
-			{ phrase: 'generic.webhook_error', locale: 'en' },
-			{ error_message: err.message },
-		);
-		console.error(errorMessage);
-		return res.status(400).send(errorMessage);
+		console.error('❌ Webhook Signature Error:', err.message);
+		return res.status(400).send(`Webhook Error: ${err.message}`);
 	}
 
 	if (event.type === 'checkout.session.completed') {
 		const session = event.data.object;
+		console.log('💰 Payment successful! Session ID:', session.id); // للتأكد أن العملية تمت
 		const { metadata } = session;
 		const ids = metadata.courses.split(' ');
+
+		// إضافة هذا السطر للتأكد من البيانات القادمة من Stripe
+		console.log('📦 Metadata Received:', metadata);
 
 		await Payment.create({ user: metadata.user, amount: session.amount_total / 100 });
 
 		const promises = ids.map((id) => Enrollment.create({ user: metadata.user, course: id }));
 		await Promise.all(promises);
+		console.log('🎉 Enrollment created successfully!'); // للتأكد من نجاح الإضافة
 	}
 
-	res.status(200).json({ status: i18n.__({ phrase: 'generic.received', locale: 'en' }) });
+	res.status(200).json({ received: true });
 });
