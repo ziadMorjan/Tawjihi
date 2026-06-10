@@ -49,16 +49,16 @@ export function Navbar() {
               {link.label}
             </NavLink>
           ))}
-                        {isAuthenticated && (
-                <NavLink
-                  onClick={() => navigate("/user/my-courses")}
-                  className={
-                    location.pathname === "/user/my-courses" ? "active" : ""
-                  }
-                >
-                  كورساتي
-                </NavLink>
-              )}
+          {isAuthenticated && (
+            <NavLink
+              onClick={() => navigate("/user/my-courses")}
+              className={
+                location.pathname === "/user/my-courses" ? "active" : ""
+              }
+            >
+              كورساتي
+            </NavLink>
+          )}
         </NavLinks>
 
         <NavActions>
@@ -71,9 +71,12 @@ export function Navbar() {
                 )}
               </CartBtn>
 
-
-              <UserAvatar onClick={() => navigate("/profile")}>
-                {user?.img ? <img src={user.img} alt={user.name} /> : initials}
+              <UserAvatar onClick={() => navigate("/user/profile")}>
+                {user?.coverImage ? (
+                  <img src={user.coverImage} alt={user.name} />
+                ) : (
+                  initials
+                )}
               </UserAvatar>
             </>
           ) : (

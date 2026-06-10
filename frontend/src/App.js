@@ -14,6 +14,9 @@ import Wishlist from './pages/Wishlist';
 import MyCourses from './pages/MyCourses';
 import NotFound from './pages/NotFound';
 import VideoPage from './pages/VideoPage';
+import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
+import ChangePassword from './pages/ChangePassword';
 
 
 export default function App() {
@@ -40,6 +43,9 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/user/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/user/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+        <Route path="/user/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
