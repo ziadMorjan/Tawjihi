@@ -1,33 +1,18 @@
 // src/pages/Auth/Register/index.jsx
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
 import { useAuth } from '../../../features/auth';
-import { AuthLayout } from '../components/AuthLayout';
 import { Button, Input, Badge } from '../../../shared/components';
+import {AuthLayout} from "../../../features/auth/components/AuthLayout"
+import {studentSchema , teacherSchema} from "../../../features/auth/validations/register.schema"
 import {
   FormHeader, FormTitle, FormSubtitle,
   Divider, OAuthButton, FooterText, ErrorBanner,
-} from '../components/AuthLayout.styles';
+} from '../../../features/auth/components/AuthLayout.styles';
 
-// Schema الطالب
-const studentSchema = yup.object({
-  name:            yup.string().required('الاسم مطلوب'),
-  email:           yup.string().email('بريد غير صحيح').required('البريد مطلوب'),
-  phone:           yup.string().required('الهاتف مطلوب'),
-  password:        yup.string().min(8, '8 أحرف على الأقل').required('كلمة المرور مطلوبة'),
-  confirmPassword: yup.string()
-    .oneOf([yup.ref('password')], 'كلمات المرور غير متطابقة')
-    .required('تأكيد كلمة المرور مطلوب'),
-});
-
-// Schema المعلم — يضيف CV
-const teacherSchema = studentSchema.shape({
-  cv: yup.mixed().required('السيرة الذاتية مطلوبة للمعلمين'),
-});
 
 export default function Register() {
   const navigate = useNavigate();
@@ -62,7 +47,7 @@ export default function Register() {
 
   const onSubmit = async (formData) => {
     try {
-      // 🟡 لو معلم نرسل FormData عشان يدعم رفع الـ CV
+
       if (selectedRole === 'teacher') {
         const fd = new FormData();
         Object.keys(formData).forEach(key => {

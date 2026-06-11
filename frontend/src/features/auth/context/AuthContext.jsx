@@ -15,11 +15,10 @@ export function AuthProvider({ children }) {
       return data?.data ?? data?.user ?? data;
     },
     retry: false,
-    // 🔴 هذا هو السبب — Infinity يعني ما يعيد الطلب أبداً
-    // بعد الـ refresh الـ cache فاضي → يطلب من جديد → الـ cookie موجودة → ينجح
+
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,  // ← يجلب عند كل mount
+    refetchOnMount: true,  
     refetchOnReconnect: false,
   });
 

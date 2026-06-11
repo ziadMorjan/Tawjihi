@@ -1,5 +1,4 @@
-// src/pages/Auth/components/AuthLayout.jsx
-import { useNavigate } from 'react-router-dom';
+
 import {
   PageWrapper, LeftPanel, PanelTitle, PanelSubtitle,
   RightPanel, FormCard,

@@ -78,6 +78,12 @@ export function Navbar() {
                   initials
                 )}
               </UserAvatar>
+
+
+                <CartBtn onClick={() => logout()} aria-label="out">
+              logout
+              </CartBtn>
+
             </>
           ) : (
             <>

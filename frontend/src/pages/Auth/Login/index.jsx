@@ -1,28 +1,21 @@
 // src/pages/Auth/Login/index.jsx
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../../features/auth';
-import { AuthLayout } from '../components/AuthLayout';
 import { Button, Input } from '../../../shared/components';
+import {AuthLayout} from "../../../features/auth/components/AuthLayout"
 import {
   FormHeader, FormTitle, FormSubtitle,
   Divider, OAuthButton, FooterText, ErrorBanner,
-} from '../components/AuthLayout.styles';
+} from '../../../features/auth/components/AuthLayout.styles';
 
-const schema = yup.object({
-  email: yup
-    .string()
-    .email('البريد الإلكتروني غير صحيح')
-    .required('البريد الإلكتروني مطلوب'),
-  password: yup
-    .string()
-    .min(8, 'كلمة المرور 8 أحرف على الأقل')
-    .required('كلمة المرور مطلوبة'),
-});
+import { schemaLogin } from '../../../features/auth/validations/login.schema';
+
+
 
 export default function Login() {
   const navigate  = useNavigate();
@@ -35,7 +28,7 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  } = useForm({ resolver: yupResolver(schemaLogin) });
 
   const onSubmit = async (formData) => {
     try {

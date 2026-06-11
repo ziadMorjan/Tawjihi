@@ -1,4 +1,3 @@
-// src/features/auth/api/authApi.js
 import { axiosInstance } from '../../../shared/lib/axiosInstance';
 
 export const authApi = {
@@ -18,14 +17,12 @@ register: async (userData) => {
   return data;
 },
 
-  // 🟡 هنا التغيير — مش /auth/me
-  // الـ backend يقرأ الـ token من الـ cookie تلقائياً
+
   getMe: async () => {
     const { data } = await axiosInstance.get('/users/me');
     return data;
   },
 
-  // GET /auth/logout وليس POST
   logout: async () => {
     await axiosInstance.get('/auth/logout');
   },
@@ -35,21 +32,21 @@ register: async (userData) => {
   },
 
   forgotPassword: async (email) => {
-    const { data } = await axiosInstance.post('/auth/forgetPassword', { email });
-    return data;
+    const response = await axiosInstance.post('/auth/forgetPassword', { email });
+    return response.data;
   },
 
   verifyResetCode: async (resetCode) => {
-    const { data } = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
-    return data;
+    const response = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
+    return response.data;
   },
 
   resetPassword: async ({ email, newPassword, newConfirmPassword }) => {
-    const { data } = await axiosInstance.patch('/auth/resetPassword', {
+    const response = await axiosInstance.patch('/auth/resetPassword', {
       email,
       newPassword,
       newConfirmPassword,
     });
-    return data;
+    return response.data;
   },
 };
