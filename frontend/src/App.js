@@ -18,7 +18,8 @@ import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import ChangePassword from './pages/ChangePassword';
 import ForgotPassword from './pages/Auth/ForgotPassword';
-
+import Teachers from './pages/Teachers';
+import TeacherProfile from './pages/TeacherProfile';
 
 export default function App() {
   return (
@@ -32,6 +33,8 @@ export default function App() {
         <Route path="/auth/register" element={<Register />} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+        <Route path="/teachers" element={<Teachers />} />
+        <Route path="/teachers/:id" element={<TeacherProfile />} />
         {/* Protected */}
         <Route path="/cart" element={<ProtectedRoute><CartList /></ProtectedRoute>} />
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />

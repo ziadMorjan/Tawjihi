@@ -167,6 +167,12 @@ src/features/reviews/hooks/useAddReview.js
 src/features/reviews/hooks/useDeleteReview.js
 src/features/reviews/hooks/useReviews.js
 src/features/reviews/index.js
+src/features/teachers/api/teachersApi.js
+src/features/teachers/hooks/useAddTeacherReview.js
+src/features/teachers/hooks/useTeacher.js
+src/features/teachers/hooks/useTeacherReviews.js
+src/features/teachers/hooks/useTeachers.js
+src/features/teachers/index.js
 src/features/user/api/userApi.js
 src/features/user/hooks/useChangePassword.js
 src/features/user/hooks/useUpdateProfile.js
@@ -197,6 +203,10 @@ src/pages/NotFound/index.jsx
 src/pages/NotFound/style.js
 src/pages/Profile/index.jsx
 src/pages/Profile/Profile.styles.js
+src/pages/TeacherProfile/index.jsx
+src/pages/TeacherProfile/TeacherProfile.styles.js
+src/pages/Teachers/index.jsx
+src/pages/Teachers/Teachers.styles.js
 src/pages/VideoPage/index.jsx
 src/pages/VideoPage/VideoPage.styles.js
 src/pages/Wishlist/index.jsx
@@ -473,7 +483,9 @@ import VideoPage from './pages/VideoPage';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import ChangePassword from './pages/ChangePassword';
-
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import Teachers from './pages/Teachers';
+import TeacherProfile from './pages/TeacherProfile';
 
 export default function App() {
   return (
@@ -486,7 +498,9 @@ export default function App() {
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
-
+        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+        <Route path="/teachers" element={<Teachers />} />
+        <Route path="/teachers/:id" element={<TeacherProfile />} />
         {/* Protected */}
         <Route path="/cart" element={<ProtectedRoute><CartList /></ProtectedRoute>} />
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
@@ -4212,16 +4226,16 @@ export const authApi = {
     return data;
   },
 
-// register يدعم FormData
-register: async (userData) => {
-  const isFormData = userData instanceof FormData;
-  const { data } = await axiosInstance.post('/auth/signup', userData, {
-    headers: isFormData
-      ? { 'Content-Type': 'multipart/form-data' }
-      : { 'Content-Type': 'application/json' },
-  });
-  return data;
-},
+  // register يدعم FormData
+  register: async (userData) => {
+    const isFormData = userData instanceof FormData;
+    const { data } = await axiosInstance.post('/auth/signup', userData, {
+      headers: isFormData
+        ? { 'Content-Type': 'multipart/form-data' }
+        : { 'Content-Type': 'application/json' },
+    });
+    return data;
+  },
 
 
   getMe: async () => {
@@ -4238,22 +4252,22 @@ register: async (userData) => {
   },
 
   forgotPassword: async (email) => {
-    const response = await axiosInstance.post('/auth/forgetPassword', { email });
-    return response.data;
+    const { data } = await axiosInstance.post('/auth/forgetPassword', { email });
+    return data;
   },
 
   verifyResetCode: async (resetCode) => {
-    const response = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
-    return response.data;
+    const { data } = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
+    return data;
   },
 
   resetPassword: async ({ email, newPassword, newConfirmPassword }) => {
-    const response = await axiosInstance.patch('/auth/resetPassword', {
+    const { data } = await axiosInstance.patch('/auth/resetPassword', {
       email,
       newPassword,
       newConfirmPassword,
     });
-    return response.data;
+    return data;
   },
 };
 </file>
@@ -6886,6 +6900,188 @@ export { useAddReview }     from './hooks/useAddReview';
 export { useDeleteReview }  from './hooks/useDeleteReview';
 </file>
 
+<file path="src/features/teachers/api/teachersApi.js">
+import { axiosInstance } from '../../../shared/lib/axiosInstance';
+
+export const teachersApi = {
+  // GET /users?role=teacher
+  getAll: async (params = {}) => {
+    const { data } = await axiosInstance.get('/users', {
+      params: { role: 'teacher', ...params },
+    });
+    return data;
+  },
+
+  // GET /users/:id
+  getById: async (id) => {
+    const { data } = await axiosInstance.get(`/users/${id}`);
+    return data;
+  },
+
+  // GET /users/:teacherId/teacherReviews
+  getReviews: async (teacherId) => {
+    const { data } = await axiosInstance.get(
+      `/users/${teacherId}/teacherReviews`
+    );
+    return data;
+  },
+
+  // POST /users/:teacherId/teacherReviews
+  addReview: async ({ teacherId, rating, comment }) => {
+    const { data } = await axiosInstance.post(
+      `/users/${teacherId}/teacherReviews`,
+      { rating, comment }
+    );
+    return data;
+  },
+
+  // DELETE /users/:teacherId/teacherReviews/:id
+  deleteReview: async ({ teacherId, reviewId }) => {
+    await axiosInstance.delete(
+      `/users/${teacherId}/teacherReviews/${reviewId}`
+    );
+  },
+
+  // GET /courses?teacher=:teacherId
+  getCourses: async (teacherId) => {
+    const { data } = await axiosInstance.get('/courses', {
+      params: { teacher: teacherId },
+    });
+    return data;
+  },
+};
+</file>
+
+<file path="src/features/teachers/hooks/useTeacher.js">
+import { useQuery } from '@tanstack/react-query';
+import { teachersApi } from '../api/teachersApi';
+
+export function useTeacher(id) {
+  return useQuery({
+    queryKey: ['teachers', id],
+    queryFn: () => teachersApi.getById(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    select: (data) => data?.data?.doc ?? data?.data ?? data,
+  });
+}
+
+export function useTeacherCourses(teacherId) {
+  return useQuery({
+    queryKey: ['teachers', teacherId, 'courses'],
+    queryFn: () => teachersApi.getCourses(teacherId),
+    enabled: !!teacherId,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    select: (data) => data?.data?.docs ?? [],
+  });
+}
+</file>
+
+<file path="src/features/teachers/hooks/useTeacherReviews.js">
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { teachersApi } from '../api/teachersApi';
+
+export const TEACHER_REVIEWS_KEY = ['teacherReviews'];
+
+export function useTeacherReviews(teacherId) {
+  return useQuery({
+    queryKey: [...TEACHER_REVIEWS_KEY, teacherId],
+    queryFn: () => teachersApi.getReviews(teacherId),
+    enabled: !!teacherId,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    select: (data) => data?.data?.docs ?? [],
+  });
+}
+
+export function useAddTeacherReview(teacherId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ rating, comment }) =>
+      teachersApi.addReview({ teacherId, rating, comment }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...TEACHER_REVIEWS_KEY, teacherId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['teachers', teacherId] });
+      toast.success('تم إضافة تقييمك بنجاح');
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message ?? 'حدث خطأ، حاول مجدداً');
+    },
+  });
+}
+
+export function useDeleteTeacherReview(teacherId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (reviewId) =>
+      teachersApi.deleteReview({ teacherId, reviewId }),
+    onMutate: async (reviewId) => {
+      await queryClient.cancelQueries({
+        queryKey: [...TEACHER_REVIEWS_KEY, teacherId],
+      });
+      const prev = queryClient.getQueryData([...TEACHER_REVIEWS_KEY, teacherId]);
+      queryClient.setQueryData(
+        [...TEACHER_REVIEWS_KEY, teacherId],
+        (old = []) => old.filter(r => r._id !== reviewId)
+      );
+      return { prev };
+    },
+    onError: (err, id, ctx) => {
+      if (ctx?.prev) {
+        queryClient.setQueryData(
+          [...TEACHER_REVIEWS_KEY, teacherId], ctx.prev
+        );
+      }
+      toast.error('حدث خطأ أثناء الحذف');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...TEACHER_REVIEWS_KEY, teacherId],
+      });
+      toast.success('تم حذف التقييم');
+    },
+  });
+}
+</file>
+
+<file path="src/features/teachers/hooks/useTeachers.js">
+import { useQuery } from '@tanstack/react-query';
+import { teachersApi } from '../api/teachersApi';
+
+export const TEACHERS_QUERY_KEY = ['teachers'];
+
+export function useTeachers(params = {}) {
+  return useQuery({
+    queryKey: [...TEACHERS_QUERY_KEY, params],
+    queryFn: () => teachersApi.getAll(params),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    select: (data) => ({
+      teachers:   data?.data?.docs ?? [],
+      pagination: data?.pagination ?? null,
+    }),
+  });
+}
+</file>
+
+<file path="src/features/teachers/index.js">
+export { teachersApi }           from './api/teachersApi';
+export { useTeachers }           from './hooks/useTeachers';
+export { useTeacher, useTeacherCourses } from './hooks/useTeacher';
+export {
+  useTeacherReviews,
+  useAddTeacherReview,
+  useDeleteTeacherReview,
+}                                from './hooks/useTeacherReviews';
+</file>
+
 <file path="src/features/user/api/userApi.js">
 import { axiosInstance } from '../../../shared/lib/axiosInstance';
 
@@ -7309,11 +7505,11 @@ import * as yup from 'yup';
 import { useMutation } from '@tanstack/react-query';
 import { Mail, Key, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { authApi } from '../../../features/auth';
-import { AuthLayout } from '../components/AuthLayout';
+import { AuthLayout } from '../../../features/auth/components/AuthLayout';
 import { Button, Input } from '../../../shared/components';
 import {
   FormHeader, FormTitle, FormSubtitle, ErrorBanner, FooterText
-} from '../components/AuthLayout.styles';
+} from '../../../features/auth/components/AuthLayout.styles';
 
 // مخططات التحقق (Schemas) لكل خطوة
 const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
@@ -7650,6 +7846,55 @@ export default function Login() {
         </button>
       </FooterText>
     </AuthLayout>
+  );
+}
+</file>
+
+<file path="src/pages/Auth/OAuthSuccess/index.jsx">
+// src/pages/Auth/OAuthSuccess/index.jsx
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { authApi } from '../../../features/auth';
+import { AUTH_QUERY_KEY } from '../../../features/auth/context/AuthContext';
+import { Spinner } from '../../../shared/components';
+
+export default function OAuthSuccess() {
+  const navigate    = useNavigate();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        // الـ cookie موجودة الآن — نجلب بيانات المستخدم
+        const data = await authApi.getMe();
+        const user = data?.data ?? data?.user ?? data;
+        // نحدث الـ cache
+        queryClient.setQueryData(AUTH_QUERY_KEY, user);
+        navigate('/', { replace: true });
+      } catch {
+        // فشل — نرجع للـ login
+        navigate('/auth/login', { replace: true });
+      }
+    };
+
+    fetchUser();
+  }, [navigate, queryClient]);
+
+  return (
+    <div style={{
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 16,
+    }}>
+      <Spinner size="lg" />
+      <p style={{ color: '#475569', fontSize: 14 }}>
+        جارٍ تسجيل الدخول...
+      </p>
+    </div>
   );
 }
 </file>
@@ -10948,6 +11193,678 @@ export const RoleBadge = styled.span`
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   background: ${({ theme }) => theme.colors.primaryLight};
   color: ${({ theme }) => theme.colors.primary};
+`;
+</file>
+
+<file path="src/pages/TeacherProfile/index.jsx">
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Star, BookOpen, MessageSquare, Trash2 } from 'lucide-react';
+import { MainLayout }      from '../../shared/components/layout/MainLayout';
+import { Button, Badge, Spinner } from '../../shared/components';
+import { CourseCard }      from '../../features/courses/components/CourseCard';
+import { CourseCardSkeleton } from '../../features/courses/components/CourseCard/CourseCardSkeleton';
+import { StarRating }      from '../../features/courses/components/CourseCard/StarRating';
+import { useAuth }         from '../../features/auth';
+import {
+  useTeacher,
+  useTeacherCourses,
+  useTeacherReviews,
+  useAddTeacherReview,
+  useDeleteTeacherReview,
+} from '../../features/teachers';
+import {
+  PageWrapper, HeroSection, HeroInner, TeacherAvatar,
+  TeacherInfo, TeacherName, TeacherDesc, StatsRow,
+  StatItem, StatValue, StatLabel, ContentWrapper,
+  Section, SectionTitle, CoursesGrid, ReviewCard,
+  ReviewHeader, ReviewAvatar, ReviewerName, ReviewText,
+  AddReviewForm, EmptyMsg,
+} from './TeacherProfile.styles';
+
+export default function TeacherProfile() {
+  const { id }   = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const [rating,  setRating]  = useState(0);
+  const [comment, setComment] = useState('');
+
+  const { data: teacher,  isLoading: teacherLoading  } = useTeacher(id);
+  const { data: courses,  isLoading: coursesLoading  } = useTeacherCourses(id);
+  const { data: reviews = [], isLoading: reviewsLoading } = useTeacherReviews(id);
+
+  const addReview    = useAddTeacherReview(id);
+  const deleteReview = useDeleteTeacherReview(id);
+
+  const handleSubmitReview = async () => {
+    if (!rating || !comment.trim()) return;
+    await addReview.mutateAsync({ rating, comment });
+    setRating(0);
+    setComment('');
+  };
+
+  if (teacherLoading) {
+    return (
+      <MainLayout>
+        <div style={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Spinner size="lg" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!teacher) {
+    return (
+      <MainLayout>
+        <div style={{ height: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+          <p style={{ color: '#475569' }}>لم يتم العثور على المعلم</p>
+          <Button onClick={() => navigate('/teachers')}>العودة للمعلمين</Button>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  return (
+    <MainLayout>
+      <PageWrapper>
+
+        {/* Hero */}
+        <HeroSection>
+          <HeroInner>
+            <TeacherAvatar>
+              {teacher.coverImage
+                ? <img src={teacher.coverImage} alt={teacher.name} />
+                : <span>{teacher.name?.charAt(0)?.toUpperCase()}</span>
+              }
+            </TeacherAvatar>
+
+            <TeacherInfo>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <TeacherName>{teacher.name}</TeacherName>
+                <Badge variant="primary">معلم معتمد</Badge>
+              </div>
+
+              {teacher.description && (
+                <TeacherDesc>{teacher.description}</TeacherDesc>
+              )}
+
+              <StatsRow>
+                {teacher.averageRating > 0 && (
+                  <StatItem>
+                    <StatValue style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#F59E0B' }}>
+                      <Star size={16} fill="#F59E0B" color="#F59E0B" />
+                      {teacher.averageRating?.toFixed(1)}
+                    </StatValue>
+                    <StatLabel>متوسط التقييم</StatLabel>
+                  </StatItem>
+                )}
+                {teacher.reviewsQuantity > 0 && (
+                  <StatItem>
+                    <StatValue>{teacher.reviewsQuantity}</StatValue>
+                    <StatLabel>تقييم</StatLabel>
+                  </StatItem>
+                )}
+                {courses?.length > 0 && (
+                  <StatItem>
+                    <StatValue>{courses.length}</StatValue>
+                    <StatLabel>كورس</StatLabel>
+                  </StatItem>
+                )}
+              </StatsRow>
+            </TeacherInfo>
+          </HeroInner>
+        </HeroSection>
+
+        <ContentWrapper>
+
+          {/* Courses */}
+          <Section>
+            <SectionTitle>
+              <BookOpen size={20} color="#1B4FD8" />
+              كورسات المعلم ({courses?.length ?? 0})
+            </SectionTitle>
+
+            {coursesLoading ? (
+              <CoursesGrid>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <CourseCardSkeleton key={i} />
+                ))}
+              </CoursesGrid>
+            ) : courses?.length === 0 ? (
+              <EmptyMsg>لم يضف هذا المعلم كورسات بعد</EmptyMsg>
+            ) : (
+              <CoursesGrid>
+                {courses.map(course => (
+                  <CourseCard key={course._id} course={course} />
+                ))}
+              </CoursesGrid>
+            )}
+          </Section>
+
+          {/* Reviews */}
+          <Section>
+            <SectionTitle>
+              <MessageSquare size={20} color="#1B4FD8" />
+              تقييمات الطلاب ({reviews.length})
+            </SectionTitle>
+
+            {/* Add Review */}
+            {user && user.role === 'user' && (
+              <AddReviewForm>
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+                  قيّم هذا المعلم
+                </p>
+
+                {/* Stars */}
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {[1,2,3,4,5].map(s => (
+                    <button
+                      key={s} type="button"
+                      onClick={() => setRating(s)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+                    >
+                      <Star
+                        size={24}
+                        fill={s <= rating ? '#F59E0B' : 'none'}
+                        color={s <= rating ? '#F59E0B' : '#CBD5E1'}
+                      />
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  value={comment}
+                  onChange={e => setComment(e.target.value)}
+                  placeholder="اكتب تقييمك للمعلم..."
+                  rows={3}
+                  style={{
+                    width: '100%', padding: '10px 14px',
+                    border: '1.5px solid #E2E8F0', borderRadius: 10,
+                    fontFamily: 'inherit', fontSize: 14,
+                    resize: 'vertical', outline: 'none', direction: 'rtl',
+                  }}
+                />
+
+                <Button
+                  size="sm"
+                  onClick={handleSubmitReview}
+                  isLoading={addReview.isPending}
+                  disabled={!rating || !comment.trim()}
+                  style={{ alignSelf: 'flex-start' }}
+                >
+                  إرسال التقييم
+                </Button>
+              </AddReviewForm>
+            )}
+
+            {/* Reviews List */}
+            {reviewsLoading ? (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+                <Spinner size="md" />
+              </div>
+            ) : reviews.length === 0 ? (
+              <EmptyMsg>لا توجد تقييمات بعد — كن أول من يقيّم هذا المعلم!</EmptyMsg>
+            ) : (
+              reviews.map(review => {
+                const isOwner = user?._id === review.user?._id;
+                return (
+                  <ReviewCard key={review._id}>
+                    <ReviewHeader>
+                      <ReviewAvatar>
+                        {review.user?.name?.charAt(0) ?? '؟'}
+                      </ReviewAvatar>
+                      <div style={{ flex: 1 }}>
+                        <ReviewerName>{review.user?.name ?? 'مجهول'}</ReviewerName>
+                        <StarRating rating={review.rating} showText={false} />
+                      </div>
+                      {isOwner && (
+                        <button
+                          onClick={() => deleteReview.mutate(review._id)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 4 }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </ReviewHeader>
+                    {review.comment && (
+                      <ReviewText>{review.comment}</ReviewText>
+                    )}
+                  </ReviewCard>
+                );
+              })
+            )}
+          </Section>
+
+        </ContentWrapper>
+      </PageWrapper>
+    </MainLayout>
+  );
+}
+</file>
+
+<file path="src/pages/TeacherProfile/TeacherProfile.styles.js">
+import styled from 'styled-components';
+
+export const PageWrapper = styled.div`
+  min-height: 100vh;
+  background: ${({ theme }) => theme.colors.bgSecondary};
+`;
+
+export const HeroSection = styled.div`
+  background: ${({ theme }) => theme.colors.textPrimary};
+  padding: ${({ theme }) => `${theme.spacing[12]} ${theme.spacing[6]}`};
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[4]}`};
+  }
+`;
+
+export const HeroInner = styled.div`
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[8]};
+  ${({ theme }) => theme.media.maxSm} {
+    flex-direction: column;
+    text-align: center;
+  }
+`;
+
+export const TeacherAvatar = styled.div`
+  width: 120px;
+  height: 120px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  overflow: hidden;
+  border: 4px solid rgba(255,255,255,0.2);
+  background: ${({ theme }) => theme.colors.primaryLight};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+  span {
+    font-size: 48px;
+    font-weight: 700;
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+export const TeacherInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[3]};
+  flex: 1;
+`;
+
+export const TeacherName = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: white;
+  margin: 0;
+  ${({ theme }) => theme.media.maxMd} {
+    font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  }
+`;
+
+export const TeacherDesc = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: rgba(255,255,255,0.75);
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  margin: 0;
+  max-width: 600px;
+`;
+
+export const StatsRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[8]};
+  flex-wrap: wrap;
+  ${({ theme }) => theme.media.maxSm} {
+    justify-content: center;
+  }
+`;
+
+export const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+export const StatValue = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: white;
+`;
+
+export const StatLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: rgba(255,255,255,0.6);
+`;
+
+export const ContentWrapper = styled.div`
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[6]}`};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[8]};
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[4]}`};
+  }
+`;
+
+export const Section = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[6]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[5]};
+`;
+
+export const SectionTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  padding-bottom: ${({ theme }) => theme.spacing[4]};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.border};
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
+
+export const CoursesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: ${({ theme }) => theme.spacing[5]};
+`;
+
+export const ReviewCard = styled.div`
+  padding: ${({ theme }) => theme.spacing[4]};
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+export const ReviewHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+export const ReviewAvatar = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  background: ${({ theme }) => theme.colors.primaryLight};
+  color: ${({ theme }) => theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+`;
+
+export const ReviewerName = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+export const ReviewText = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  margin: 0;
+`;
+
+export const AddReviewForm = styled.div`
+  padding: ${({ theme }) => theme.spacing[4]};
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  border: 1px dashed ${({ theme }) => theme.colors.border};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+export const EmptyMsg = styled.p`
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  padding: ${({ theme }) => theme.spacing[6]};
+  margin: 0;
+`;
+</file>
+
+<file path="src/pages/Teachers/index.jsx">
+import { useNavigate } from 'react-router-dom';
+import { Users, Star } from 'lucide-react';
+import { MainLayout }  from '../../shared/components/layout/MainLayout';
+import {  Spinner } from '../../shared/components';
+import { useTeachers } from '../../features/teachers';
+import {
+  PageWrapper, PageHeader, PageTitle, PageSubtitle,
+  TeachersGrid, TeacherCard, TeacherAvatar, TeacherName,
+  TeacherDesc, TeacherStats, StatItem, StatValue, StatLabel,
+  EmptyState,
+} from './Teachers.styles';
+
+export default function Teachers() {
+  const navigate = useNavigate();
+  const { data, isLoading } = useTeachers();
+  const teachers = data?.teachers ?? [];
+
+  return (
+    <MainLayout>
+      <PageWrapper>
+        <PageHeader>
+          <PageTitle>معلمونا</PageTitle>
+          <PageSubtitle>
+            تعرّف على نخبة من أفضل معلمي التوجيهي في فلسطين
+          </PageSubtitle>
+        </PageHeader>
+
+        {isLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>
+            <Spinner size="lg" />
+          </div>
+        ) : teachers.length === 0 ? (
+          <EmptyState>
+            <Users size={64} />
+            <p style={{ fontSize: 16, color: '#475569' }}>
+              لا يوجد معلمون متاحون حالياً
+            </p>
+          </EmptyState>
+        ) : (
+          <TeachersGrid>
+            {teachers.map(teacher => (
+              <TeacherCard
+                key={teacher._id}
+                onClick={() => navigate(`/teachers/${teacher._id}`)}
+              >
+                <TeacherAvatar>
+                  {teacher.coverImage
+                    ? <img src={teacher.coverImage} alt={teacher.name} />
+                    : <span>{teacher.name?.charAt(0)?.toUpperCase()}</span>
+                  }
+                </TeacherAvatar>
+
+                <TeacherName>{teacher.name}</TeacherName>
+
+                {teacher.description && (
+                  <TeacherDesc>{teacher.description}</TeacherDesc>
+                )}
+
+                <TeacherStats>
+                  {teacher.averageRating > 0 && (
+                    <StatItem>
+                      <StatValue style={{ color: '#F59E0B', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Star size={14} fill="#F59E0B" color="#F59E0B" />
+                        {teacher.averageRating?.toFixed(1)}
+                      </StatValue>
+                      <StatLabel>التقييم</StatLabel>
+                    </StatItem>
+                  )}
+                  {teacher.reviewsQuantity > 0 && (
+                    <StatItem>
+                      <StatValue>{teacher.reviewsQuantity}</StatValue>
+                      <StatLabel>تقييم</StatLabel>
+                    </StatItem>
+                  )}
+                </TeacherStats>
+              </TeacherCard>
+            ))}
+          </TeachersGrid>
+        )}
+      </PageWrapper>
+    </MainLayout>
+  );
+}
+</file>
+
+<file path="src/pages/Teachers/Teachers.styles.js">
+import styled from 'styled-components';
+
+export const PageWrapper = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[6]}`};
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[4]}`};
+  }
+`;
+
+export const PageHeader = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing[10]};
+  text-align: center;
+`;
+
+export const PageTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing[3]};
+`;
+
+export const PageSubtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+export const TeachersGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: ${({ theme }) => theme.spacing[6]};
+`;
+
+export const TeacherCard = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  overflow: hidden;
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.normal};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing[8]};
+  gap: ${({ theme }) => theme.spacing[4]};
+  text-align: center;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: ${({ theme }) => theme.shadows.lg};
+    transform: translateY(-4px);
+  }
+`;
+
+export const TeacherAvatar = styled.div`
+  width: 88px;
+  height: 88px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  overflow: hidden;
+  background: ${({ theme }) => theme.colors.primaryLight};
+  border: 3px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  span {
+    font-size: 32px;
+    font-weight: 700;
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+export const TeacherName = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin: 0;
+`;
+
+export const TeacherDesc = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+export const TeacherStats = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  padding-top: ${({ theme }) => theme.spacing[4]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  width: 100%;
+  justify-content: center;
+`;
+
+export const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+`;
+
+export const StatValue = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+export const StatLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+export const EmptyState = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  svg { color: ${({ theme }) => theme.colors.textMuted}; }
 `;
 </file>
 
