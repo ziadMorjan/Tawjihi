@@ -118,11 +118,15 @@ src/design-system/index.js
 src/design-system/theme.js
 src/design-system/tokens.js
 src/features/auth/api/authApi.js
+src/features/auth/components/AuthLayout.jsx
+src/features/auth/components/AuthLayout.styles.js
 src/features/auth/components/ProtectedRoute.jsx
 src/features/auth/context/AuthContext.jsx
 src/features/auth/hooks/useAuth.js
 src/features/auth/hooks/useAuthQuery.js
 src/features/auth/index.js
+src/features/auth/validations/login.schema.js
+src/features/auth/validations/register.schema.js
 src/features/cart/api/cartApi.js
 src/features/cart/hooks/useCart.js
 src/features/cart/hooks/useCartActions.js
@@ -133,13 +137,6 @@ src/features/comments/hooks/useComments.js
 src/features/comments/hooks/useDeleteComment.js
 src/features/comments/hooks/useEditComment.js
 src/features/comments/index.js
-src/features/components/ForgetPassword.jsx
-src/features/components/LoginForm.jsx
-src/features/components/OAuthSuccess.jsx
-src/features/components/Register.jsx
-src/features/components/ResetPassword.jsx
-src/features/components/style.js
-src/features/components/VerificationCode.jsx
 src/features/courses/api/coursesApi.js
 src/features/courses/components/CourseCard/CourseCard.styles.js
 src/features/courses/components/CourseCard/CourseCardSkeleton.jsx
@@ -180,13 +177,10 @@ src/features/wishlist/hooks/useWishlistActions.js
 src/features/wishlist/index.js
 src/index.css
 src/index.js
-src/pages/Auth/components/AuthLayout.jsx
-src/pages/Auth/components/AuthLayout.styles.js
-src/pages/Auth/index.jsx
+src/pages/Auth/ForgotPassword/index.jsx
 src/pages/Auth/Login/index.jsx
 src/pages/Auth/OAuthSuccess/index.jsx
 src/pages/Auth/Register/index.jsx
-src/pages/Auth/style.js
 src/pages/CartList/CartList.styles.js
 src/pages/CartList/index.jsx
 src/pages/ChangePassword/index.jsx
@@ -1460,6 +1454,12 @@ export function Navbar() {
                   initials
                 )}
               </UserAvatar>
+
+
+                <CartBtn onClick={() => logout()} aria-label="out">
+              logout
+              </CartBtn>
+
             </>
           ) : (
             <>
@@ -4204,7 +4204,6 @@ export const media = {
 </file>
 
 <file path="src/features/auth/api/authApi.js">
-// src/features/auth/api/authApi.js
 import { axiosInstance } from '../../../shared/lib/axiosInstance';
 
 export const authApi = {
@@ -4224,14 +4223,12 @@ register: async (userData) => {
   return data;
 },
 
-  // 🟡 هنا التغيير — مش /auth/me
-  // الـ backend يقرأ الـ token من الـ cookie تلقائياً
+
   getMe: async () => {
     const { data } = await axiosInstance.get('/users/me');
     return data;
   },
 
-  // GET /auth/logout وليس POST
   logout: async () => {
     await axiosInstance.get('/auth/logout');
   },
@@ -4241,24 +4238,200 @@ register: async (userData) => {
   },
 
   forgotPassword: async (email) => {
-    const { data } = await axiosInstance.post('/auth/forgetPassword', { email });
-    return data;
+    const response = await axiosInstance.post('/auth/forgetPassword', { email });
+    return response.data;
   },
 
   verifyResetCode: async (resetCode) => {
-    const { data } = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
-    return data;
+    const response = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
+    return response.data;
   },
 
   resetPassword: async ({ email, newPassword, newConfirmPassword }) => {
-    const { data } = await axiosInstance.patch('/auth/resetPassword', {
+    const response = await axiosInstance.patch('/auth/resetPassword', {
       email,
       newPassword,
       newConfirmPassword,
     });
-    return data;
+    return response.data;
   },
 };
+</file>
+
+<file path="src/features/auth/components/AuthLayout.jsx">
+import {
+  PageWrapper, LeftPanel, PanelTitle, PanelSubtitle,
+  RightPanel, FormCard,
+} from './AuthLayout.styles';
+
+export function AuthLayout({ children, panelTitle, panelSubtitle }) {
+  return (
+    <PageWrapper>
+      <LeftPanel>
+        <img src="/assets/img/logo.png" alt="Tawjihi" style={{ height: 64 }} />
+        <PanelTitle>{panelTitle}</PanelTitle>
+        <PanelSubtitle>{panelSubtitle}</PanelSubtitle>
+      </LeftPanel>
+
+      <RightPanel>
+        <FormCard>
+          {children}
+        </FormCard>
+      </RightPanel>
+    </PageWrapper>
+  );
+}
+</file>
+
+<file path="src/features/auth/components/AuthLayout.styles.js">
+import styled from 'styled-components';
+
+export const PageWrapper = styled.div`
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  direction: rtl;
+
+  ${({ theme }) => theme.media.maxMd} {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const LeftPanel = styled.div`
+  background: ${({ theme }) => theme.colors.primary};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing[12]};
+  gap: ${({ theme }) => theme.spacing[8]};
+
+  ${({ theme }) => theme.media.maxMd} {
+    display: none;
+  }
+`;
+
+export const PanelTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: white;
+  text-align: center;
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+`;
+
+export const PanelSubtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+`;
+
+export const RightPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing[12]};
+  background: ${({ theme }) => theme.colors.bgPrimary};
+
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => theme.spacing[6]};
+  }
+`;
+
+export const FormCard = styled.div`
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[6]};
+`;
+
+export const FormHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
+
+export const FormTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+export const FormSubtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+export const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: ${({ theme }) => theme.colors.border};
+  }
+`;
+
+export const OAuthButton = styled.button`
+  width: 100%;
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-family: ${({ theme }) => theme.typography.fontFamily.base};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.bgTertiary};
+    border-color: ${({ theme }) => theme.colors.borderStrong};
+  }
+`;
+
+export const FooterText = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-align: center;
+
+  a, button {
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+    padding: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+export const ErrorBanner = styled.div`
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  background: ${({ theme }) => theme.colors.dangerLight};
+  border: 1px solid ${({ theme }) => theme.colors.danger};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  color: ${({ theme }) => theme.colors.danger};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+`;
 </file>
 
 <file path="src/features/auth/components/ProtectedRoute.jsx">
@@ -4310,11 +4483,10 @@ export function AuthProvider({ children }) {
       return data?.data ?? data?.user ?? data;
     },
     retry: false,
-    // 🔴 هذا هو السبب — Infinity يعني ما يعيد الطلب أبداً
-    // بعد الـ refresh الـ cache فاضي → يطلب من جديد → الـ cookie موجودة → ينجح
+
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,  // ← يجلب عند كل mount
+    refetchOnMount: true,  
     refetchOnReconnect: false,
   });
 
@@ -4376,12 +4548,45 @@ export function useAuth() {
 </file>
 
 <file path="src/features/auth/index.js">
-// src/features/auth/index.js
-// نقطة دخول واحدة للـ feature كاملة
-
 export { AuthProvider, useAuth, AUTH_QUERY_KEY } from './context/AuthContext';
 export { ProtectedRoute } from './components/ProtectedRoute';
 export { authApi } from './api/authApi';
+export {schemaLogin} from "./validations/login.schema"
+export {teacherSchema , studentSchema} from "./validations/register.schema"
+</file>
+
+<file path="src/features/auth/validations/login.schema.js">
+import * as yup from 'yup';
+export const schemaLogin = yup.object({
+  email: yup
+    .string()
+    .email('البريد الإلكتروني غير صحيح')
+    .required('البريد الإلكتروني مطلوب'),
+  password: yup
+    .string()
+    .min(8, 'كلمة المرور 8 أحرف على الأقل')
+    .required('كلمة المرور مطلوبة'),
+});
+</file>
+
+<file path="src/features/auth/validations/register.schema.js">
+import * as yup from 'yup';
+
+// Schema الطالب
+export const studentSchema = yup.object({
+  name:            yup.string().required('الاسم مطلوب'),
+  email:           yup.string().email('بريد غير صحيح').required('البريد مطلوب'),
+  phone:           yup.string().required('الهاتف مطلوب'),
+  password:        yup.string().min(8, '8 أحرف على الأقل').required('كلمة المرور مطلوبة'),
+  confirmPassword: yup.string()
+    .oneOf([yup.ref('password')], 'كلمات المرور غير متطابقة')
+    .required('تأكيد كلمة المرور مطلوب'),
+});
+
+// Schema المعلم — يضيف CV
+export const teacherSchema = studentSchema.shape({
+  cv: yup.mixed().required('السيرة الذاتية مطلوبة للمعلمين'),
+});
 </file>
 
 <file path="src/features/cart/api/cartApi.js">
@@ -4697,1034 +4902,6 @@ export { useComments, COMMENTS_QUERY_KEY } from './hooks/useComments';
 export { useAddComment }    from './hooks/useAddComment';
 export { useEditComment }   from './hooks/useEditComment';
 export { useDeleteComment } from './hooks/useDeleteComment';
-</file>
-
-<file path="src/features/components/ForgetPassword.jsx">
-// React
-import { useState } from "react";
-
-// Yup
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-
-// Axios
-import axios from "axios";
-
-// Hooks
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-
-// Components
-import { H3, Pargrahph } from "../../components/typography";
-
-// Styled
-import {
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  ErrorText,
-  FormActions,
-  FormForgetPassword,
-} from "./style";
-
-// Paths
-import { PATH } from "../../routes";
-
-// URL
-import { API_URL } from "../../config";
-
-// Validation Schema
-//=======================================================
-const schema = yup
-  .object()
-  .shape({
-    email: yup
-      .string()
-      .required("البريد الإلكتروني مطلوب")
-      .email("ادخل البريد الالكتروني بشكل صحيح"),
-  })
-  .noUnknown(true);
-//=======================================================
-
-
-
-export const ForgetPassword = () => {
-  const navigate = useNavigate();
-  const [serverError, setServerError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  //submit data
-  //=======================================================
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setServerError("");
-
-
-    try {
-      const response = await axios.post(`${API_URL}/auth/forgetPassword`, data);
-
-      localStorage.setItem("email", data.email);
-      navigate(`/${PATH.VerificationCode}`);
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        "حدث خطأ أثناء إرسال البريد الإلكتروني. حاول مرة أخرى.";
-
-      localStorage.removeItem("email");
-      setServerError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  //=======================================================
-
-  return (
-    <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
-      {serverError && <ErrorText>{serverError}</ErrorText>}
-
-      <FormGroup>
-        <H3>إعادة تعيين كلمة المرور</H3>
-        <Pargrahph size="16px">
-          من فضلك أدخل بريدك الإلكتروني لإرسال رمز التحقق لإعادة تعيين كلمة
-          المرور
-        </Pargrahph>
-
-        <Label>البريد الإلكتروني</Label>
-        <Input type="email" {...register("email")} disabled={loading} />
-        {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
-      </FormGroup>
-
-      <FormActions>
-        <Button type="submit" disabled={loading}>
-          {loading ? "جاري الإرسال..." : "ارسل كود التحقق"}
-        </Button>
-      </FormActions>
-    </FormForgetPassword>
-  );
-};
-</file>
-
-<file path="src/features/components/LoginForm.jsx">
-import { Link, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-
-// config
-import { API_URL } from "../../config";
-import { PATH } from "../../routes";
-
-// contexts
-import { AuthContext } from "../../context/AuthContext";
-import { AppContext } from "../../context/WishAndCartListContext";
-import { Actions } from "../../constant/ACTIONS";
-
-// components & styles
-import {
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  ErrorText,
-  FormActions,
-} from "./style";
-import { SocialMediaIcon } from "../../components/Icon/socialMediaIcon";
-import { Pargrahph } from "../../components/typography";
-import { MiddleLineLetter } from "../../components/MiddleLineLetter";
-import { WrapperElementFlexCenter } from "../../styles/style";
-
-// validation schema
-const schema = yup.object({
-  email: yup
-    .string()
-    .required("البريد الإلكتروني مطلوب")
-    .email("ادخل البريد الالكتروني بشكل صحيح"),
-  password: yup.string().required("كلمة المرور مطلوبة"),
-});
-
-export const LoginForm = () => {
-  const navigate = useNavigate();
-  const { setIsAuth } = useContext(AuthContext);
-  const { dispatch } = useContext(AppContext);
-
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({ resolver: yupResolver(schema) });
-
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setServerError("");
-
-    try {
-      const response = await axios.post(`${API_URL}/auth/login`, data, {
-        withCredentials: true,
-      });
-
-      if (response.data.user) {
-        // Save full user object with wishlist and cart to localStorage
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        if (response.data.token) localStorage.setItem("token", response.data.token);
-        setIsAuth(true);
-
-        const storedUser = response.data.user;
-
-        // Extract wishlist from user data or empty array
-        const wishlistFromStorage = Array.isArray(storedUser.wishlist)
-          ? storedUser.wishlist
-          : [];
-
-        // Extract cart from user data or empty array
-        const cartFromStorage = Array.isArray(storedUser.cart)
-          ? storedUser.cart
-          : [];
-
-        // Dispatch wishlist
-        dispatch({
-          type: Actions.SetWishList,
-          payload: wishlistFromStorage,
-        });
-
-        // Dispatch cart
-        dispatch({
-          type: Actions.SetCartList,
-          payload: cartFromStorage,
-        });
-
-        reset();
-        if (storedUser.role === "admin") {
-          navigate(`/${PATH.AdminDashboard}`);
-        } else if (storedUser.role === "teacher") {
-          navigate(`/${PATH.AdminDashboard}/courses`);
-        } else {
-          navigate(`${PATH.Main}`);
-        }
-      } else {
-        throw new Error("لم يتم العثور على بيانات المستخدم.");
-      }
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "حدث خطأ أثناء محاولة تسجيل الدخول. حاول مرة أخرى.";
-      setServerError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      {serverError && <ErrorText>{serverError}</ErrorText>}
-
-      <FormGroup>
-        <Label>البريد الإلكتروني</Label>
-        <Input type="email" {...register("email")} disabled={loading} />
-        {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
-      </FormGroup>
-
-      <FormGroup>
-        <Label>كلمة المرور </Label>
-        <Input type="password" {...register("password")} disabled={loading} />
-        {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
-      </FormGroup>
-
-      <FormGroup>
-        <Label>
-          <Link to={`/${PATH.ForgetPassword}`}>هل نسيت كلمة السر؟</Link>
-        </Label>
-      </FormGroup>
-
-      <FormActions>
-        <Button type="submit" disabled={loading}>
-          {loading ? "جاري التسجيل..." : "تسجيل"}
-        </Button>
-      </FormActions>
-
-      <MiddleLineLetter text="أو تسجيل الدخول باستخدام" />
-      <WrapperElementFlexCenter>
-        <SocialMediaIcon icon="google" />
-        <SocialMediaIcon icon="facebook" />
-      </WrapperElementFlexCenter>
-
-      <Pargrahph size="16px">
-        ليس لديك حساب؟ <Link to={`/${PATH.Register}`}>إنشاء حساب جديد</Link>
-      </Pargrahph>
-    </Form>
-  );
-};
-</file>
-
-<file path="src/features/components/OAuthSuccess.jsx">
-//react
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-//axios
-import axios from "axios";
-
-//Path
-import { PATH } from "../../routes/";
-
-//URL
-import { API_URL } from "../../config";
-
-//context
-import { AuthContext } from "../../context/AuthContext";
-
-const OAuthSuccess = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const { setIsAuth } = useContext(AuthContext);
-
-  useEffect(() => {
-    axios
-      .get(`${API_URL}/users/me`, { withCredentials: true }) //withCredentials to cookies
-      .then((response) => {
-        if (response.data.user) {
-          localStorage.setItem("user", JSON.stringify(response.data.user));
-          // setIsAuth(true);
-        }
-        navigate(PATH.Main);
-      })
-      .catch((error) => {
-        console.error("error:", error);
-        setIsAuth(false);
-        navigate(`/${PATH.Auth}/login`);
-      })
-      .finally(() => setLoading(false));
-  }, [navigate, setIsAuth]);
-
-  if (loading) return <div>يتم الان التحويل علي الصفحة الرئيسية...</div>;
-};
-
-export default OAuthSuccess;
-</file>
-
-<file path="src/features/components/Register.jsx">
-//react
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-
-//yup
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-
-//axios
-import axios from "axios";
-
-//hooks
-import { useForm } from "react-hook-form";
-
-// Context
-import { AuthContext } from "../../context/AuthContext";
-
-//URL
-import { API_URL } from "../../config";
-
-//Paths
-import { PATH } from "../../routes";
-
-// Styled Components
-import {
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  ErrorText,
-  PasswordRulesList,
-  PasswordRuleItem,
-  FormActions,
-  CheckboxContainer,
-  Checkbox,
-  CheckboxLabel,
-} from "./style";
-
-// Password validation regex
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-// Yup schema
-//=======================================================
-const schema = yup.object({
-  name: yup.string().required("الاسم الأول مطلوب").min(3, "ادخل الاسم كامل"),
-  phone: yup
-    .string()
-    .required("رقم الهاتف مطلوب")
-    .matches(/^\d{10}$/, "رقم الهاتف غير صالح، يجب أن يكون 10 أرقام"),
-  email: yup
-    .string()
-    .required("البريد الإلكتروني مطلوب")
-    .email("ادخل البريد الالكتروني بشكل صحيح"),
-  password: yup
-    .string()
-    .required("كلمة المرور مطلوبة")
-    .matches(passwordRegex, "invalid-password"),
-  confirmPassword: yup
-    .string()
-    .required("تأكيد كلمة المرور مطلوب")
-    .oneOf([yup.ref("password")], "كلمتا المرور غير متطابقتين"),
-  terms: yup.boolean().oneOf([true], "يجب الموافقة على الشروط والأحكام"),
-});
-//=======================================================
-
-export const RegisterForm = () => {
-  const navigate = useNavigate();
-  const { setIsAuth } = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    reset,
-  } = useForm({
-    resolver: yupResolver(schema),
-    mode: "onChange",
-  });
-
-  //check password
-  //=======================================================
-  const passwordValue = watch("password") || "";
-  const passwordRules = [
-    {
-      label: "يجب أن تحتوي على حرف صغير (a-z)",
-      isValid: /[a-z]/.test(passwordValue),
-    },
-    {
-      label: "يجب أن تحتوي على حرف كبير (A-Z)",
-      isValid: /[A-Z]/.test(passwordValue),
-    },
-    { label: "يجب أن تحتوي على رقم (0-9)", isValid: /\d/.test(passwordValue) },
-    {
-      label: "يجب أن تحتوي على رمز خاص مثل (@, $, !, %, *, ?, &)",
-      isValid: /[@$!%*?&]/.test(passwordValue),
-    },
-    {
-      label: "يجب أن تكون 8 أحرف على الأقل",
-      isValid: passwordValue.length >= 8,
-    },
-  ];
-  //=======================================================
-
-  //submit data
-  //=======================================================
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setServerError("");
-
-    try {
-      const response = await axios.post(`${API_URL}/auth/signup`, data, {
-        withCredentials: true,
-      }); //withCredentials to cookies
-
-      if (response.data.user) {
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        if (response.data.token) localStorage.setItem("token", response.data.token);
-        setIsAuth(true);
-        reset();
-        navigate(PATH.Main);
-      } else {
-        throw new Error("حدث خطأ أثناء إنشاء الحساب.");
-      }
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "حدث خطأ أثناء التسجيل. حاول مرة أخرى.";
-      setServerError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  //=======================================================
-
-
-  return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      {serverError && <ErrorText>{serverError}</ErrorText>}
-
-      <FormGroup>
-        <Label>الاسم كامل</Label>
-        <Input type="text" {...register("name")} disabled={loading} />
-        {errors.name && <ErrorText>{errors.name.message}</ErrorText>}
-      </FormGroup>
-
-      <FormGroup>
-        <Label>البريد الإلكتروني</Label>
-        <Input type="email" {...register("email")} disabled={loading} />
-        {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
-      </FormGroup>
-
-      <FormGroup>
-        <Label>رقم الهاتف</Label>
-        <Input type="tel" {...register("phone")} disabled={loading} />
-        {errors.phone && <ErrorText>{errors.phone.message}</ErrorText>}
-      </FormGroup>
-
-      <FormGroup>
-        <Label>كلمة المرور</Label>
-        <Input type="password" {...register("password")} disabled={loading} />
-        {errors.password && (
-          <ErrorText>
-            {errors.password.message === "invalid-password" ? (
-              <PasswordRulesList>
-                {passwordRules.map((rule, i) => (
-                  <PasswordRuleItem key={i} $valid={rule.isValid}>
-                    {rule.label}
-                  </PasswordRuleItem>
-                ))}
-              </PasswordRulesList>
-            ) : (
-              errors.password.message
-            )}
-          </ErrorText>
-        )}
-      </FormGroup>
-
-      <FormGroup>
-        <Label>تأكيد كلمة المرور</Label>
-        <Input
-          type="password"
-          {...register("confirmPassword")}
-          disabled={loading}
-        />
-        {errors.confirmPassword && (
-          <ErrorText>{errors.confirmPassword.message}</ErrorText>
-        )}
-      </FormGroup>
-
-      <FormGroup>
-        <CheckboxContainer>
-          <Checkbox {...register("terms")} id="terms" disabled={loading} />
-          <CheckboxLabel htmlFor="terms">
-            أوافق على الشروط والأحكام
-          </CheckboxLabel>
-        </CheckboxContainer>
-        {errors.terms && <ErrorText>{errors.terms.message}</ErrorText>}
-      </FormGroup>
-
-      <FormActions>
-        <Button type="submit" disabled={loading}>
-          {loading ? "جاري التسجيل..." : "تسجيل"}
-        </Button>
-      </FormActions>
-    </Form>
-  );
-};
-</file>
-
-<file path="src/features/components/ResetPassword.jsx">
-//react
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-
-//yup
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-
-//axios
-import axios from "axios";
-
-//hooks
-import { useForm } from "react-hook-form";
-
-// Components
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { H3, Pargrahph } from "../../components/typography";
-
-// Styled
-import {
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  ErrorText,
-  FormActions,
-  FormForgetPassword,
-} from "./style";
-
-//Paths
-import { PATH } from "../../routes";
-
-//URL
-import { API_URL } from "../../config";
-
-//context
-import { AuthContext } from "../../context/AuthContext";
-
-// Password regex
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-// Validation schema
-const schema = yup.object({
-  newPassword: yup
-    .string()
-    .required("كلمة المرور مطلوبة")
-    .matches(passwordRegex, "invalid-password"),
-  newConfirmPassword: yup
-    .string()
-    .required("تأكيد كلمة المرور مطلوب")
-    .oneOf([yup.ref("newPassword")], "كلمتا المرور غير متطابقتين"),
-});
-
-export const ResetPassword = () => {
-  const navigate = useNavigate();
-  const { setIsAuth } = useContext(AuthContext);
-
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    reset,
-  } = useForm({ resolver: yupResolver(schema) });
-
-  //check password
-  //=======================================================
-  const passwordValue = watch("newPassword") || "";
-  const passwordRules = [
-    {
-      label: "يجب أن تحتوي على حرف صغير (a-z)",
-      isValid: /[a-z]/.test(passwordValue),
-    },
-    {
-      label: "يجب أن تحتوي على حرف كبير (A-Z)",
-      isValid: /[A-Z]/.test(passwordValue),
-    },
-    { label: "يجب أن تحتوي على رقم (0-9)", isValid: /\d/.test(passwordValue) },
-    {
-      label: "يجب أن تحتوي على رمز خاص مثل (@, $, !, %, *, ?, &)",
-      isValid: /[@$!%*?&]/.test(passwordValue),
-    },
-    {
-      label: "يجب أن تكون 8 أحرف على الأقل",
-      isValid: passwordValue.length >= 8,
-    },
-  ];
-  //=======================================================
-
-
-
-  //submit data
-  //=======================================================
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setServerError("");
-
-    try {
-      const response = await axios.patch(
-        `${API_URL}/auth/resetPassword`,
-        {
-          newPassword: data.newPassword,
-          newConfirmPassword: data.newConfirmPassword,
-          email: localStorage.getItem("email"),
-        },
-        { withCredentials: true } //withCredentials to cookies
-      );
-
-      if (response.data.user) {
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        if (response.data.token) localStorage.setItem("token", response.data.token);
-        localStorage.removeItem("email");
-        setIsAuth(true);
-        reset();
-        navigate(PATH.Main);
-      } else {
-        throw new Error("لم يتم استلام بيانات المستخدم.");
-      }
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "حدث خطأ أثناء إعادة تعيين كلمة المرور.";
-      setServerError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  //=======================================================
-
-  return (
-    <>
-      <LogoAndButton />
-      <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
-        <H3>إعادة تعيين كلمة المرور</H3>
-        <Pargrahph size="16px">
-          قم بإدخال كلمة المرور الجديدة الخاصة بك
-        </Pargrahph>
-
-        {serverError && <ErrorText>{serverError}</ErrorText>}
-
-        <FormGroup>
-          <Label>كلمة المرور</Label>
-          <Input
-            type="password"
-            {...register("newPassword")}
-            disabled={loading}
-          />
-          {errors.newPassword && (
-            <ErrorText>
-              {errors.newPassword.message === "invalid-password" ? (
-                <ul style={{ paddingRight: "1rem", margin: "0.5rem 0" }}>
-                  {passwordRules.map((rule, index) => (
-                    <li
-                      key={index}
-                      style={{
-                        color: rule.isValid ? "green" : "red",
-                        fontWeight: rule.isValid ? "bold" : "normal",
-                      }}
-                    >
-                      {rule.label}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                errors.newPassword.message
-              )}
-            </ErrorText>
-          )}
-        </FormGroup>
-
-        <FormGroup>
-          <Label>تأكيد كلمة المرور</Label>
-          <Input
-            type="password"
-            {...register("newConfirmPassword")}
-            disabled={loading}
-          />
-          {errors.newConfirmPassword && (
-            <ErrorText>{errors.newConfirmPassword.message}</ErrorText>
-          )}
-        </FormGroup>
-
-        <FormActions>
-          <Button type="submit" disabled={loading}>
-            {loading ? "جاري الإرسال..." : "إعادة تعيين"}
-          </Button>
-        </FormActions>
-      </FormForgetPassword>
-    </>
-  );
-};
-</file>
-
-<file path="src/features/components/style.js">
-import styled from "styled-components";
-
-// Form Layout
-export const Form = styled.form`
-  width: 100%;
-  max-width: 400px;
-  margin: -10px auto;
-  background: ${({ theme }) => theme.background};
-  padding: 1.5rem;
-  border-radius: 1rem;
-
-  @media (max-width: 576px) {
-    padding: 0.5rem;
-  }
-`;
-
-export const FormGroup = styled.div`
-  margin-bottom: 0.5rem;
-`;
-
-export const Label = styled.label`
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  background: ${({ theme }) => theme.linearGradient};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-`;
-
-export const Input = styled.input`
-  width: 100%;
-  padding: 0.7rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  color: var(--color-text);
-
-  &:focus {
-    outline: none;
-    border-color: var(--color-link);
-    background-color: white;
-  }
-`;
-
-export const ErrorText = styled.div`
-  margin-top: 0.2rem;
-  color: red;
-  font-size: 0.875rem;
-  padding: 0.5rem;
-  border-radius: 0.4rem;
-`;
-
-export const Button = styled.button`
-  width: 100%;
-  padding: 0.8rem 1.5rem;
-  background: ${({ theme }) => theme.linearGradient};
-  color: white;
-  border: none;
-  border-radius: 0.6rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: var(--color-primary-hover);
-  }
-`;
-
-export const PasswordRulesList = styled.ul`
-  list-style: none;
-  padding: 0 1rem;
-  margin: 0.5rem 0;
-`;
-
-export const PasswordRuleItem = styled.li`
-  color: ${(props) => (props.$valid ? "var(--color-success-text)" : "red")};
-  font-weight: ${(props) => (props.$valid ? "bold" : "normal")};
-`;
-
-export const FormActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-
-  @media (max-width: 576px) {
-    justify-content: center;
-  }
-`;
-
-export const CheckboxContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 20px;
-
-  @media (max-width: 576px) {
-    gap: 0.75rem;
-  }
-`;
-
-export const Checkbox = styled.input.attrs({ type: "checkbox" })`
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-`;
-
-export const CheckboxLabel = styled(Label)`
-  margin: 0;
-  cursor: pointer;
-`;
-
-
-
-export const FormForgetPassword = styled(Form)`
-  border: 1px solid var(--color-primary);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-
-  padding: 2rem;
-  width: 100%;
-  max-width: 400px;
-
-  @media (max-width: 576px) {
-    padding: 1rem;
-    max-width: 90%;
-    align-items: start;
-
-    & input {
-      width: 100%;
-    }
-
-    & label {
-      width: 100%;
-      text-align: right;
-    }
-  }
-
-  & label {
-    margin: 5px 0px;
-  }
-
-  & input {
-    width: 100%;
-  }
-`;
-</file>
-
-<file path="src/features/components/VerificationCode.jsx">
-//react
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-//yup
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-
-//hooks
-import { useForm } from "react-hook-form";
-
-//axios
-import axios from "axios";
-
-// Components
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { H3, Pargrahph } from "../../components/typography";
-
-// Styled
-import {
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  ErrorText,
-  FormActions,
-  FormForgetPassword,
-} from "./style";
-
-// Paths
-import { PATH } from "../../routes";
-
-// URL
-import { API_URL } from "../../config";
-
-// Validation schema for 6-digit reset code
-const schema = yup.object({
-  resetCode: yup
-    .string()
-    .length(6, "يجب أن يتكون رمز التحقق من 6 أرقام")
-    .required("رمز التحقق مطلوب"),
-});
-
-export const VerificationCode = () => {
-  const navigate = useNavigate();
-  const [serverError, setServerError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  const inputsRef = useRef([]);
-
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setServerError("");
-
-    try {
-      const resetCode = inputsRef.current.map((input) => input.value).join("");
-      const response = await axios.post(`${API_URL}/auth/verifyResetCode`, {
-        resetCode,
-      });
-
-      navigate(`/${PATH.ResetPassword}`);
-      reset();
-    } catch (error) {
-      const message =
-        error.response?.data?.message || "حدث خطأ أثناء التحقق. حاول مرة أخرى.";
-      setServerError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e, index) => {
-    const value = e.target.value;
-    if (!/^\d?$/.test(value)) return;
-
-    inputsRef.current[index].value = value;
-
-    const combinedCode = inputsRef.current.map((input) => input.value).join("");
-    setValue("resetCode", combinedCode);
-
-    if (value && index < inputsRef.current.length - 1) {
-      inputsRef.current[index + 1].focus();
-    }
-  };
-
-  const arr = [0, 1, 2, 3, 4, 5];
-
-  return (
-    <>
-      <LogoAndButton />
-      <FormForgetPassword onSubmit={handleSubmit(onSubmit)}>
-        {serverError && <ErrorText>{serverError}</ErrorText>}
-
-        <FormGroup>
-          <H3>التحقق من الرمز</H3>
-          <Pargrahph size="16px">
-            سوف نرسل لك كود التحقق عبر الايميل الخاص بك
-          </Pargrahph>
-          <Label>رمز التحقق</Label>
-          <div style={{ display: "flex", gap: "10px", direction: "ltr" }}>
-            {arr.map((_, index) => (
-              <Input
-                key={index}
-                type="text"
-                maxLength={1}
-                onChange={(e) => handleChange(e, index)}
-                ref={(el) => (inputsRef.current[index] = el)}
-                disabled={loading}
-              />
-            ))}
-          </div>
-          <input type="hidden" {...register("resetCode")} />
-          {errors.resetCode && (
-            <ErrorText>{errors.resetCode.message}</ErrorText>
-          )}
-        </FormGroup>
-
-        <FormActions>
-          <Button type="submit" disabled={loading}>
-            {loading ? "جاري التحقق..." : "ارسل كود التحقق"}
-          </Button>
-        </FormActions>
-      </FormForgetPassword>
-    </>
-  );
-};
 </file>
 
 <file path="src/features/courses/api/coursesApi.js">
@@ -8123,268 +7300,253 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 );
 </file>
 
-<file path="src/pages/Auth/components/AuthLayout.jsx">
-// src/pages/Auth/components/AuthLayout.jsx
+<file path="src/pages/Auth/ForgotPassword/index.jsx">
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { useMutation } from '@tanstack/react-query';
+import { Mail, Key, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { authApi } from '../../../features/auth';
+import { AuthLayout } from '../components/AuthLayout';
+import { Button, Input } from '../../../shared/components';
 import {
-  PageWrapper, LeftPanel, PanelTitle, PanelSubtitle,
-  RightPanel, FormCard,
-} from './AuthLayout.styles';
+  FormHeader, FormTitle, FormSubtitle, ErrorBanner, FooterText
+} from '../components/AuthLayout.styles';
 
-export function AuthLayout({ children, panelTitle, panelSubtitle }) {
+// مخططات التحقق (Schemas) لكل خطوة
+const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+const emailSchema = yup.object({
+  email: yup.string().email('البريد الإلكتروني غير صحيح').required('البريد الإلكتروني مطلوب'),
+});
+
+const codeSchema = yup.object({
+  resetCode: yup.string().length(6, 'يجب أن يتكون الرمز من 6 أرقام').required('رمز التحقق مطلوب'),
+});
+
+const passwordSchema = yup.object({
+  newPassword: yup.string()
+    .min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل')
+    .matches(passRegex, 'يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز خاص')
+    .required('كلمة المرور مطلوبة'),
+  newConfirmPassword: yup.string()
+    .oneOf([yup.ref('newPassword')], 'كلمات المرور غير متطابقتين')
+    .required('تأكيد كلمة المرور مطلوب'),
+});
+
+export default function ForgotPassword() {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1); // 1: إدخال البريد, 2: إدخال الكود, 3: تعيين كلمة المرور
+  const [userEmail, setUserEmail] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  // إعداد النماذج المنفصلة لكل خطوة لحماية الـ Validation
+  const emailForm = useForm({ resolver: yupResolver(emailSchema) });
+  const codeForm = useForm({ resolver: yupResolver(codeSchema) });
+  const passwordForm = useForm({ resolver: yupResolver(passwordSchema) });
+
+  // --- عمليات الـ Mutations (React Query) ---
+
+  // الخطوة 1: طلب إرسال الكود
+  const forgotPasswordMutation = useMutation({
+    mutationFn: authApi.forgotPassword,
+    onSuccess: (_, variables) => {
+      setUserEmail(variables);
+      setErrorMessage(null);
+      setStep(2);
+    },
+    onError: (error) => {
+      setErrorMessage(error.response?.data?.message || 'حدث خطأ أثناء إرسال الكود');
+    }
+  });
+
+  // الخطوة 2: التحقق من الكود
+  const verifyCodeMutation = useMutation({
+    mutationFn: authApi.verifyResetCode,
+    onSuccess: () => {
+      setErrorMessage(null);
+      setStep(3);
+    },
+    onError: (error) => {
+      setErrorMessage(error.response?.data?.message || 'رمز التحقق غير صحيح أو منتهي الصلاحية');
+    }
+  });
+
+  // الخطوة 3: تغيير كلمة المرور النهائية
+  const resetPasswordMutation = useMutation({
+    mutationFn: authApi.resetPassword,
+    onSuccess: () => {
+      setErrorMessage(null);
+      // توجيه المستخدم لصفحة تسجيل الدخول بنجاح
+      navigate('/auth/login', { replace: true });
+    },
+    onError: (error) => {
+      setErrorMessage(error.response?.data?.message || 'فشل إعادة تعيين كلمة المرور');
+    }
+  });
+
+  // --- الدوال المشغلة لإرسال البيانات ---
+  const onEmailSubmit = (data) => forgotPasswordMutation.mutate(data.email);
+  const onCodeSubmit = (data) => verifyCodeMutation.mutate(data.resetCode);
+  const onPasswordSubmit = (data) => {
+    resetPasswordMutation.mutate({
+      email: userEmail,
+      newPassword: data.newPassword,
+      newConfirmPassword: data.newConfirmPassword
+    });
+  };
+
   return (
-    <PageWrapper>
-      <LeftPanel>
-        <img src="/assets/img/logo.png" alt="Tawjihi" style={{ height: 64 }} />
-        <PanelTitle>{panelTitle}</PanelTitle>
-        <PanelSubtitle>{panelSubtitle}</PanelSubtitle>
-      </LeftPanel>
+    <AuthLayout
+      panelTitle="استعادة الوصول لحسابك"
+      panelSubtitle="خطوات بسيطة لإعادة تعيين كلمة المرور الخاصة بك والعودة للتعلم"
+    >
+      {/* الخطوة الأولى: إدخال البريد الإلكتروني */}
+      {step === 1 && (
+        <>
+          <FormHeader>
+            <FormTitle>نسيت كلمة المرور؟</FormTitle>
+            <FormSubtitle>أدخل بريدك الإلكتروني لإرسال رمز التحقق</FormSubtitle>
+          </FormHeader>
 
-      <RightPanel>
-        <FormCard>
-          {children}
-        </FormCard>
-      </RightPanel>
-    </PageWrapper>
+          {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
+
+          <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Input
+              id="email"
+              type="email"
+              label="البريد الإلكتروني"
+              placeholder="example@email.com"
+              leftIcon={<Mail size={18} />}
+              error={emailForm.formState.errors.email?.message}
+              dir="ltr"
+              {...emailForm.register('email')}
+            />
+            <Button type="submit" fullWidth isLoading={forgotPasswordMutation.isPending} size="lg">
+              إرسال رمز التحقق
+            </Button>
+          </form>
+        </>
+      )}
+
+      {/* الخطوة الثانية: إدخال كود التحقق المكون من 6 أرقام */}
+      {step === 2 && (
+        <>
+          <FormHeader>
+            <FormTitle>التحقق من الرمز</FormTitle>
+            <FormSubtitle>أدخل الرمز المكون من 6 أرقام المرسل إلى {userEmail}</FormSubtitle>
+          </FormHeader>
+
+          {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
+
+          <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Input
+              id="resetCode"
+              type="text"
+              label="رمز التحقق"
+              placeholder="123456"
+              maxLength={6}
+              leftIcon={<Key size={18} />}
+              error={codeForm.formState.errors.resetCode?.message}
+              dir="ltr"
+              {...codeForm.register('resetCode')}
+            />
+            <Button type="submit" fullWidth isLoading={verifyCodeMutation.isPending} size="lg">
+              التحقق من الرمز
+            </Button>
+            <div style={{ textAlign: 'center' }}>
+              <button
+                type="button"
+                onClick={() => { setStep(1); setErrorMessage(null); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#2563EB', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+              >
+                <ArrowRight size={14} /> تعديل البريد الإلكتروني
+              </button>
+            </div>
+          </form>
+        </>
+      )}
+
+      {/* الخطوة الثالثة: كتابة كلمة المرور الجديدة */}
+      {step === 3 && (
+        <>
+          <FormHeader>
+            <FormTitle>تعيين كلمة مرور جديدة</FormTitle>
+            <FormSubtitle>أدخل كلمة المرور الجديدة لحمايتها وتحديث حسابك</FormSubtitle>
+          </FormHeader>
+
+          {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
+
+          <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Input
+              id="newPassword"
+              type={showPassword ? 'text' : 'password'}
+              label="كلمة المرور الجديدة"
+              placeholder="••••••••"
+              leftIcon={<Lock size={18} />}
+              error={passwordForm.formState.errors.newPassword?.message}
+              rightIcon={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(p => !p)}
+                  style={{ cursor: 'pointer', display: 'flex', background: 'none', border: 'none', color: 'inherit' }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              }
+              {...passwordForm.register('newPassword')}
+            />
+
+            <Input
+              id="newConfirmPassword"
+              type="password"
+              label="تأكيد كلمة المرور الجديدة"
+              placeholder="••••••••"
+              leftIcon={<Lock size={18} />}
+              error={passwordForm.formState.errors.newConfirmPassword?.message}
+              {...passwordForm.register('newConfirmPassword')}
+            />
+
+            <Button type="submit" fullWidth isLoading={resetPasswordMutation.isPending} size="lg">
+              حفظ وتحديث كلمة المرور
+            </Button>
+          </form>
+        </>
+      )}
+
+      <FooterText>
+        تذكرت كلمة المرور؟{' '}
+        <button type="button" onClick={() => navigate('/auth/login')}>
+          تسجيل الدخول
+        </button>
+      </FooterText>
+    </AuthLayout>
   );
 }
-</file>
-
-<file path="src/pages/Auth/components/AuthLayout.styles.js">
-import styled from 'styled-components';
-
-export const PageWrapper = styled.div`
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  direction: rtl;
-
-  ${({ theme }) => theme.media.maxMd} {
-    grid-template-columns: 1fr;
-  }
-`;
-
-export const LeftPanel = styled.div`
-  background: ${({ theme }) => theme.colors.primary};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: ${({ theme }) => theme.spacing[12]};
-  gap: ${({ theme }) => theme.spacing[8]};
-
-  ${({ theme }) => theme.media.maxMd} {
-    display: none;
-  }
-`;
-
-export const PanelTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: white;
-  text-align: center;
-  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
-`;
-
-export const PanelSubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
-`;
-
-export const RightPanel = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: ${({ theme }) => theme.spacing[12]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-
-  ${({ theme }) => theme.media.maxMd} {
-    padding: ${({ theme }) => theme.spacing[6]};
-  }
-`;
-
-export const FormCard = styled.div`
-  width: 100%;
-  max-width: 440px;
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[6]};
-`;
-
-export const FormHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-export const FormTitle = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-export const FormSubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-export const Divider = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[4]};
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: ${({ theme }) => theme.colors.border};
-  }
-`;
-
-export const OAuthButton = styled.button`
-  width: 100%;
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-family: ${({ theme }) => theme.typography.fontFamily.base};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  cursor: pointer;
-  transition: ${({ theme }) => theme.transitions.fast};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.bgTertiary};
-    border-color: ${({ theme }) => theme.colors.borderStrong};
-  }
-`;
-
-export const FooterText = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-align: center;
-
-  a, button {
-    color: ${({ theme }) => theme.colors.primary};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: inherit;
-    font-family: inherit;
-    padding: 0;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
-
-export const ErrorBanner = styled.div`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  background: ${({ theme }) => theme.colors.dangerLight};
-  border: 1px solid ${({ theme }) => theme.colors.danger};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  color: ${({ theme }) => theme.colors.danger};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-`;
-</file>
-
-<file path="src/pages/Auth/index.jsx">
-//react
-import { Outlet, useLocation } from "react-router-dom";
-
-// styled
-import { StyledNavLink, UlWrapper, Wrapper } from "./style";
-
-// components
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { RegisterAnimation } from "../../components/Animations/RegisterAnimatiom";
-import { Containers } from "../../components/Container";
-
-// Paths
-import { PATH } from "../../routes";
-
-const Auth = () => {
-  const location = useLocation();
-
-  return (
-    <>
-      <LogoAndButton />
-
-      <UlWrapper>
-        <li>
-          <StyledNavLink
-            to={`/${PATH.Register}`}
-            $active={location.pathname === `/${PATH.Register}`}
-            className={
-              location.pathname === `/${PATH.Register}` ? "active" : ""
-            }
-          >
-            التسجيل
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink
-            to={`/${PATH.Login}`}
-            $active={location.pathname === `/${PATH.Login}`}
-            className={location.pathname === `/${PATH.Login}` ? "active" : ""}
-          >
-            تسجيل الدخول
-          </StyledNavLink>
-        </li>
-      </UlWrapper>
-
-      <Containers>
-        <Wrapper>
-          <Outlet />
-          <RegisterAnimation />
-        </Wrapper>
-      </Containers>
-    </>
-  );
-};
-
-export default Auth;
 </file>
 
 <file path="src/pages/Auth/Login/index.jsx">
 // src/pages/Auth/Login/index.jsx
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../../features/auth';
-import { AuthLayout } from '../components/AuthLayout';
 import { Button, Input } from '../../../shared/components';
+import {AuthLayout} from "../../../features/auth/components/AuthLayout"
 import {
   FormHeader, FormTitle, FormSubtitle,
   Divider, OAuthButton, FooterText, ErrorBanner,
-} from '../components/AuthLayout.styles';
+} from '../../../features/auth/components/AuthLayout.styles';
 
-const schema = yup.object({
-  email: yup
-    .string()
-    .email('البريد الإلكتروني غير صحيح')
-    .required('البريد الإلكتروني مطلوب'),
-  password: yup
-    .string()
-    .min(8, 'كلمة المرور 8 أحرف على الأقل')
-    .required('كلمة المرور مطلوبة'),
-});
+import { schemaLogin } from '../../../features/auth/validations/login.schema';
+
+
 
 export default function Login() {
   const navigate  = useNavigate();
@@ -8397,7 +7559,7 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  } = useForm({ resolver: yupResolver(schemaLogin) });
 
   const onSubmit = async (formData) => {
     try {
@@ -8496,33 +7658,18 @@ export default function Login() {
 // src/pages/Auth/Register/index.jsx
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
 import { useAuth } from '../../../features/auth';
-import { AuthLayout } from '../components/AuthLayout';
 import { Button, Input, Badge } from '../../../shared/components';
+import {AuthLayout} from "../../../features/auth/components/AuthLayout"
+import {studentSchema , teacherSchema} from "../../../features/auth/validations/register.schema"
 import {
   FormHeader, FormTitle, FormSubtitle,
   Divider, OAuthButton, FooterText, ErrorBanner,
-} from '../components/AuthLayout.styles';
+} from '../../../features/auth/components/AuthLayout.styles';
 
-// Schema الطالب
-const studentSchema = yup.object({
-  name:            yup.string().required('الاسم مطلوب'),
-  email:           yup.string().email('بريد غير صحيح').required('البريد مطلوب'),
-  phone:           yup.string().required('الهاتف مطلوب'),
-  password:        yup.string().min(8, '8 أحرف على الأقل').required('كلمة المرور مطلوبة'),
-  confirmPassword: yup.string()
-    .oneOf([yup.ref('password')], 'كلمات المرور غير متطابقة')
-    .required('تأكيد كلمة المرور مطلوب'),
-});
-
-// Schema المعلم — يضيف CV
-const teacherSchema = studentSchema.shape({
-  cv: yup.mixed().required('السيرة الذاتية مطلوبة للمعلمين'),
-});
 
 export default function Register() {
   const navigate = useNavigate();
@@ -8557,7 +7704,7 @@ export default function Register() {
 
   const onSubmit = async (formData) => {
     try {
-      // 🟡 لو معلم نرسل FormData عشان يدعم رفع الـ CV
+
       if (selectedRole === 'teacher') {
         const fd = new FormData();
         Object.keys(formData).forEach(key => {
@@ -8730,91 +7877,6 @@ export default function Register() {
     </AuthLayout>
   );
 }
-</file>
-
-<file path="src/pages/Auth/style.js">
-import { Link } from "react-router-dom";
-import styled, {css} from "styled-components";
-
-// Auth Wrapper
-export const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 2rem;
-  gap: 1rem;
-
-
-
-  @media (max-width: 1024px) {
-    flex-direction: column-reverse;
-    padding: 1rem;
-
-  }
-`;
-
-// Navigation Tabs
-export const UlWrapper = styled.ul`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2rem;
-  flex-wrap: wrap;
-
-  & li {
-    margin: 0 10px;
-  }
-
-  @media (max-width: 576px) {
-    & li {
-      margin: 10px;
-    }
-  }
-`;
-
-// Active Link
-export const StyledNavLink = styled(Link)`
-  position: relative;
-  padding: 10px 15px;
-  text-decoration: none;
-  color: #555;
-  font-weight: 500;
-  transition: all 0.3s ease;
-
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%) scaleX(0);
-    transform-origin: center;
-    width: 80%;
-    height: 2px;
-    background: ${({ theme }) => theme.linearGradient};
-    transition: transform 0.3s ease;
-  }
-
-  &:hover {
-    color: transparent;
-    background: ${({ theme }) => theme.linearGradient};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  ${({ $active, theme }) =>
-    $active &&
-    css`
-      font-weight: bold;
-      color: transparent;
-      background: ${theme.linearGradient};
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-
-      &::after {
-        transform: translateX(-50%) scaleX(1);
-      }
-    `}
-`;
 </file>
 
 <file path="src/pages/CartList/CartList.styles.js">
@@ -13434,7 +12496,7 @@ export const Input = forwardRef(function Input({
 
         <StyledInput
           id={id}
-          ref={ref}          // ← هذا هو الإصلاح
+          ref={ref}          
           $hasError={!!error}
           $hasLeftIcon={!!leftIcon}
           $hasRightIcon={!!rightIcon}

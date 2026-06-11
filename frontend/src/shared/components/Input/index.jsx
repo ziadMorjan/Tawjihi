@@ -18,7 +18,7 @@ export const Input = forwardRef(function Input({
 
         <StyledInput
           id={id}
-          ref={ref}          // ← هذا هو الإصلاح
+          ref={ref}          
           $hasError={!!error}
           $hasLeftIcon={!!leftIcon}
           $hasRightIcon={!!rightIcon}
