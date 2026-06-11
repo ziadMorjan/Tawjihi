@@ -6,16 +6,16 @@ export const authApi = {
     return data;
   },
 
-// register يدعم FormData
-register: async (userData) => {
-  const isFormData = userData instanceof FormData;
-  const { data } = await axiosInstance.post('/auth/signup', userData, {
-    headers: isFormData
-      ? { 'Content-Type': 'multipart/form-data' }
-      : { 'Content-Type': 'application/json' },
-  });
-  return data;
-},
+  // register يدعم FormData
+  register: async (userData) => {
+    const isFormData = userData instanceof FormData;
+    const { data } = await axiosInstance.post('/auth/signup', userData, {
+      headers: isFormData
+        ? { 'Content-Type': 'multipart/form-data' }
+        : { 'Content-Type': 'application/json' },
+    });
+    return data;
+  },
 
 
   getMe: async () => {
@@ -32,21 +32,21 @@ register: async (userData) => {
   },
 
   forgotPassword: async (email) => {
-    const response = await axiosInstance.post('/auth/forgetPassword', { email });
-    return response.data;
+    const { data } = await axiosInstance.post('/auth/forgetPassword', { email });
+    return data;
   },
 
   verifyResetCode: async (resetCode) => {
-    const response = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
-    return response.data;
+    const { data } = await axiosInstance.post('/auth/verifyResetCode', { resetCode });
+    return data;
   },
 
   resetPassword: async ({ email, newPassword, newConfirmPassword }) => {
-    const response = await axiosInstance.patch('/auth/resetPassword', {
+    const { data } = await axiosInstance.patch('/auth/resetPassword', {
       email,
       newPassword,
       newConfirmPassword,
     });
-    return response.data;
+    return data;
   },
 };

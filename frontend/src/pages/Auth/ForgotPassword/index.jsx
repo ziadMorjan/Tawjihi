@@ -6,11 +6,11 @@ import * as yup from 'yup';
 import { useMutation } from '@tanstack/react-query';
 import { Mail, Key, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { authApi } from '../../../features/auth';
-import { AuthLayout } from '../components/AuthLayout';
+import { AuthLayout } from '../../../features/auth/components/AuthLayout';
 import { Button, Input } from '../../../shared/components';
 import {
   FormHeader, FormTitle, FormSubtitle, ErrorBanner, FooterText
-} from '../components/AuthLayout.styles';
+} from '../../../features/auth/components/AuthLayout.styles';
 
 // مخططات التحقق (Schemas) لكل خطوة
 const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;

@@ -17,6 +17,7 @@ import VideoPage from './pages/VideoPage';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import ChangePassword from './pages/ChangePassword';
+import ForgotPassword from './pages/Auth/ForgotPassword';
 
 
 export default function App() {
@@ -30,7 +31,7 @@ export default function App() {
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
-
+        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
         {/* Protected */}
         <Route path="/cart" element={<ProtectedRoute><CartList /></ProtectedRoute>} />
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
