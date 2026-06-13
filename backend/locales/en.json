@@ -20,7 +20,9 @@
 		"social_login_required": "You must login using your social account, you cannot use password"
 	},
 	"cart": {
-		"coupon_already_applied": "You have applied this coupon '{{coupon_name}}' before"
+		"coupon_already_applied": "You have applied this coupon '{{coupon_name}}' before",
+		"invalid_coupon": "Invalid or expired coupon code",
+		"cart_empty": "You cannot apply a coupon to an empty cart"
 	},
 	"generic": {
 		"not_found": "{{model_name}} not found",

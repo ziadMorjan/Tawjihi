@@ -165,7 +165,7 @@ export default function MyCourses() {
                 >
                   <Thumbnail>
                     <img
-                      src={course.img || '/assets/img/logo.png'}
+                      src={course.coverImage || '/assets/img/logo.png'}
                       alt={course.name}
                       loading="lazy"
                     />

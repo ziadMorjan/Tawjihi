@@ -20,7 +20,9 @@
 		"social_login_required": "يجب عليك تسجيل الدخول باستخدام حسابك الاجتماعي، لا يمكنك استخدام كلمة المرور"
 	},
 	"cart": {
-		"coupon_already_applied": "لقد قمت بتطبيق هذا الكوبون '{{coupon_name}}' من قبل"
+		"coupon_already_applied": "لقد قمت بتطبيق هذا الكوبون '{{coupon_name}}' من قبل",
+		"invalid_coupon": "كود الخصم غير صالح أو منتهي الصلاحية",
+		"cart_empty": "لا يمكنك تطبيق كوبون على سلة فارغة"
 	},
 	"generic": {
 		"not_found": "لم يتم العثور على {{model_name}}",

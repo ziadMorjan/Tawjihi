@@ -30,7 +30,7 @@ export function CourseCard({ course }) {
     _id,
     name,
     description,
-    img,
+    coverImage,
     price,
     priceAfterDiscount,
     averageRating = 0,
@@ -61,7 +61,7 @@ export function CourseCard({ course }) {
     <CardWrapper onClick={handleCardClick} role="article">
       <ImageWrapper>
         <CourseImage
-          src={img || "/assets/img/logo.png"}
+          src={coverImage || "/assets/img/logo.png"}
           alt={name}
           loading="lazy"
         />

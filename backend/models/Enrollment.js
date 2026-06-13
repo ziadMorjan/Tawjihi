@@ -23,8 +23,8 @@ const enrollmentSchema = new mongoose.Schema(
 enrollmentSchema.pre(/^find/, function (next) {
 	this.populate({
 		path: 'course',
-		// 1. أضفنا img و teacher إلى الـ select
-		select: 'name img teacher',
+		// 1. أضفنا coverImage و teacher إلى الـ select
+		select: 'name coverImage teacher',
 		// 2. قمنا بعمل تداخل (Nested Populate) لجلب اسم المدرس الفعلي من جدول المستخدمين
 		populate: {
 			path: 'teacher',

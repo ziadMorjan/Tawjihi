@@ -110,7 +110,7 @@ export default function CourseDetails() {
     _id,
     name,
     description,
-    img,
+    coverImage,
     price = 0,
     priceAfterDiscount,
     averageRating = 0,
@@ -325,7 +325,7 @@ export default function CourseDetails() {
             {/* Purchase Card — Hero */}
             <PurchaseCard>
               <CardImage>
-                <img src={img || "/assets/img/logo.png"} alt={name} />
+                <img src={coverImage || "/assets/img/logo.png"} alt={name} />
               </CardImage>
               {PurchaseCardContent}
             </PurchaseCard>
