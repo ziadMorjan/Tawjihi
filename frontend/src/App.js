@@ -1,6 +1,6 @@
 // src/App.js
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ProtectedRoute } from './features/auth';
+import { ProtectedRoute, GuestRoute } from './features/auth';
 
 // Pages
 import Home from './pages/Home';
@@ -29,10 +29,11 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:id" element={<CourseDetails />} />
-        <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/register" element={<Register />} />
+
+        <Route path="/auth/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/auth/register" element={<GuestRoute><Register /></GuestRoute>} />
+        <Route path="/auth/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
-        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
         <Route path="/teachers" element={<Teachers />} />
         <Route path="/teachers/:id" element={<TeacherProfile />} />
         {/* Protected */}

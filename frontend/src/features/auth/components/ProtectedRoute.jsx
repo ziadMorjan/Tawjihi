@@ -1,26 +1,47 @@
-// src/features/auth/components/ProtectedRoute.jsx
-
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Spinner } from '../../../shared/components';
+
+// 🟡 نوعان:
+// ProtectedRoute — يمنع غير المسجلين
+// GuestRoute    — يمنع المسجلين من دخول صفحات Auth
 
 export function ProtectedRoute({ children, allowedRoles }) {
   const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
-  // لسا بيتحقق من الـ session — لا تعمل redirect قبل ما تعرف
   if (isLoading) {
-    return null; // أو Spinner component لاحقاً
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
-  // مش logged in
   if (!isAuthenticated) {
-    //  نحفظ الصفحة اللي كان رايح عليها
-    // بعد الـ login نرجعه لنفس المكان
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
-  // logged in بس مش عنده صلاحية
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
+// صفحات Auth فقط — المسجل يُعاد توجيهه للـ Home
+export function GuestRoute({ children }) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 

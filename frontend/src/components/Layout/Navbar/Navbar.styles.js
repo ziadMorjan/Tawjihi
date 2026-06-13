@@ -143,3 +143,76 @@ export const UserAvatar = styled.button`
     opacity: 0.85;
   }
 `;
+
+// أضف في نهاية الملف الموجود
+
+export const DropdownWrapper = styled.div`
+  position: relative;
+`;
+
+export const DropdownMenu = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  box-shadow: ${({ theme }) => theme.shadows.xl};
+  overflow: hidden;
+  z-index: 200;
+  animation: dropIn 0.15s ease;
+
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+`;
+
+export const DropdownHeader = styled.div`
+  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[4]}`};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+export const DropdownName = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+export const DropdownEmail = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+export const DropdownItem = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  background: none;
+  border: none;
+  font-family: ${({ theme }) => theme.typography.fontFamily.base};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme, $danger }) => $danger ? theme.colors.danger : theme.colors.textSecondary};
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
+  text-align: right;
+
+  &:hover {
+    background: ${({ theme, $danger }) => $danger ? theme.colors.dangerLight : theme.colors.bgSecondary};
+    color: ${({ theme, $danger }) => $danger ? theme.colors.danger : theme.colors.textPrimary};
+  }
+
+  svg { flex-shrink: 0; }
+`;
+
+export const DropdownDivider = styled.div`
+  height: 1px;
+  background: ${({ theme }) => theme.colors.border};
+  margin: ${({ theme }) => `${theme.spacing[1]} 0`};
+`;
