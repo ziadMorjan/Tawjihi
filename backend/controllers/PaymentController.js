@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import i18n from '../config/i18n.js';
 import Course from '../models/Course.js';
+import Cart from '../models/Cart.js';
 import Payment from '../models/Payment.js';
 import Enrollment from '../models/Enrollment.js';
 import { getAll, getOne } from './controller.js';
@@ -13,32 +14,36 @@ export const getPayments = getAll(Payment);
 
 export const getPayment = getOne(Payment, 'Payment');
 
-// أضف هذا الاستيراد في أعلى الملف
-import Cart from '../models/Cart.js';
 
 export const createCheckoutSession = asyncErrorHandler(async (req, res, next) => {
-	// 1. جلب سلة المستخدم للحصول على السعر النهائي بعد الخصومات/الكوبونات
+	// 1. جلب سلة المستخدم مع populate للكورسات
 	const cart = await Cart.findOne({ user: req.user.id }).populate('courses');
 
 	if (!cart || cart.courses.length === 0) {
 		return res.status(400).json({ status: 'fail', message: 'السلة فارغة' });
 	}
 
-	// 2. حساب نسبة خصم الكوبون
-	// إذا استخدم كوبون، نستخرج النسبة لنطبقها على كل كورس في Stripe
-	const hasCoupon = cart.totalPriceAfterDiscount !== undefined;
-	const discountMultiplier = hasCoupon ? cart.totalPriceAfterDiscount / cart.totalPrice : 1;
+	// 2. حساب السعر الفعلي لكل كورس (بعد خصم الكورس نفسه إن وجد)
+	// هذا هو السعر الذي يُعرض للمستخدم في الواجهة
+	const effectivePrices = cart.courses.map((item) => item.priceAfterDiscount ?? item.price);
+	const effectiveTotal = effectivePrices.reduce((sum, p) => sum + p, 0);
 
-	// 3. إنشاء جلسة الدفع
+	// 3. حساب نسبة خصم الكوبون (إن وُجد)
+	// totalPriceAfterDiscount مبني على totalPrice (الأسعار الأصلية) — نحتاج نُعيد حسابه على effectiveTotal
+	let couponMultiplier = 1;
+	if (cart.totalPriceAfterDiscount !== undefined && cart.totalPrice > 0) {
+		// نسبة الخصم = (totalPrice - totalPriceAfterDiscount) / totalPrice
+		const couponDiscountRatio = (cart.totalPrice - cart.totalPriceAfterDiscount) / cart.totalPrice;
+		couponMultiplier = 1 - couponDiscountRatio;
+	}
+
+	// 4. إنشاء جلسة الدفع في Stripe
 	const session = await stripe.checkout.sessions.create({
 		payment_method_types: ['card'],
-		line_items: cart.courses.map((item) => {
-			// دائماً نستخدم السعر الأصلي كأساس — نفس ما بُني عليه totalPrice في السلة
-			// خصم الكورس (priceAfterDiscount) موجود في discountMultiplier بشكل غير مباشر
-			const basePrice = item.price;
-
-			// السعر النهائي بعد الكوبون
-			const finalPrice = basePrice * discountMultiplier;
+		line_items: cart.courses.map((item, index) => {
+			// السعر الفعلي للكورس (بعد خصم الكورس) ثم نطبق عليه نسبة خصم الكوبون
+			const effectivePrice = effectivePrices[index];
+			const finalPrice = effectivePrice * couponMultiplier;
 
 			return {
 				price_data: {
@@ -53,7 +58,6 @@ export const createCheckoutSession = asyncErrorHandler(async (req, res, next) =>
 			};
 		}),
 		metadata: {
-			// نأخذ الـ IDs من السلة مباشرة
 			courses: cart.courses.map((c) => c._id.toString()).join(' '),
 			user: req.user.id.toString(),
 		},

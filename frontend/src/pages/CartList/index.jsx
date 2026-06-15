@@ -64,13 +64,15 @@ export default function CartList() {
   // خصم الكورسات نفسها (مقارنة بالسعر الأصلي في totalPrice)
   const courseDiscount = totalPrice - displayPrice;
 
-  
-  // السعر النهائي: إذا تطبق كوبون → totalPriceAfterDiscount، وإلا → displayPrice
-  const finalPrice = totalPriceAfterDiscount ?? displayPrice;
-  // خصم الكوبون فقط (محسوب على totalPrice الأصلي)
-  const couponDiscount = totalPriceAfterDiscount
-    ? totalPrice - totalPriceAfterDiscount
-    : 0;
+  // نسبة خصم الكوبون (محسوبة على totalPrice الأصلي)
+  // نطبقها على displayPrice (بعد خصم الكورسات) للحصول على السعر الصحيح
+  let finalPrice = displayPrice;
+  let couponDiscount = 0;
+  if (totalPriceAfterDiscount !== null && totalPrice > 0) {
+    const couponDiscountRatio = (totalPrice - totalPriceAfterDiscount) / totalPrice;
+    finalPrice = displayPrice * (1 - couponDiscountRatio);
+    couponDiscount = displayPrice - finalPrice;
+  }
 
 
 
