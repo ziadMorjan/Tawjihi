@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShoppingCart, Trash2, Tag } from "lucide-react";
-import { toast } from "react-toastify";
 import { MainLayout } from "../../shared/components/layout/MainLayout";
 import { Button, Input, Badge, Spinner } from "../../shared/components";
 import { StarRating } from "../../features/courses/components/CourseCard/StarRating";

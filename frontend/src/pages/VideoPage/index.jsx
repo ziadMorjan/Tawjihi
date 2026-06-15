@@ -10,7 +10,6 @@ import {
   PlayCircle,
   Lock,
   MessageSquare,
-  Star,
   Pencil,
   Trash2,
   Check,
@@ -27,7 +26,6 @@ import {
 } from "../../features/comments";
 import { MainLayout } from "../../shared/components/layout/MainLayout";
 import { Button, Spinner, Badge } from "../../shared/components";
-import { StarRating } from "../../features/courses/components/CourseCard/StarRating";
 import {
   PageWrapper,
   VideoHeader,
@@ -78,7 +76,7 @@ export default function VideoPage() {
   const { isEnrolled, isLoading: enrollLoading } = useMyEnrollments();
   const { data: lessons = [], isLoading: lessonsLoading } = useLessons(id);
 
-  // 🟡 currentLesson يُعرَّف هنا — قبل أي hook يعتمد عليه
+  //  currentLesson يُعرَّف هنا — قبل أي hook يعتمد عليه
   const currentLesson = lessons[currentIndex] ?? null;
 
 

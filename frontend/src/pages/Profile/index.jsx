@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { Edit2, Mail, Phone, Calendar, BookOpen, Heart, ShoppingCart } from 'lucide-react';
+import { Edit2, Mail, BookOpen, Heart, ShoppingCart } from 'lucide-react';
 import { MainLayout }       from '../../shared/components/layout/MainLayout';
-import { Button, Badge, Spinner } from '../../shared/components';
+import { Button, Spinner } from '../../shared/components';
 import { useAuth }          from '../../features/auth';
 import { useMyEnrollments } from '../../features/enrollments/hooks/useMyEnrollments';
 import { useCart }          from '../../features/cart';

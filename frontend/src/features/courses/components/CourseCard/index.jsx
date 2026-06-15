@@ -25,11 +25,9 @@ export function CourseCard({ course }) {
   const { isInCart, isInWishlist, toggleCart, toggleWishlist } =
     useCourseActions();
 
-  // 🟡 [تحسين] destructuring هنا بدل ما نمرر 10 props منفصلة
   const {
     _id,
     name,
-    description,
     coverImage,
     price,
     priceAfterDiscount,

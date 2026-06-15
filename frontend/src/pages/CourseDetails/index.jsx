@@ -11,7 +11,6 @@ import {
 import { Button, Badge, Spinner } from "../../shared/components";
 import { useCourse } from "../../features/courses/hooks/useCourse";
 import { useCourseActions } from "../../features/courses/hooks/useCourseActions";
-import { StarRating } from "../../features/courses/components/CourseCard/StarRating";
 import { CourseCurriculum } from "../../features/courses/components/CourseDetails/CourseCurriculum";
 import { CourseIncludes } from "../../features/courses/components/CourseDetails/CourseIncludes";
 import { CourseReviews } from "../../features/courses/components/CourseDetails/CourseReviews";

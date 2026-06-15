@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import { Camera, User, Mail, Phone, FileText } from 'lucide-react';
 import styled from 'styled-components';
 import { MainLayout }      from '../../shared/components/layout/MainLayout';
-import { Button, Input, Spinner } from '../../shared/components';
+import { Button, Input } from '../../shared/components';
 import { useAuth }         from '../../features/auth';
 import { useUpdateProfile } from '../../features/user';
 

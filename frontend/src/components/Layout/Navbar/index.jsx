@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart, Heart, BookOpen, User,
-  LogOut, Settings, ChevronDown,
+  LogOut, Settings,
 } from 'lucide-react';
 
 import {

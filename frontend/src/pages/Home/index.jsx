@@ -4,7 +4,7 @@ import { ArrowLeft, BookOpen, Users, Award, Star, Zap, Target } from 'lucide-rea
 import styled from 'styled-components';
 import { MainLayout }    from '../../shared/components/layout/MainLayout';
 import { CoursesGrid }   from '../../components/CoursesGrid';
-import { Button, Badge, Spinner } from '../../shared/components';
+import { Button, Badge } from '../../shared/components';
 import useCourses        from '../../features/courses/hooks/useCourses';
 import { useTeachers }   from '../../features/teachers';
 
