@@ -61,6 +61,11 @@ const UserSchema = new mongoose.Schema(
 			min: 0,
 			max: 5,
 		},
+		// Flag: هل المستخدم رأى الـ Welcome Popup من قبل؟
+		hasSeenWelcomePopup: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{
 		timestamps: true,

@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { authApi } from '../api/authApi';
 
@@ -7,6 +7,9 @@ export const AUTH_QUERY_KEY = ['auth', 'user'];
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
+
+  const [welcomeReward, setWelcomeReward] = useState(null);
+  const clearWelcomeReward = useCallback(() => setWelcomeReward(null), []);
 
   const { data: user, isLoading } = useQuery({
     queryKey: AUTH_QUERY_KEY,
@@ -27,6 +30,10 @@ export function AuthProvider({ children }) {
     onSuccess: (data) => {
       const userData = data?.user ?? data?.data?.user ?? data;
       queryClient.setQueryData(AUTH_QUERY_KEY, userData);
+
+      if (data?.welcomeReward) {
+        setWelcomeReward(data.welcomeReward);
+      }
     },
   });
 
@@ -34,6 +41,7 @@ export function AuthProvider({ children }) {
     mutationFn: authApi.logout,
     onSuccess: () => {
       queryClient.clear();
+      setWelcomeReward(null);
     },
   });
 
@@ -42,6 +50,10 @@ export function AuthProvider({ children }) {
     onSuccess: (data) => {
       const userData = data?.user ?? data?.data?.user;
       if (userData) queryClient.setQueryData(AUTH_QUERY_KEY, userData);
+
+      if (data?.welcomeReward) {
+        setWelcomeReward(data.welcomeReward);
+      }
     },
   });
 
@@ -63,6 +75,9 @@ export function AuthProvider({ children }) {
 
     loginError:    loginMutation.error,
     registerError: registerMutation.error,
+
+    welcomeReward,
+    clearWelcomeReward,
   };
 
   return (

@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import bcryptjs from 'bcryptjs';
 import User from '../models/User.js';
 import Cart from '../models/Cart.js';
+import Coupon from '../models/Coupon.js';
 import { sendEmail } from '../utils/emails.js';
 import CustomError from '../utils/CustomError.js';
 import { createToken } from '../utils/JWTs.js';
@@ -28,12 +29,34 @@ export const sendAuthRes = async function (res, user, statusCode) {
 
 	res.cookie('token', token, options);
 
+	// جلب كود الترحيب إذا كانت هذه أول مرة يسجل المستخدم دخوله
+	let welcomeReward = null;
+	if (!user.hasSeenWelcomePopup) {
+		const coupon = await Coupon.findOne({ expire: { $gt: new Date() } }).sort({
+			createdAt: -1,
+		});
+		if (coupon) {
+			welcomeReward = {
+				coupon: coupon.name,
+				discount: coupon.discount,
+				expire: coupon.expire,
+			};
+		}
+	}
+
 	res.status(statusCode).json({
 		status: 'success',
 		token,
 		user: userToRes,
+		...(welcomeReward && { welcomeReward }),
 	});
 };
+
+// تحديث Flag بعد ما يشوف المستخدم الـ Welcome Popup
+export const markWelcomeSeen = asyncErrorHandler(async (req, res) => {
+	await User.findByIdAndUpdate(req.user.id, { hasSeenWelcomePopup: true });
+	res.status(200).json({ status: 'success' });
+});
 
 export const signup = asyncErrorHandler(async (req, res, next) => {
 	if (req.body.role === 'teacher') req.body.isActive = false;

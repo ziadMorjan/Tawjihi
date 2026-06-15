@@ -627,7 +627,7 @@ export default function Home() {
               انضم لأكثر من ١٠٠٠٠ طالب يدرسون معنا ويحققون نتائج متميزة
             </p>
           </motion.div>
-          <motion.div variants={fadeUp}>
+          <motion.div >
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
               <Button
                 size="lg"

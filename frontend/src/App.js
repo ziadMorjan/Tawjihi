@@ -20,6 +20,7 @@ import ChangePassword from './pages/ChangePassword';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import Teachers from './pages/Teachers';
 import TeacherProfile from './pages/TeacherProfile';
+import { WelcomeModal } from './features/auth/components/WelcomeModal';
 
 export default function App() {
   return (
@@ -54,6 +55,9 @@ export default function App() {
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      {/* Welcome Popup — يظهر مرة واحدة فقط بعد أول تسجيل دخول */}
+      <WelcomeModal />
     </BrowserRouter>
   );
 }
