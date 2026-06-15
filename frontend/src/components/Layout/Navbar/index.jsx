@@ -14,6 +14,7 @@ import {
 import { useAuth } from '../../../features/auth';
 import { useCourseActions } from '../../../features/courses/hooks/useCourseActions';
 import {Button} from "../../../shared/components/Button";
+import { toast } from 'react-toastify';
 export function Navbar() {
   const navigate  = useNavigate();
   const location  = useLocation();
@@ -50,6 +51,7 @@ export function Navbar() {
     logout();
     setDropdownOpen(false);
     navigate('/');
+    toast.success('تم تسجيل الخروج بنجاح');
   };
 
   const handleNavClick = (path) => {

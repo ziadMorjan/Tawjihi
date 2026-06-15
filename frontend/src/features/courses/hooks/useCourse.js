@@ -16,7 +16,6 @@ export function useCourse(id) {
         ?? data?.data
         ?? data?.course
         ?? data;
-      console.log('course data:', course); // احذفه بعد التأكد
       return course;
       
     },
