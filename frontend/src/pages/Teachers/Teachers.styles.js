@@ -131,5 +131,11 @@ export const EmptyState = styled.div`
   flex-direction: column;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[4]};
+
   svg { color: ${({ theme }) => theme.colors.textMuted}; }
+
+  p {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+  }
 `;

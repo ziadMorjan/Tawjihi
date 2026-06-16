@@ -1,22 +1,54 @@
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, Users, Award, Star, Zap, Target } from 'lucide-react';
-import styled from 'styled-components';
+import { useNavigate }        from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ArrowLeft, BookOpen, Award, Star,
+   Target, Clock, ChevronLeft, ChevronRight,
+  GraduationCap, TrendingUp, Shield,
+} from 'lucide-react';
+import styled, { keyframes } from 'styled-components';
+import { useState, useEffect, useCallback }  from 'react';
 import { MainLayout }    from '../../shared/components/layout/MainLayout';
 import { CoursesGrid }   from '../../components/CoursesGrid';
-import { Button, Badge } from '../../shared/components';
+import { Button } from '../../shared/components';
 import useCourses        from '../../features/courses/hooks/useCourses';
 import { useTeachers }   from '../../features/teachers';
 
+/* ─── Keyframes ─── */
+const float = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+`;
+
+const pulse = keyframes`
+  0%, 100% { box-shadow: 0 0 0 0 rgba(27,79,216,0.4); }
+  50%       { box-shadow: 0 0 0 12px rgba(27,79,216,0); }
+`;
+
+const shimmer = keyframes`
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+`;
+
+const gradientShift = keyframes`
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+
+const tickIn = keyframes`
+  from { transform: scale(0.8) rotateX(90deg); opacity: 0; }
+  to   { transform: scale(1) rotateX(0deg); opacity: 1; }
+`;
+
 /* ─── Animations ─── */
 const fadeUp = {
-  hidden:  { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+  hidden:  { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const stagger = {
   hidden:  {},
-  visible: { transition: { staggerChildren: 0.15 } },
+  visible: { transition: { staggerChildren: 0.12 } },
 };
 
 const fadeIn = {
@@ -24,44 +56,92 @@ const fadeIn = {
   visible: { opacity: 1, transition: { duration: 0.5 } },
 };
 
-/* ─── Styles ─── */
+const slideVariants = {
+  enter: (dir) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
+  center: { x: 0, opacity: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+  exit:  (dir) => ({ x: dir < 0 ? '100%' : '-100%', opacity: 0, transition: { duration: 0.5 } }),
+};
+
+/* ─── Slides data ─── */
+const heroSlides = [
+  {
+    badge: 'منصة التوجيهي الأولى في فلسطين',
+    title: 'استعد لتوجيهيك مع',
+    highlight: 'أفضل المعلمين',
+    sub: 'كورسات شاملة لجميع مواد التوجيهي، شروحات مفصلة وتمارين تفاعلية تساعدك على التفوق.',
+    gradient: 'linear-gradient(135deg, #1B4FD8 0%, #7C3AED 100%)',
+    icon: <GraduationCap size={80} strokeWidth={1.2} />,
+    accent: '#1B4FD8',
+  },
+  {
+    badge: 'تعلّم في أي وقت ومن أي مكان',
+    title: 'محتوى تعليمي',
+    highlight: 'متاح ٢٤ ساعة',
+    sub: 'وصول غير محدود لجميع الدروس والمحاضرات، ابدأ الآن واستثمر وقتك بذكاء.',
+    gradient: 'linear-gradient(135deg, #059669 0%, #0EA5E9 100%)',
+    icon: <Clock size={80} strokeWidth={1.2} />,
+    accent: '#059669',
+  },
+  {
+    badge: 'معلمون خبراء ومتميزون',
+    title: 'تعلّم من',
+    highlight: 'أساتذة متخصصين',
+    sub: 'نخبة من أفضل معلمي التوجيهي في فلسطين، يقدمون المادة بأسلوب مبتكر وسهل الفهم.',
+    gradient: 'linear-gradient(135deg, #D97706 0%, #DC2626 100%)',
+    icon: <TrendingUp size={80} strokeWidth={1.2} />,
+    accent: '#D97706',
+  },
+];
+
+/* ─── Styled Components ─── */
+
+/* Hero */
 const HeroSection = styled.section`
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: ${({ theme }) => theme.colors.bgPrimary};
+`;
 
-  /* خلفية هندسية خفيفة */
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse 80% 60% at 50% -20%,
-      ${({ theme }) => theme.colors.primaryLight} 0%,
-      transparent 70%
-    );
-    pointer-events: none;
-  }
+const HeroBg = styled.div`
+  position: absolute;
+  inset: 0;
+  background: ${({ theme }) =>
+    theme.colors.bgPrimary === '#FFFFFF'
+      ? 'radial-gradient(ellipse 80% 60% at 60% -10%, rgba(27,79,216,0.12) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 0% 80%, rgba(124,58,237,0.08) 0%, transparent 50%)'
+      : 'radial-gradient(ellipse 80% 60% at 60% -10%, rgba(27,79,216,0.22) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 0% 80%, rgba(124,58,237,0.14) 0%, transparent 50%)'
+  };
+  pointer-events: none;
+`;
 
-  ${({ theme }) => theme.media.maxMd} {
-    padding: ${({ theme }) => `${theme.spacing[12]} ${theme.spacing[4]}`};
-  }
+const GridPattern = styled.div`
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(${({ theme }) => theme.colors.border} 1px, transparent 1px),
+    linear-gradient(90deg, ${({ theme }) => theme.colors.border} 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.3;
+  pointer-events: none;
 `;
 
 const HeroInner = styled.div`
   max-width: 1280px;
   margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]} ${theme.spacing[12]}`};
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 480px;
   gap: ${({ theme }) => theme.spacing[16]};
   align-items: center;
   position: relative;
+  width: 100%;
 
   ${({ theme }) => theme.media.maxMd} {
     grid-template-columns: 1fr;
-    text-align: center;
+    padding: ${({ theme }) => `${theme.spacing[12]} ${theme.spacing[4]} ${theme.spacing[8]}`};
   }
 `;
 
@@ -71,61 +151,114 @@ const HeroContent = styled.div`
   gap: ${({ theme }) => theme.spacing[6]};
 `;
 
-const HeroTitle = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+const HeroBadge = styled(motion.div)`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  background: ${({ theme }) => theme.colors.primaryLight};
+  color: ${({ theme }) => theme.colors.primary};
+  border: 1px solid ${({ theme }) => theme.colors.primary}33;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  width: fit-content;
+`;
+
+const HeroTitle = styled(motion.h1)`
+  font-size: 3.5rem;
+  font-weight: 800;
   color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.2;
-
-  span {
-    color: ${({ theme }) => theme.colors.primary};
-    position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      right: 0;
-      left: 0;
-      height: 3px;
-      background: ${({ theme }) => theme.colors.primary};
-      border-radius: 999px;
-      opacity: 0.3;
-    }
-  }
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 
   ${({ theme }) => theme.media.maxMd} {
-    font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+    font-size: 2.5rem;
   }
 `;
 
-const HeroSubtitle = styled.p`
+const HeroHighlight = styled.span`
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.accent});
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ${shimmer} 3s linear infinite;
+  display: block;
+`;
+
+const HeroSubtitle = styled(motion.p)`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   color: ${({ theme }) => theme.colors.textSecondary};
   line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
-  max-width: 480px;
+  max-width: 520px;
 
   ${({ theme }) => theme.media.maxMd} { max-width: 100%; }
 `;
 
-const HeroActions = styled.div`
+const HeroActions = styled(motion.div)`
   display: flex;
   gap: ${({ theme }) => theme.spacing[4]};
   flex-wrap: wrap;
 
   ${({ theme }) => theme.media.maxMd} {
-    justify-content: center;
+    justify-content: flex-start;
   }
 `;
 
-const StatsRow = styled.div`
+const PrimaryBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[8]}`};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.primaryHover});
+  color: white;
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  animation: ${pulse} 3s infinite;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px ${({ theme }) => theme.colors.primary}44;
+  }
+`;
+
+const SecondaryBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[8]}`};
+  background: ${({ theme }) => theme.colors.bgTertiary};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-2px);
+  }
+`;
+
+const StatsRow = styled(motion.div)`
   display: flex;
   gap: ${({ theme }) => theme.spacing[8]};
   padding-top: ${({ theme }) => theme.spacing[6]};
   border-top: 1px solid ${({ theme }) => theme.colors.border};
+  flex-wrap: wrap;
 
   ${({ theme }) => theme.media.maxMd} {
-    justify-content: center;
+    gap: ${({ theme }) => theme.spacing[5]};
   }
 `;
 
@@ -136,23 +269,181 @@ const StatItem = styled.div`
 `;
 
 const StatNumber = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: 800;
   color: ${({ theme }) => theme.colors.textPrimary};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.accent});
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const StatLabel = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ theme }) => theme.colors.textMuted};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 `;
 
+/* Clock */
+const ClockWidget = styled(motion.div)`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  padding: ${({ theme }) => theme.spacing[5]};
+  box-shadow: ${({ theme }) => theme.shadows.xl};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  position: absolute;
+  bottom: -20px;
+  left: -30px;
+  z-index: 10;
+  min-width: 180px;
+
+  ${({ theme }) => theme.media.maxMd} { display: none; }
+`;
+
+const ClockLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+`;
+
+const ClockTime = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const ClockDigit = styled.span`
+  font-size: 2rem;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-variant-numeric: tabular-nums;
+  background: ${({ theme }) => theme.colors.bgTertiary};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  padding: 4px 8px;
+  min-width: 52px;
+  text-align: center;
+  animation: ${tickIn} 0.3s ease;
+`;
+
+const ClockSeparator = styled.span`
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+  animation: ${pulse} 1.5s infinite;
+`;
+
+const ClockDate = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+`;
+
+/* Slider Visual */
 const HeroVisual = styled.div`
+  position: relative;
+  height: 420px;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 
   ${({ theme }) => theme.media.maxMd} { display: none; }
+`;
+
+const SlideCanvas = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  overflow: hidden;
+  position: relative;
+  box-shadow: ${({ theme }) => theme.shadows.xl};
+`;
+
+const SlideInner = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[6]};
+  padding: ${({ theme }) => theme.spacing[8]};
+  background: ${({ gradient }) => gradient};
+  color: white;
+  text-align: center;
+`;
+
+const SlideIcon = styled.div`
+  opacity: 0.9;
+  animation: ${float} 4s ease-in-out infinite;
+`;
+
+const SlideTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+`;
+
+const SlideSub = styled.p`
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 280px;
+`;
+
+const SliderDots = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: ${({ theme }) => theme.spacing[2]};
+`;
+
+const Dot = styled.button`
+  width: ${({ $active }) => ($active ? '24px' : '8px')};
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  background: ${({ $active, theme }) => $active ? theme.colors.primary : theme.colors.border};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const SliderArrow = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  ${({ $right }) => $right ? 'right: -16px;' : 'left: -16px;'}
+  z-index: 20;
+  width: 36px;
+  height: 36px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary};
+    color: white;
+    border-color: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-50%) scale(1.1);
+  }
 `;
 
 const FloatingCard = styled(motion.div)`
@@ -169,23 +460,10 @@ const FloatingCard = styled(motion.div)`
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   position: absolute;
   white-space: nowrap;
+  z-index: 15;
 `;
 
-const HeroImage = styled.div`
-  width: 380px;
-  height: 380px;
-  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
-  overflow: hidden;
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.bgTertiary};
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
+/* Sections */
 const Section = styled.section`
   max-width: 1280px;
   margin: 0 auto;
@@ -196,11 +474,15 @@ const Section = styled.section`
   }
 `;
 
+const AltBg = styled.div`
+  background: ${({ theme }) => theme.colors.bgSecondary};
+`;
+
 const SectionHeader = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing[8]};
+  margin-bottom: ${({ theme }) => theme.spacing[10]};
   gap: ${({ theme }) => theme.spacing[4]};
 
   ${({ theme }) => theme.media.maxSm} {
@@ -209,18 +491,31 @@ const SectionHeader = styled.div`
   }
 `;
 
-const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+const SectionTag = styled.span`
+  display: inline-block;
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.primary};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
+`;
+
+const SectionTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-weight: 800;
   color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 `;
 
 const SectionSubtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textMuted};
-  margin-top: ${({ theme }) => theme.spacing[1]};
+  margin-top: ${({ theme }) => theme.spacing[2]};
 `;
 
+/* Features */
 const FeaturesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -234,24 +529,40 @@ const FeaturesGrid = styled.div`
 const FeatureCard = styled(motion.div)`
   background: ${({ theme }) => theme.colors.bgPrimary};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: ${({ theme }) => theme.spacing[6]};
+  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  padding: ${({ theme }) => theme.spacing[8]};
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[4]};
-  transition: ${({ theme }) => theme.transitions.normal};
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.accent});
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: ${({ theme }) => theme.shadows.lg};
-    transform: translateY(-4px);
+    border-color: ${({ theme }) => theme.colors.primary}44;
+    box-shadow: 0 20px 40px ${({ theme }) => theme.colors.primary}11;
+    transform: translateY(-6px);
+
+    &::before { opacity: 1; }
   }
 `;
 
-const FeatureIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+const FeatureIconWrap = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
   background: ${({ theme }) => theme.colors.primaryLight};
   display: flex;
   align-items: center;
@@ -260,8 +571,8 @@ const FeatureIcon = styled.div`
 `;
 
 const FeatureTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
   margin: 0;
 `;
@@ -273,45 +584,47 @@ const FeatureDesc = styled.p`
   margin: 0;
 `;
 
+/* Teachers */
 const TeachersRow = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: ${({ theme }) => theme.spacing[5]};
 `;
 
 const TeacherCard = styled(motion.div)`
   background: ${({ theme }) => theme.colors.bgPrimary};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: ${({ theme }) => theme.spacing[5]};
+  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  padding: ${({ theme }) => theme.spacing[6]};
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[3]};
   text-align: center;
   cursor: pointer;
-  transition: ${({ theme }) => theme.transitions.normal};
+  transition: all 0.3s ease;
 
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: ${({ theme }) => theme.shadows.md};
-    transform: translateY(-3px);
+    box-shadow: 0 12px 28px ${({ theme }) => theme.colors.primary}20;
+    transform: translateY(-4px);
   }
 `;
 
 const TeacherAvatar = styled.div`
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: ${({ theme }) => theme.borderRadius.full};
   overflow: hidden;
-  border: 2px solid ${({ theme }) => theme.colors.border};
+  border: 3px solid ${({ theme }) => theme.colors.primaryLight};
   background: ${({ theme }) => theme.colors.primaryLight};
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 
   img { width: 100%; height: 100%; object-fit: cover; }
-  span { font-size: 24px; font-weight: 700; color: ${({ theme }) => theme.colors.primary}; }
+  span { font-size: 28px; font-weight: 700; color: ${({ theme }) => theme.colors.primary}; }
 `;
 
 const TeacherName = styled.span`
@@ -320,23 +633,26 @@ const TeacherName = styled.span`
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
+/* CTA */
 const CTASection = styled.section`
-  background: ${({ theme }) => theme.colors.primary};
-  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
-  text-align: center;
   position: relative;
   overflow: hidden;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
+  text-align: center;
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, ${({ theme }) => theme.colors.accent} 100%);
+  background-size: 200% 200%;
+  animation: ${gradientShift} 6s ease infinite;
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 80% 80% at 50% 120%, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(ellipse 80% 80% at 50% 120%, rgba(255,255,255,0.15) 0%, transparent 70%);
   }
 `;
 
-const CTAInner = styled.div`
-  max-width: 600px;
+const CTAInner = styled(motion.div)`
+  max-width: 640px;
   margin: 0 auto;
   position: relative;
   display: flex;
@@ -345,9 +661,100 @@ const CTAInner = styled.div`
   gap: ${({ theme }) => theme.spacing[6]};
 `;
 
+const CTATitle = styled.h2`
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  line-height: 1.2;
+
+  ${({ theme }) => theme.media.maxMd} {
+    font-size: 2rem;
+  }
+`;
+
+const CTASub = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+  max-width: 480px;
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+`;
+
+const CTAActions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[4]};
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+const CTAPrimaryBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[8]}`};
+  background: white;
+  color: ${({ theme }) => theme.colors.primary};
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+  }
+`;
+
+const CTASecondaryBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[8]}`};
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+  }
+`;
+
+/* ─── Clock Hook ─── */
+function useClock() {
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const pad = (n) => String(n).padStart(2, '0');
+  const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+  return {
+    hours:   pad(time.getHours()),
+    minutes: pad(time.getMinutes()),
+    seconds: pad(time.getSeconds()),
+    dateStr: `${dayNames[time.getDay()]}، ${time.getDate()} ${monthNames[time.getMonth()]}`,
+  };
+}
+
 /* ─── Component ─── */
 export default function Home() {
   const navigate = useNavigate();
+  const clock = useClock();
 
   const { data: rawData, isLoading: coursesLoading } = useCourses({ limit: 8 });
   const { data: teachersData } = useTeachers({ limit: 6 });
@@ -355,183 +762,229 @@ export default function Home() {
   const courses  = rawData?.data?.docs ?? rawData?.data ?? [];
   const teachers = teachersData?.teachers ?? [];
 
+  /* Slider state */
+  const [slide, setSlide] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [autoplay, setAutoplay] = useState(true);
+
+  const goTo = useCallback((next) => {
+    setDirection(next > slide ? 1 : -1);
+    setSlide(next);
+  }, [slide]);
+
+  const goNext = useCallback(() => goTo((slide + 1) % heroSlides.length), [slide, goTo]);
+  const goPrev = useCallback(() => goTo((slide - 1 + heroSlides.length) % heroSlides.length), [slide, goTo]);
+
+  useEffect(() => {
+    if (!autoplay) return;
+    const id = setInterval(goNext, 4500);
+    return () => clearInterval(id);
+  }, [autoplay, goNext]);
+
+  const currentSlide = heroSlides[slide];
+
   const features = [
     {
-      icon: <BookOpen size={22} />,
-      title: 'محتوى شامل',
-      desc:  'كورسات تغطي جميع مواد التوجيهي مع شروحات مفصلة ومسائل محلولة',
+      icon: <BookOpen size={26} />,
+      title: 'محتوى شامل ومتكامل',
+      desc: 'كورسات تغطي جميع مواد التوجيهي مع شروحات مفصلة ومسائل محلولة خطوة بخطوة',
     },
     {
-      icon: <Target size={22} />,
-      title: 'منهجية مركزة',
-      desc:  'تعلّم بأسلوب مدروس يوفر وقتك ويضمن استيعابك الكامل للمادة',
+      icon: <Target size={26} />,
+      title: 'منهجية تعليمية مركزة',
+      desc: 'تعلّم بأسلوب مدروس يوفر وقتك ويضمن استيعابك الكامل للمادة بأقل جهد',
     },
     {
-      icon: <Zap size={22} />,
-      title: 'متابعة فورية',
-      desc:  'تواصل مع المعلمين وأجب عن أسئلتك في أي وقت',
+      icon: <Shield size={26} />,
+      title: 'متابعة فورية مضمونة',
+      desc: 'تواصل مع المعلمين وأجب عن أسئلتك في أي وقت، دعم مستمر طوال رحلتك',
     },
   ];
 
   return (
     <MainLayout>
 
-      {/* Hero */}
+      {/* ══════════════ HERO ══════════════ */}
       <HeroSection>
+        <HeroBg />
+        <GridPattern />
+
         <HeroInner>
+          {/* Left: Content */}
           <HeroContent
             as={motion.div}
             variants={stagger}
             initial="hidden"
             animate="visible"
           >
-            <motion.div variants={fadeUp}>
-              <Badge variant="primary" icon={<Award size={14} />}>
-                منصة التوجيهي الأولى في فلسطين
-              </Badge>
-            </motion.div>
+            <HeroBadge variants={fadeUp}>
+              <Award size={14} />
+              {currentSlide.badge}
+            </HeroBadge>
 
             <motion.div variants={fadeUp}>
               <HeroTitle>
-                استعد لتوجيهيك مع
-                <br />
-                <span>أفضل المعلمين</span>
+                {currentSlide.title}
+                <HeroHighlight>{currentSlide.highlight}</HeroHighlight>
               </HeroTitle>
             </motion.div>
 
-            <motion.div variants={fadeUp}>
-              <HeroSubtitle>
-                كورسات شاملة لجميع مواد التوجيهي، شروحات مفصلة وتمارين تفاعلية
-                تساعدك على التفوق في الامتحان.
-              </HeroSubtitle>
-            </motion.div>
+            <HeroSubtitle variants={fadeUp}>
+              {currentSlide.sub}
+            </HeroSubtitle>
 
-            <motion.div variants={fadeUp}>
-              <HeroActions>
-                <Button
-                  size="lg"
-                  onClick={() => navigate('/courses')}
-                  rightIcon={<ArrowLeft size={18} />}
-                >
-                  تصفح الكورسات
-                </Button>
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  onClick={() => navigate('/auth/register')}
-                >
-                  ابدأ مجاناً
-                </Button>
-              </HeroActions>
-            </motion.div>
+            <HeroActions variants={fadeUp}>
+              <PrimaryBtn onClick={() => navigate('/courses')}>
+                <ArrowLeft size={18} />
+                تصفح الكورسات
+              </PrimaryBtn>
+              <SecondaryBtn onClick={() => navigate('/auth/register')}>
+                ابدأ مجاناً
+              </SecondaryBtn>
+            </HeroActions>
 
-            <motion.div variants={fadeUp}>
-              <StatsRow>
-                {[
-                  { value: '+٥٠٠', label: 'كورس متاح'     },
-                  { value: '+١٠٠٠٠', label: 'طالب مسجل'  },
-                  { value: '+٥٠',  label: 'معلم محترف'   },
-                ].map(stat => (
-                  <StatItem key={stat.label}>
-                    <StatNumber>{stat.value}</StatNumber>
-                    <StatLabel>{stat.label}</StatLabel>
-                  </StatItem>
-                ))}
-              </StatsRow>
-            </motion.div>
+            <StatsRow variants={fadeUp}>
+              {[
+                { value: '+٥٠٠', label: 'كورس متاح'    },
+                { value: '+١٠٠٠٠', label: 'طالب مسجل' },
+                { value: '+٥٠',  label: 'معلم محترف'  },
+              ].map(stat => (
+                <StatItem key={stat.label}>
+                  <StatNumber>{stat.value}</StatNumber>
+                  <StatLabel>{stat.label}</StatLabel>
+                </StatItem>
+              ))}
+            </StatsRow>
           </HeroContent>
 
-          {/* Visual مع Floating Cards */}
+          {/* Right: Swiper Visual */}
           <HeroVisual>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-            >
-              <HeroImage>
-                <img src="/assets/img/learning.png" alt="تعلم" />
-              </HeroImage>
-            </motion.div>
+            {/* Arrow prev */}
+            <SliderArrow onClick={() => { goPrev(); setAutoplay(false); }}>
+              <ChevronRight size={18} />
+            </SliderArrow>
 
-            {/* Floating card — أعلى يسار */}
+            <SlideCanvas
+              onMouseEnter={() => setAutoplay(false)}
+              onMouseLeave={() => setAutoplay(true)}
+            >
+              <AnimatePresence custom={direction} initial={false}>
+                <SlideInner
+                  key={slide}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  gradient={currentSlide.gradient}
+                >
+                  <SlideIcon>{currentSlide.icon}</SlideIcon>
+                  <SlideTitle>{currentSlide.highlight}</SlideTitle>
+                  <SlideSub>{currentSlide.sub}</SlideSub>
+
+                  <SliderDots>
+                    {heroSlides.map((_, i) => (
+                      <Dot
+                        key={i}
+                        $active={i === slide}
+                        onClick={() => { goTo(i); setAutoplay(false); }}
+                      />
+                    ))}
+                  </SliderDots>
+                </SlideInner>
+              </AnimatePresence>
+            </SlideCanvas>
+
+            {/* Arrow next */}
+            <SliderArrow $right onClick={() => { goNext(); setAutoplay(false); }}>
+              <ChevronLeft size={18} />
+            </SliderArrow>
+
+            {/* Floating Rating Card */}
             <FloatingCard
-              style={{ top: 20, right: -40 }}
+              style={{ top: 20, right: -24 }}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
+              transition={{ delay: 0.8 }}
             >
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
-                background: '#EFF6FF',
+                background: '#FFFBEB',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Star size={18} color="#1B4FD8" fill="#1B4FD8" />
+                <Star size={18} color="#F59E0B" fill="#F59E0B" />
               </div>
               تقييم ٤.٩ من ٥
             </FloatingCard>
 
-            {/* Floating card — أسفل يسار */}
-            <FloatingCard
-              style={{ bottom: 40, right: -20 }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.0, duration: 0.5 }}
+            {/* Clock Widget */}
+            <ClockWidget
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.0 }}
             >
-              <div style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: '#F0FDF4',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Users size={18} color="#16A34A" />
-              </div>
-              +١٠٠٠ طالب هذا الشهر
-            </FloatingCard>
+              <ClockLabel>
+                <Clock size={12} style={{ display: 'inline', marginLeft: 4 }} />
+                الوقت الحالي
+              </ClockLabel>
+              <ClockTime>
+                <ClockDigit key={`h-${clock.hours}`}>{clock.hours}</ClockDigit>
+                <ClockSeparator>:</ClockSeparator>
+                <ClockDigit key={`m-${clock.minutes}`}>{clock.minutes}</ClockDigit>
+                <ClockSeparator>:</ClockSeparator>
+                <ClockDigit key={`s-${clock.seconds}`}>{clock.seconds}</ClockDigit>
+              </ClockTime>
+              <ClockDate>{clock.dateStr}</ClockDate>
+            </ClockWidget>
           </HeroVisual>
         </HeroInner>
       </HeroSection>
 
-      {/* Features */}
-      <Section>
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <motion.div variants={fadeUp}>
-            <SectionHeader>
-              <div>
-                <SectionTitle>لماذا توجيهي؟</SectionTitle>
-                <SectionSubtitle>كل ما تحتاجه للنجاح في مكان واحد</SectionSubtitle>
-              </div>
-            </SectionHeader>
+      {/* ══════════════ FEATURES ══════════════ */}
+      <AltBg>
+        <Section>
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+          >
+            <motion.div variants={fadeUp}>
+              <SectionHeader>
+                <div>
+                  <SectionTag>مميزاتنا</SectionTag>
+                  <SectionTitle>لماذا توجيهي؟</SectionTitle>
+                  <SectionSubtitle>كل ما تحتاجه للنجاح في مكان واحد</SectionSubtitle>
+                </div>
+              </SectionHeader>
+            </motion.div>
+
+            <FeaturesGrid>
+              {features.map((f, i) => (
+                <motion.div key={i} variants={fadeUp}>
+                  <FeatureCard>
+                    <FeatureIconWrap>{f.icon}</FeatureIconWrap>
+                    <FeatureTitle>{f.title}</FeatureTitle>
+                    <FeatureDesc>{f.desc}</FeatureDesc>
+                  </FeatureCard>
+                </motion.div>
+              ))}
+            </FeaturesGrid>
           </motion.div>
+        </Section>
+      </AltBg>
 
-          <FeaturesGrid>
-            {features.map((f, i) => (
-              <motion.div key={i} variants={fadeUp}>
-                <FeatureCard whileHover={{ scale: 1.02 }}>
-                  <FeatureIcon>{f.icon}</FeatureIcon>
-                  <FeatureTitle>{f.title}</FeatureTitle>
-                  <FeatureDesc>{f.desc}</FeatureDesc>
-                </FeatureCard>
-              </motion.div>
-            ))}
-          </FeaturesGrid>
-        </motion.div>
-      </Section>
-
-      {/* Latest Courses */}
+      {/* ══════════════ LATEST COURSES ══════════════ */}
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-80px' }}
         variants={fadeIn}
-        style={{ background: '#F8FAFC' }}
       >
         <Section>
           <SectionHeader>
             <div>
+              <SectionTag>أحدث ما أضفناه</SectionTag>
               <SectionTitle>أحدث الكورسات</SectionTitle>
               <SectionSubtitle>اكتشف كورسات جديدة أضافها معلمونا مؤخراً</SectionSubtitle>
             </div>
@@ -545,105 +998,96 @@ export default function Home() {
             </Button>
           </SectionHeader>
 
-          <CoursesGrid
-            courses={courses}
-            isLoading={coursesLoading}
-          />
+          <CoursesGrid courses={courses} isLoading={coursesLoading} />
         </Section>
       </motion.div>
 
-      {/* Teachers */}
+      {/* ══════════════ TEACHERS ══════════════ */}
       {teachers.length > 0 && (
-        <Section>
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
-          >
-            <motion.div variants={fadeUp}>
-              <SectionHeader>
-                <div>
-                  <SectionTitle>معلمونا</SectionTitle>
-                  <SectionSubtitle>نخبة من أفضل معلمي التوجيهي</SectionSubtitle>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  rightIcon={<ArrowLeft size={16} />}
-                  onClick={() => navigate('/teachers')}
-                >
-                  جميع المعلمين
-                </Button>
-              </SectionHeader>
-            </motion.div>
-
-            <TeachersRow>
-              {teachers.map((teacher, i) => (
-                <motion.div key={teacher._id} variants={fadeUp}>
-                  <TeacherCard
-                    onClick={() => navigate(`/teachers/${teacher._id}`)}
-                    whileHover={{ y: -4 }}
+        <AltBg>
+          <Section>
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-80px' }}
+            >
+              <motion.div variants={fadeUp}>
+                <SectionHeader>
+                  <div>
+                    <SectionTag>نخبة المعلمين</SectionTag>
+                    <SectionTitle>معلمونا</SectionTitle>
+                    <SectionSubtitle>نخبة من أفضل معلمي التوجيهي في فلسطين</SectionSubtitle>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    rightIcon={<ArrowLeft size={16} />}
+                    onClick={() => navigate('/teachers')}
                   >
-                    <TeacherAvatar>
-                      {teacher.coverImage
-                        ? <img src={teacher.coverImage} alt={teacher.name} />
-                        : <span>{teacher.name?.charAt(0)?.toUpperCase()}</span>
-                      }
-                    </TeacherAvatar>
-                    <TeacherName>{teacher.name}</TeacherName>
-                    {teacher.averageRating > 0 && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Star size={12} fill="#F59E0B" color="#F59E0B" />
-                        <span style={{ fontSize: 12, color: '#94A3B8' }}>
-                          {teacher.averageRating?.toFixed(1)}
-                        </span>
-                      </div>
-                    )}
-                  </TeacherCard>
-                </motion.div>
-              ))}
-            </TeachersRow>
-          </motion.div>
-        </Section>
+                    جميع المعلمين
+                  </Button>
+                </SectionHeader>
+              </motion.div>
+
+              <TeachersRow>
+                {teachers.map((teacher, i) => (
+                  <motion.div key={teacher._id} variants={fadeUp}>
+                    <TeacherCard
+                      onClick={() => navigate(`/teachers/${teacher._id}`)}
+                      whileHover={{ y: -4 }}
+                    >
+                      <TeacherAvatar>
+                        {teacher.coverImage
+                          ? <img src={teacher.coverImage} alt={teacher.name} />
+                          : <span>{teacher.name?.charAt(0)?.toUpperCase()}</span>
+                        }
+                      </TeacherAvatar>
+                      <TeacherName>{teacher.name}</TeacherName>
+                      {teacher.averageRating > 0 && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Star size={12} fill="#F59E0B" color="#F59E0B" />
+                          <span style={{ fontSize: 12, color: '#94A3B8' }}>
+                            {teacher.averageRating?.toFixed(1)}
+                          </span>
+                        </div>
+                      )}
+                    </TeacherCard>
+                  </motion.div>
+                ))}
+              </TeachersRow>
+            </motion.div>
+          </Section>
+        </AltBg>
       )}
 
-      {/* CTA */}
+      {/* ══════════════ CTA ══════════════ */}
       <CTASection>
         <CTAInner
-          as={motion.div}
           variants={stagger}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
           <motion.div variants={fadeUp}>
-            <h2 style={{ fontSize: 32, fontWeight: 700, color: 'white', margin: 0 }}>
-              ابدأ رحلتك التعليمية اليوم
-            </h2>
+            <CTATitle>ابدأ رحلتك التعليمية اليوم</CTATitle>
           </motion.div>
           <motion.div variants={fadeUp}>
-            <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.8)', margin: 0, maxWidth: 480 }}>
-              انضم لأكثر من ١٠٠٠٠ طالب يدرسون معنا ويحققون نتائج متميزة
-            </p>
+            <CTASub>
+              انضم لأكثر من ١٠٠٠٠ طالب يدرسون معنا ويحققون نتائج متميزة في التوجيهي
+            </CTASub>
           </motion.div>
-          <motion.div >
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Button
-                size="lg"
-                variant="secondary"
-                onClick={() => navigate('/auth/register')}
-              >
+          <motion.div variants={fadeUp}>
+            <CTAActions>
+              <CTAPrimaryBtn onClick={() => navigate('/auth/register')}>
+                <GraduationCap size={18} />
                 إنشاء حساب مجاني
-              </Button>
-              <Button
-                size="lg"
-                style={{ background: 'rgba(255,255,255,0.15)', color: 'white', border: '2px solid rgba(255,255,255,0.3)' }}
-                onClick={() => navigate('/courses')}
-              >
+              </CTAPrimaryBtn>
+              <CTASecondaryBtn onClick={() => navigate('/courses')}>
+                <ArrowLeft size={18} />
                 تصفح الكورسات
-              </Button>
-            </div>
+              </CTASecondaryBtn>
+            </CTAActions>
           </motion.div>
         </CTAInner>
       </CTASection>

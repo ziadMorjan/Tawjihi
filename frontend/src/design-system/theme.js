@@ -46,18 +46,44 @@ export const lightTheme = {
   media,
 };
 
-// Dark mode جاهز للمستقبل — نفس الـ structure، ألوان مختلفة
+// Dark mode — لوحة ألوان احترافية داكنة
 export const darkTheme = {
   ...lightTheme,
   colors: {
     ...lightTheme.colors,
-    bgPrimary:   colors.gray[900],
-    bgSecondary: colors.gray[800],
-    bgTertiary:  colors.gray[700],
-    textPrimary:   colors.white,
-    textSecondary: colors.gray[300],
-    textMuted:     colors.gray[500],
-    border:       colors.gray[700],
-    borderStrong: colors.gray[600],
+
+    // ── Backgrounds: navy-slate hierarchy ──
+    bgPrimary:   '#0D1117',   // الخلفية الرئيسية — أعمق وأنيق
+    bgSecondary: '#161B22',   // خلفية ثانوية — sections, alt areas
+    bgTertiary:  '#21262D',   // كاردات، إدخالات، hover
+
+    // ── Text: contrast مثالي ──
+    textPrimary:   '#E6EDF3',   // أبيض دافئ مريح للعين
+    textSecondary: '#8B949E',   // رمادي-أزرق للنصوص الثانوية
+    textMuted:     '#484F58',   // للتلميحات والـ placeholders
+    textInverse:   '#0D1117',
+
+    // ── Brand: أزرق كهربائي أكثر إشراقاً ──
+    primary:      '#4493F8',   // أزرق GitHub-inspired مضيء
+    primaryHover: '#2F81F7',
+    primaryLight: 'rgba(68,147,248,0.12)',
+
+    // ── Accent: بنفسجي نابض ──
+    accent:      '#A371F7',
+    accentLight: 'rgba(163,113,247,0.12)',
+
+    // ── Semantic ──
+    success:      '#3FB950',
+    successLight: 'rgba(63,185,80,0.12)',
+    warning:      '#D29922',
+    warningLight: 'rgba(210,153,34,0.12)',
+    danger:       '#F85149',
+    dangerLight:  'rgba(248,81,73,0.12)',
+
+    // ── Borders: خطوط رقيقة مميزة ──
+    border:       '#30363D',   // حدود افتراضية
+    borderStrong: '#3D444D',   // حدود قوية للتركيز
+
+    heroBg: '#090D13',
   },
-};
+};

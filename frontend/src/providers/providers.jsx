@@ -1,10 +1,12 @@
 import { ThemeProvider } from "styled-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GlobalStyle, lightTheme } from "../design-system";
+import { GlobalStyle, lightTheme, darkTheme } from "../design-system";
 import { AuthProvider } from "../features/auth";
+import { ThemeModeProvider, useThemeMode } from "../features/theme/ThemeContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -15,16 +17,25 @@ const queryClient = new QueryClient({
   },
 });
 
+function ThemedApp({ children }) {
+  const { isDark } = useThemeMode();
+  return (
+    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+      <GlobalStyle />
+      <AuthProvider>
+        <ToastContainer position="bottom-left" rtl={true} autoClose={3000} />
+        {children}
+      </AuthProvider>
+    </ThemeProvider>
+  );
+}
+
 export function AppProviders({ children }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={lightTheme}>
-        <GlobalStyle />
-        <AuthProvider>
-          <ToastContainer position="bottom-left" rtl={true} autoClose={3000} />
-          {children}
-        </AuthProvider>
-      </ThemeProvider>
+      <ThemeModeProvider>
+        <ThemedApp>{children}</ThemedApp>
+      </ThemeModeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

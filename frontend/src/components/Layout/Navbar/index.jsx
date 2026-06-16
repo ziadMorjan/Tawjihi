@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart, Heart, BookOpen, User,
-  LogOut, Settings,
+  LogOut, Settings, Moon, Sun,
 } from 'lucide-react';
+import { useThemeMode } from '../../../features/theme/ThemeContext';
 
 import {
   NavWrapper, NavInner, Logo, NavLinks, NavLink,
@@ -20,6 +21,7 @@ export function Navbar() {
   const location  = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const { cartItems } = useCourseActions();
+  const { isDark, toggle } = useThemeMode();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -83,6 +85,11 @@ export function Navbar() {
         </NavLinks>
 
         <NavActions>
+          {/* Dark Mode Toggle */}
+          <CartBtn onClick={toggle} aria-label={isDark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الداكن'} title={isDark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </CartBtn>
+
           {isAuthenticated ? (
             <>
               {/* Cart */}

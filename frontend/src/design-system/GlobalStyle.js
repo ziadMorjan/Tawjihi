@@ -49,9 +49,11 @@ export const GlobalStyle = createGlobalStyle`
     background-color: ${({ theme }) => theme.colors.bgPrimary};
     line-height: ${({ theme }) => theme.typography.lineHeight.normal};
     direction: rtl;
-    /* 🟡 [تحسين] يحسن وضوح النص على الشاشات */
+    /* يحسن وضوح النص على الشاشات */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* انتقال سلس عند تغيير الثيم */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   /* Typography defaults */

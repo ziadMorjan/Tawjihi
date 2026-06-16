@@ -10,8 +10,12 @@ export function useTeachers(params = {}) {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     select: (data) => ({
-      teachers:   data?.data?.docs ?? [],
-      pagination: data?.pagination ?? null,
+      teachers: data?.data?.docs ?? data?.data ?? [],
+      // دعم جميع أشكال الـ response من الـ backend
+      pagination:
+        data?.pagination ??
+        data?.data?.pagination ??
+        null,
     }),
   });
-}
+}
