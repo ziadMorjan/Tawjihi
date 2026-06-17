@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 export const PageWrapper = styled.div`
   max-width: 1280px;
@@ -138,4 +138,68 @@ export const EmptyState = styled.div`
     color: ${({ theme }) => theme.colors.textSecondary};
     font-size: ${({ theme }) => theme.typography.fontSize.base};
   }
+`;
+
+/* ─── Skeleton loading ────────────────────────────────────────────── */
+
+const shimmer = keyframes`
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+`;
+
+const shimmerGradient = ({ theme }) => {
+  const base  = theme.colors.bgTertiary;
+  const shine = theme.colors.bgPrimary === '#0D1117'
+    ? 'rgba(255,255,255,0.07)'
+    : 'rgba(255,255,255,0.65)';
+  return css`
+    background: linear-gradient(90deg, ${base} 25%, ${shine} 50%, ${base} 75%);
+    background-size: 1200px 100%;
+    animation: ${shimmer} 1.6s infinite linear;
+  `;
+};
+
+export const SkeletonCard = styled.div`
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing[8]};
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const SkeletonAvatar = styled.div`
+  width: 88px;
+  height: 88px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  flex-shrink: 0;
+  border-radius: 50%;
+  ${shimmerGradient}
+`;
+
+export const SkeletonLine = styled.div`
+  height: ${({ height }) => height || '14px'};
+  width:  ${({ width  }) => width  || '100%'};
+  border-radius: 6px;
+  ${shimmerGradient}
+`;
+
+export const SkeletonStats = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  padding-top: ${({ theme }) => theme.spacing[4]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  width: 100%;
+  justify-content: center;
+`;
+
+export const SkeletonStatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 `;

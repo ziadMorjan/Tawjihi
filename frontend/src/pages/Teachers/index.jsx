@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Users, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MainLayout }  from '../../shared/components/layout/MainLayout';
-import { Spinner }     from '../../shared/components';
 import { useTeachers } from '../../features/teachers';
 import { Pagination }  from '../../features/courses/components/Pagination';
 import {
@@ -11,9 +10,31 @@ import {
   TeachersGrid, TeacherCard, TeacherAvatar, TeacherName,
   TeacherDesc, TeacherStats, StatItem, StatValue, StatLabel,
   EmptyState,
+  SkeletonCard, SkeletonAvatar, SkeletonLine, SkeletonStats, SkeletonStatItem,
 } from './Teachers.styles';
 
 const LIMIT = 12;
+
+function TeacherCardSkeleton() {
+  return (
+    <SkeletonCard>
+      <SkeletonAvatar />
+      <SkeletonLine height="18px" width="60%" />
+      <SkeletonLine height="13px" width="85%" />
+      <SkeletonLine height="13px" width="70%" />
+      <SkeletonStats>
+        <SkeletonStatItem>
+          <SkeletonLine height="16px" width="40px" />
+          <SkeletonLine height="11px" width="32px" />
+        </SkeletonStatItem>
+        <SkeletonStatItem>
+          <SkeletonLine height="16px" width="40px" />
+          <SkeletonLine height="11px" width="32px" />
+        </SkeletonStatItem>
+      </SkeletonStats>
+    </SkeletonCard>
+  );
+}
 
 const fadeUp = {
   hidden:  { opacity: 0, y: 24 },
@@ -57,9 +78,11 @@ export default function Teachers() {
         </PageHeader>
 
         {isLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>
-            <Spinner size="lg" />
-          </div>
+          <TeachersGrid>
+            {Array.from({ length: LIMIT }).map((_, i) => (
+              <TeacherCardSkeleton key={i} />
+            ))}
+          </TeachersGrid>
         ) : teachers.length === 0 ? (
           <EmptyState>
             <Users size={64} />
