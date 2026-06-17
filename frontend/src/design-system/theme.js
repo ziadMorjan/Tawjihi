@@ -63,14 +63,14 @@ export const darkTheme = {
     textMuted:     '#484F58',   // للتلميحات والـ placeholders
     textInverse:   '#0D1117',
 
-    // ── Brand: أزرق كهربائي أكثر إشراقاً ──
-    primary:      '#4493F8',   // أزرق GitHub-inspired مضيء
-    primaryHover: '#2F81F7',
-    primaryLight: 'rgba(68,147,248,0.12)',
+    // ── Brand: تيل مضيء في الدارك ──
+    primary:      '#1FA8D4',   // تيل أفتح ليكون مرئياً على الدارك
+    primaryHover: '#0B6B8A',
+    primaryLight: 'rgba(13,127,163,0.15)',
 
-    // ── Accent: بنفسجي نابض ──
-    accent:      '#A371F7',
-    accentLight: 'rgba(163,113,247,0.12)',
+    // ── Accent: ذهبي دافئ ──
+    accent:      '#E0A855',
+    accentLight: 'rgba(200,137,58,0.15)',
 
     // ── Semantic ──
     success:      '#3FB950',

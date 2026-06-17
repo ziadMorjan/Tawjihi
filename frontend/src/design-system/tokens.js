@@ -1,20 +1,20 @@
 // src/design-system/tokens.js
 
 export const colors = {
-  // --- Primary ---
+  // --- Primary: تيل داكن راقٍ بدل الأزرق الـ AI-classic ---
   primary: {
-    50:  '#EFF6FF',
-    100: '#DBEAFE',
-    500: '#2563EB',
-    600: '#1B4FD8',
-    700: '#1D40AF',
+    50:  '#EDF6F9',
+    100: '#C8E8F2',
+    500: '#0D7FA3',
+    600: '#0B6B8A',
+    700: '#09566E',
   },
 
-  // --- Accent (للـ badges وعناصر Premium) ---
+  // --- Accent: ذهبي دافئ بدل البنفسجي الـ AI ---
   accent: {
-    50:  '#F5F3FF',
-    500: '#7C3AED',
-    600: '#6D28D9',
+    50:  '#FDF6EC',
+    500: '#C8893A',
+    600: '#A86E25',
   },
 
   // --- Neutrals ---

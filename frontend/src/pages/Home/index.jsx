@@ -16,39 +16,23 @@ import { useTeachers }   from '../../features/teachers';
 /* ─── Keyframes ─── */
 const float = keyframes`
   0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-12px); }
-`;
-
-const pulse = keyframes`
-  0%, 100% { box-shadow: 0 0 0 0 rgba(27,79,216,0.4); }
-  50%       { box-shadow: 0 0 0 12px rgba(27,79,216,0); }
-`;
-
-const shimmer = keyframes`
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
-`;
-
-const gradientShift = keyframes`
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  50%       { transform: translateY(-10px); }
 `;
 
 const tickIn = keyframes`
-  from { transform: scale(0.8) rotateX(90deg); opacity: 0; }
-  to   { transform: scale(1) rotateX(0deg); opacity: 1; }
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 `;
 
 /* ─── Animations ─── */
 const fadeUp = {
-  hidden:  { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  hidden:  { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const stagger = {
   hidden:  {},
-  visible: { transition: { staggerChildren: 0.12 } },
+  visible: { transition: { staggerChildren: 0.1 } },
 };
 
 const fadeIn = {
@@ -57,39 +41,38 @@ const fadeIn = {
 };
 
 const slideVariants = {
-  enter: (dir) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
-  center: { x: 0, opacity: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-  exit:  (dir) => ({ x: dir < 0 ? '100%' : '-100%', opacity: 0, transition: { duration: 0.5 } }),
+  enter:  (dir) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
+  center: { x: 0, opacity: 1, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+  exit:   (dir) => ({ x: dir < 0 ? '100%' : '-100%', opacity: 0, transition: { duration: 0.45 } }),
 };
 
-/* ─── Slides data ─── */
 const heroSlides = [
   {
-    badge: 'منصة التوجيهي الأولى في فلسطين',
+    badge: 'منصة كورسات التوجيهي',
     title: 'استعد لتوجيهيك مع',
     highlight: 'أفضل المعلمين',
-    sub: 'كورسات شاملة لجميع مواد التوجيهي، شروحات مفصلة وتمارين تفاعلية تساعدك على التفوق.',
-    gradient: 'linear-gradient(135deg, #1B4FD8 0%, #7C3AED 100%)',
+    sub: 'كورسات شاملة لجميع مواد التوجيهي، شروحات مفصلة وتمارين تساعدك على الفهم الحقيقي.',
+    gradient: 'linear-gradient(145deg, #0B6B8A 0%, #0a4f68 100%)',
     icon: <GraduationCap size={80} strokeWidth={1.2} />,
-    accent: '#1B4FD8',
+    accent: '#0B6B8A',
   },
   {
     badge: 'تعلّم في أي وقت ومن أي مكان',
     title: 'محتوى تعليمي',
     highlight: 'متاح ٢٤ ساعة',
-    sub: 'وصول غير محدود لجميع الدروس والمحاضرات، ابدأ الآن واستثمر وقتك بذكاء.',
-    gradient: 'linear-gradient(135deg, #059669 0%, #0EA5E9 100%)',
+    sub: 'وصول كامل لجميع الدروس والمحاضرات عند اشتراكك، ابدأ الآن واستثمر وقتك بذكاء.',
+    gradient: 'linear-gradient(145deg, #0f6b4a 0%, #0a4f36 100%)',
     icon: <Clock size={80} strokeWidth={1.2} />,
-    accent: '#059669',
+    accent: '#0f6b4a',
   },
   {
     badge: 'معلمون خبراء ومتميزون',
     title: 'تعلّم من',
     highlight: 'أساتذة متخصصين',
-    sub: 'نخبة من أفضل معلمي التوجيهي في فلسطين، يقدمون المادة بأسلوب مبتكر وسهل الفهم.',
-    gradient: 'linear-gradient(135deg, #D97706 0%, #DC2626 100%)',
+    sub: 'نخبة من معلمي التوجيهي في فلسطين يقدمون المادة بأسلوب واضح وسهل الفهم.',
+    gradient: 'linear-gradient(145deg, #8a5a0b 0%, #6b4208 100%)',
     icon: <TrendingUp size={80} strokeWidth={1.2} />,
-    accent: '#D97706',
+    accent: '#8a5a0b',
   },
 ];
 
@@ -117,16 +100,7 @@ const HeroBg = styled.div`
   pointer-events: none;
 `;
 
-const GridPattern = styled.div`
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(${({ theme }) => theme.colors.border} 1px, transparent 1px),
-    linear-gradient(90deg, ${({ theme }) => theme.colors.border} 1px, transparent 1px);
-  background-size: 60px 60px;
-  opacity: 0.3;
-  pointer-events: none;
-`;
+
 
 const HeroInner = styled.div`
   max-width: 1280px;
@@ -179,11 +153,9 @@ const HeroTitle = styled(motion.h1)`
 
 const HeroHighlight = styled.span`
   background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.accent});
-  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: ${shimmer} 3s linear infinite;
   display: block;
 `;
 
@@ -218,13 +190,12 @@ const PrimaryBtn = styled.button`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   font-family: inherit;
-  animation: ${pulse} 3s infinite;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 24px ${({ theme }) => theme.colors.primary}44;
+    box-shadow: 0 10px 20px ${({ theme }) => theme.colors.primary}40;
   }
 `;
 
@@ -335,7 +306,6 @@ const ClockSeparator = styled.span`
   font-size: 1.5rem;
   font-weight: 800;
   color: ${({ theme }) => theme.colors.primary};
-  animation: ${pulse} 1.5s infinite;
 `;
 
 const ClockDate = styled.span`
@@ -343,6 +313,8 @@ const ClockDate = styled.span`
   color: ${({ theme }) => theme.colors.textSecondary};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 `;
+
+
 
 /* Slider Visual */
 const HeroVisual = styled.div`
@@ -380,7 +352,7 @@ const SlideInner = styled(motion.div)`
 
 const SlideIcon = styled.div`
   opacity: 0.9;
-  animation: ${float} 4s ease-in-out infinite;
+  animation: ${float} 6s ease-in-out infinite;
 `;
 
 const SlideTitle = styled.h3`
@@ -444,23 +416,6 @@ const SliderArrow = styled.button`
     border-color: ${({ theme }) => theme.colors.primary};
     transform: translateY(-50%) scale(1.1);
   }
-`;
-
-const FloatingCard = styled(motion.div)`
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: ${({ theme }) => theme.spacing[4]};
-  box-shadow: ${({ theme }) => theme.shadows.lg};
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  position: absolute;
-  white-space: nowrap;
-  z-index: 15;
 `;
 
 /* Sections */
@@ -639,15 +594,14 @@ const CTASection = styled.section`
   overflow: hidden;
   padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
   text-align: center;
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, ${({ theme }) => theme.colors.accent} 100%);
-  background-size: 200% 200%;
-  animation: ${gradientShift} 6s ease infinite;
+  background: ${({ theme }) => theme.colors.primary};
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 80% 80% at 50% 120%, rgba(255,255,255,0.15) 0%, transparent 70%);
+    background: radial-gradient(ellipse 70% 80% at 50% 110%, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
   }
 `;
 
@@ -743,10 +697,15 @@ function useClock() {
   const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
   const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
+  const raw   = time.getHours();
+  const ampm  = raw >= 12 ? 'م' : 'ص';
+  const hours12 = raw % 12 || 12;
+
   return {
-    hours:   pad(time.getHours()),
+    hours:   pad(hours12),
     minutes: pad(time.getMinutes()),
     seconds: pad(time.getSeconds()),
+    ampm,
     dateStr: `${dayNames[time.getDay()]}، ${time.getDate()} ${monthNames[time.getMonth()]}`,
   };
 }
@@ -807,7 +766,6 @@ export default function Home() {
       {/* ══════════════ HERO ══════════════ */}
       <HeroSection>
         <HeroBg />
-        <GridPattern />
 
         <HeroInner>
           {/* Left: Content */}
@@ -845,9 +803,9 @@ export default function Home() {
 
             <StatsRow variants={fadeUp}>
               {[
-                { value: '+٥٠٠', label: 'كورس متاح'    },
-                { value: '+١٠٠٠٠', label: 'طالب مسجل' },
-                { value: '+٥٠',  label: 'معلم محترف'  },
+                { value: 'جميع المواد', label: 'رياضيات، فيزياء، كيمياء والمزيد' },
+                { value: 'شرح مفصّل', label: 'خطوة بخطوة مع تمارين' },
+                { value: 'معلمون متخصصون', label: 'خبرة حقيقية في التوجيهي' },
               ].map(stat => (
                 <StatItem key={stat.label}>
                   <StatNumber>{stat.value}</StatNumber>
@@ -900,41 +858,24 @@ export default function Home() {
               <ChevronLeft size={18} />
             </SliderArrow>
 
-            {/* Floating Rating Card */}
-            <FloatingCard
-              style={{ top: 20, right: -24 }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-            >
-              <div style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: '#FFFBEB',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Star size={18} color="#F59E0B" fill="#F59E0B" />
-              </div>
-              تقييم ٤.٩ من ٥
-            </FloatingCard>
-
             {/* Clock Widget */}
             <ClockWidget
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0 }}
+              transition={{ delay: 0.9 }}
             >
               <ClockLabel>
                 <Clock size={12} style={{ display: 'inline', marginLeft: 4 }} />
                 الوقت الحالي
               </ClockLabel>
               <ClockTime>
-                <ClockDigit key={`h-${clock.hours}`}>{clock.hours}</ClockDigit>
+                <ClockDigit key={`s-${clock.seconds}`}>{clock.seconds}</ClockDigit>
                 <ClockSeparator>:</ClockSeparator>
                 <ClockDigit key={`m-${clock.minutes}`}>{clock.minutes}</ClockDigit>
                 <ClockSeparator>:</ClockSeparator>
-                <ClockDigit key={`s-${clock.seconds}`}>{clock.seconds}</ClockDigit>
+                <ClockDigit key={`h-${clock.hours}`}>{clock.hours}</ClockDigit>
               </ClockTime>
-              <ClockDate>{clock.dateStr}</ClockDate>
+              <ClockDate>{clock.ampm} — {clock.dateStr}</ClockDate>
             </ClockWidget>
           </HeroVisual>
         </HeroInner>
@@ -953,8 +894,8 @@ export default function Home() {
               <SectionHeader>
                 <div>
                   <SectionTag>مميزاتنا</SectionTag>
-                  <SectionTitle>لماذا توجيهي؟</SectionTitle>
-                  <SectionSubtitle>كل ما تحتاجه للنجاح في مكان واحد</SectionSubtitle>
+                  <SectionTitle>ليش تختار توجيهي؟</SectionTitle>
+                  <SectionSubtitle>كل ما تحتاجه للتحضير للتوجيهي في مكان واحد</SectionSubtitle>
                 </div>
               </SectionHeader>
             </motion.div>
@@ -1070,11 +1011,11 @@ export default function Home() {
           viewport={{ once: true }}
         >
           <motion.div variants={fadeUp}>
-            <CTATitle>ابدأ رحلتك التعليمية اليوم</CTATitle>
+            <CTATitle>جاهز تبدأ تحضيرك للتوجيهي؟</CTATitle>
           </motion.div>
           <motion.div variants={fadeUp}>
             <CTASub>
-              انضم لأكثر من ١٠٠٠٠ طالب يدرسون معنا ويحققون نتائج متميزة في التوجيهي
+              اشترك الآن واستفد من كورسات توجيهي مع أفضل المعلمين في فلسطين
             </CTASub>
           </motion.div>
           <motion.div variants={fadeUp}>
