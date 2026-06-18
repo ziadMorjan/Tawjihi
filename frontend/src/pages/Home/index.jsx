@@ -1,4 +1,5 @@
 import { useNavigate }        from 'react-router-dom';
+import { PATH }              from '../../constants';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, BookOpen, Award, Star,
@@ -792,11 +793,11 @@ export default function Home() {
             </HeroSubtitle>
 
             <HeroActions variants={fadeUp}>
-              <PrimaryBtn onClick={() => navigate('/courses')}>
+              <PrimaryBtn onClick={() => navigate(PATH.courses)}>
                 <ArrowLeft size={18} />
                 تصفح الكورسات
               </PrimaryBtn>
-              <SecondaryBtn onClick={() => navigate('/auth/register')}>
+              <SecondaryBtn onClick={() => navigate(PATH.register)}>
                 ابدأ مجاناً
               </SecondaryBtn>
             </HeroActions>
@@ -933,7 +934,7 @@ export default function Home() {
               variant="ghost"
               size="sm"
               rightIcon={<ArrowLeft size={16} />}
-              onClick={() => navigate('/courses')}
+              onClick={() => navigate(PATH.courses)}
             >
               عرض الكل
             </Button>
@@ -964,7 +965,7 @@ export default function Home() {
                     variant="ghost"
                     size="sm"
                     rightIcon={<ArrowLeft size={16} />}
-                    onClick={() => navigate('/teachers')}
+                    onClick={() => navigate(PATH.teachers)}
                   >
                     جميع المعلمين
                   </Button>
@@ -975,7 +976,7 @@ export default function Home() {
                 {teachers.map((teacher, i) => (
                   <motion.div key={teacher._id} variants={fadeUp}>
                     <TeacherCard
-                      onClick={() => navigate(`/teachers/${teacher._id}`)}
+                      onClick={() => navigate(PATH.teacherProfile(teacher._id))}
                       whileHover={{ y: -4 }}
                     >
                       <TeacherAvatar>
@@ -1020,11 +1021,11 @@ export default function Home() {
           </motion.div>
           <motion.div variants={fadeUp}>
             <CTAActions>
-              <CTAPrimaryBtn onClick={() => navigate('/auth/register')}>
+              <CTAPrimaryBtn onClick={() => navigate(PATH.register)}>
                 <GraduationCap size={18} />
                 إنشاء حساب مجاني
               </CTAPrimaryBtn>
-              <CTASecondaryBtn onClick={() => navigate('/courses')}>
+              <CTASecondaryBtn onClick={() => navigate(PATH.courses)}>
                 <ArrowLeft size={18} />
                 تصفح الكورسات
               </CTASecondaryBtn>

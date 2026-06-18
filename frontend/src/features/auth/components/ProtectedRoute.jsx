@@ -1,8 +1,8 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../../../shared/components';
+import { PATH } from '../../../constants';
 
-// 🟡 نوعان:
 // ProtectedRoute — يمنع غير المسجلين
 // GuestRoute    — يمنع المسجلين من دخول صفحات Auth
 
@@ -19,11 +19,11 @@ export function ProtectedRoute({ children, allowedRoles }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+    return <Navigate to={PATH.login} state={{ from: location }} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={PATH.home} replace />;
   }
 
   return children;
@@ -42,7 +42,7 @@ export function GuestRoute({ children }) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={PATH.home} replace />;
   }
 
   return children;

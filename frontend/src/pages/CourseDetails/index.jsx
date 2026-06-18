@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { PATH } from "../../constants";
 import {
   Users,
   Star,
@@ -99,7 +100,7 @@ export default function CourseDetails() {
           }}
         >
           <p style={{ color: "#475569" }}>حدث خطأ في تحميل الكورس</p>
-          <Button onClick={() => navigate("/courses")}>العودة للكورسات</Button>
+          <Button onClick={() => navigate(PATH.courses)}>العودة للكورسات</Button>
         </div>
       </MainLayout>
     );
@@ -130,12 +131,12 @@ export default function CourseDetails() {
 
   const handleMainAction = () => {
     if (isEnrolled(courseId)) {
-      navigate(`/learn/${courseId}`);
+      navigate(PATH.learn(courseId));
       return;
     }
     if (!user) {
-      navigate("/auth/login", {
-        state: { from: { pathname: `/courses/${courseId}` } },
+      navigate(PATH.login, {
+        state: { from: { pathname: PATH.courseDetails(courseId) } },
       });
       return;
     }
@@ -304,7 +305,7 @@ export default function CourseDetails() {
               {/* Teacher */}
               {teacher && (
                 <TeacherInfo
-                  onClick={() => navigate(`/teachers/${teacher._id}`)}
+                  onClick={() => navigate(PATH.teacherProfile(teacher._id))}
                 >
                   <TeacherAvatar>
                     {teacher.coverImage ? (
@@ -357,7 +358,7 @@ export default function CourseDetails() {
               <InstructorCard>
                 <InstructorTitle>المعلم</InstructorTitle>
                 <InstructorInfo
-                  onClick={() => navigate(`/teachers/${teacher._id}`)}
+                  onClick={() => navigate(PATH.teacherProfile(teacher._id))}
                 >
                   <InstructorAvatar>
                     {teacher.coverImage ? (

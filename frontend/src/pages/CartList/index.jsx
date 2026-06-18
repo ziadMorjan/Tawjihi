@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { PATH } from "../../constants";
 import { ShoppingCart, Trash2, Tag } from "lucide-react";
 import { MainLayout } from "../../shared/components/layout/MainLayout";
 import { Button, Input, Badge, Spinner } from "../../shared/components";
@@ -101,7 +102,7 @@ export default function CartList() {
             <ShoppingCart size={64} />
             <EmptyTitle>سلتك فارغة</EmptyTitle>
             <EmptyText>لم تضف أي كورسات بعد</EmptyText>
-            <Button onClick={() => navigate("/courses")}>تصفح الكورسات</Button>
+            <Button onClick={() => navigate(PATH.courses)}>تصفح الكورسات</Button>
           </EmptyState>
         </PageWrapper>
       </MainLayout>
@@ -136,11 +137,11 @@ export default function CartList() {
 
               return (
                 <CartItem key={id}>
-                  <ItemImage onClick={() => navigate(`/courses/${id}`)}>
+                  <ItemImage onClick={() => navigate(PATH.courseDetails(id))}>
                     <img src={img} alt={name} loading="lazy" />
                   </ItemImage>
                   <ItemInfo>
-                    <ItemTitle onClick={() => navigate(`/courses/${id}`)}>
+                    <ItemTitle onClick={() => navigate(PATH.courseDetails(id))}>
                       {name}
                     </ItemTitle>
                     {teacher?.name && <ItemTeacher>{teacher.name}</ItemTeacher>}

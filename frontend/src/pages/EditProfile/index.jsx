@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -173,7 +174,7 @@ export default function EditProfile() {
     if (imageFile)  fd.append('coverImage', imageFile);
 
     await updateMutation.mutateAsync(fd);
-    navigate('/user/profile');
+    navigate(PATH.profile);
   };
 
   return (
@@ -251,7 +252,7 @@ export default function EditProfile() {
           </FormGrid>
 
           <Actions>
-            <Button variant="ghost" onClick={() => navigate('/user/profile')}>
+            <Button variant="ghost" onClick={() => navigate(PATH.profile)}>
               إلغاء
             </Button>
             <Button

@@ -3,6 +3,7 @@ import { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ProtectedRoute, GuestRoute } from '../features/auth';
 import { WelcomeModal } from '../features/auth/components/WelcomeModal';
+import { PATH } from '../constants';
 
 // ─── Lazy-loaded pages ────────────────────────────────────────────────────────
 const Home           = lazy(() => import('../pages/Home'));
@@ -44,29 +45,29 @@ export default function AppRoutes() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* ── Public ── */}
-          <Route path="/"                    element={<Home />} />
-          <Route path="/courses"             element={<Courses />} />
-          <Route path="/courses/:id"         element={<CourseDetails />} />
-          <Route path="/teachers"            element={<Teachers />} />
-          <Route path="/teachers/:id"        element={<TeacherProfile />} />
-          <Route path="/oauth-success"       element={<OAuthSuccess />} />
+          <Route path={PATH.home}                         element={<Home />} />
+          <Route path={PATH.courses}                      element={<Courses />} />
+          <Route path={PATH.courseDetails()}              element={<CourseDetails />} />
+          <Route path={PATH.teachers}                     element={<Teachers />} />
+          <Route path={PATH.teacherProfile()}             element={<TeacherProfile />} />
+          <Route path={PATH.oauthSuccess}                 element={<OAuthSuccess />} />
 
           {/* ── Guest-only (redirect if already logged in) ── */}
-          <Route path="/auth/login"          element={<GuestRoute><Login /></GuestRoute>} />
-          <Route path="/auth/register"       element={<GuestRoute><Register /></GuestRoute>} />
-          <Route path="/auth/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+          <Route path={PATH.login}          element={<GuestRoute><Login /></GuestRoute>} />
+          <Route path={PATH.register}       element={<GuestRoute><Register /></GuestRoute>} />
+          <Route path={PATH.forgotPassword} element={<GuestRoute><ForgotPassword /></GuestRoute>} />
 
           {/* ── Protected (require authentication) ── */}
-          <Route path="/cart"                element={<ProtectedRoute><CartList /></ProtectedRoute>} />
-          <Route path="/wishlist"            element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
-          <Route path="/user/my-courses"     element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
-          <Route path="/learn/:id"           element={<ProtectedRoute><VideoPage /></ProtectedRoute>} />
-          <Route path="/user/profile"        element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/user/edit-profile"   element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-          <Route path="/user/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+          <Route path={PATH.cart}           element={<ProtectedRoute><CartList /></ProtectedRoute>} />
+          <Route path={PATH.wishlist}       element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+          <Route path={PATH.myCourses}      element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
+          <Route path={PATH.learn()}        element={<ProtectedRoute><VideoPage /></ProtectedRoute>} />
+          <Route path={PATH.profile}        element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path={PATH.editProfile}    element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+          <Route path={PATH.changePassword} element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
 
           {/* ── 404 ── */}
-          <Route path="*"                    element={<NotFound />} />
+          <Route path={PATH.notFound}       element={<NotFound />} />
         </Routes>
       </Suspense>
 

@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { PATH } from '../../../constants';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../../features/auth';
 import { Button, Input } from '../../../shared/components';
@@ -90,7 +91,7 @@ export default function Login() {
         <div style={{ textAlign: 'left' }}>
           <button
             type="button"
-            onClick={() => navigate('/auth/forgot-password')}
+            onClick={() => navigate(PATH.forgotPassword)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#2563EB' }}
           >
             نسيت كلمة المرور؟
@@ -114,7 +115,7 @@ export default function Login() {
 
       <FooterText>
         ليس لديك حساب؟{' '}
-        <button type="button" onClick={() => navigate('/auth/register')}>
+        <button type="button" onClick={() => navigate(PATH.register)}>
           إنشاء حساب جديد
         </button>
       </FooterText>

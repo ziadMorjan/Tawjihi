@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../../../constants';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { welcomeApi } from '../../api/welcomeApi';
@@ -68,7 +69,7 @@ export function WelcomeModal() {
 
   const handleUseCoupon = useCallback(async () => {
     await handleClose();
-    navigate('/courses');
+    navigate(PATH.courses);
   }, [handleClose, navigate]);
 
   // إغلاق عند Escape

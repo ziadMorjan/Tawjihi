@@ -1,6 +1,7 @@
 // src/pages/Auth/OAuthSuccess/index.jsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../../constants';
 import { useQueryClient } from '@tanstack/react-query';
 import { authApi } from '../../../features/auth';
 import { AUTH_QUERY_KEY } from '../../../features/auth/context/AuthContext';
@@ -18,10 +19,10 @@ export default function OAuthSuccess() {
         const user = data?.data ?? data?.user ?? data;
         // نحدث الـ cache
         queryClient.setQueryData(AUTH_QUERY_KEY, user);
-        navigate('/', { replace: true });
+        navigate(PATH.home, { replace: true });
       } catch {
         // فشل — نرجع للـ login
-        navigate('/auth/login', { replace: true });
+        navigate(PATH.login, { replace: true });
       }
     };
 

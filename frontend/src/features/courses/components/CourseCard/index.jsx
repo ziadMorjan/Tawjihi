@@ -1,5 +1,6 @@
 // src/features/courses/components/CourseCard/index.jsx
 import { useNavigate } from "react-router-dom";
+import { PATH } from "../../../../constants";
 import { Heart, ShoppingCart, User, BookOpen } from "lucide-react";
 import { useCourseActions } from "../../hooks/useCourseActions";
 import { StarRating } from "./StarRating";
@@ -41,7 +42,7 @@ export function CourseCard({ course }) {
   const courseId = _id ?? course.id ?? course._id;
 
   const handleCardClick = () => {
-    navigate(`/courses/${courseId}`);
+    navigate(PATH.courseDetails(courseId));
   };
 
   const handleCartClick = (e) => {

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { PATH } from '../../constants';
 import { Star, BookOpen, MessageSquare, Trash2 } from 'lucide-react';
 import { MainLayout }      from '../../shared/components/layout/MainLayout';
 import { Button, Badge, Spinner } from '../../shared/components';
@@ -60,7 +61,7 @@ export default function TeacherProfile() {
       <MainLayout>
         <div style={{ height: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
           <p style={{ color: '#475569' }}>لم يتم العثور على المعلم</p>
-          <Button onClick={() => navigate('/teachers')}>العودة للمعلمين</Button>
+          <Button onClick={() => navigate(PATH.teachers)}>العودة للمعلمين</Button>
         </div>
       </MainLayout>
     );

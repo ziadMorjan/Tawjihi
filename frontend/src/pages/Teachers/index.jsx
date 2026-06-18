@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../constants';
 import { Users, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MainLayout }  from '../../shared/components/layout/MainLayout';
@@ -100,7 +101,7 @@ export default function Teachers() {
                 {teachers.map((teacher) => (
                   <motion.div key={teacher._id} variants={fadeUp}>
                     <TeacherCard
-                      onClick={() => navigate(`/teachers/${teacher._id}`)}
+                      onClick={() => navigate(PATH.teacherProfile(teacher._id))}
                     >
                       <TeacherAvatar>
                         {teacher.coverImage

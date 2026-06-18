@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../../constants';
 import { Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
 import { useAuth } from '../../../features/auth';
 import { Button, Input, Badge } from '../../../shared/components';
@@ -56,12 +57,12 @@ export default function Register() {
         fd.append('cv', formData.cv);
         fd.append('role', 'teacher');
         await registerUser(fd);
-        navigate('/auth/login', {
+        navigate(PATH.login, {
           state: { message: 'تم إرسال طلبك، انتظر موافقة الإدارة' }
         });
       } else {
         await registerUser({ ...formData, role: 'user' });
-        navigate('/');
+        navigate(PATH.home);
       }
     } catch {
       // error في registerError
@@ -213,7 +214,7 @@ export default function Register() {
 
       <FooterText>
         لديك حساب؟{' '}
-        <button type="button" onClick={() => navigate('/auth/login')}>
+        <button type="button" onClick={() => navigate(PATH.login)}>
           تسجيل الدخول
         </button>
       </FooterText>

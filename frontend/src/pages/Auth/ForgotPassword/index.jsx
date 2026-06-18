@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -78,7 +79,7 @@ export default function ForgotPassword() {
     onSuccess: () => {
       setErrorMessage(null);
       // توجيه المستخدم لصفحة تسجيل الدخول بنجاح
-      navigate('/auth/login', { replace: true });
+      navigate(PATH.login, { replace: true });
     },
     onError: (error) => {
       setErrorMessage(error.response?.data?.message || 'فشل إعادة تعيين كلمة المرور');
@@ -216,7 +217,7 @@ export default function ForgotPassword() {
 
       <FooterText>
         تذكرت كلمة المرور؟{' '}
-        <button type="button" onClick={() => navigate('/auth/login')}>
+        <button type="button" onClick={() => navigate(PATH.login)}>
           تسجيل الدخول
         </button>
       </FooterText>

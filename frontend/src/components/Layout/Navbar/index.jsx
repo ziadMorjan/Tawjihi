@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { PATH } from '../../../constants';
 import {
   ShoppingCart, Heart, BookOpen, User,
   LogOut, Settings, Moon, Sun,
@@ -26,14 +27,14 @@ export function Navbar() {
   const dropdownRef = useRef(null);
 
   const links = [
-    { label: 'الرئيسية',  path: '/'         },
-    { label: 'الكورسات',  path: '/courses'  },
-    { label: 'المعلمون',  path: '/teachers' },
+    { label: 'الرئيسية',  path: PATH.home     },
+    { label: 'الكورسات',  path: PATH.courses  },
+    { label: 'المعلمون',  path: PATH.teachers },
   ];
 
   // أضف "كورساتي" لو مسجل دخول
   if (isAuthenticated) {
-    links.push({ label: 'كورساتي', path: '/user/my-courses' });
+    links.push({ label: 'كورساتي', path: PATH.myCourses });
   }
 
   const initials = user?.name?.charAt(0)?.toUpperCase() ?? '؟';
@@ -52,7 +53,7 @@ export function Navbar() {
   const handleLogout = () => {
     logout();
     setDropdownOpen(false);
-    navigate('/');
+    navigate(PATH.home);
     toast.success('تم تسجيل الخروج بنجاح');
   };
 
@@ -67,7 +68,7 @@ export function Navbar() {
     <NavWrapper>
       <NavInner>
 
-        <Logo onClick={() => navigate('/')}>
+        <Logo onClick={() => navigate(PATH.home)}>
           <img src="/assets/img/logo.png" alt="Tawjihi" />
           <span>توجيهي</span>
         </Logo>
@@ -93,7 +94,7 @@ export function Navbar() {
           {isAuthenticated ? (
             <>
               {/* Cart */}
-              <CartBtn onClick={() => navigate('/cart')} aria-label="السلة">
+              <CartBtn onClick={() => navigate(PATH.cart)} aria-label="السلة">
                 <ShoppingCart size={20} />
                 {cartItems.length > 0 && (
                   <CartCount>{cartItems.length}</CartCount>
@@ -123,22 +124,22 @@ export function Navbar() {
                     </DropdownHeader>
 
                     {/* Links */}
-                    <DropdownItem onClick={() => handleNavClick('/user/profile')}>
+                    <DropdownItem onClick={() => handleNavClick(PATH.profile)}>
                       <User size={16} />
                       الملف الشخصي
                     </DropdownItem>
 
-                    <DropdownItem onClick={() => handleNavClick('/user/my-courses')}>
+                    <DropdownItem onClick={() => handleNavClick(PATH.myCourses)}>
                       <BookOpen size={16} />
                       كورساتي
                     </DropdownItem>
 
-                    <DropdownItem onClick={() => handleNavClick('/wishlist')}>
+                    <DropdownItem onClick={() => handleNavClick(PATH.wishlist)}>
                       <Heart size={16} />
                       المفضلة
                     </DropdownItem>
 
-                    <DropdownItem onClick={() => handleNavClick('/cart')}>
+                    <DropdownItem onClick={() => handleNavClick(PATH.cart)}>
                       <ShoppingCart size={16} />
                       السلة
                       {cartItems.length > 0 && (
@@ -156,7 +157,7 @@ export function Navbar() {
                       )}
                     </DropdownItem>
 
-                    <DropdownItem onClick={() => handleNavClick('/user/edit-profile')}>
+                    <DropdownItem onClick={() => handleNavClick(PATH.editProfile)}>
                       <Settings size={16} />
                       الإعدادات
                     </DropdownItem>
@@ -176,14 +177,14 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/auth/login')}
+                onClick={() => navigate(PATH.login)}
               >
                 تسجيل الدخول
               </Button>
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => navigate('/auth/register')}
+                onClick={() => navigate(PATH.register)}
               >
                 إنشاء حساب
               </Button>

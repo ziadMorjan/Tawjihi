@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../constants';
 import { BookOpen, PlayCircle, Clock } from 'lucide-react';
 import styled from 'styled-components';
 import { MainLayout } from '../../shared/components/layout/MainLayout';
@@ -145,7 +146,7 @@ export default function MyCourses() {
               لم تسجل في أي كورس بعد
             </h2>
             <p style={{ color: '#475569' }}>ابدأ رحلتك التعليمية الآن</p>
-            <Button onClick={() => navigate('/courses')}>تصفح الكورسات</Button>
+            <Button onClick={() => navigate(PATH.courses)}>تصفح الكورسات</Button>
           </EmptyState>
         ) : (
           <Grid>
@@ -161,7 +162,7 @@ export default function MyCourses() {
               return (
                 <EnrolledCard
                   key={enrollment._id}
-                  onClick={() => navigate(`/learn/${courseId}`)}
+                  onClick={() => navigate(PATH.learn(courseId))}
                 >
                   <Thumbnail>
                     <img

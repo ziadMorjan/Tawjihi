@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../constants';
 import { motion }      from 'framer-motion';
 import styled, { keyframes } from 'styled-components';
 import { Home, ArrowLeft, BookOpen, Search } from 'lucide-react';
@@ -421,7 +422,7 @@ export default function NotFound() {
           variants={fadeUp}
           transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
         >
-          <PrimaryBtn onClick={() => navigate('/')}>
+          <PrimaryBtn onClick={() => navigate(PATH.home)}>
             <Home size={18} />
             العودة للرئيسية
           </PrimaryBtn>
@@ -436,15 +437,15 @@ export default function NotFound() {
           variants={fadeUp}
           transition={{ duration: 0.6, delay: 0.45, ease: 'easeOut' }}
         >
-          <QuickLink onClick={() => navigate('/courses')}>
+          <QuickLink onClick={() => navigate(PATH.courses)}>
             <BookOpen size={14} />
             الكورسات
           </QuickLink>
-          <QuickLink onClick={() => navigate('/teachers')}>
+          <QuickLink onClick={() => navigate(PATH.teachers)}>
             <Search size={14} />
             المعلمون
           </QuickLink>
-          <QuickLink onClick={() => navigate('/auth/login')}>
+          <QuickLink onClick={() => navigate(PATH.login)}>
             <ArrowLeft size={14} />
             تسجيل الدخول
           </QuickLink>

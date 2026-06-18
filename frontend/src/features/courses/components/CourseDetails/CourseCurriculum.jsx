@@ -16,6 +16,7 @@ import {
   SectionTitle,
 } from "./CourseDetails.styles";
 import { useNavigate } from "react-router-dom";
+import { PATH } from "../../../../constants";
 
 const shimmer = keyframes`
   0% { background-position: 200% 0; }
@@ -183,7 +184,7 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
               $clickable={canAccess}
               onClick={() => {
                 if (!canAccess) return;
-                navigate(`/learn/${courseId}`, {
+                navigate(PATH.learn(courseId), {
                   state: { startIndex: index },
                 });
               }}

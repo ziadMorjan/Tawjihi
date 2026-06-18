@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -96,7 +97,7 @@ export default function ChangePassword() {
 
   const onSubmit = async (data) => {
     await changeMutation.mutateAsync(data);
-    navigate('/user/profile');
+    navigate(PATH.profile);
   };
 
   return (
@@ -136,7 +137,7 @@ export default function ChangePassword() {
           />
 
           <Actions>
-            <Button variant="ghost" onClick={() => navigate('/user/profile')}>
+            <Button variant="ghost" onClick={() => navigate(PATH.profile)}>
               إلغاء
             </Button>
             <Button

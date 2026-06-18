@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../constants';
 import { Heart } from 'lucide-react';
 import styled from 'styled-components';
 import { MainLayout } from '../../shared/components/layout/MainLayout';
@@ -69,7 +70,7 @@ export default function Wishlist() {
               {!isLoading && <Badge variant="danger">{courses.length}</Badge>}
             </PageTitle>
 
-            <Button variant="ghost" size="sm" onClick={() => navigate('/courses')}>
+            <Button variant="ghost" size="sm" onClick={() => navigate(PATH.courses)}>
               تصفح المزيد
             </Button>
           </Header>
@@ -89,7 +90,7 @@ export default function Wishlist() {
               قائمة المفضلة فارغة
             </h2>
             <p style={{ color: '#475569' }}>أضف كورسات للمفضلة لتجدها هنا بسهولة</p>
-            <Button onClick={() => navigate('/courses')}>تصفح الكورسات</Button>
+            <Button onClick={() => navigate(PATH.courses)}>تصفح الكورسات</Button>
           </EmptyState>
         ) : (
           <Grid>

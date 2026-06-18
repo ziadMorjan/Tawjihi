@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../constants';
 import { Edit2, Mail, BookOpen, Heart, ShoppingCart } from 'lucide-react';
 import { MainLayout }       from '../../shared/components/layout/MainLayout';
 import { Button, Spinner } from '../../shared/components';
@@ -33,7 +34,7 @@ export default function Profile() {
   }
 
   if (!user) {
-    navigate('/auth/login');
+    navigate(PATH.login);
     return null;
   }
 
@@ -66,7 +67,7 @@ export default function Profile() {
                 variant="secondary"
                 size="sm"
                 leftIcon={<Edit2 size={15} />}
-                onClick={() => navigate('/user/edit-profile')}
+                onClick={() => navigate(PATH.editProfile)}
               >
                 تعديل الملف
               </Button>
@@ -150,7 +151,7 @@ export default function Profile() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => navigate('/user/change-password')}
+                  onClick={() => navigate(PATH.changePassword)}
                 >
                   تغيير كلمة المرور
                 </Button>

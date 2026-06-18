@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { PATH } from "../../constants";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -162,7 +163,7 @@ export default function VideoPage() {
           <Lock size={56} color="#94A3B8" />
           <h3>غير مسجل في الدورة</h3>
           <p>يجب الاشتراك في هذه الدورة لمشاهدة الفيديوهات</p>
-          <Button onClick={() => navigate(`/courses/${id}`)}>
+          <Button onClick={() => navigate(PATH.courseDetails(id))}>
             العودة لصفحة الكورس
           </Button>
         </EmptyState>
