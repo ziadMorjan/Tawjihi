@@ -1,238 +1,77 @@
-// routes.js (or wherever you define routes)
+// src/routes/index.js
+import { Suspense, lazy } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { ProtectedRoute, GuestRoute } from '../features/auth';
+import { WelcomeModal } from '../features/auth/components/WelcomeModal';
 
-import { Navigate } from "react-router-dom";
-import { lazy } from "react";
+// ─── Lazy-loaded pages ────────────────────────────────────────────────────────
+const Home           = lazy(() => import('../pages/Home'));
+const Courses        = lazy(() => import('../pages/Courses'));
+const CourseDetails  = lazy(() => import('../pages/CourseDetails'));
+const Login          = lazy(() => import('../pages/Auth/Login'));
+const Register       = lazy(() => import('../pages/Auth/Register'));
+const OAuthSuccess   = lazy(() => import('../pages/Auth/OAuthSuccess'));
+const ForgotPassword = lazy(() => import('../pages/Auth/ForgotPassword'));
+const Teachers       = lazy(() => import('../pages/Teachers'));
+const TeacherProfile = lazy(() => import('../pages/TeacherProfile'));
+const CartList       = lazy(() => import('../pages/CartList'));
+const Wishlist       = lazy(() => import('../pages/Wishlist'));
+const MyCourses      = lazy(() => import('../pages/MyCourses'));
+const VideoPage      = lazy(() => import('../pages/VideoPage'));
+const Profile        = lazy(() => import('../pages/Profile'));
+const EditProfile    = lazy(() => import('../pages/EditProfile'));
+const ChangePassword = lazy(() => import('../pages/ChangePassword'));
+const NotFound       = lazy(() => import('../pages/NotFound'));
 
-// Components
-import { LoginForm } from "../features/components/LoginForm";
-import { RegisterForm } from "../features/components/Register";
-import { ForgetPassword } from "../features/components/ForgetPassword";
-import { VerificationCode } from "../features/components/VerificationCode";
-import { ResetPassword } from "../features/components/ResetPassword";
-import TeacherProfile from "../pages/TeacherProfile";
-import OneCourse from "../pages/CourseDetails/index.js";
-import MyCourses from "../pages/MyCourses";
-import UserProfile from "../pages/MyProfile";
-import EditProfile from "../pages/MyProfile/EditProfile";
-import ChangePassword from "../pages/MyProfile/changePassword.jsx";
+// ─── Fallback spinner shown while a lazy chunk is loading ─────────────────────
+function PageLoader() {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+    }}>
+      <span className="loader" />
+    </div>
+  );
+}
 
-import ProtectedRoute from "../components/ProtectedRoute";
-import App from "../App";
-import Dashboard from "../dashboard/layouts/dashboard/index.js";
-import Tables from "../dashboard/layouts/tables/index.js";
-import ProtectedDashboardRoute from "../components/ProtectedRoute/ProtectedDashboardRoute.jsx";
-import RoleProtectedRoute from "../components/ProtectedRoute/RoleProtectedRoute.jsx";
-import UsersTable from "../dashboard/layouts/tables/UsersTable.jsx";
-import CoursesDashboard from "../dashboard/layouts/courses";
-import TeacherRequests from "../dashboard/layouts/teacherRequests";
-import BranchesDashboard from "../dashboard/layouts/branches";
-import SubjectsDashboard from "../dashboard/layouts/subjects";
-import PaymentsDashboard from "../dashboard/layouts/payments";
-import LessonsDashboard from "../dashboard/layouts/lessons";
-import Broadcast from "../dashboard/layouts/broadcast";
+// ─── App routes ───────────────────────────────────────────────────────────────
+export default function AppRoutes() {
+  return (
+    <>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* ── Public ── */}
+          <Route path="/"                    element={<Home />} />
+          <Route path="/courses"             element={<Courses />} />
+          <Route path="/courses/:id"         element={<CourseDetails />} />
+          <Route path="/teachers"            element={<Teachers />} />
+          <Route path="/teachers/:id"        element={<TeacherProfile />} />
+          <Route path="/oauth-success"       element={<OAuthSuccess />} />
 
-// Lazy loaded pages
-const Main = lazy(() => import("../pages/Main"));
-const About = lazy(() => import("../pages/About"));
-const News = lazy(() => import("../pages/News"));
-const Contact = lazy(() => import("../pages/Contact"));
-const Auth = lazy(() => import("../pages/Auth"));
-const OAuthSuccess = lazy(() => import("../features/components/OAuthSuccess"));
-const NotFound = lazy(() => import("../pages/NotFound"));
-const NotAuth = lazy(() => import("../pages/NotAuth"));
-const Courses = lazy(() => import("../pages/Courses"));
-const Teachers = lazy(() => import("../pages/Teachers"));
-const WishList = lazy(() => import("../pages/Wishlist"));
-const CartList = lazy(() => import("../pages/CartList"));
-const VideoPage = lazy(() => import("../pages/CourseDetails/VideoPage.jsx"));
+          {/* ── Guest-only (redirect if already logged in) ── */}
+          <Route path="/auth/login"          element={<GuestRoute><Login /></GuestRoute>} />
+          <Route path="/auth/register"       element={<GuestRoute><Register /></GuestRoute>} />
+          <Route path="/auth/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
 
-export const PATH = {
-  Main: "/",
-  About: "about",
-  News: "news",
-  Contact: "contact",
-  Courses: "courses",
-  CoursesOne: "courses/:name/:id",
-  VideoLesson: "courses/:name/:id/video/:videoIndex",
-  Auth: "auth",
-  Login: "auth/login",
-  Register: "auth/register",
-  ForgetPassword: "forget-password",
-  VerificationCode: "verification-code",
-  ResetPassword: "reset-password",
-  Teachers: "teachers",
-  TeacherProfile: "teachers/:id",
-  User: "user",
-  WishList: "wishlist",
-  CartList: "cartlist",
-  MyCourses: "my-courses",
-  OAuthSuccess: "oauth-success",
-  UserProfile: "user-profile",
-  EditProfile: "edit-profile",
-  NotAuth: "not-auth",
-  ChangePassword: "change-password",
-  AdminDashboard: "dashboard",
-};
+          {/* ── Protected (require authentication) ── */}
+          <Route path="/cart"                element={<ProtectedRoute><CartList /></ProtectedRoute>} />
+          <Route path="/wishlist"            element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+          <Route path="/user/my-courses"     element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
+          <Route path="/learn/:id"           element={<ProtectedRoute><VideoPage /></ProtectedRoute>} />
+          <Route path="/user/profile"        element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/user/edit-profile"   element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+          <Route path="/user/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
 
-export const routers = [
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      { index: true, element: <Main /> },
-      { path: "about", element: <About /> },
-      { path: "news", element: <News /> },
-      { path: "contact", element: <Contact /> },
-      { path: "courses", element: <Courses /> },
-      { path: "courses/:name/:id", element: <OneCourse /> },
-      { path: "courses/:name/:id/video/:videoIndex", element: <VideoPage /> },
+          {/* ── 404 ── */}
+          <Route path="*"                    element={<NotFound />} />
+        </Routes>
+      </Suspense>
 
-      {
-        path: "auth",
-        element: <Auth />,
-        children: [
-          { index: true, element: <Navigate to="login" /> },
-          { path: "login", element: <LoginForm /> },
-          { path: "register", element: <RegisterForm /> },
-        ],
-      },
-
-      { path: "forget-password", element: <ForgetPassword /> },
-      { path: "verification-code", element: <VerificationCode /> },
-      { path: "reset-password", element: <ResetPassword /> },
-      { path: "teachers", element: <Teachers /> },
-      { path: "teachers/:id", element: <TeacherProfile /> },
-      { path: "not-auth", element: <NotAuth /> },
-      { path: "oauth-success", element: <OAuthSuccess /> },
-
-      {
-        path: "user",
-        element: <ProtectedRoute />,
-        children: [
-          { path: "wishlist", element: <WishList /> },
-          { path: "cartlist", element: <CartList /> },
-          { path: "my-courses", element: <MyCourses /> },
-          { path: "user-profile", element: <UserProfile /> },
-          { path: "edit-profile", element: <EditProfile /> },
-          { path: "change-password", element: <ChangePassword /> },
-        ],
-      },
-
-
-      {
-        path: "dashboard",
-        element: <ProtectedDashboardRoute />,
-        children: [
-
-        // ------------------------- Admin routes -------------------------
-
-          {
-            index: true,
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <Dashboard />
-              </RoleProtectedRoute>
-          },
-          {
-            path: "students",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <UsersTable usersType={"user"} tableTitle={"جدول الطلاب"}/>
-              </RoleProtectedRoute>
-          },
-          {
-            path: "teachers",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <UsersTable usersType={"teacher"} tableTitle={"جدول المعلمين"}/>
-              </RoleProtectedRoute>
-          },
-          {
-            path: "teachers-requests",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <TeacherRequests />
-              </RoleProtectedRoute>
-          },
-          {
-            path: "branches",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <BranchesDashboard />
-              </RoleProtectedRoute>
-          },
-          {
-            path: "subjects",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <SubjectsDashboard />
-              </RoleProtectedRoute>
-          },
-          {
-            path: "courses",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin", "teacher"]}>
-                <CoursesDashboard />
-              </RoleProtectedRoute>
-          },
-          {
-            path: "payments",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin"]}>
-                <PaymentsDashboard />
-              </RoleProtectedRoute>
-          },
-          
-
-        // ------------------------- Teacher routes -------------------------
-
-          {
-            path: "lessons",
-            element:
-              <RoleProtectedRoute allowedRoles={["teacher"]}>
-                <LessonsDashboard />
-              </RoleProtectedRoute>
-          },
-          {
-            path: "broadcast",
-            element:
-              <RoleProtectedRoute allowedRoles={["admin", "teacher"]}>
-                <Broadcast />
-              </RoleProtectedRoute>
-          },
-
-        ]
-      },
-
-      // {
-      //   path: "dashboard",
-      //   element: <ProtectedDashboardRoute />,
-      //   children: [
-      //     {
-      //       path: "admin",
-      //       element: <RoleProtectedRoute allowedRoles={["admin"]} />,
-      //       children: [
-
-      //         { index: true, element: <Dashboard /> },
-      //         { path: "tables", element: <Tables tableTitle={"جدول الطلاب"} /> },
-      //         { path: "billing", element: <Billing /> },
-      //         { path: "courses", element: <Billing /> },
-
-      //       ],
-      //     },
-
-      //     {
-      //       path: "teacher",
-      //       element: <RoleProtectedRoute allowedRoles={["teacher"]} />,
-      //       children: [
-      //         { path: "courses", element: <Billing /> },
-      //       ],
-      //     },
-
-      //   ]
-      // },
-
-      { path: "*", element: <NotFound /> },
-    ],
-  },
-];
+      {/* Welcome popup — shown once after first login */}
+      <WelcomeModal />
+    </>
+  );
+}
