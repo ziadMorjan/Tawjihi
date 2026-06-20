@@ -27,6 +27,9 @@ export const PATH = {
   editProfile:     '/user/edit-profile',
   changePassword:  '/user/change-password',
 
+  // ── Search ───────────────────────────────────────────────────────────────────
+  search:          '/search',
+
   // ── Fallback ─────────────────────────────────────────────────────────────────
   notFound:        '*',
 };
