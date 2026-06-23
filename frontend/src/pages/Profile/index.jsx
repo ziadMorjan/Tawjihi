@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
 import { Edit2, Mail, BookOpen, Heart, ShoppingCart } from 'lucide-react';
 import { MainLayout }       from '../../shared/components/layout/MainLayout';
@@ -14,14 +15,19 @@ import {
   StatGrid, StatCard, StatValue, StatLabel, BioText, RoleBadge,
 } from './Profile.styles';
 
-const ROLE_MAP = { user: 'طالب', teacher: 'معلم', admin: 'مدير' };
-
 export default function Profile() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, isLoading } = useAuth();
   const { enrollments } = useMyEnrollments();
   const { cartItems }   = useCart();
   const { wishlistIds } = useWishlist();
+
+  const ROLE_MAP = {
+    user:    t('roles.user'),
+    teacher: t('roles.teacher'),
+    admin:   t('roles.admin'),
+  };
 
   if (isLoading) {
     return (
@@ -69,7 +75,7 @@ export default function Profile() {
                 leftIcon={<Edit2 size={15} />}
                 onClick={() => navigate(PATH.editProfile)}
               >
-                تعديل الملف
+                {t('profile.editProfile')}
               </Button>
             </HeaderActions>
           </ProfileHeader>
@@ -91,36 +97,36 @@ export default function Profile() {
             <StatCard>
               <BookOpen size={22} color="#1B4FD8" />
               <StatValue>{enrollments.length}</StatValue>
-              <StatLabel>كورس مسجّل</StatLabel>
+              <StatLabel>{t('profile.coursesCount')}</StatLabel>
             </StatCard>
             <StatCard>
               <ShoppingCart size={22} color="#1B4FD8" />
               <StatValue>{cartItems.length}</StatValue>
-              <StatLabel>في السلة</StatLabel>
+              <StatLabel>{t('nav.cart')}</StatLabel>
             </StatCard>
             <StatCard>
               <Heart size={22} color="#DC2626" />
               <StatValue>{wishlistIds.length}</StatValue>
-              <StatLabel>في المفضلة</StatLabel>
+              <StatLabel>{t('nav.wishlist')}</StatLabel>
             </StatCard>
           </StatGrid>
 
           <Grid>
             {/* Account Details */}
             <Card>
-              <CardTitle>
-                <Mail size={16} color="#1B4FD8" />
-                تفاصيل الحساب
-              </CardTitle>
+                <CardTitle>
+                  <Mail size={16} color="#1B4FD8" />
+                  {t('profile.title')}
+                </CardTitle>
 
-              <DetailRow>
-                <DetailLabel>الاسم</DetailLabel>
-                <DetailValue>{user.name}</DetailValue>
-              </DetailRow>
-              <DetailRow>
-                <DetailLabel>البريد</DetailLabel>
-                <DetailValue>{user.email}</DetailValue>
-              </DetailRow>
+                <DetailRow>
+                  <DetailLabel>{t('auth.name')}</DetailLabel>
+                  <DetailValue>{user.name}</DetailValue>
+                </DetailRow>
+                <DetailRow>
+                  <DetailLabel>{t('auth.email')}</DetailLabel>
+                  <DetailValue>{user.email}</DetailValue>
+                </DetailRow>
               {user.phone && (
                 <DetailRow>
                   <DetailLabel>الهاتف</DetailLabel>
@@ -131,10 +137,10 @@ export default function Profile() {
                 <DetailLabel>الدور</DetailLabel>
                 <DetailValue>{ROLE_MAP[user.role] ?? user.role}</DetailValue>
               </DetailRow>
-              <DetailRow>
-                <DetailLabel>عضو منذ</DetailLabel>
-                <DetailValue>{joinedDate}</DetailValue>
-              </DetailRow>
+                <DetailRow>
+                  <DetailLabel>{t('profile.joinDate')}</DetailLabel>
+                  <DetailValue>{joinedDate}</DetailValue>
+                </DetailRow>
             </Card>
 
             {/* Bio + Security */}
@@ -147,13 +153,13 @@ export default function Profile() {
               </Card>
 
               <Card>
-                <CardTitle>الأمان</CardTitle>
+                <CardTitle>{t('auth.changePassword')}</CardTitle>
                 <Button
                   variant="secondary"
                   size="sm"
                   onClick={() => navigate(PATH.changePassword)}
                 >
-                  تغيير كلمة المرور
+                  {t('profile.changePassword')}
                 </Button>
               </Card>
             </div>

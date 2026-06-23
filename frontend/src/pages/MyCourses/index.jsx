@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
 import { BookOpen, PlayCircle, Clock } from 'lucide-react';
 import styled from 'styled-components';
@@ -120,6 +121,7 @@ const EmptyState = styled.div`
 
 export default function MyCourses() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { enrollments, isLoading } = useMyEnrollments();
 
   return (
@@ -127,9 +129,9 @@ export default function MyCourses() {
       <PageWrapper>
         <PageTitle>
           <BookOpen size={28} color="#1B4FD8" />
-          كورساتي
+          {t('nav.myCourses')}
           {enrollments.length > 0 && (
-            <Badge variant="primary">{enrollments.length} كورس</Badge>
+            <Badge variant="primary">{enrollments.length} {t('courses.title')}</Badge>
           )}
         </PageTitle>
 
@@ -143,10 +145,10 @@ export default function MyCourses() {
           <EmptyState>
             <BookOpen size={64} />
             <h2 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A' }}>
-              لم تسجل في أي كورس بعد
+              {t('courses.noResults')}
             </h2>
-            <p style={{ color: '#475569' }}>ابدأ رحلتك التعليمية الآن</p>
-            <Button onClick={() => navigate(PATH.courses)}>تصفح الكورسات</Button>
+            <p style={{ color: '#475569' }}>{t('home.heroSubtitle')}</p>
+            <Button onClick={() => navigate(PATH.courses)}>{t('cart.browseBtn')}</Button>
           </EmptyState>
         ) : (
           <Grid>
@@ -181,7 +183,7 @@ export default function MyCourses() {
                       <TeacherName>{course.teacher.name}</TeacherName>
                     )}
                     <CardFooter>
-                      <Badge variant="success">مسجّل</Badge>
+                      <Badge variant="success">{t('courseDetails.alreadyEnrolled')}</Badge>
                       {enrolledAt && (
                         <EnrolledDate>
                           <Clock size={12} />

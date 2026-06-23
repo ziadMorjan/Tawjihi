@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
 import { Heart } from 'lucide-react';
 import styled from 'styled-components';
@@ -53,6 +54,7 @@ const EmptyState = styled.div`
 
 export default function Wishlist() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { wishlistIds, courses, isLoading, isCoursesSuccess } = useWishlist();
 
   // تحديد ما إذا كانت القائمة فارغة بعد انتهاء التحميل
@@ -66,12 +68,12 @@ export default function Wishlist() {
           <Header>
             <PageTitle>
               <Heart size={28} color="#DC2626" fill="#DC2626" />
-              المفضلة
+              {t('wishlist.title')}
               {!isLoading && <Badge variant="danger">{courses.length}</Badge>}
             </PageTitle>
 
             <Button variant="ghost" size="sm" onClick={() => navigate(PATH.courses)}>
-              تصفح المزيد
+              {t('wishlist.browseBtn')}
             </Button>
           </Header>
         )}
@@ -87,10 +89,10 @@ export default function Wishlist() {
           <EmptyState>
             <Heart size={64} />
             <h2 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A' }}>
-              قائمة المفضلة فارغة
+              {t('wishlist.empty')}
             </h2>
-            <p style={{ color: '#475569' }}>أضف كورسات للمفضلة لتجدها هنا بسهولة</p>
-            <Button onClick={() => navigate(PATH.courses)}>تصفح الكورسات</Button>
+            <p style={{ color: '#475569' }}>{t('courses.noResults')}</p>
+            <Button onClick={() => navigate(PATH.courses)}>{t('wishlist.browseBtn')}</Button>
           </EmptyState>
         ) : (
           <Grid>
