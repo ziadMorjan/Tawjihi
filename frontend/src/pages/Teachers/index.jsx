@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
 import { Users, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -49,6 +50,7 @@ const stagger = {
 
 export default function Teachers() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useTeachers({ page, limit: LIMIT });
@@ -67,13 +69,13 @@ export default function Teachers() {
     <MainLayout>
       <PageWrapper>
         <PageHeader>
-          <PageTitle>معلمونا</PageTitle>
+          <PageTitle>{t('teachers.title')}</PageTitle>
           <PageSubtitle>
-            تعرّف على نخبة من أفضل معلمي التوجيهي في فلسطين
+            {t('home.heroSubtitle')}
           </PageSubtitle>
           {!isLoading && totalItems > 0 && (
             <p style={{ marginTop: 8, fontSize: '0.875rem', color: 'var(--text-muted, #94A3B8)' }}>
-              {totalItems} معلم متاح
+              {totalItems} {t('teachers.certified')}
             </p>
           )}
         </PageHeader>
@@ -87,7 +89,7 @@ export default function Teachers() {
         ) : teachers.length === 0 ? (
           <EmptyState>
             <Users size={64} />
-            <p style={{ fontSize: 16 }}>لا يوجد معلمون متاحون حالياً</p>
+            <p style={{ fontSize: 16 }}>{t('teachers.noResults')}</p>
           </EmptyState>
         ) : (
           <>
@@ -123,13 +125,13 @@ export default function Teachers() {
                               <Star size={14} fill="#F59E0B" color="#F59E0B" />
                               {teacher.averageRating?.toFixed(1)}
                             </StatValue>
-                            <StatLabel>التقييم</StatLabel>
+                            <StatLabel>{t('common.ratingOf')}</StatLabel>
                           </StatItem>
                         )}
                         {teacher.reviewsQuantity > 0 && (
                           <StatItem>
                             <StatValue>{teacher.reviewsQuantity}</StatValue>
-                            <StatLabel>تقييم</StatLabel>
+                            <StatLabel>{t('courses.students')}</StatLabel>
                           </StatItem>
                         )}
                       </TeacherStats>
