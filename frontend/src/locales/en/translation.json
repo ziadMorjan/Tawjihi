@@ -1,0 +1,131 @@
+{
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "teachers": "Teachers",
+    "myCourses": "My Courses",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Sign Up",
+    "searchPlaceholder": "Search for a course or teacher...",
+    "searching": "Searching...",
+    "noResults": "No results match",
+    "viewAll": "View all results",
+    "darkMode": "Enable dark mode",
+    "lightMode": "Enable light mode"
+  },
+  "roles": {
+    "user": "Student",
+    "teacher": "Teacher",
+    "admin": "Admin"
+  },
+  "home": {
+    "heroTitle": "Learn Without Limits",
+    "heroSubtitle": "Discover top courses with the best teachers",
+    "heroBtn": "Explore Courses",
+    "featuredCourses": "Featured Courses",
+    "topTeachers": "Top Teachers",
+    "viewAll": "View All"
+  },
+  "courses": {
+    "title": "Courses",
+    "filterAll": "All",
+    "sortBy": "Sort by",
+    "noResults": "No courses available",
+    "enroll": "Enroll Now",
+    "price": "Price",
+    "free": "Free",
+    "duration": "Duration",
+    "lessons": "lessons",
+    "students": "students"
+  },
+  "courseDetails": {
+    "about": "About this Course",
+    "whatYouLearn": "What you will learn",
+    "curriculum": "Curriculum",
+    "instructor": "Instructor",
+    "reviews": "Reviews",
+    "enrollNow": "Enroll Now",
+    "alreadyEnrolled": "Already Enrolled",
+    "addToCart": "Add to Cart",
+    "addToWishlist": "Add to Wishlist",
+    "shareBtn": "Share"
+  },
+  "teachers": {
+    "title": "Teachers",
+    "certified": "Certified Teacher",
+    "viewProfile": "View Profile",
+    "courses": "courses",
+    "students": "students",
+    "noResults": "No teachers available"
+  },
+  "auth": {
+    "loginTitle": "Login",
+    "registerTitle": "Create a New Account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Full Name",
+    "forgotPassword": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginBtn": "Login",
+    "registerBtn": "Create Account",
+    "orContinueWith": "Or continue with",
+    "loginSuccess": "Logged in successfully",
+    "logoutSuccess": "Logged out successfully",
+    "registerSuccess": "Account created successfully"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "total": "Total",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "browseBtn": "Browse Courses"
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "empty": "Your wishlist is empty",
+    "browseBtn": "Browse Courses",
+    "remove": "Remove from Wishlist",
+    "moveToCart": "Add to Cart"
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "changePassword": "Change Password",
+    "joinDate": "Joined",
+    "coursesCount": "Courses",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel"
+  },
+  "search": {
+    "title": "Search Results",
+    "results": "result(s)",
+    "coursesTab": "Courses",
+    "teachersTab": "Teachers",
+    "noResults": "No Results Found",
+    "noResultsSub": "Try different search keywords"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "by": "by",
+    "ratingOf": "out of 5",
+    "notFound": "Page Not Found"
+  }
+}
