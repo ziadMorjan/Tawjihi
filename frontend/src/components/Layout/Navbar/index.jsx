@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../../constants';
 import {
   ShoppingCart, Heart, BookOpen, User,
-  LogOut, Settings, Moon, Sun,
+  LogOut, Settings, Moon, Sun, Languages,
 } from 'lucide-react';
 import { useThemeMode } from '../../../features/theme/ThemeContext';
 
@@ -20,26 +21,32 @@ import { toast } from 'react-toastify';
 export function Navbar() {
   const navigate  = useNavigate();
   const location  = useLocation();
+  const { t, i18n } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const { cartItems } = useCourseActions();
   const { isDark, toggle } = useThemeMode();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const isAr = i18n.language === 'ar';
+
+  const handleToggleLanguage = () => {
+    const next = isAr ? 'en' : 'ar';
+    i18n.changeLanguage(next);
+  };
+
   const links = [
-    { label: 'الرئيسية',  path: PATH.home     },
-    { label: 'الكورسات',  path: PATH.courses  },
-    { label: 'المعلمون',  path: PATH.teachers },
+    { label: t('nav.home'),     path: PATH.home     },
+    { label: t('nav.courses'),  path: PATH.courses  },
+    { label: t('nav.teachers'), path: PATH.teachers },
   ];
 
-  // أضف "كورساتي" لو مسجل دخول
   if (isAuthenticated) {
-    links.push({ label: 'كورساتي', path: PATH.myCourses });
+    links.push({ label: t('nav.myCourses'), path: PATH.myCourses });
   }
 
   const initials = user?.name?.charAt(0)?.toUpperCase() ?? '؟';
 
-  // إغلاق الـ dropdown عند الضغط خارجه
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -54,7 +61,7 @@ export function Navbar() {
     logout();
     setDropdownOpen(false);
     navigate(PATH.home);
-    toast.success('تم تسجيل الخروج بنجاح');
+    toast.success(t('auth.logoutSuccess'));
   };
 
   const handleNavClick = (path) => {
@@ -62,7 +69,11 @@ export function Navbar() {
     navigate(path);
   };
 
-  const ROLE_MAP = { user: 'طالب', teacher: 'معلم', admin: 'مدير' };
+  const ROLE_MAP = {
+    user:    t('roles.user'),
+    teacher: t('roles.teacher'),
+    admin:   t('roles.admin'),
+  };
 
   return (
     <NavWrapper>
@@ -86,26 +97,27 @@ export function Navbar() {
         </NavLinks>
 
         <NavActions>
-          {/* Dark Mode Toggle */}
-          <CartBtn onClick={toggle} aria-label={isDark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الداكن'} title={isDark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+          <CartBtn onClick={toggle} aria-label={isDark ? t('nav.lightMode') : t('nav.darkMode')} title={isDark ? t('nav.lightMode') : t('nav.darkMode')}>
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </CartBtn>
+
+          <CartBtn onClick={handleToggleLanguage} aria-label="toggle language" title={isAr ? 'Switch to English' : 'التبديل للعربية'}>
+            <Languages size={18} />
           </CartBtn>
 
           {isAuthenticated ? (
             <>
-              {/* Cart */}
-              <CartBtn onClick={() => navigate(PATH.cart)} aria-label="السلة">
+              <CartBtn onClick={() => navigate(PATH.cart)} aria-label={t('nav.cart')}>
                 <ShoppingCart size={20} />
                 {cartItems.length > 0 && (
                   <CartCount>{cartItems.length}</CartCount>
                 )}
               </CartBtn>
 
-              {/* User Avatar + Dropdown */}
               <DropdownWrapper ref={dropdownRef}>
                 <UserAvatar
                   onClick={() => setDropdownOpen(p => !p)}
-                  aria-label="قائمة المستخدم"
+                  aria-label={t('nav.userMenu')}
                 >
                   {user?.coverImage
                     ? <img src={user.coverImage} alt={user.name} />
@@ -115,7 +127,6 @@ export function Navbar() {
 
                 {dropdownOpen && (
                   <DropdownMenu>
-                    {/* Header */}
                     <DropdownHeader>
                       <DropdownName>{user?.name}</DropdownName>
                       <DropdownEmail>
@@ -123,25 +134,24 @@ export function Navbar() {
                       </DropdownEmail>
                     </DropdownHeader>
 
-                    {/* Links */}
                     <DropdownItem onClick={() => handleNavClick(PATH.profile)}>
                       <User size={16} />
-                      الملف الشخصي
+                      {t('nav.profile')}
                     </DropdownItem>
 
                     <DropdownItem onClick={() => handleNavClick(PATH.myCourses)}>
                       <BookOpen size={16} />
-                      كورساتي
+                      {t('nav.myCourses')}
                     </DropdownItem>
 
                     <DropdownItem onClick={() => handleNavClick(PATH.wishlist)}>
                       <Heart size={16} />
-                      المفضلة
+                      {t('nav.wishlist')}
                     </DropdownItem>
 
                     <DropdownItem onClick={() => handleNavClick(PATH.cart)}>
                       <ShoppingCart size={16} />
-                      السلة
+                      {t('nav.cart')}
                       {cartItems.length > 0 && (
                         <span style={{
                           marginRight: 'auto',
@@ -159,14 +169,14 @@ export function Navbar() {
 
                     <DropdownItem onClick={() => handleNavClick(PATH.editProfile)}>
                       <Settings size={16} />
-                      الإعدادات
+                      {t('nav.settings')}
                     </DropdownItem>
 
                     <DropdownDivider />
 
                     <DropdownItem $danger onClick={handleLogout}>
                       <LogOut size={16} />
-                      تسجيل الخروج
+                      {t('nav.logout')}
                     </DropdownItem>
                   </DropdownMenu>
                 )}
@@ -179,14 +189,14 @@ export function Navbar() {
                 size="sm"
                 onClick={() => navigate(PATH.login)}
               >
-                تسجيل الدخول
+                {t('nav.login')}
               </Button>
               <Button
                 variant="primary"
                 size="sm"
                 onClick={() => navigate(PATH.register)}
               >
-                إنشاء حساب
+                {t('nav.register')}
               </Button>
             </>
           )}
