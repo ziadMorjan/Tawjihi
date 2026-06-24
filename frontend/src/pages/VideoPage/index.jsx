@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { PATH } from "../../constants";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -60,13 +61,10 @@ import {
   EmptyState,
 } from "./VideoPage.styles";
 
-const commentSchema = yup.object({
-  review: yup.string().min(3, "التعليق قصير جداً").required("التعليق مطلوب"),
-});
-
 export default function VideoPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const videoRef = useRef(null);
 
@@ -94,6 +92,10 @@ export default function VideoPage() {
   const addCommentMutation = useAddComment(currentLesson?._id);
 
   // ─── Form ───
+  const commentSchema = useMemo(() => yup.object({
+    review: yup.string().min(3, t('video.commentMinChar')).required(t('video.commentRequired')),
+  }), [t]);
+
   const {
     register,
     handleSubmit,
@@ -161,10 +163,10 @@ export default function VideoPage() {
       <MainLayout>
         <EmptyState>
           <Lock size={56} color="#94A3B8" />
-          <h3>غير مسجل في الدورة</h3>
-          <p>يجب الاشتراك في هذه الدورة لمشاهدة الفيديوهات</p>
+          <h3>{t('video.notEnrolledTitle')}</h3>
+          <p>{t('video.notEnrolledSub')}</p>
           <Button onClick={() => navigate(PATH.courseDetails(id))}>
-            العودة لصفحة الكورس
+            {t('video.backToCourse')}
           </Button>
         </EmptyState>
       </MainLayout>
@@ -176,10 +178,10 @@ export default function VideoPage() {
       <MainLayout>
         <EmptyState>
           <PlayCircle size={56} color="#94A3B8" />
-          <h3>لا توجد دروس بعد</h3>
-          <p>لم يُضف المعلم دروساً لهذا الكورس حتى الآن</p>
+          <h3>{t('video.noLessonsTitle')}</h3>
+          <p>{t('video.noLessonsSub')}</p>
           <Button variant="secondary" onClick={() => navigate(-1)}>
-            رجوع
+            {t('common.back')}
           </Button>
         </EmptyState>
       </MainLayout>
@@ -198,7 +200,7 @@ export default function VideoPage() {
             <VideoTitle>
               {currentLesson?.title ??
                 currentLesson?.name ??
-                `الدرس ${currentIndex + 1}`}
+                `${t('video.lessonNum')} ${currentIndex + 1}`}
             </VideoTitle>
             <VideoMeta>
               <Badge variant="primary">
@@ -207,12 +209,12 @@ export default function VideoPage() {
               {currentLesson?.duration && (
                 <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
                   <Clock size={13} />
-                  {Math.ceil(currentLesson.duration / 60)} دقيقة
+                  {Math.ceil(currentLesson.duration / 60)} {t('video.minute')}
                 </span>
               )}
             </VideoMeta>
           </HeaderLeft>
-          <NavHint>استخدم الأسهم ← → للتنقل بين الدروس</NavHint>
+          <NavHint>{t('video.navHint')}</NavHint>
         </VideoHeader>
 
         <ContentWrapper>
@@ -227,14 +229,14 @@ export default function VideoPage() {
                   onContextMenu={(e) => e.preventDefault()}
                 >
                   <source src={currentLesson.video} type="video/mp4" />
-                  متصفحك لا يدعم تشغيل الفيديو
+                  {t('video.noBrowserSupport')}
                 </video>
               </PlayerWrapper>
             ) : (
               <NoVideoPlaceholder>
                 <PlayCircle size={48} />
                 <p style={{ margin: 0, fontSize: 14 }}>
-                  لا يوجد فيديو لهذا الدرس
+                  {t('video.noVideo')}
                 </p>
               </NoVideoPlaceholder>
             )}
@@ -248,10 +250,10 @@ export default function VideoPage() {
                 onClick={() => setCurrentIndex((p) => p - 1)}
                 leftIcon={<ChevronRight size={16} />}
               >
-                الدرس السابق
+                {t('video.prevLesson')}
               </Button>
               <span style={{ fontSize: 13, color: "#94A3B8" }}>
-                {currentIndex + 1} من {lessons.length}
+                {currentIndex + 1} {t('video.of')} {lessons.length}
               </span>
               <Button
                 variant="secondary"
@@ -260,7 +262,7 @@ export default function VideoPage() {
                 onClick={() => setCurrentIndex((p) => p + 1)}
                 rightIcon={<ChevronLeft size={16} />}
               >
-                الدرس التالي
+                {t('video.nextLesson')}
               </Button>
             </NavButtons>
 
@@ -268,7 +270,7 @@ export default function VideoPage() {
             <ReviewsSection>
               <ReviewsTitle>
                 <MessageSquare size={18} style={{ marginLeft: 8 }} />
-                التعليقات ({comments.length})
+                {t('video.comments')} ({comments.length})
               </ReviewsTitle>
 
               {/* Add Comment */}
@@ -282,11 +284,11 @@ export default function VideoPage() {
                       color: "#0F172A",
                     }}
                   >
-                    أضف تعليقك
+                    {t('video.addComment')}
                   </p>
                   <textarea
                     {...register("review")}
-                    placeholder="اكتب تعليقك هنا..."
+                    placeholder={t('video.placeholder')}
                     rows={3}
                     style={{
                       width: "100%",
@@ -297,7 +299,6 @@ export default function VideoPage() {
                       fontSize: 14,
                       resize: "vertical",
                       outline: "none",
-                      direction: "rtl",
                     }}
                   />
                   {errors.review && (
@@ -311,7 +312,7 @@ export default function VideoPage() {
                     isLoading={addCommentMutation.isPending}
                     style={{ alignSelf: "flex-start" }}
                   >
-                    إرسال التعليق
+                    {t('video.submit')}
                   </Button>
                 </AddReviewForm>
               )}
@@ -336,7 +337,7 @@ export default function VideoPage() {
                     margin: "16px 0",
                   }}
                 >
-                  لا توجد تعليقات بعد — كن أول من يعلّق!
+                  {t('video.noComments')}
                 </p>
               ) : (
                 comments.map((comment) => {
@@ -351,7 +352,7 @@ export default function VideoPage() {
                         </ReviewAvatar>
                         <div style={{ flex: 1 }}>
                           <ReviewerName>
-                            {comment.user?.name ?? "مجهول"}
+                            {comment.user?.name ?? t('teachers.anonymous')}
                           </ReviewerName>
                         </div>
 
@@ -371,7 +372,7 @@ export default function VideoPage() {
                                 color: "#94A3B8",
                                 borderRadius: 6,
                               }}
-                              title="تعديل"
+                              title={t('video.edit')}
                             >
                               <Pencil size={14} />
                             </button>
@@ -387,7 +388,7 @@ export default function VideoPage() {
                                 color: "#94A3B8",
                                 borderRadius: 6,
                               }}
-                              title="حذف"
+                              title={t('video.delete')}
                             >
                               <Trash2 size={14} />
                             </button>
@@ -417,18 +418,17 @@ export default function VideoPage() {
                               fontSize: 14,
                               resize: "vertical",
                               outline: "none",
-                              direction: "rtl",
                             }}
                           />
                           <div style={{ display: "flex", gap: 6 }}>
                             <button
                               onClick={async () => {
-                                await editCommentMutation.mutateAsync({
-                                  commentId: comment._id,
-                                  content: editContent,
-                                });
-                                setEditingId(null);
-                              }}
+                                  await editCommentMutation.mutateAsync({
+                                    commentId: comment._id,
+                                    content: editContent,
+                                  });
+                                  setEditingId(null);
+                                }}
                               style={{
                                 display: "flex",
                                 alignItems: "center",
@@ -443,7 +443,7 @@ export default function VideoPage() {
                                 fontFamily: "inherit",
                               }}
                             >
-                              <Check size={13} /> حفظ
+                              <Check size={13} /> {t('video.save')}
                             </button>
                             <button
                               onClick={() => setEditingId(null)}
@@ -461,7 +461,7 @@ export default function VideoPage() {
                                 fontFamily: "inherit",
                               }}
                             >
-                              <X size={13} /> إلغاء
+                              <X size={13} /> {t('video.cancel')}
                             </button>
                           </div>
                         </div>
@@ -480,8 +480,8 @@ export default function VideoPage() {
           {/* Playlist */}
           <PlaylistWrapper>
             <PlaylistHeader>
-              <PlaylistTitle>قائمة الدروس</PlaylistTitle>
-              <PlaylistCount>{lessons.length} درس</PlaylistCount>
+              <PlaylistTitle>{t('video.lessonsList')}</PlaylistTitle>
+              <PlaylistCount>{lessons.length} {t('video.lessonCount')}</PlaylistCount>
             </PlaylistHeader>
             <PlaylistScroll>
               {lessons.map((lesson, index) => {
@@ -507,7 +507,7 @@ export default function VideoPage() {
                       {lesson.duration && (
                         <LessonDuration>
                           <Clock size={11} />
-                          {Math.ceil(lesson.duration / 60)} دقيقة
+                          {Math.ceil(lesson.duration / 60)} {t('video.minute')}
                         </LessonDuration>
                       )}
                     </LessonInfo>

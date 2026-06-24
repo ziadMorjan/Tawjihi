@@ -1,4 +1,5 @@
 import { useNavigate }        from 'react-router-dom';
+import { useTranslation }    from 'react-i18next';
 import { PATH }              from '../../constants';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -47,35 +48,7 @@ const slideVariants = {
   exit:   (dir) => ({ x: dir < 0 ? '100%' : '-100%', opacity: 0, transition: { duration: 0.45 } }),
 };
 
-const heroSlides = [
-  {
-    badge: 'منصة كورسات التوجيهي',
-    title: 'استعد لتوجيهيك مع',
-    highlight: 'أفضل المعلمين',
-    sub: 'كورسات شاملة لجميع مواد التوجيهي، شروحات مفصلة وتمارين تساعدك على الفهم الحقيقي.',
-    gradient: 'linear-gradient(145deg, #0B6B8A 0%, #0a4f68 100%)',
-    icon: <GraduationCap size={80} strokeWidth={1.2} />,
-    accent: '#0B6B8A',
-  },
-  {
-    badge: 'تعلّم في أي وقت ومن أي مكان',
-    title: 'محتوى تعليمي',
-    highlight: 'متاح ٢٤ ساعة',
-    sub: 'وصول كامل لجميع الدروس والمحاضرات عند اشتراكك، ابدأ الآن واستثمر وقتك بذكاء.',
-    gradient: 'linear-gradient(145deg, #0f6b4a 0%, #0a4f36 100%)',
-    icon: <Clock size={80} strokeWidth={1.2} />,
-    accent: '#0f6b4a',
-  },
-  {
-    badge: 'معلمون خبراء ومتميزون',
-    title: 'تعلّم من',
-    highlight: 'أساتذة متخصصين',
-    sub: 'نخبة من معلمي التوجيهي في فلسطين يقدمون المادة بأسلوب واضح وسهل الفهم.',
-    gradient: 'linear-gradient(145deg, #8a5a0b 0%, #6b4208 100%)',
-    icon: <TrendingUp size={80} strokeWidth={1.2} />,
-    accent: '#8a5a0b',
-  },
-];
+
 
 /* ─── Styled Components ─── */
 
@@ -270,6 +243,10 @@ const ClockWidget = styled(motion.div)`
   position: absolute;
   bottom: -20px;
   left: -30px;
+  html[dir="ltr"] & {
+    left: auto;
+    right: -30px;
+  }
   z-index: 10;
   min-width: 180px;
 
@@ -288,6 +265,7 @@ const ClockTime = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  direction: ltr;
 `;
 
 const ClockDigit = styled.span`
@@ -465,11 +443,7 @@ const SectionTitle = styled.h2`
   letter-spacing: -0.02em;
 `;
 
-const SectionSubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textMuted};
-  margin-top: ${({ theme }) => theme.spacing[2]};
-`;
+
 
 /* Features */
 const FeaturesGrid = styled.div`
@@ -688,6 +662,7 @@ const CTASecondaryBtn = styled.button`
 
 /* ─── Clock Hook ─── */
 function useClock() {
+  const { i18n } = useTranslation();
   const [time, setTime] = useState(new Date());
   useEffect(() => {
     const id = setInterval(() => setTime(new Date()), 1000);
@@ -695,25 +670,28 @@ function useClock() {
   }, []);
 
   const pad = (n) => String(n).padStart(2, '0');
-  const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-  const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const isAr = i18n.language.startsWith('ar');
 
   const raw   = time.getHours();
-  const ampm  = raw >= 12 ? 'م' : 'ص';
+  const ampm  = isAr ? (raw >= 12 ? 'م' : 'ص') : (raw >= 12 ? 'PM' : 'AM');
   const hours12 = raw % 12 || 12;
+
+  const locale = isAr ? 'ar-EG' : 'en-US';
+  const dateStr = time.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
   return {
     hours:   pad(hours12),
     minutes: pad(time.getMinutes()),
     seconds: pad(time.getSeconds()),
     ampm,
-    dateStr: `${dayNames[time.getDay()]}، ${time.getDate()} ${monthNames[time.getMonth()]}`,
+    dateStr,
   };
 }
 
 /* ─── Component ─── */
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const clock = useClock();
 
   const { data: rawData, isLoading: coursesLoading } = useCourses({ limit: 8 });
@@ -721,6 +699,34 @@ export default function Home() {
 
   const courses  = rawData?.data?.docs ?? rawData?.data ?? [];
   const teachers = teachersData?.teachers ?? [];
+
+  // ── heroSlides inside component so t() re-runs on language change ────────
+  const heroSlides = [
+    {
+      badge:     t('home.slide1Badge'),
+      title:     t('home.slide1Title'),
+      highlight: t('home.slide1Highlight'),
+      sub:       t('home.slide1Sub'),
+      gradient:  'linear-gradient(145deg, #0B6B8A 0%, #0a4f68 100%)',
+      icon:      <GraduationCap size={80} strokeWidth={1.2} />,
+    },
+    {
+      badge:     t('home.slide2Badge'),
+      title:     t('home.slide2Title'),
+      highlight: t('home.slide2Highlight'),
+      sub:       t('home.slide2Sub'),
+      gradient:  'linear-gradient(145deg, #0f6b4a 0%, #0a4f36 100%)',
+      icon:      <Clock size={80} strokeWidth={1.2} />,
+    },
+    {
+      badge:     t('home.slide3Badge'),
+      title:     t('home.slide3Title'),
+      highlight: t('home.slide3Highlight'),
+      sub:       t('home.slide3Sub'),
+      gradient:  'linear-gradient(145deg, #8a5a0b 0%, #6b4208 100%)',
+      icon:      <TrendingUp size={80} strokeWidth={1.2} />,
+    },
+  ];
 
   /* Slider state */
   const [slide, setSlide] = useState(0);
@@ -732,8 +738,8 @@ export default function Home() {
     setSlide(next);
   }, [slide]);
 
-  const goNext = useCallback(() => goTo((slide + 1) % heroSlides.length), [slide, goTo]);
-  const goPrev = useCallback(() => goTo((slide - 1 + heroSlides.length) % heroSlides.length), [slide, goTo]);
+  const goNext = useCallback(() => goTo((slide + 1) % heroSlides.length), [slide, goTo, heroSlides.length]);
+  const goPrev = useCallback(() => goTo((slide - 1 + heroSlides.length) % heroSlides.length), [slide, goTo, heroSlides.length]);
 
   useEffect(() => {
     if (!autoplay) return;
@@ -743,22 +749,11 @@ export default function Home() {
 
   const currentSlide = heroSlides[slide];
 
+  // ── features inside component so t() re-runs on language change ──────────
   const features = [
-    {
-      icon: <BookOpen size={26} />,
-      title: 'محتوى شامل ومتكامل',
-      desc: 'كورسات تغطي جميع مواد التوجيهي مع شروحات مفصلة ومسائل محلولة خطوة بخطوة',
-    },
-    {
-      icon: <Target size={26} />,
-      title: 'منهجية تعليمية مركزة',
-      desc: 'تعلّم بأسلوب مدروس يوفر وقتك ويضمن استيعابك الكامل للمادة بأقل جهد',
-    },
-    {
-      icon: <Shield size={26} />,
-      title: 'متابعة فورية مضمونة',
-      desc: 'تواصل مع المعلمين وأجب عن أسئلتك في أي وقت، دعم مستمر طوال رحلتك',
-    },
+    { icon: <BookOpen size={26} />, title: t('home.feat1Title'), desc: t('home.feat1Desc') },
+    { icon: <Target  size={26} />, title: t('home.feat2Title'), desc: t('home.feat2Desc') },
+    { icon: <Shield  size={26} />, title: t('home.feat3Title'), desc: t('home.feat3Desc') },
   ];
 
   return (
@@ -795,20 +790,20 @@ export default function Home() {
             <HeroActions variants={fadeUp}>
               <PrimaryBtn onClick={() => navigate(PATH.courses)}>
                 <ArrowLeft size={18} />
-                تصفح الكورسات
+                {t('home.heroBtn')}
               </PrimaryBtn>
               <SecondaryBtn onClick={() => navigate(PATH.register)}>
-                ابدأ مجاناً
+                {t('home.heroBtnSecondary')}
               </SecondaryBtn>
             </HeroActions>
 
             <StatsRow variants={fadeUp}>
               {[
-                { value: 'جميع المواد', label: 'رياضيات، فيزياء، كيمياء والمزيد' },
-                { value: 'شرح مفصّل', label: 'خطوة بخطوة مع تمارين' },
-                { value: 'معلمون متخصصون', label: 'خبرة حقيقية في التوجيهي' },
+                { value: t('home.statsStudents'), label: t('home.slide1Badge') },
+                { value: t('home.statsCourses'),  label: t('home.feat1Title') },
+                { value: t('home.statsTeachers'), label: t('home.feat3Title') },
               ].map(stat => (
-                <StatItem key={stat.label}>
+                <StatItem key={stat.value}>
                   <StatNumber>{stat.value}</StatNumber>
                   <StatLabel>{stat.label}</StatLabel>
                 </StatItem>
@@ -866,15 +861,15 @@ export default function Home() {
               transition={{ delay: 0.9 }}
             >
               <ClockLabel>
-                <Clock size={12} style={{ display: 'inline', marginLeft: 4 }} />
-                الوقت الحالي
+                <Clock size={12} style={{ display: 'inline', marginInlineEnd: 4 }} />
+                {t('home.clockLabel')}
               </ClockLabel>
               <ClockTime>
-                <ClockDigit key={`s-${clock.seconds}`}>{clock.seconds}</ClockDigit>
+                <ClockDigit key={`h-${clock.hours}`}>{clock.hours}</ClockDigit>
                 <ClockSeparator>:</ClockSeparator>
                 <ClockDigit key={`m-${clock.minutes}`}>{clock.minutes}</ClockDigit>
                 <ClockSeparator>:</ClockSeparator>
-                <ClockDigit key={`h-${clock.hours}`}>{clock.hours}</ClockDigit>
+                <ClockDigit key={`s-${clock.seconds}`}>{clock.seconds}</ClockDigit>
               </ClockTime>
               <ClockDate>{clock.ampm} — {clock.dateStr}</ClockDate>
             </ClockWidget>
@@ -894,9 +889,8 @@ export default function Home() {
             <motion.div variants={fadeUp}>
               <SectionHeader>
                 <div>
-                  <SectionTag>مميزاتنا</SectionTag>
-                  <SectionTitle>ليش تختار توجيهي؟</SectionTitle>
-                  <SectionSubtitle>كل ما تحتاجه للتحضير للتوجيهي في مكان واحد</SectionSubtitle>
+                  <SectionTag>{t('home.whyTag')}</SectionTag>
+                  <SectionTitle>{t('home.whyTitle')}</SectionTitle>
                 </div>
               </SectionHeader>
             </motion.div>
@@ -926,9 +920,8 @@ export default function Home() {
         <Section>
           <SectionHeader>
             <div>
-              <SectionTag>أحدث ما أضفناه</SectionTag>
-              <SectionTitle>أحدث الكورسات</SectionTitle>
-              <SectionSubtitle>اكتشف كورسات جديدة أضافها معلمونا مؤخراً</SectionSubtitle>
+              <SectionTag>{t('home.coursesTag')}</SectionTag>
+              <SectionTitle>{t('home.coursesTitle')}</SectionTitle>
             </div>
             <Button
               variant="ghost"
@@ -936,7 +929,7 @@ export default function Home() {
               rightIcon={<ArrowLeft size={16} />}
               onClick={() => navigate(PATH.courses)}
             >
-              عرض الكل
+              {t('home.viewAllCourses')}
             </Button>
           </SectionHeader>
 
@@ -957,9 +950,8 @@ export default function Home() {
               <motion.div variants={fadeUp}>
                 <SectionHeader>
                   <div>
-                    <SectionTag>نخبة المعلمين</SectionTag>
-                    <SectionTitle>معلمونا</SectionTitle>
-                    <SectionSubtitle>نخبة من أفضل معلمي التوجيهي في فلسطين</SectionSubtitle>
+                    <SectionTag>{t('home.teachersTag')}</SectionTag>
+                    <SectionTitle>{t('home.teachersTitle')}</SectionTitle>
                   </div>
                   <Button
                     variant="ghost"
@@ -967,7 +959,7 @@ export default function Home() {
                     rightIcon={<ArrowLeft size={16} />}
                     onClick={() => navigate(PATH.teachers)}
                   >
-                    جميع المعلمين
+                    {t('home.viewAllTeachers')}
                   </Button>
                 </SectionHeader>
               </motion.div>
@@ -1012,22 +1004,20 @@ export default function Home() {
           viewport={{ once: true }}
         >
           <motion.div variants={fadeUp}>
-            <CTATitle>جاهز تبدأ تحضيرك للتوجيهي؟</CTATitle>
+            <CTATitle>{t('home.ctaTitle')}</CTATitle>
           </motion.div>
           <motion.div variants={fadeUp}>
-            <CTASub>
-              اشترك الآن واستفد من كورسات توجيهي مع أفضل المعلمين في فلسطين
-            </CTASub>
+            <CTASub>{t('home.ctaSub')}</CTASub>
           </motion.div>
           <motion.div variants={fadeUp}>
             <CTAActions>
               <CTAPrimaryBtn onClick={() => navigate(PATH.register)}>
                 <GraduationCap size={18} />
-                إنشاء حساب مجاني
+                {t('home.ctaBtn')}
               </CTAPrimaryBtn>
               <CTASecondaryBtn onClick={() => navigate(PATH.courses)}>
                 <ArrowLeft size={18} />
-                تصفح الكورسات
+                {t('home.ctaBtnSecondary')}
               </CTASecondaryBtn>
             </CTAActions>
           </motion.div>

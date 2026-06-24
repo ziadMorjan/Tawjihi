@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { PATH } from "../../constants";
 import {
   Users,
@@ -59,6 +60,7 @@ import {
 export default function CourseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const { data: course, isLoading, isError } = useCourse(id);
@@ -99,8 +101,8 @@ export default function CourseDetails() {
             gap: 16,
           }}
         >
-          <p style={{ color: "#475569" }}>حدث خطأ في تحميل الكورس</p>
-          <Button onClick={() => navigate(PATH.courses)}>العودة للكورسات</Button>
+          <p style={{ color: "#475569" }}>{t('courseDetails.errorLoading')}</p>
+          <Button onClick={() => navigate(PATH.courses)}>{t('courseDetails.backToCourses')}</Button>
         </div>
       </MainLayout>
     );
@@ -155,7 +157,7 @@ export default function CourseDetails() {
             variant="success"
             style={{ fontSize: 18, padding: "8px 20px" }}
           >
-            مجاني تماماً
+            {t('courseDetails.freeBadge')}
           </Badge>
         ) : (
           <>
@@ -164,7 +166,7 @@ export default function CourseDetails() {
               <>
                 <OldPrice>{price} ₪</OldPrice>
                 {discountPercent > 0 && (
-                  <DiscountBadge>خصم {discountPercent}%</DiscountBadge>
+                  <DiscountBadge>{t('courseDetails.discount')} {discountPercent}%</DiscountBadge>
                 )}
               </>
             )}
@@ -181,10 +183,10 @@ export default function CourseDetails() {
         variant={enrolled ? "secondary" : "primary"}
       >
         {enrolled
-          ? "متابعة التعلم"
+          ? t('courseDetails.continueLearning')
           : price === 0
-            ? "ابدأ مجاناً"
-            : "اشترِ الآن"}
+            ? t('courseDetails.startFree')
+            : t('courseDetails.buyNow')}
       </Button>
 
       {/* Cart & Wishlist */}
@@ -197,7 +199,7 @@ export default function CourseDetails() {
             onClick={() => toggleCart(courseId)}
             leftIcon={<ShoppingCart size={16} />}
           >
-            {isInCart(courseId) ? "إزالة من السلة" : "أضف للسلة"}
+            {isInCart(courseId) ? t('courseDetails.removeFromCart') : t('courseDetails.addToCart')}
           </Button>
           <button
             onClick={() => toggleWishlist(courseId)}
@@ -236,7 +238,7 @@ export default function CourseDetails() {
             color: "#0F172A",
           }}
         >
-          يتضمن هذا الكورس:
+          {t('courseDetails.includes')}
         </p>
         <CourseIncludes lessonsCount={lessonsCount} />
       </div>
@@ -260,7 +262,7 @@ export default function CourseDetails() {
                 )}
                 {averageRating > 0 && (
                   <Badge variant="warning" icon={<Award size={12} />}>
-                    {averageRating.toFixed(1)} تقييم
+                    {averageRating.toFixed(1)} {t('courseDetails.ratingCount')}
                   </Badge>
                 )}
               </CourseMeta>
@@ -285,19 +287,19 @@ export default function CourseDetails() {
                     <strong style={{ color: "#F59E0B" }}>
                       {averageRating.toFixed(1)}
                     </strong>
-                    <span>({reviewsQuantity} تقييم)</span>
+                    <span>({reviewsQuantity} {t('courseDetails.ratingCount')})</span>
                   </StatItem>
                 )}
                 {studentsCount > 0 && (
                   <StatItem>
                     <Users size={15} />
-                    <span>{studentsCount.toLocaleString()} طالب</span>
+                    <span>{studentsCount.toLocaleString()} {t('courses.students')}</span>
                   </StatItem>
                 )}
                 {lessonsCount > 0 && (
                   <StatItem>
                     <BookOpen size={15} />
-                    <span>{lessonsCount} درس</span>
+                    <span>{lessonsCount} {t('courses.lessons')}</span>
                   </StatItem>
                 )}
               </StatsRow>
@@ -315,7 +317,7 @@ export default function CourseDetails() {
                     )}
                   </TeacherAvatar>
                   <TeacherMeta>
-                    <TeacherLabel>يُدرّسه</TeacherLabel>
+                    <TeacherLabel>{t('courseDetails.taughtBy')}</TeacherLabel>
                     <TeacherName>{teacher.name}</TeacherName>
                   </TeacherMeta>
                 </TeacherInfo>
@@ -339,7 +341,7 @@ export default function CourseDetails() {
               <Section>
                 <SectionTitle>
                   <BookOpen size={20} color="#1B4FD8" />
-                  عن الكورس
+                  {t('courseDetails.about')}
                 </SectionTitle>
                 <SectionText>{description}</SectionText>
               </Section>
@@ -356,7 +358,7 @@ export default function CourseDetails() {
           <SidebarSticky>
             {teacher && (
               <InstructorCard>
-                <InstructorTitle>المعلم</InstructorTitle>
+                <InstructorTitle>{t('courseDetails.instructor')}</InstructorTitle>
                 <InstructorInfo
                   onClick={() => navigate(PATH.teacherProfile(teacher._id))}
                 >
@@ -369,7 +371,7 @@ export default function CourseDetails() {
                   </InstructorAvatar>
                   <div>
                     <InstructorName>{teacher.name}</InstructorName>
-                    <InstructorRole>معلم معتمد</InstructorRole>
+                    <InstructorRole>{t('teachers.certified')}</InstructorRole>
                   </div>
                 </InstructorInfo>
               </InstructorCard>
