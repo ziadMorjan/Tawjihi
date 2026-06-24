@@ -22,20 +22,24 @@ const queryClient = new QueryClient({
 // ── Syncs <html dir="" lang=""> with the active i18n language ──────────────
 function DirectionSync() {
   const { i18n } = useTranslation();
-  const isAr = i18n.language === 'ar';
+  // resolvedLanguage is always the exact matched key ('ar' or 'en')
+  // fallback to language.startsWith() in case it's 'ar-EG', 'en-US', etc.
+  const lang = i18n.resolvedLanguage ?? i18n.language;
+  const isAr = lang === 'ar' || lang.startsWith('ar');
 
   useEffect(() => {
-    document.documentElement.setAttribute('lang', i18n.language);
+    document.documentElement.setAttribute('lang', lang);
     document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
-  }, [i18n.language, isAr]);
+  }, [lang, isAr]);
 
-  return null; // renders nothing — side-effect only
+  return null;
 }
 
 function ThemedApp({ children }) {
   const { isDark } = useThemeMode();
   const { i18n } = useTranslation();
-  const isAr = i18n.language === 'ar';
+  const lang = i18n.resolvedLanguage ?? i18n.language;
+  const isAr = lang === 'ar' || lang.startsWith('ar');
 
   return (
     <ThemeProvider theme={isDark ? darkTheme : lightTheme}>

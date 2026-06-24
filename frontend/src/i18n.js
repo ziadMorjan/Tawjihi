@@ -39,12 +39,14 @@ i18n
 
 // ── Apply dir & lang on <html> whenever language changes ────────────────────
 i18n.on('languageChanged', (lng) => {
-  document.documentElement.setAttribute('lang', lng);
-  document.documentElement.setAttribute('dir', lng === 'ar' ? 'rtl' : 'ltr');
+  const isAr = lng === 'ar' || lng.startsWith('ar');
+  document.documentElement.setAttribute('lang', isAr ? 'ar' : 'en');
+  document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
 });
 
-// ── Apply on initial load ────────────────────────────────────────────────────
-const initialLng = i18n.language?.startsWith('ar') ? 'ar' : 'en';
+// ── Apply on initial load ────────────────────────────────────────────────
+const savedLng = localStorage.getItem('tawjihi-language');
+const initialLng = savedLng === 'en' ? 'en' : 'ar';
 document.documentElement.setAttribute('lang', initialLng);
 document.documentElement.setAttribute('dir', initialLng === 'ar' ? 'rtl' : 'ltr');
 
