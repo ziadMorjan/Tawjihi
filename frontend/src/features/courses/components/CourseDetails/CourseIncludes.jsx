@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { PlayCircle, BookOpen, Award, Infinity, Monitor } from 'lucide-react';
 
 const Grid = styled.div`
@@ -25,21 +26,23 @@ const Item = styled.div`
   }
 `;
 
-const items = [
-  { icon: PlayCircle, text: (n) => `${n} درس فيديو` },
-  { icon: Infinity, text: () => 'وصول مدى الحياة' },
-  { icon: Monitor, text: () => 'متاح على جميع الأجهزة' },
-  { icon: Award, text: () => 'شهادة إتمام' },
-  { icon: BookOpen, text: () => 'موارد قابلة للتحميل' },
-];
-
 export function CourseIncludes({ lessonsCount = 0 }) {
+  const { t } = useTranslation();
+
+  const items = [
+    { icon: PlayCircle, text: t('courseDetails.videoLessonsCount', { count: lessonsCount }) },
+    { icon: Infinity, text: t('courseDetails.lifetimeAccess') },
+    { icon: Monitor, text: t('courseDetails.availableOnDevices') },
+    { icon: Award, text: t('courseDetails.certificate') },
+    { icon: BookOpen, text: t('courseDetails.downloadableResources') },
+  ];
+
   return (
     <Grid>
       {items.map(({ icon: Icon, text }, i) => (
         <Item key={i}>
           <Icon size={15} />
-          {text(lessonsCount)}
+          {text}
         </Item>
       ))}
     </Grid>

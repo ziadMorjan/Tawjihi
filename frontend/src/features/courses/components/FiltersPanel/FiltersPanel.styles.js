@@ -43,7 +43,7 @@ export const FilterOption = styled.button`
   color: ${({ theme }) => theme.colors.textSecondary};
   cursor: pointer;
   transition: ${({ theme }) => theme.transitions.fast};
-  text-align: right;
+  text-align: start;
   width: 100%;
 
   ${({ $active, theme }) => $active && css`
@@ -71,7 +71,6 @@ export const SortSelect = styled.select`
   cursor: pointer;
   outline: none;
   appearance: none;
-  direction: rtl;
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.primary};
