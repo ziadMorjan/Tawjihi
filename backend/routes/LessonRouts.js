@@ -28,11 +28,13 @@ import {
 
 import resourceRouts from './ResourceRouts.js';
 import commentsRouts from './CommentRoutes.js';
+import { getOrGenerateAIContent } from '../controllers/AIController.js';
 
 const router = express.Router({ mergeParams: true });
 
 router.use('/:lessonId/resources', resourceRouts);
 router.use('/:lessonId/comments', commentsRouts);
+router.post('/:lessonId/ai', protect, getOrGenerateAIContent);
 
 router
 	.route('/')
