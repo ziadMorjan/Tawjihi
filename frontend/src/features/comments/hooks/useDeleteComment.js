@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { commentsApi } from '../api/commentsApi';
 import { COMMENTS_QUERY_KEY } from './useComments';
 
 export function useDeleteComment(lessonId) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -18,11 +20,11 @@ export function useDeleteComment(lessonId) {
     },
     onError: (err, id, ctx) => {
       queryClient.setQueryData([...COMMENTS_QUERY_KEY, lessonId], ctx.prev);
-      toast.error('حدث خطأ أثناء الحذف');
+      toast.error(t('video.commentDeleteError'));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [...COMMENTS_QUERY_KEY, lessonId] });
-      toast.success('تم حذف التعليق');
+      toast.success(t('video.commentDeleted'));
     },
   });
 }

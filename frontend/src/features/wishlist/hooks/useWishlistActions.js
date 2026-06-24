@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { wishlistApi } from '../api/wishlistApi';
 import { WISHLIST_QUERY_KEY } from './useWishlist';
 import { useAuth } from '../../auth';
 
 export function useWishlistActions() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -15,9 +17,9 @@ export function useWishlistActions() {
     mutationFn: wishlistApi.addToWishlist,
     onSuccess: () => {
       invalidateWishlist();
-      toast.success('تمت الإضافة إلى المفضلة');
+      toast.success(t('wishlist.added'));
     },
-    onError: () => toast.error('حدث خطأ، حاول مجدداً'),
+    onError: () => toast.error(t('wishlist.error')),
   });
 
   const removeMutation = useMutation({
@@ -32,16 +34,16 @@ export function useWishlistActions() {
     },
     onError: (err, id, ctx) => {
       queryClient.setQueryData(WISHLIST_QUERY_KEY, ctx.prev);
-      toast.error('حدث خطأ، حاول مجدداً');
+      toast.error(t('wishlist.error'));
     },
     onSettled: () => {
       invalidateWishlist();
-      toast.info('تمت الإزالة من المفضلة');
+      toast.info(t('wishlist.removed'));
     },
   });
 
   const toggleWishlist = (courseId) => {
-    if (!user) { toast.info('سجّل دخولك أولاً'); return; }
+    if (!user) { toast.info(t('wishlist.loginFirst')); return; }
     const ids = queryClient.getQueryData(WISHLIST_QUERY_KEY) ?? [];
     const inWishlist = ids.some((id) => (id?._id ?? id) === courseId);
     inWishlist
