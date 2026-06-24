@@ -28,7 +28,8 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const isAr = i18n.language === 'ar';
+  const lang = i18n.resolvedLanguage ?? i18n.language;
+  const isAr = lang === 'ar' || lang.startsWith('ar');
 
   const handleToggleLanguage = () => {
     const next = isAr ? 'en' : 'ar';
@@ -81,7 +82,7 @@ export function Navbar() {
 
         <Logo onClick={() => navigate(PATH.home)}>
           <img src="/assets/img/logo.png" alt="Tawjihi" />
-          <span>توجيهي</span>
+          <span>{t('nav.logoText')}</span>
         </Logo>
 
         <NavLinks>
