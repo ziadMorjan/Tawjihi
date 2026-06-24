@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../../../constants';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -51,9 +52,14 @@ const cardVariants = {
  * البيانات (كود الخصم، الخصم، الانتهاء) تأتي من الـ Backend
  */
 export function WelcomeModal() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user, welcomeReward, clearWelcomeReward } = useAuth();
   const markedRef = useRef(false);
+
+  const lang = i18n.resolvedLanguage ?? i18n.language;
+  const isAr = lang === 'ar' || lang.startsWith('ar');
+  const dateLocale = isAr ? 'ar-EG' : 'en-US';
 
   const handleClose = useCallback(async () => {
     if (markedRef.current) return;
@@ -97,7 +103,7 @@ export function WelcomeModal() {
   const { coupon, discount, expire } = welcomeReward ?? {};
 
   const expireDate = expire
-    ? new Date(expire).toLocaleDateString('ar-SA', {
+    ? new Date(expire).toLocaleDateString(dateLocale, {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -131,7 +137,7 @@ export function WelcomeModal() {
             aria-labelledby="wm-title"
           >
             {/* زر الإغلاق */}
-            <CloseBtn onClick={handleClose} aria-label="إغلاق">✕</CloseBtn>
+            <CloseBtn onClick={handleClose} aria-label={t('welcomeModal.close')}>✕</CloseBtn>
 
             {/* الأيقونة */}
             <IconWrap>
@@ -142,38 +148,36 @@ export function WelcomeModal() {
 
             {/* الترحيب */}
             <Title id="wm-title">
-              أهلاً وسهلاً{user?.name ? `، ${user.name}` : ''}!
+              {t('welcomeModal.title', { name: user?.name ? (isAr ? `، ${user.name}` : `, ${user.name}`) : '' })}
             </Title>
-            <Subtitle>
-              يسعدنا انضمامك إلى منصة <strong>توجيهي</strong>
-            </Subtitle>
-            <GiftText>حصلت على كود خصم حصري لأول طلب:</GiftText>
+            <Subtitle dangerouslySetInnerHTML={{ __html: t('welcomeModal.subtitle') }} />
+            <GiftText>{t('welcomeModal.giftText')}</GiftText>
 
             {/* كود الخصم */}
             <CouponWrap>
               <CouponCode
                 id="wm-coupon-code"
                 onClick={copyToClipboard}
-                title="اضغط للنسخ"
+                title={t('welcomeModal.copyTooltip')}
               >
                 <CouponText>{coupon}</CouponText>
-                <CopyHint>انسخ</CopyHint>
-                <CopiedHint>✓ تم النسخ!</CopiedHint>
+                <CopyHint>{t('welcomeModal.copyBtn')}</CopyHint>
+                <CopiedHint>{t('welcomeModal.copiedHint')}</CopiedHint>
               </CouponCode>
-              <DiscountBadge>خصم {discount}%</DiscountBadge>
+              <DiscountBadge>{t('welcomeModal.discountBadge', { discount })}</DiscountBadge>
             </CouponWrap>
 
             {expireDate && (
-              <Expire>صالح حتى: <strong>{expireDate}</strong></Expire>
+              <Expire dangerouslySetInnerHTML={{ __html: t('welcomeModal.expire', { date: expireDate }) }} />
             )}
 
             {/* الأزرار */}
             <Actions>
               <PrimaryBtn onClick={handleUseCoupon}>
-                استخدم الكود الآن
+                {t('welcomeModal.primaryBtn')}
               </PrimaryBtn>
               <SecondaryBtn onClick={handleClose}>
-                ربما لاحقاً
+                {t('welcomeModal.secondaryBtn')}
               </SecondaryBtn>
             </Actions>
           </Card>

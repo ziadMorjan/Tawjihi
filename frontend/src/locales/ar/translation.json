@@ -316,5 +316,18 @@
     "commentDeleted": "تم حذف التعليق",
     "commentEdited": "تم تعديل التعليق",
     "commentEditError": "حدث خطأ أثناء التعديل"
+  },
+  "welcomeModal": {
+    "title": "أهلاً وسهلاً{{name}}!",
+    "subtitle": "يسعدنا انضمامك إلى منصة <strong>توجيهي</strong>",
+    "giftText": "حصلت على كود خصم حصري لأول طلب:",
+    "copyTooltip": "اضغط للنسخ",
+    "copyBtn": "انسخ",
+    "copiedHint": "✓ تم النسخ!",
+    "discountBadge": "خصم {{discount}}%",
+    "expire": "صالح حتى: <strong>{{date}}</strong>",
+    "primaryBtn": "استخدم الكود الآن",
+    "secondaryBtn": "ربما لاحقاً",
+    "close": "إغلاق"
   }
 }

@@ -321,5 +321,18 @@
     "commentDeleted": "Comment deleted successfully",
     "commentEdited": "Comment edited successfully",
     "commentEditError": "An error occurred while editing the comment"
+  },
+  "welcomeModal": {
+    "title": "Welcome{{name}}!",
+    "subtitle": "We are glad you joined <strong>Tawjihi</strong>",
+    "giftText": "You have received an exclusive discount code for your first order:",
+    "copyTooltip": "Click to copy",
+    "copyBtn": "Copy",
+    "copiedHint": "✓ Copied!",
+    "discountBadge": "{{discount}}% Off",
+    "expire": "Valid until: <strong>{{date}}</strong>",
+    "primaryBtn": "Use Coupon Now",
+    "secondaryBtn": "Maybe later",
+    "close": "Close"
   }
 }
