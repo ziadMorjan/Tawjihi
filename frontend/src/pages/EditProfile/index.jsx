@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,13 +11,6 @@ import { MainLayout }      from '../../shared/components/layout/MainLayout';
 import { Button, Input } from '../../shared/components';
 import { useAuth }         from '../../features/auth';
 import { useUpdateProfile } from '../../features/user';
-
-const schema = yup.object({
-  name:  yup.string().required('الاسم مطلوب'),
-  email: yup.string().email('بريد غير صحيح').required('البريد مطلوب'),
-  phone: yup.string().nullable(),
-  bio:   yup.string().nullable(),
-});
 
 const PageWrapper = styled.div`
   max-width: 640px;
@@ -107,7 +101,6 @@ const Textarea = styled.textarea`
   color: ${({ theme }) => theme.colors.textPrimary};
   resize: vertical;
   outline: none;
-  direction: rtl;
   min-height: 100px;
   background: ${({ theme }) => theme.colors.bgPrimary};
 
@@ -137,12 +130,20 @@ const Actions = styled.div`
 
 export default function EditProfile() {
   const navigate   = useNavigate();
+  const { t }      = useTranslation();
   const { user }   = useAuth();
   const fileRef    = useRef(null);
   const [preview, setPreview] = useState(user?.coverImage ?? null);
   const [imageFile, setImageFile] = useState(null);
 
   const updateMutation = useUpdateProfile();
+
+  const schema = useMemo(() => yup.object({
+    name:  yup.string().required(t('profile.nameRequired')),
+    email: yup.string().email(t('profile.emailInvalid')).required(t('profile.emailRequired')),
+    phone: yup.string().nullable(),
+    bio:   yup.string().nullable(),
+  }), [t]);
 
   const {
     register,
@@ -180,7 +181,7 @@ export default function EditProfile() {
   return (
     <MainLayout>
       <PageWrapper>
-        <PageTitle>تعديل الملف الشخصي</PageTitle>
+        <PageTitle>{t('profile.editProfile')}</PageTitle>
 
         <Card>
           {/* Avatar Upload */}
@@ -196,10 +197,10 @@ export default function EditProfile() {
             </AvatarUpload>
             <div>
               <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
-                صورة الملف الشخصي
+                {t('profile.avatarLabel')}
               </p>
               <p style={{ margin: '4px 0 0', fontSize: 12, color: '#94A3B8' }}>
-                اضغط لتغيير الصورة
+                {t('profile.avatarHint')}
               </p>
             </div>
             <input
@@ -215,7 +216,7 @@ export default function EditProfile() {
           <FormGrid>
             <Input
               id="name"
-              label="الاسم الكامل"
+              label={t('auth.name')}
               leftIcon={<User size={16} />}
               error={errors.name?.message}
               {...register('name')}
@@ -223,7 +224,7 @@ export default function EditProfile() {
             <Input
               id="email"
               type="email"
-              label="البريد الإلكتروني"
+              label={t('auth.email')}
               leftIcon={<Mail size={16} />}
               error={errors.email?.message}
               dir="ltr"
@@ -232,7 +233,7 @@ export default function EditProfile() {
             <Input
               id="phone"
               type="tel"
-              label="رقم الهاتف"
+              label={t('profile.phoneLabel')}
               leftIcon={<Phone size={16} />}
               error={errors.phone?.message}
               dir="ltr"
@@ -241,11 +242,11 @@ export default function EditProfile() {
             <div>
               <Label htmlFor="bio">
                 <FileText size={14} style={{ display: 'inline', marginLeft: 4 }} />
-                نبذة شخصية
+                {t('profile.bioLabel')}
               </Label>
               <Textarea
                 id="bio"
-                placeholder="اكتب نبذة مختصرة عن نفسك..."
+                placeholder={t('profile.bioPlaceholder')}
                 {...register('bio')}
               />
             </div>
@@ -253,13 +254,13 @@ export default function EditProfile() {
 
           <Actions>
             <Button variant="ghost" onClick={() => navigate(PATH.profile)}>
-              إلغاء
+              {t('profile.cancel')}
             </Button>
             <Button
               isLoading={updateMutation.isPending}
               onClick={handleSubmit(onSubmit)}
             >
-              حفظ التغييرات
+              {t('profile.saveChanges')}
             </Button>
           </Actions>
         </Card>
