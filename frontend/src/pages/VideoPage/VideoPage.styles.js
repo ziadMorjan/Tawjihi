@@ -347,3 +347,47 @@ export const EmptyState = styled.div`
     margin: 0;
   }
 `;
+
+/* ─── Tabs for AI summary, Flashcards, and Comments ─── */
+export const TabsContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[2]};
+  border-bottom: 2.5px solid ${({ theme }) => theme.colors.border || '#E2E8F0'};
+  padding-bottom: 2px;
+  margin-top: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const TabButton = styled.button`
+  background: none;
+  border: none;
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[5]}`};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textSecondary || '#64748B'};
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
+
+  ${({ $active, theme }) => $active && css`
+    color: ${theme.colors.primary};
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -4.5px;
+      left: 0;
+      right: 0;
+      height: 3.5px;
+      background: ${theme.colors.primary};
+      border-radius: 999px;
+    }
+  `}
+`;

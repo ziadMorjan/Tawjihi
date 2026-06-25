@@ -38,7 +38,9 @@
 		"invalid_token_login_again": "Invalid token. Please log in again!",
 		"token_expired": "Your token has expired! Please log in again.",
 		"something_went_wrong": "Something went wrong",
-		"route_not_found": "Can't find {{original_url}} on this server"
+		"route_not_found": "Can't find {{original_url}} on this server",
+		"ai_generation_failed": "AI generation failed. Please verify your API key and connection.",
+		"ai_overloaded": "The AI service is currently busy due to high demand. Please try again in a minute."
 	},
 	"comments": {
 		"comment_does_not_belong_to_you": "This comment does not belong to you.",

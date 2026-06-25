@@ -8,4 +8,8 @@ export const lessonsApi = {
     });
     return data;
   },
+  getAIContent: async (lessonId) => {
+    const { data } = await axiosInstance.post(`/lessons/${lessonId}/ai`);
+    return data;
+  },
 };

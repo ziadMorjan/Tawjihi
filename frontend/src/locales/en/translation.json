@@ -334,5 +334,21 @@
     "primaryBtn": "Use Coupon Now",
     "secondaryBtn": "Maybe later",
     "close": "Close"
+  },
+  "aiSummary": {
+    "title": "Smart Lesson Summary",
+    "generateBtn": "Generate Summary & Flashcards with AI",
+    "generating": "Generating with AI...",
+    "copied": "✓ Copied!",
+    "copyBtn": "Copy Summary",
+    "error": "Failed to generate AI summary. Please try again later."
+  },
+  "flashcards": {
+    "title": "Study Flashcards",
+    "flipHint": "Click on card to flip and reveal answer",
+    "next": "Next",
+    "prev": "Prev",
+    "progress": "Card {{current}} of {{total}}",
+    "generateFirst": "Please generate the summary and flashcards first from the dedicated tab."
   }
 }

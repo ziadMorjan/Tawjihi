@@ -14,7 +14,6 @@ export const getPayments = getAll(Payment);
 
 export const getPayment = getOne(Payment, 'Payment');
 
-
 export const createCheckoutSession = asyncErrorHandler(async (req, res, next) => {
 	// 1. جلب سلة المستخدم مع populate للكورسات
 	const cart = await Cart.findOne({ user: req.user.id }).populate('courses');
@@ -33,7 +32,8 @@ export const createCheckoutSession = asyncErrorHandler(async (req, res, next) =>
 	let couponMultiplier = 1;
 	if (cart.totalPriceAfterDiscount !== undefined && cart.totalPrice > 0) {
 		// نسبة الخصم = (totalPrice - totalPriceAfterDiscount) / totalPrice
-		const couponDiscountRatio = (cart.totalPrice - cart.totalPriceAfterDiscount) / cart.totalPrice;
+		const couponDiscountRatio =
+			(cart.totalPrice - cart.totalPriceAfterDiscount) / cart.totalPrice;
 		couponMultiplier = 1 - couponDiscountRatio;
 	}
 

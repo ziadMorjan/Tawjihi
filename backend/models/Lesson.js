@@ -31,6 +31,16 @@ const lessonSchema = new mongoose.Schema(
 			required: true,
 		},
 		resources: [resourceSchema],
+		aiSummary: {
+			type: String,
+			default: '',
+		},
+		aiFlashcards: [
+			{
+				front: { type: String, required: true },
+				back: { type: String, required: true },
+			},
+		],
 	},
 	{ timestamps: true },
 );

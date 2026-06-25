@@ -16,10 +16,11 @@ import {
   Trash2,
   Check,
   X,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "../../features/auth";
 import { useMyEnrollments } from "../../features/enrollments/hooks/useMyEnrollments";
-import { useLessons } from "../../features/lessons";
+import { useLessons, useGenerateAI, AISummary, Flashcards } from "../../features/lessons";
 import {
   useComments,
   useAddComment,
@@ -59,6 +60,8 @@ import {
   ReviewText,
   AddReviewForm,
   EmptyState,
+  TabsContainer,
+  TabButton,
 } from "./VideoPage.styles";
 
 export default function VideoPage() {
@@ -70,6 +73,8 @@ export default function VideoPage() {
 
   const { state } = useLocation();
   const [currentIndex, setCurrentIndex] = useState(state?.startIndex ?? 0);
+  const [activeTab, setActiveTab] = useState("comments");
+  const generateAIMutation = useGenerateAI(id);
 
   // ─── Data ───
   const { isEnrolled, isLoading: enrollLoading } = useMyEnrollments();
@@ -192,8 +197,8 @@ export default function VideoPage() {
   const hasNext = currentIndex < lessons.length - 1;
 
   return (
-    <MainLayout>
-      <PageWrapper>
+      <MainLayout>
+        <PageWrapper>
         {/* Header */}
         <VideoHeader>
           <HeaderLeft>
@@ -265,216 +270,256 @@ export default function VideoPage() {
                 {t('video.nextLesson')}
               </Button>
             </NavButtons>
-
-            {/* Comments */}
-            <ReviewsSection>
-              <ReviewsTitle>
-                <MessageSquare size={18} style={{ marginLeft: 8 }} />
+            {/* Tabs for comments, summary, and flashcards */}
+            <TabsContainer>
+              <TabButton
+                $active={activeTab === "comments"}
+                onClick={() => setActiveTab("comments")}
+              >
+                <MessageSquare size={16} />
                 {t('video.comments')} ({comments.length})
-              </ReviewsTitle>
+              </TabButton>
+              <TabButton
+                $active={activeTab === "summary"}
+                onClick={() => setActiveTab("summary")}
+              >
+                <Sparkles size={16} />
+                {t('aiSummary.title')}
+              </TabButton>
+              <TabButton
+                $active={activeTab === "flashcards"}
+                onClick={() => setActiveTab("flashcards")}
+              >
+                <Sparkles size={16} style={{ display: 'none' }} />
+                {t('flashcards.title')}
+              </TabButton>
+            </TabsContainer>
 
-              {/* Add Comment */}
-              {user && (
-                <AddReviewForm>
+            {/* Tab Contents */}
+            {activeTab === "comments" && (
+              <ReviewsSection>
+                <ReviewsTitle>
+                  <MessageSquare size={18} style={{ marginInlineEnd: 8 }} />
+                  {t('video.comments')} ({comments.length})
+                </ReviewsTitle>
+
+                {/* Add Comment */}
+                {user && (
+                  <AddReviewForm>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: "#0F172A",
+                      }}
+                    >
+                      {t('video.addComment')}
+                    </p>
+                    <textarea
+                      {...register("review")}
+                      placeholder={t('video.placeholder')}
+                      rows={3}
+                      style={{
+                        width: "100%",
+                        padding: "10px 14px",
+                        border: `1.5px solid ${errors.review ? "#DC2626" : "#E2E8F0"}`,
+                        borderRadius: 10,
+                        fontFamily: "inherit",
+                        fontSize: 14,
+                        resize: "vertical",
+                        outline: "none",
+                      }}
+                    />
+                    {errors.review && (
+                      <span style={{ fontSize: 12, color: "#DC2626" }}>
+                        {errors.review.message}
+                      </span>
+                    )}
+                    <Button
+                      size="sm"
+                      onClick={handleSubmit(onSubmitComment)}
+                      isLoading={addCommentMutation.isPending}
+                      style={{ alignSelf: "flex-start" }}
+                    >
+                      {t('video.submit')}
+                    </Button>
+                  </AddReviewForm>
+                )}
+
+                {/* Comments List */}
+                {commentsLoading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      padding: 24,
+                    }}
+                  >
+                    <Spinner size="md" />
+                  </div>
+                ) : comments.length === 0 ? (
                   <p
                     style={{
-                      margin: 0,
+                      textAlign: "center",
+                      color: "#94A3B8",
                       fontSize: 14,
-                      fontWeight: 600,
-                      color: "#0F172A",
+                      margin: "16px 0",
                     }}
                   >
-                    {t('video.addComment')}
+                    {t('video.noComments')}
                   </p>
-                  <textarea
-                    {...register("review")}
-                    placeholder={t('video.placeholder')}
-                    rows={3}
-                    style={{
-                      width: "100%",
-                      padding: "10px 14px",
-                      border: `1.5px solid ${errors.review ? "#DC2626" : "#E2E8F0"}`,
-                      borderRadius: 10,
-                      fontFamily: "inherit",
-                      fontSize: 14,
-                      resize: "vertical",
-                      outline: "none",
-                    }}
-                  />
-                  {errors.review && (
-                    <span style={{ fontSize: 12, color: "#DC2626" }}>
-                      {errors.review.message}
-                    </span>
-                  )}
-                  <Button
-                    size="sm"
-                    onClick={handleSubmit(onSubmitComment)}
-                    isLoading={addCommentMutation.isPending}
-                    style={{ alignSelf: "flex-start" }}
-                  >
-                    {t('video.submit')}
-                  </Button>
-                </AddReviewForm>
-              )}
+                ) : (
+                  comments.map((comment) => {
+                    const isOwner = user?._id === comment.user?._id;
+                    const isEditing = editingId === comment._id;
 
-              {/* Comments List */}
-              {commentsLoading ? (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    padding: 24,
-                  }}
-                >
-                  <Spinner size="md" />
-                </div>
-              ) : comments.length === 0 ? (
-                <p
-                  style={{
-                    textAlign: "center",
-                    color: "#94A3B8",
-                    fontSize: 14,
-                    margin: "16px 0",
-                  }}
-                >
-                  {t('video.noComments')}
-                </p>
-              ) : (
-                comments.map((comment) => {
-                  const isOwner = user?._id === comment.user?._id;
-                  const isEditing = editingId === comment._id;
-
-                  return (
-                    <ReviewCard key={comment._id}>
-                      <ReviewHeader>
-                        <ReviewAvatar>
-                          {comment.user?.name?.charAt(0) ?? "؟"}
-                        </ReviewAvatar>
-                        <div style={{ flex: 1 }}>
-                          <ReviewerName>
-                            {comment.user?.name ?? t('teachers.anonymous')}
-                          </ReviewerName>
-                        </div>
-
-                        {/* أزرار التعديل والحذف — للمالك فقط */}
-                        {isOwner && !isEditing && (
-                          <div style={{ display: "flex", gap: 6 }}>
-                            <button
-                              onClick={() => {
-                                setEditingId(comment._id);
-                                setEditContent(comment.content);
-                              }}
-                              style={{
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                padding: 4,
-                                color: "#94A3B8",
-                                borderRadius: 6,
-                              }}
-                              title={t('video.edit')}
-                            >
-                              <Pencil size={14} />
-                            </button>
-                            <button
-                              onClick={() =>
-                                deleteCommentMutation.mutate(comment._id)
-                              }
-                              style={{
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                padding: 4,
-                                color: "#94A3B8",
-                                borderRadius: 6,
-                              }}
-                              title={t('video.delete')}
-                            >
-                              <Trash2 size={14} />
-                            </button>
+                    return (
+                      <ReviewCard key={comment._id}>
+                        <ReviewHeader>
+                          <ReviewAvatar>
+                            {comment.user?.name?.charAt(0) ?? "؟"}
+                          </ReviewAvatar>
+                          <div style={{ flex: 1 }}>
+                            <ReviewerName>
+                              {comment.user?.name ?? t('teachers.anonymous')}
+                            </ReviewerName>
                           </div>
-                        )}
-                      </ReviewHeader>
 
-                      {/* محتوى التعليق — عرض أو تعديل */}
-                      {isEditing ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 8,
-                          }}
-                        >
-                          <textarea
-                            value={editContent}
-                            onChange={(e) => setEditContent(e.target.value)}
-                            rows={2}
-                            style={{
-                              width: "100%",
-                              padding: "8px 12px",
-                              border: "1.5px solid #E2E8F0",
-                              borderRadius: 8,
-                              fontFamily: "inherit",
-                              fontSize: 14,
-                              resize: "vertical",
-                              outline: "none",
-                            }}
-                          />
-                          <div style={{ display: "flex", gap: 6 }}>
-                            <button
-                              onClick={async () => {
-                                  await editCommentMutation.mutateAsync({
-                                    commentId: comment._id,
-                                    content: editContent,
-                                  });
-                                  setEditingId(null);
+                          {/* أزرار التعديل والحذف — للمالك فقط */}
+                          {isOwner && !isEditing && (
+                            <div style={{ display: "flex", gap: 6 }}>
+                              <button
+                                onClick={() => {
+                                  setEditingId(comment._id);
+                                  setEditContent(comment.content);
                                 }}
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  padding: 4,
+                                  color: "#94A3B8",
+                                  borderRadius: 6,
+                                }}
+                                title={t('video.edit')}
+                              >
+                                <Pencil size={14} />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  deleteCommentMutation.mutate(comment._id)
+                                }
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  padding: 4,
+                                  color: "#94A3B8",
+                                  borderRadius: 6,
+                                }}
+                                title={t('video.delete')}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          )}
+                        </ReviewHeader>
+
+                        {/* محتوى التعليق — عرض أو تعديل */}
+                        {isEditing ? (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 8,
+                            }}
+                          >
+                            <textarea
+                              value={editContent}
+                              onChange={(e) => setEditContent(e.target.value)}
+                              rows={2}
                               style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 4,
-                                padding: "4px 10px",
-                                borderRadius: 6,
-                                border: "1px solid #16A34A",
-                                background: "#F0FDF4",
-                                color: "#16A34A",
-                                cursor: "pointer",
-                                fontSize: 12,
+                                width: "100%",
+                                padding: "8px 12px",
+                                border: "1.5px solid #E2E8F0",
+                                borderRadius: 8,
                                 fontFamily: "inherit",
+                                fontSize: 14,
+                                resize: "vertical",
+                                outline: "none",
                               }}
-                            >
-                              <Check size={13} /> {t('video.save')}
-                            </button>
-                            <button
-                              onClick={() => setEditingId(null)}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 4,
-                                padding: "4px 10px",
-                                borderRadius: 6,
-                                border: "1px solid #E2E8F0",
-                                background: "transparent",
-                                color: "#94A3B8",
-                                cursor: "pointer",
-                                fontSize: 12,
-                                fontFamily: "inherit",
-                              }}
-                            >
-                              <X size={13} /> {t('video.cancel')}
-                            </button>
+                            />
+                            <div style={{ display: "flex", gap: 6 }}>
+                              <button
+                                onClick={async () => {
+                                    await editCommentMutation.mutateAsync({
+                                      commentId: comment._id,
+                                      content: editContent,
+                                    });
+                                    setEditingId(null);
+                                  }}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                  padding: "4px 10px",
+                                  borderRadius: 6,
+                                  border: "1px solid #16A34A",
+                                  background: "#F0FDF4",
+                                  color: "#16A34A",
+                                  cursor: "pointer",
+                                  fontSize: 12,
+                                  fontFamily: "inherit",
+                                }}
+                              >
+                                <Check size={13} /> {t('video.save')}
+                              </button>
+                              <button
+                                onClick={() => setEditingId(null)}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                  padding: "4px 10px",
+                                  borderRadius: 6,
+                                  border: "1px solid #E2E8F0",
+                                  background: "transparent",
+                                  color: "#94A3B8",
+                                  cursor: "pointer",
+                                  fontSize: 12,
+                                  fontFamily: "inherit",
+                                }}
+                              >
+                                <X size={13} /> {t('video.cancel')}
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        comment.content && (
-                          <ReviewText>{comment.content}</ReviewText>
-                        )
-                      )}
-                    </ReviewCard>
-                  );
-                })
-              )}
-            </ReviewsSection>
+                        ) : (
+                          comment.content && (
+                            <ReviewText>{comment.content}</ReviewText>
+                          )
+                        )}
+                      </ReviewCard>
+                    );
+                  })
+                )}
+              </ReviewsSection>
+            )}
+
+            {activeTab === "summary" && (
+              <AISummary
+                summary={currentLesson?.aiSummary}
+                isGenerating={generateAIMutation.isPending}
+                onGenerate={() => generateAIMutation.mutate(currentLesson?._id)}
+              />
+            )}
+
+            {activeTab === "flashcards" && (
+              <Flashcards
+                flashcards={currentLesson?.aiFlashcards}
+              />
+            )}
           </PlayerSection>
 
           {/* Playlist */}
