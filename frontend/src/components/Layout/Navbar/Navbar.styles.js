@@ -216,3 +216,193 @@ export const DropdownDivider = styled.div`
   background: ${({ theme }) => theme.colors.border};
   margin: ${({ theme }) => `${theme.spacing[1]} 0`};
 `;
+
+/* ─────────────────── Search ─────────────────── */
+
+export const SearchWrap = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+export const SearchInputWrap = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  border: 1.5px solid ${({ $focused, theme }) =>
+    $focused ? theme.colors.primary : theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
+  width: ${({ $focused }) => ($focused ? '320px' : '200px')};
+  transition: width 0.3s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: ${({ $focused, theme }) =>
+    $focused ? `0 0 0 3px ${theme.colors.primary}18` : 'none'};
+
+  ${({ theme }) => theme.media.maxMd} {
+    width: ${({ $focused }) => ($focused ? '180px' : '130px')};
+  }
+
+  svg { color: ${({ theme }) => theme.colors.textMuted}; flex-shrink: 0; }
+`;
+
+export const SearchInput = styled.input`
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-family: inherit;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  direction: rtl;
+  min-width: 0;
+
+  &::placeholder { color: ${({ theme }) => theme.colors.textMuted}; }
+`;
+
+export const ClearBtn = styled.button`
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textMuted};
+  display: flex;
+  align-items: center;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  transition: color 0.15s;
+
+  &:hover { color: ${({ theme }) => theme.colors.textPrimary}; }
+`;
+
+/* Search dropdown */
+export const SearchDropdown = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  box-shadow: ${({ theme }) => theme.shadows.xl};
+  overflow: hidden;
+  z-index: 300;
+  animation: dropIn 0.15s ease;
+  min-width: 340px;
+
+  ${({ theme }) => theme.media.maxMd} {
+    min-width: unset;
+    width: 270px;
+    left: auto;
+    right: 0;
+  }
+
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+`;
+
+export const DropSection = styled.div`
+  padding: ${({ theme }) => `${theme.spacing[2]} 0`};
+`;
+
+export const DropSectionTitle = styled.p`
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.textMuted};
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[4]}`};
+  margin: 0;
+`;
+
+export const DropResult = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  cursor: pointer;
+  text-align: right;
+  transition: background 0.15s;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.bgSecondary};
+  }
+`;
+
+export const DropResultImg = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: ${({ $round, theme }) =>
+    $round ? theme.borderRadius.full : theme.borderRadius.lg};
+  overflow: hidden;
+  background: ${({ theme }) => theme.colors.primaryLight};
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.primary};
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+`;
+
+export const DropResultInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+`;
+
+export const DropResultName = styled.span`
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const DropResultSub = styled.span`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+export const DropViewAll = styled.button`
+  width: 100%;
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.bgSecondary};
+  font-family: inherit;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.primary};
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+
+  &:hover { background: ${({ theme }) => theme.colors.primaryLight}; }
+`;
+
+export const SearchSpinner = styled.div`
+  width: 16px;
+  height: 16px;
+  border: 2px solid ${({ theme }) => theme.colors.border};
+  border-top-color: ${({ theme }) => theme.colors.primary};
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+`;
