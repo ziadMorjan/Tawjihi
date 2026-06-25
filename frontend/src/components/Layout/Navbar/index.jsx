@@ -7,12 +7,17 @@ import {
   LogOut, Settings, Moon, Sun, Languages,
 } from 'lucide-react';
 import { useThemeMode } from '../../../features/theme/ThemeContext';
+import { useDebounce } from '../../../shared/hooks/useDebounce';
+import { useSearch } from '../../../features/search/useSearch';
 
 import {
   NavWrapper, NavInner, Logo, NavLinks, NavLink,
   NavActions, CartBtn, CartCount, UserAvatar,
   DropdownWrapper, DropdownMenu, DropdownHeader,
   DropdownName, DropdownEmail, DropdownItem, DropdownDivider,
+  SearchWrap, SearchInputWrap, SearchInput, ClearBtn, SearchDropdown,
+  DropSection, DropSectionTitle, DropResult, DropResultImg,
+  DropResultInfo, DropResultName, DropResultSub, DropViewAll, SearchSpinner
 } from './Navbar.styles';
 import { useAuth } from '../../../features/auth';
 import { useCourseActions } from '../../../features/courses/hooks/useCourseActions';
@@ -52,6 +57,9 @@ export function Navbar() {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSearchDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -96,6 +104,116 @@ export function Navbar() {
             </NavLink>
           ))}
         </NavLinks>
+
+        {/* ── Search Bar ── */}
+        <SearchWrap ref={searchRef}>
+          <SearchInputWrap $focused={searchFocused}>
+            <Search size={18} />
+            <SearchInput
+              type="text"
+              placeholder="ابحث عن كورس أو معلم..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchDropdown(true);
+              }}
+              onFocus={() => {
+                setSearchFocused(true);
+                setShowSearchDropdown(true);
+              }}
+              onBlur={() => setSearchFocused(false)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchSubmit();
+                }
+              }}
+            />
+            {isLoading && <SearchSpinner />}
+            {searchQuery && !isLoading && (
+              <ClearBtn onClick={handleClearSearch} type="button" aria-label="مسح البحث">
+                <X size={14} />
+              </ClearBtn>
+            )}
+          </SearchInputWrap>
+
+          {showSearchDropdown && debouncedSearch && (
+            <SearchDropdown>
+              {isLoading && (
+                <div style={{ padding: '16px', textAlign: 'center', color: '#888' }}>
+                  جاري البحث...
+                </div>
+              )}
+
+              {!isLoading && !hasResults && (
+                <div style={{ padding: '16px', textAlign: 'center', color: '#888' }}>
+                  لا توجد نتائج تطابق "{debouncedSearch}"
+                </div>
+              )}
+
+              {!isLoading && hasResults && (
+                <>
+                  {courses.length > 0 && (
+                    <DropSection>
+                      <DropSectionTitle>الكورسات</DropSectionTitle>
+                      {courses.slice(0, 3).map((course) => (
+                        <DropResult
+                          key={course._id}
+                          onClick={() => {
+                            navigate(PATH.courseDetails(course._id));
+                            setShowSearchDropdown(false);
+                          }}
+                        >
+                          <DropResultImg>
+                            {course.coverImage ? (
+                              <img src={course.coverImage} alt={course.title} />
+                            ) : (
+                              <BookOpen size={16} />
+                            )}
+                          </DropResultImg>
+                          <DropResultInfo>
+                            <DropResultName>{course.title}</DropResultName>
+                            <DropResultSub>{course.teacher?.name || 'معلم توجيهي'}</DropResultSub>
+                          </DropResultInfo>
+                        </DropResult>
+                      ))}
+                    </DropSection>
+                  )}
+
+                  {teachers.length > 0 && (
+                    <DropSection>
+                      <DropSectionTitle>المعلمون</DropSectionTitle>
+                      {teachers.slice(0, 3).map((teacher) => (
+                        <DropResult
+                          key={teacher._id}
+                          onClick={() => {
+                            navigate(PATH.teacherProfile(teacher._id));
+                            setShowSearchDropdown(false);
+                          }}
+                        >
+                          <DropResultImg $round>
+                            {teacher.coverImage ? (
+                              <img src={teacher.coverImage} alt={teacher.name} />
+                            ) : (
+                              <span>{teacher.name?.charAt(0).toUpperCase()}</span>
+                            )}
+                          </DropResultImg>
+                          <DropResultInfo>
+                            <DropResultName>{teacher.name}</DropResultName>
+                            <DropResultSub>معلم معتمد</DropResultSub>
+                          </DropResultInfo>
+                        </DropResult>
+                      ))}
+                    </DropSection>
+                  )}
+
+                  <DropViewAll onClick={handleSearchSubmit}>
+                    عرض كل النتائج ({courses.length + teachers.length})
+                  </DropViewAll>
+                </>
+              )}
+            </SearchDropdown>
+          )}
+        </SearchWrap>
 
         <NavActions>
           <CartBtn onClick={toggle} aria-label={isDark ? t('nav.lightMode') : t('nav.darkMode')} title={isDark ? t('nav.lightMode') : t('nav.darkMode')}>

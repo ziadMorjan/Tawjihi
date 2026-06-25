@@ -23,6 +23,7 @@ const Profile        = lazy(() => import('../pages/Profile'));
 const EditProfile    = lazy(() => import('../pages/EditProfile'));
 const ChangePassword = lazy(() => import('../pages/ChangePassword'));
 const NotFound       = lazy(() => import('../pages/NotFound'));
+const Search         = lazy(() => import('../pages/Search'));
 
 // ─── Fallback spinner shown while a lazy chunk is loading ─────────────────────
 function PageLoader() {
@@ -65,6 +66,9 @@ export default function AppRoutes() {
           <Route path={PATH.profile}        element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path={PATH.editProfile}    element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
           <Route path={PATH.changePassword} element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+
+          {/* ── Search ── */}
+          <Route path={PATH.search}       element={<Search />} />
 
           {/* ── 404 ── */}
           <Route path={PATH.notFound}       element={<NotFound />} />
