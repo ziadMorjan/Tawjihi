@@ -5,6 +5,8 @@ import { PATH } from '../../../constants';
 import {
   ShoppingCart, Heart, BookOpen, User,
   LogOut, Settings, Moon, Sun, Languages,
+  X,
+  Search,
 } from 'lucide-react';
 import { useThemeMode } from '../../../features/theme/ThemeContext';
 import { useDebounce } from '../../../shared/hooks/useDebounce';
@@ -18,6 +20,7 @@ import {
   SearchWrap, SearchInputWrap, SearchInput, ClearBtn, SearchDropdown,
   DropSection, DropSectionTitle, DropResult, DropResultImg,
   DropResultInfo, DropResultName, DropResultSub, DropViewAll, SearchSpinner
+  
 } from './Navbar.styles';
 import { useAuth } from '../../../features/auth';
 import { useCourseActions } from '../../../features/courses/hooks/useCourseActions';
@@ -40,6 +43,16 @@ export function Navbar() {
     const next = isAr ? 'en' : 'ar';
     i18n.changeLanguage(next);
   };
+
+
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const searchRef = useRef(null);
+
+  const debouncedSearch = useDebounce(searchQuery, 400);
+  const { courses, teachers, isLoading, hasResults } = useSearch(debouncedSearch, { limit: 5 });
 
   const links = [
     { label: t('nav.home'),     path: PATH.home     },
@@ -77,6 +90,23 @@ export function Navbar() {
     setDropdownOpen(false);
     navigate(path);
   };
+
+    const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      navigate(`${PATH.search}?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSearchDropdown(false);
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setShowSearchDropdown(false);
+  };
+
+
 
   const ROLE_MAP = {
     user:    t('roles.user'),
