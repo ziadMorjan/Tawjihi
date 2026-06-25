@@ -18,13 +18,20 @@ export function useDeleteComment(lessonId) {
       );
       return { prev };
     },
-    onError: (err, id, ctx) => {
-      queryClient.setQueryData([...COMMENTS_QUERY_KEY, lessonId], ctx.prev);
-      toast.error(t('video.commentDeleteError'));
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [...COMMENTS_QUERY_KEY, lessonId] });
+    onSuccess: () => {
+      // نُعلم الكاش بأن البيانات "قديمة" لكن لا نُعيد الجلب فوراً لتجنب إعادة تحميل الفيديو
+      queryClient.invalidateQueries({
+        queryKey: [...COMMENTS_QUERY_KEY, lessonId],
+        refetchType: 'none',
+      });
       toast.success(t('video.commentDeleted'));
+    },
+    onError: (err, _id, ctx) => {
+      // استرجاع البيانات السابقة عند حدوث خطأ
+      if (ctx?.prev !== undefined) {
+        queryClient.setQueryData([...COMMENTS_QUERY_KEY, lessonId], ctx.prev);
+      }
+      toast.error(t('video.commentDeleteError'));
     },
   });
 }
