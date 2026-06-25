@@ -350,3 +350,22 @@ export const ConfettiPiece = styled.span`
   animation: ${wmConfettiFall} 3s ease-in calc(var(--i) * 0.15s) both;
   transform-origin: center bottom;
 `;
+
+
+/* ─── Framer Motion variants ─── */
+export const overlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.25 } },
+};
+
+export const cardVariants = {
+  hidden: { opacity: 0, y: 40, scale: 0.93 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring', damping: 22, stiffness: 260, delay: 0.05 },
+  },
+  exit: { opacity: 0, y: 30, scale: 0.95, transition: { duration: 0.2 } },
+};

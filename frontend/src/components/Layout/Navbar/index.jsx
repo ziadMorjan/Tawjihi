@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { PATH } from '../../../constants';
 import {
   ShoppingCart, Heart, BookOpen, User,
@@ -10,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useThemeMode } from '../../../features/theme/ThemeContext';
 import { useDebounce } from '../../../shared/hooks/useDebounce';
+import { useLanguage } from '../../../shared/hooks/useLanguage';
 import { useSearch } from '../../../features/search/useSearch';
 
 import {
@@ -29,20 +29,13 @@ import { toast } from 'react-toastify';
 export function Navbar() {
   const navigate  = useNavigate();
   const location  = useLocation();
-  const { t, i18n } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const { cartItems } = useCourseActions();
   const { isDark, toggle } = useThemeMode();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const lang = i18n.resolvedLanguage ?? i18n.language;
-  const isAr = lang === 'ar' || lang.startsWith('ar');
-
-  const handleToggleLanguage = () => {
-    const next = isAr ? 'en' : 'ar';
-    i18n.changeLanguage(next);
-  };
+  const { isAr, toggleLanguage: handleToggleLanguage, t } = useLanguage();
 
 
   

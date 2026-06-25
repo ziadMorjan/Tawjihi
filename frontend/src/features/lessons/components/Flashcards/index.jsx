@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../../../shared/hooks/useLanguage';
 import { ChevronLeft, ChevronRight, RotateCw, AlertCircle } from 'lucide-react';
 import styled from 'styled-components';
 
@@ -145,12 +145,9 @@ const EmptyState = styled.div`
 `;
 
 export default function Flashcards({ flashcards = [] }) {
-  const { t, i18n } = useTranslation();
+  const { t, isAr: isRtl } = useLanguage();
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-
-  const lang = i18n.resolvedLanguage ?? i18n.language;
-  const isRtl = lang === 'ar' || lang.startsWith('ar');
 
   // Reset card state when changing card or lesson
   useEffect(() => {

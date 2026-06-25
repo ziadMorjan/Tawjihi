@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { ThemeProvider } from "styled-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "../shared/hooks/useLanguage";
 import { GlobalStyle, lightTheme, darkTheme } from "../design-system";
 import { AuthProvider } from "../features/auth";
 import { ThemeModeProvider, useThemeMode } from "../features/theme/ThemeContext";
@@ -21,25 +21,19 @@ const queryClient = new QueryClient({
 
 // ── Syncs <html dir="" lang=""> with the active i18n language ──────────────
 function DirectionSync() {
-  const { i18n } = useTranslation();
-  // resolvedLanguage is always the exact matched key ('ar' or 'en')
-  // fallback to language.startsWith() in case it's 'ar-EG', 'en-US', etc.
-  const lang = i18n.resolvedLanguage ?? i18n.language;
-  const isAr = lang === 'ar' || lang.startsWith('ar');
+  const { lang, dir } = useLanguage();
 
   useEffect(() => {
     document.documentElement.setAttribute('lang', lang);
-    document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
-  }, [lang, isAr]);
+    document.documentElement.setAttribute('dir', dir);
+  }, [lang, dir]);
 
   return null;
 }
 
 function ThemedApp({ children }) {
   const { isDark } = useThemeMode();
-  const { i18n } = useTranslation();
-  const lang = i18n.resolvedLanguage ?? i18n.language;
-  const isAr = lang === 'ar' || lang.startsWith('ar');
+  const { isAr } = useLanguage();
 
   return (
     <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
