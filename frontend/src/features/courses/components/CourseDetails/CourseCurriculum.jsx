@@ -16,7 +16,16 @@ import {
   SectionTitle,
 } from "./CourseDetails.styles";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { PATH } from "../../../../constants";
+
+const formatDuration = (seconds) => {
+  if (!seconds || seconds <= 0) return null;
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  if (mins === 0) return `${secs}s`;
+  return `${mins}:${String(secs).padStart(2, '0')}`;
+};
 
 const shimmer = keyframes`
   0% { background-position: 200% 0; }
@@ -132,6 +141,7 @@ const Count = styled.span`
 export function CourseCurriculum({ courseId, isEnrolled }) {
   const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ["lessons", courseId],
     queryFn: () => fetchLessons(courseId),
@@ -193,10 +203,10 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
 
               <LessonInfo>
                 <LessonTitle>{lesson.title ?? lesson.name}</LessonTitle>
-                {lesson.duration && (
+                {lesson.duration > 0 && (
                   <LessonMeta>
                     <Clock size={11} />
-                    {Math.round(lesson.duration / 60)} دقيقة
+                    {formatDuration(lesson.duration)}
                   </LessonMeta>
                 )}
               </LessonInfo>

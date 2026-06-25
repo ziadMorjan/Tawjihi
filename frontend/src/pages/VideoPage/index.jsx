@@ -71,6 +71,15 @@ export default function VideoPage() {
   const { user } = useAuth();
   const videoRef = useRef(null);
 
+  // تحويل الثواني إلى صيغة دقيقة:ثانية
+  const formatDuration = (seconds) => {
+    if (!seconds || seconds <= 0) return null;
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    if (mins === 0) return `${secs}s`;
+    return `${mins}:${String(secs).padStart(2, '0')} ${t('video.minute')}`;
+  };
+
   const { state } = useLocation();
   const [currentIndex, setCurrentIndex] = useState(state?.startIndex ?? 0);
   const [activeTab, setActiveTab] = useState("comments");
@@ -211,10 +220,10 @@ export default function VideoPage() {
               <Badge variant="primary">
                 {currentIndex + 1} / {lessons.length}
               </Badge>
-              {currentLesson?.duration && (
+              {currentLesson?.duration > 0 && (
                 <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
                   <Clock size={13} />
-                  {Math.ceil(currentLesson.duration / 60)} {t('video.minute')}
+                  {formatDuration(currentLesson.duration)}
                 </span>
               )}
             </VideoMeta>
@@ -549,10 +558,10 @@ export default function VideoPage() {
                       <LessonTitle $active={isActive}>
                         {lesson.title ?? lesson.name}
                       </LessonTitle>
-                      {lesson.duration && (
+                      {lesson.duration > 0 && (
                         <LessonDuration>
                           <Clock size={11} />
-                          {Math.ceil(lesson.duration / 60)} {t('video.minute')}
+                          {formatDuration(lesson.duration)}
                         </LessonDuration>
                       )}
                     </LessonInfo>
