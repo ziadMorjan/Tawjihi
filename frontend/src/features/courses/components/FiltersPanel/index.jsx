@@ -1,4 +1,5 @@
 // src/features/courses/components/FiltersPanel/index.jsx
+import { useTranslation } from 'react-i18next';
 import { useSubjects, useBranches } from '../../hooks/useFiltersData';
 import {
   PanelWrapper, FilterSection, FilterLabel,
@@ -6,14 +7,15 @@ import {
 } from './FiltersPanel.styles';
 
 const SORT_OPTIONS = [
-  { value: '-createdAt', label: 'الأحدث أولاً'    },
-  { value: 'createdAt',  label: 'الأقدم أولاً'    },
-  { value: 'price',      label: 'السعر: الأقل'    },
-  { value: '-price',     label: 'السعر: الأعلى'   },
-  { value: '-averageRating', label: 'الأعلى تقييماً' },
+  { value: '-createdAt', labelKey: 'courses.sortNewest' },
+  { value: 'createdAt',  labelKey: 'courses.sortOldest' },
+  { value: 'price',      labelKey: 'courses.sortPriceLow' },
+  { value: '-price',     labelKey: 'courses.sortPriceHigh' },
+  { value: '-averageRating', labelKey: 'courses.sortRating' },
 ];
 
 export function FiltersPanel({ filters, setFilter, clearFilters, hasActiveFilters, mobileOpen }) {
+  const { t } = useTranslation();
   const { data: subjects = [] } = useSubjects();
   const { data: branches = [] } = useBranches();
 
@@ -26,14 +28,14 @@ export function FiltersPanel({ filters, setFilter, clearFilters, hasActiveFilter
 
       {/* Sort */}
       <FilterSection>
-        <FilterLabel>الترتيب</FilterLabel>
+        <FilterLabel>{t('courses.sortBy')}</FilterLabel>
         <SortSelect
           value={filters.sort}
           onChange={(e) => setFilter('sort', e.target.value)}
         >
           {SORT_OPTIONS.map(opt => (
             <option key={opt.value} value={opt.value}>
-              {opt.label}
+              {t(opt.labelKey)}
             </option>
           ))}
         </SortSelect>
@@ -42,7 +44,7 @@ export function FiltersPanel({ filters, setFilter, clearFilters, hasActiveFilter
       {/* Subjects */}
       {subjectsList.length > 0 && (
         <FilterSection>
-          <FilterLabel>المادة</FilterLabel>
+          <FilterLabel>{t('courses.filterSubject')}</FilterLabel>
           {subjectsList.map(subject => (
             <FilterOption
               key={subject._id}
@@ -61,7 +63,7 @@ export function FiltersPanel({ filters, setFilter, clearFilters, hasActiveFilter
       {/* Branches */}
       {branchesList.length > 0 && (
         <FilterSection>
-          <FilterLabel>الفرع</FilterLabel>
+          <FilterLabel>{t('courses.filterBranch')}</FilterLabel>
           {branchesList.map(branch => (
             <FilterOption
               key={branch._id}
@@ -80,7 +82,7 @@ export function FiltersPanel({ filters, setFilter, clearFilters, hasActiveFilter
       {/* Clear */}
       {hasActiveFilters && (
         <ClearButton onClick={clearFilters}>
-          مسح الفلاتر
+          {t('courses.clearFilters')}
         </ClearButton>
       )}
 

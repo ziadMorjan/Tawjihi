@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { cartApi } from '../api/cartApi';
 import { CART_QUERY_KEY } from './useCart';
 
 export function useCartActions() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const invalidateCart = () =>
@@ -13,9 +15,9 @@ export function useCartActions() {
     mutationFn: cartApi.addToCart,
     onSuccess: () => {
       invalidateCart();
-      toast.success('تمت الإضافة إلى السلة');
+      toast.success(t('cart.added'));
     },
-    onError: () => toast.error('حدث خطأ، حاول مجدداً'),
+    onError: () => toast.error(t('cart.error')),
   });
 
   const removeMutation = useMutation({
@@ -36,11 +38,11 @@ export function useCartActions() {
     },
     onError: (err, id, ctx) => {
       queryClient.setQueryData(CART_QUERY_KEY, ctx.prev);
-      toast.error('حدث خطأ، حاول مجدداً');
+      toast.error(t('cart.error'));
     },
     onSettled: () => {
       invalidateCart();
-      toast.info('تمت الإزالة من السلة');
+      toast.info(t('cart.removed'));
     },
   });
 
@@ -48,7 +50,7 @@ export function useCartActions() {
     mutationFn: cartApi.clearCart,
     onSuccess: () => {
       invalidateCart();
-      toast.info('تم تفريغ السلة');
+      toast.info(t('cart.cleared'));
     },
   });
 
@@ -58,10 +60,10 @@ export function useCartActions() {
     onSuccess: (data) => {
       invalidateCart();
       const saved = data?.cart?.totalPrice - data?.cart?.totalPriceAfterDiscount;
-      if (saved > 0) toast.success(`تم تطبيق الكوبون — وفّرت ${saved.toFixed(2)} ₪`);
+      if (saved > 0) toast.success(t('cart.couponSuccess', { amount: saved.toFixed(2) }));
     },
     onError: (err) => {
-      toast.error(err?.response?.data?.message ?? 'كوبون غير صالح');
+      toast.error(err?.response?.data?.message ?? t('cart.couponError'));
     },
   });
 
@@ -71,7 +73,7 @@ export function useCartActions() {
     onSuccess: (data) => {
       if (data?.sessionUrl) window.location.href = data.sessionUrl;
     },
-    onError: () => toast.error('حدث خطأ أثناء الدفع، حاول مجدداً'),
+    onError: () => toast.error(t('cart.checkoutError')),
   });
 
 

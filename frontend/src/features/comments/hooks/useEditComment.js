@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { commentsApi } from '../api/commentsApi';
 import { COMMENTS_QUERY_KEY } from './useComments';
 
 export function useEditComment(lessonId) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -11,8 +13,8 @@ export function useEditComment(lessonId) {
       commentsApi.updateComment(commentId, { content }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...COMMENTS_QUERY_KEY, lessonId] });
-      toast.success('تم تعديل التعليق');
+      toast.success(t('video.commentEdited'));
     },
-    onError: () => toast.error('حدث خطأ أثناء التعديل'),
+    onError: () => toast.error(t('video.commentEditError')),
   });
 }

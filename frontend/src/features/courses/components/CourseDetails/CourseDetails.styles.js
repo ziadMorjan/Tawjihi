@@ -9,7 +9,6 @@ export const PageWrapper = styled.div`
 export const HeroSection = styled.div`
   background: ${({ theme }) => theme.colors.textPrimary};
   padding: ${({ theme }) => `${theme.spacing[16]} ${theme.spacing[6]}`};
-  direction: rtl;  
 
   ${({ theme }) => theme.media.maxMd} {
     padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[4]}`};

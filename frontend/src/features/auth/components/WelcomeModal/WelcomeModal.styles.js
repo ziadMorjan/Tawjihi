@@ -47,7 +47,6 @@ export const Card = styled(motion.div)`
     0 32px 64px -12px rgba(79, 70, 229, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.15) inset;
   overflow: hidden;
-  direction: rtl;
 
   /* خلفية زخرفية — pseudo elements */
   &::before {

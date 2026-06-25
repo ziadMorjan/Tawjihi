@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
-import { Edit2, Mail, BookOpen, Heart, ShoppingCart } from 'lucide-react';
+import { Edit2, Mail, BookOpen, Heart, ShoppingCart, User, Phone, Calendar, Shield, FileText, Lock } from 'lucide-react';
 import { MainLayout }       from '../../shared/components/layout/MainLayout';
 import { Button, Spinner } from '../../shared/components';
 import { useAuth }          from '../../features/auth';
@@ -8,20 +9,27 @@ import { useMyEnrollments } from '../../features/enrollments/hooks/useMyEnrollme
 import { useCart }          from '../../features/cart';
 import { useWishlist }      from '../../features/wishlist';
 import {
-  PageWrapper, CoverSection, ContentWrapper, ProfileHeader,
-  AvatarWrapper, HeaderActions, UserInfo, UserName, UserEmail,
-  Grid, Card, CardTitle, DetailRow, DetailLabel, DetailValue,
-  StatGrid, StatCard, StatValue, StatLabel, BioText, RoleBadge,
+  PageWrapper, CoverSection, ContentWrapper, ProfileHeaderCard, UserBrief,
+  AvatarWrapper, UserMeta, UserName, UserEmail, ActionArea,
+  Grid, MainPane, SidebarPane, DashboardCard, CardHeader, CardTitle,
+  StatGrid, StatCard, StatIconContainer, StatValue, StatLabel,
+  BioContainer, BioText, DetailList, DetailItem, DetailLabelGroup,
+  DetailLabelText, DetailValueText, RoleBadge, SecurityActions
 } from './Profile.styles';
-
-const ROLE_MAP = { user: 'طالب', teacher: 'معلم', admin: 'مدير' };
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { user, isLoading } = useAuth();
   const { enrollments } = useMyEnrollments();
   const { cartItems }   = useCart();
   const { wishlistIds } = useWishlist();
+
+  const ROLE_MAP = {
+    user:    t('roles.user'),
+    teacher: t('roles.teacher'),
+    admin:   t('roles.admin'),
+  };
 
   if (isLoading) {
     return (
@@ -39,124 +47,183 @@ export default function Profile() {
   }
 
   const joinedDate = user.createdAt
-    ? new Date(user.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long' })
+    ? new Date(user.createdAt).toLocaleDateString(i18n.language.startsWith('ar') ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long' })
     : '—';
 
   return (
     <MainLayout>
       <PageWrapper>
-
         {/* Cover */}
         <CoverSection>
           {user.coverImage && <img src={user.coverImage} alt="cover" />}
         </CoverSection>
 
         <ContentWrapper>
+          {/* Header Card */}
+          <ProfileHeaderCard>
+            <UserBrief>
+              <AvatarWrapper>
+                {user.coverImage
+                  ? <img src={user.coverImage} alt={user.name} />
+                  : <span>{user.name?.charAt(0)?.toUpperCase()}</span>
+                }
+              </AvatarWrapper>
 
-          {/* Header */}
-          <ProfileHeader>
-            <AvatarWrapper>
-              {user.coverImage
-                ? <img src={user.coverImage} alt={user.name} />
-                : <span>{user.name?.charAt(0)?.toUpperCase()}</span>
-              }
-            </AvatarWrapper>
+              <UserMeta>
+                <UserName>
+                  {user.name}
+                  <RoleBadge>{ROLE_MAP[user.role] ?? user.role}</RoleBadge>
+                </UserName>
+                <UserEmail>
+                  <Mail size={14} />
+                  {user.email}
+                </UserEmail>
+              </UserMeta>
+            </UserBrief>
 
-            <HeaderActions>
+            <ActionArea>
               <Button
                 variant="secondary"
-                size="sm"
-                leftIcon={<Edit2 size={15} />}
+                size="md"
+                leftIcon={<Edit2 size={16} />}
                 onClick={() => navigate(PATH.editProfile)}
               >
-                تعديل الملف
+                {t('profile.editProfile')}
               </Button>
-            </HeaderActions>
-          </ProfileHeader>
-
-          {/* User Info */}
-          <UserInfo>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <UserName>{user.name}</UserName>
-              <RoleBadge>{ROLE_MAP[user.role] ?? user.role}</RoleBadge>
-            </div>
-            <UserEmail>
-              <Mail size={14} />
-              {user.email}
-            </UserEmail>
-          </UserInfo>
-
-          {/* Stats */}
-          <StatGrid style={{ marginBottom: 24 }}>
-            <StatCard>
-              <BookOpen size={22} color="#1B4FD8" />
-              <StatValue>{enrollments.length}</StatValue>
-              <StatLabel>كورس مسجّل</StatLabel>
-            </StatCard>
-            <StatCard>
-              <ShoppingCart size={22} color="#1B4FD8" />
-              <StatValue>{cartItems.length}</StatValue>
-              <StatLabel>في السلة</StatLabel>
-            </StatCard>
-            <StatCard>
-              <Heart size={22} color="#DC2626" />
-              <StatValue>{wishlistIds.length}</StatValue>
-              <StatLabel>في المفضلة</StatLabel>
-            </StatCard>
-          </StatGrid>
+            </ActionArea>
+          </ProfileHeaderCard>
 
           <Grid>
-            {/* Account Details */}
-            <Card>
-              <CardTitle>
-                <Mail size={16} color="#1B4FD8" />
-                تفاصيل الحساب
-              </CardTitle>
+            {/* Main Pane (Left) */}
+            <MainPane>
+              {/* Stats Dashboard */}
+              <DashboardCard>
+                <CardHeader>
+                  <CardTitle>
+                    <BookOpen size={20} color="#1B4FD8" />
+                    {t('profile.coursesCount')}
+                  </CardTitle>
+                </CardHeader>
+                
+                <StatGrid>
+                  <StatCard onClick={() => navigate(PATH.myCourses)}>
+                    <StatIconContainer style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+                      <BookOpen size={24} />
+                    </StatIconContainer>
+                    <StatValue>{enrollments.length}</StatValue>
+                    <StatLabel>{t('profile.coursesCount')}</StatLabel>
+                  </StatCard>
 
-              <DetailRow>
-                <DetailLabel>الاسم</DetailLabel>
-                <DetailValue>{user.name}</DetailValue>
-              </DetailRow>
-              <DetailRow>
-                <DetailLabel>البريد</DetailLabel>
-                <DetailValue>{user.email}</DetailValue>
-              </DetailRow>
-              {user.phone && (
-                <DetailRow>
-                  <DetailLabel>الهاتف</DetailLabel>
-                  <DetailValue>{user.phone}</DetailValue>
-                </DetailRow>
-              )}
-              <DetailRow>
-                <DetailLabel>الدور</DetailLabel>
-                <DetailValue>{ROLE_MAP[user.role] ?? user.role}</DetailValue>
-              </DetailRow>
-              <DetailRow>
-                <DetailLabel>عضو منذ</DetailLabel>
-                <DetailValue>{joinedDate}</DetailValue>
-              </DetailRow>
-            </Card>
+                  <StatCard onClick={() => navigate(PATH.cart)}>
+                    <StatIconContainer style={{ background: '#FDF2F8', color: '#DB2777' }}>
+                      <ShoppingCart size={24} />
+                    </StatIconContainer>
+                    <StatValue>{cartItems.length}</StatValue>
+                    <StatLabel>{t('nav.cart')}</StatLabel>
+                  </StatCard>
 
-            {/* Bio + Security */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <Card>
-                <CardTitle>نبذة شخصية</CardTitle>
-                <BioText>
-                  {user.bio || 'لم تُضف نبذة بعد — اضغط على تعديل الملف لإضافة نبذة عن نفسك.'}
-                </BioText>
-              </Card>
+                  <StatCard onClick={() => navigate(PATH.wishlist)}>
+                    <StatIconContainer style={{ background: '#FEF2F2', color: '#DC2626' }}>
+                      <Heart size={24} />
+                    </StatIconContainer>
+                    <StatValue>{wishlistIds.length}</StatValue>
+                    <StatLabel>{t('nav.wishlist')}</StatLabel>
+                  </StatCard>
+                </StatGrid>
+              </DashboardCard>
 
-              <Card>
-                <CardTitle>الأمان</CardTitle>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => navigate(PATH.changePassword)}
-                >
-                  تغيير كلمة المرور
-                </Button>
-              </Card>
-            </div>
+              {/* Bio Card */}
+              <DashboardCard>
+                <CardHeader>
+                  <CardTitle>
+                    <FileText size={20} color="#1B4FD8" />
+                    {t('profile.bioLabel')}
+                  </CardTitle>
+                </CardHeader>
+                <BioContainer>
+                  <BioText>
+                    {user.bio || t('profile.noBio')}
+                  </BioText>
+                </BioContainer>
+              </DashboardCard>
+            </MainPane>
+
+            {/* Sidebar Pane (Right) */}
+            <SidebarPane>
+              {/* Account Details */}
+              <DashboardCard>
+                <CardHeader>
+                  <CardTitle>
+                    <User size={20} color="#1B4FD8" />
+                    {t('profile.title')}
+                  </CardTitle>
+                </CardHeader>
+
+                <DetailList>
+                  <DetailItem>
+                    <DetailLabelGroup>
+                      <User size={16} />
+                      <DetailLabelText>{t('auth.name')}</DetailLabelText>
+                    </DetailLabelGroup>
+                    <DetailValueText>{user.name}</DetailValueText>
+                  </DetailItem>
+
+                  <DetailItem>
+                    <DetailLabelGroup>
+                      <Mail size={16} />
+                      <DetailLabelText>{t('auth.email')}</DetailLabelText>
+                    </DetailLabelGroup>
+                    <DetailValueText>{user.email}</DetailValueText>
+                  </DetailItem>
+
+                  {user.phone && (
+                    <DetailItem>
+                      <DetailLabelGroup>
+                        <Phone size={16} />
+                        <DetailLabelText>{t('profile.phoneLabel')}</DetailLabelText>
+                      </DetailLabelGroup>
+                      <DetailValueText>{user.phone}</DetailValueText>
+                    </DetailItem>
+                  )}
+
+                  <DetailItem>
+                    <DetailLabelGroup>
+                      <Shield size={16} />
+                      <DetailLabelText>{t('profile.roleLabel')}</DetailLabelText>
+                    </DetailLabelGroup>
+                    <DetailValueText>{ROLE_MAP[user.role] ?? user.role}</DetailValueText>
+                  </DetailItem>
+
+                  <DetailItem>
+                    <DetailLabelGroup>
+                      <Calendar size={16} />
+                      <DetailLabelText>{t('profile.joinDate')}</DetailLabelText>
+                    </DetailLabelGroup>
+                    <DetailValueText>{joinedDate}</DetailValueText>
+                  </DetailItem>
+                </DetailList>
+              </DashboardCard>
+
+              {/* Security Actions */}
+              <DashboardCard>
+                <CardHeader>
+                  <CardTitle>
+                    <Lock size={20} color="#1B4FD8" />
+                    {t('profile.changePassword')}
+                  </CardTitle>
+                </CardHeader>
+                <SecurityActions>
+                  <Button
+                    variant="secondary"
+                    fullWidth
+                    leftIcon={<Lock size={16} />}
+                    onClick={() => navigate(PATH.changePassword)}
+                  >
+                    {t('profile.changePassword')}
+                  </Button>
+                </SecurityActions>
+              </DashboardCard>
+            </SidebarPane>
           </Grid>
         </ContentWrapper>
       </PageWrapper>

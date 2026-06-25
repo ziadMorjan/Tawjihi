@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
 import { motion }      from 'framer-motion';
 import styled, { keyframes } from 'styled-components';
@@ -346,6 +347,7 @@ const stagger = {
 /* ─── Component ─── */
 export default function NotFound() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <PageWrap>
@@ -407,14 +409,14 @@ export default function NotFound() {
           variants={fadeUp}
           transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
         >
-          عذراً، الصفحة غير موجودة!
+          {t('common.notFound')}
         </Heading>
 
         <Sub
           variants={fadeUp}
           transition={{ duration: 0.6, delay: 0.28, ease: 'easeOut' }}
         >
-          الصفحة التي تبحث عنها إما أنها لا وجود لها، أو تم نقلها، أو أن الرابط مكسور.
+          {t('search.noResultsSub')}
         </Sub>
 
         {/* ── Buttons ── */}
@@ -424,11 +426,11 @@ export default function NotFound() {
         >
           <PrimaryBtn onClick={() => navigate(PATH.home)}>
             <Home size={18} />
-            العودة للرئيسية
+            {t('nav.home')}
           </PrimaryBtn>
           <GhostBtn onClick={() => navigate(-1)}>
             <ArrowLeft size={18} />
-            الصفحة السابقة
+            {t('common.back')}
           </GhostBtn>
         </Actions>
 
@@ -439,15 +441,15 @@ export default function NotFound() {
         >
           <QuickLink onClick={() => navigate(PATH.courses)}>
             <BookOpen size={14} />
-            الكورسات
+            {t('nav.courses')}
           </QuickLink>
           <QuickLink onClick={() => navigate(PATH.teachers)}>
             <Search size={14} />
-            المعلمون
+            {t('nav.teachers')}
           </QuickLink>
           <QuickLink onClick={() => navigate(PATH.login)}>
             <ArrowLeft size={14} />
-            تسجيل الدخول
+            {t('nav.login')}
           </QuickLink>
         </QuickLinks>
       </motion.div>

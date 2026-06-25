@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -13,33 +14,36 @@ import {
   FormHeader, FormTitle, FormSubtitle, ErrorBanner, FooterText
 } from '../../../features/auth/components/AuthLayout.styles';
 
-// مخططات التحقق (Schemas) لكل خطوة
 const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-const emailSchema = yup.object({
-  email: yup.string().email('البريد الإلكتروني غير صحيح').required('البريد الإلكتروني مطلوب'),
-});
-
-const codeSchema = yup.object({
-  resetCode: yup.string().length(6, 'يجب أن يتكون الرمز من 6 أرقام').required('رمز التحقق مطلوب'),
-});
-
-const passwordSchema = yup.object({
-  newPassword: yup.string()
-    .min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل')
-    .matches(passRegex, 'يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز خاص')
-    .required('كلمة المرور مطلوبة'),
-  newConfirmPassword: yup.string()
-    .oneOf([yup.ref('newPassword')], 'كلمات المرور غير متطابقتين')
-    .required('تأكيد كلمة المرور مطلوب'),
-});
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState(1); // 1: إدخال البريد, 2: إدخال الكود, 3: تعيين كلمة المرور
   const [userEmail, setUserEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const isRtl = i18n.language.startsWith('ar');
+
+  // مخططات التحقق (Schemas) لكل خطوة
+  const emailSchema = useMemo(() => yup.object({
+    email: yup.string().email(t('validation.emailInvalid')).required(t('validation.emailRequired')),
+  }), [t]);
+
+  const codeSchema = useMemo(() => yup.object({
+    resetCode: yup.string().length(6, t('validation.codeLength')).required(t('validation.codeRequired')),
+  }), [t]);
+
+  const passwordSchema = useMemo(() => yup.object({
+    newPassword: yup.string()
+      .min(8, t('validation.passwordMin'))
+      .matches(passRegex, t('validation.passwordStrength'))
+      .required(t('validation.passwordRequired')),
+    newConfirmPassword: yup.string()
+      .oneOf([yup.ref('newPassword')], t('validation.passwordsMustMatch'))
+      .required(t('validation.confirmPasswordRequired')),
+  }), [t]);
 
   // إعداد النماذج المنفصلة لكل خطوة لحماية الـ Validation
   const emailForm = useForm({ resolver: yupResolver(emailSchema) });
@@ -57,7 +61,7 @@ export default function ForgotPassword() {
       setStep(2);
     },
     onError: (error) => {
-      setErrorMessage(error.response?.data?.message || 'حدث خطأ أثناء إرسال الكود');
+      setErrorMessage(error.response?.data?.message || t('auth.errorSendCode'));
     }
   });
 
@@ -69,7 +73,7 @@ export default function ForgotPassword() {
       setStep(3);
     },
     onError: (error) => {
-      setErrorMessage(error.response?.data?.message || 'رمز التحقق غير صحيح أو منتهي الصلاحية');
+      setErrorMessage(error.response?.data?.message || t('auth.errorInvalidCode'));
     }
   });
 
@@ -82,7 +86,7 @@ export default function ForgotPassword() {
       navigate(PATH.login, { replace: true });
     },
     onError: (error) => {
-      setErrorMessage(error.response?.data?.message || 'فشل إعادة تعيين كلمة المرور');
+      setErrorMessage(error.response?.data?.message || t('auth.errorResetFailed'));
     }
   });
 
@@ -99,15 +103,15 @@ export default function ForgotPassword() {
 
   return (
     <AuthLayout
-      panelTitle="استعادة الوصول لحسابك"
-      panelSubtitle="خطوات بسيطة لإعادة تعيين كلمة المرور الخاصة بك والعودة للتعلم"
+      panelTitle={t('auth.resetAccessTitle')}
+      panelSubtitle={t('auth.resetAccessSub')}
     >
       {/* الخطوة الأولى: إدخال البريد الإلكتروني */}
       {step === 1 && (
         <>
           <FormHeader>
-            <FormTitle>نسيت كلمة المرور؟</FormTitle>
-            <FormSubtitle>أدخل بريدك الإلكتروني لإرسال رمز التحقق</FormSubtitle>
+            <FormTitle>{t('auth.forgotPasswordTitle')}</FormTitle>
+            <FormSubtitle>{t('auth.forgotPasswordSub')}</FormSubtitle>
           </FormHeader>
 
           {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
@@ -116,7 +120,7 @@ export default function ForgotPassword() {
             <Input
               id="email"
               type="email"
-              label="البريد الإلكتروني"
+              label={t('auth.email')}
               placeholder="example@email.com"
               leftIcon={<Mail size={18} />}
               error={emailForm.formState.errors.email?.message}
@@ -124,7 +128,7 @@ export default function ForgotPassword() {
               {...emailForm.register('email')}
             />
             <Button type="submit" fullWidth isLoading={forgotPasswordMutation.isPending} size="lg">
-              إرسال رمز التحقق
+              {t('auth.sendCodeBtn')}
             </Button>
           </form>
         </>
@@ -134,8 +138,8 @@ export default function ForgotPassword() {
       {step === 2 && (
         <>
           <FormHeader>
-            <FormTitle>التحقق من الرمز</FormTitle>
-            <FormSubtitle>أدخل الرمز المكون من 6 أرقام المرسل إلى {userEmail}</FormSubtitle>
+            <FormTitle>{t('auth.verifyCodeTitle')}</FormTitle>
+            <FormSubtitle>{t('auth.verifyCodeSub', { email: userEmail })}</FormSubtitle>
           </FormHeader>
 
           {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
@@ -144,7 +148,7 @@ export default function ForgotPassword() {
             <Input
               id="resetCode"
               type="text"
-              label="رمز التحقق"
+              label={t('auth.verificationCodeLabel')}
               placeholder="123456"
               maxLength={6}
               leftIcon={<Key size={18} />}
@@ -153,7 +157,7 @@ export default function ForgotPassword() {
               {...codeForm.register('resetCode')}
             />
             <Button type="submit" fullWidth isLoading={verifyCodeMutation.isPending} size="lg">
-              التحقق من الرمز
+              {t('auth.verifyCodeBtn')}
             </Button>
             <div style={{ textAlign: 'center' }}>
               <button
@@ -161,7 +165,7 @@ export default function ForgotPassword() {
                 onClick={() => { setStep(1); setErrorMessage(null); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#2563EB', display: 'inline-flex', alignItems: 'center', gap: 4 }}
               >
-                <ArrowRight size={14} /> تعديل البريد الإلكتروني
+                {isRtl ? <ArrowRight size={14} /> : <ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} />} {t('auth.editEmail')}
               </button>
             </div>
           </form>
@@ -172,8 +176,8 @@ export default function ForgotPassword() {
       {step === 3 && (
         <>
           <FormHeader>
-            <FormTitle>تعيين كلمة مرور جديدة</FormTitle>
-            <FormSubtitle>أدخل كلمة المرور الجديدة لحمايتها وتحديث حسابك</FormSubtitle>
+            <FormTitle>{t('auth.newPasswordTitle')}</FormTitle>
+            <FormSubtitle>{t('auth.newPasswordSub')}</FormSubtitle>
           </FormHeader>
 
           {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
@@ -182,7 +186,7 @@ export default function ForgotPassword() {
             <Input
               id="newPassword"
               type={showPassword ? 'text' : 'password'}
-              label="كلمة المرور الجديدة"
+              label={t('auth.newPasswordLabel')}
               placeholder="••••••••"
               leftIcon={<Lock size={18} />}
               error={passwordForm.formState.errors.newPassword?.message}
@@ -201,7 +205,7 @@ export default function ForgotPassword() {
             <Input
               id="newConfirmPassword"
               type="password"
-              label="تأكيد كلمة المرور الجديدة"
+              label={t('auth.newConfirmPasswordLabel')}
               placeholder="••••••••"
               leftIcon={<Lock size={18} />}
               error={passwordForm.formState.errors.newConfirmPassword?.message}
@@ -209,16 +213,16 @@ export default function ForgotPassword() {
             />
 
             <Button type="submit" fullWidth isLoading={resetPasswordMutation.isPending} size="lg">
-              حفظ وتحديث كلمة المرور
+              {t('auth.savePasswordBtn')}
             </Button>
           </form>
         </>
       )}
 
       <FooterText>
-        تذكرت كلمة المرور؟{' '}
+        {t('auth.rememberPassword')}{' '}
         <button type="button" onClick={() => navigate(PATH.login)}>
-          تسجيل الدخول
+          {t('auth.loginTitle')}
         </button>
       </FooterText>
     </AuthLayout>

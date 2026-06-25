@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
 import { Star, BookOpen, MessageSquare, Trash2 } from 'lucide-react';
 import { MainLayout }      from '../../shared/components/layout/MainLayout';
@@ -27,6 +28,7 @@ import {
 export default function TeacherProfile() {
   const { id }   = useParams();
   const navigate = useNavigate();
+  const { t }    = useTranslation();
   const { user } = useAuth();
 
   const [rating,  setRating]  = useState(0);
@@ -60,8 +62,8 @@ export default function TeacherProfile() {
     return (
       <MainLayout>
         <div style={{ height: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <p style={{ color: '#475569' }}>لم يتم العثور على المعلم</p>
-          <Button onClick={() => navigate(PATH.teachers)}>العودة للمعلمين</Button>
+          <p style={{ color: '#475569' }}>{t('teachers.notFound')}</p>
+          <Button onClick={() => navigate(PATH.teachers)}>{t('teachers.backToTeachers')}</Button>
         </div>
       </MainLayout>
     );
@@ -84,7 +86,7 @@ export default function TeacherProfile() {
             <TeacherInfo>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                 <TeacherName>{teacher.name}</TeacherName>
-                <Badge variant="primary">معلم معتمد</Badge>
+                <Badge variant="primary">{t('teachers.certified')}</Badge>
               </div>
 
               {teacher.description && (
@@ -98,19 +100,19 @@ export default function TeacherProfile() {
                       <Star size={16} fill="#F59E0B" color="#F59E0B" />
                       {teacher.averageRating?.toFixed(1)}
                     </StatValue>
-                    <StatLabel>متوسط التقييم</StatLabel>
+                    <StatLabel>{t('teachers.averageRating')}</StatLabel>
                   </StatItem>
                 )}
                 {teacher.reviewsQuantity > 0 && (
                   <StatItem>
                     <StatValue>{teacher.reviewsQuantity}</StatValue>
-                    <StatLabel>تقييم</StatLabel>
+                    <StatLabel>{t('teachers.reviewsCount')}</StatLabel>
                   </StatItem>
                 )}
                 {courses?.length > 0 && (
                   <StatItem>
                     <StatValue>{courses.length}</StatValue>
-                    <StatLabel>كورس</StatLabel>
+                    <StatLabel>{t('teachers.coursesCount')}</StatLabel>
                   </StatItem>
                 )}
               </StatsRow>
@@ -124,7 +126,7 @@ export default function TeacherProfile() {
           <Section>
             <SectionTitle>
               <BookOpen size={20} color="#1B4FD8" />
-              كورسات المعلم ({courses?.length ?? 0})
+              {t('teachers.teacherCourses')} ({courses?.length ?? 0})
             </SectionTitle>
 
             {coursesLoading ? (
@@ -134,7 +136,7 @@ export default function TeacherProfile() {
                 ))}
               </CoursesGrid>
             ) : courses?.length === 0 ? (
-              <EmptyMsg>لم يضف هذا المعلم كورسات بعد</EmptyMsg>
+              <EmptyMsg>{t('teachers.noCourses')}</EmptyMsg>
             ) : (
               <CoursesGrid>
                 {courses.map(course => (
@@ -148,14 +150,14 @@ export default function TeacherProfile() {
           <Section>
             <SectionTitle>
               <MessageSquare size={20} color="#1B4FD8" />
-              تقييمات الطلاب ({reviews.length})
+              {t('teachers.studentReviews')} ({reviews.length})
             </SectionTitle>
 
             {/* Add Review */}
             {user && user.role === 'user' && (
               <AddReviewForm>
                 <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
-                  قيّم هذا المعلم
+                  {t('teachers.rateTeacher')}
                 </p>
 
                 {/* Stars */}
@@ -178,13 +180,13 @@ export default function TeacherProfile() {
                 <textarea
                   value={comment}
                   onChange={e => setComment(e.target.value)}
-                  placeholder="اكتب تقييمك للمعلم..."
+                  placeholder={t('teachers.reviewPlaceholder')}
                   rows={3}
                   style={{
                     width: '100%', padding: '10px 14px',
                     border: '1.5px solid #E2E8F0', borderRadius: 10,
                     fontFamily: 'inherit', fontSize: 14,
-                    resize: 'vertical', outline: 'none', direction: 'rtl',
+                    resize: 'vertical', outline: 'none',
                   }}
                 />
 
@@ -195,7 +197,7 @@ export default function TeacherProfile() {
                   disabled={!rating || !comment.trim()}
                   style={{ alignSelf: 'flex-start' }}
                 >
-                  إرسال التقييم
+                  {t('teachers.submitReview')}
                 </Button>
               </AddReviewForm>
             )}
@@ -206,7 +208,7 @@ export default function TeacherProfile() {
                 <Spinner size="md" />
               </div>
             ) : reviews.length === 0 ? (
-              <EmptyMsg>لا توجد تقييمات بعد — كن أول من يقيّم هذا المعلم!</EmptyMsg>
+              <EmptyMsg>{t('teachers.noReviews')}</EmptyMsg>
             ) : (
               reviews.map(review => {
                 const isOwner = user?._id === review.user?._id;
@@ -217,7 +219,7 @@ export default function TeacherProfile() {
                         {review.user?.name?.charAt(0) ?? '؟'}
                       </ReviewAvatar>
                       <div style={{ flex: 1 }}>
-                        <ReviewerName>{review.user?.name ?? 'مجهول'}</ReviewerName>
+                        <ReviewerName>{review.user?.name ?? t('teachers.anonymous')}</ReviewerName>
                         <StarRating rating={review.rating} showText={false} />
                       </div>
                       {isOwner && (

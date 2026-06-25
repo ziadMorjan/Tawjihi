@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH } from '../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,14 +10,6 @@ import styled from 'styled-components';
 import { MainLayout }        from '../../shared/components/layout/MainLayout';
 import { Button, Input }     from '../../shared/components';
 import { useChangePassword } from '../../features/user';
-
-const schema = yup.object({
-  currentPassword:    yup.string().required('كلمة المرور الحالية مطلوبة'),
-  newPassword:        yup.string().min(8, '8 أحرف على الأقل').required('كلمة المرور الجديدة مطلوبة'),
-  newConfirmPassword: yup.string()
-    .oneOf([yup.ref('newPassword')], 'كلمتا المرور غير متطابقتين')
-    .required('تأكيد كلمة المرور مطلوب'),
-});
 
 const PageWrapper = styled.div`
   max-width: 480px;
@@ -83,7 +77,16 @@ const Actions = styled.div`
 
 export default function ChangePassword() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const changeMutation = useChangePassword();
+
+  const schema = useMemo(() => yup.object({
+    currentPassword:    yup.string().required(t('profile.currentPasswordRequired')),
+    newPassword:        yup.string().min(8, t('profile.minChar')).required(t('profile.newPasswordRequired')),
+    newConfirmPassword: yup.string()
+      .oneOf([yup.ref('newPassword')], t('profile.passwordsMustMatch'))
+      .required(t('profile.confirmPasswordRequired')),
+  }), [t]);
 
   const {
     register,
@@ -103,13 +106,13 @@ export default function ChangePassword() {
   return (
     <MainLayout>
       <PageWrapper>
-        <PageTitle>تغيير كلمة المرور</PageTitle>
+        <PageTitle>{t('profile.changePassword')}</PageTitle>
 
         <Card>
           <Input
             id="currentPassword"
             type="password"
-            label="كلمة المرور الحالية"
+            label={t('profile.currentPassword')}
             leftIcon={<Lock size={16} />}
             error={errors.currentPassword?.message}
             {...register('currentPassword')}
@@ -119,7 +122,7 @@ export default function ChangePassword() {
             <Input
               id="newPassword"
               type="password"
-              label="كلمة المرور الجديدة"
+              label={t('profile.newPassword')}
               leftIcon={<Lock size={16} />}
               error={errors.newPassword?.message}
               {...register('newPassword')}
@@ -130,7 +133,7 @@ export default function ChangePassword() {
           <Input
             id="newConfirmPassword"
             type="password"
-            label="تأكيد كلمة المرور"
+            label={t('profile.confirmNewPassword')}
             leftIcon={<Lock size={16} />}
             error={errors.newConfirmPassword?.message}
             {...register('newConfirmPassword')}
@@ -138,13 +141,13 @@ export default function ChangePassword() {
 
           <Actions>
             <Button variant="ghost" onClick={() => navigate(PATH.profile)}>
-              إلغاء
+              {t('profile.cancel')}
             </Button>
             <Button
               isLoading={changeMutation.isPending}
               onClick={handleSubmit(onSubmit)}
             >
-              تغيير كلمة المرور
+              {t('profile.changePassword')}
             </Button>
           </Actions>
         </Card>

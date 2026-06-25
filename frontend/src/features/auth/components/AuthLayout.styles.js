@@ -4,7 +4,6 @@ export const PageWrapper = styled.div`
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  direction: rtl;
 
   ${({ theme }) => theme.media.maxMd} {
     grid-template-columns: 1fr;

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '../../../../shared/lib/axiosInstance';
 import { StarRating } from '../CourseCard/StarRating';
@@ -92,6 +93,7 @@ const Count = styled.span`
 `;
 
 export function CourseReviews({ courseId }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ['reviews', courseId],
     queryFn: () => fetchReviews(courseId),
@@ -107,7 +109,7 @@ export function CourseReviews({ courseId }) {
     <div>
       <SectionHeader>
         <SectionIcon><MessageSquare size={16} /></SectionIcon>
-        <SectionTitle>تقييمات الطلاب</SectionTitle>
+        <SectionTitle>{t('courseDetails.studentReviews')}</SectionTitle>
         <Count>({reviews.length})</Count>
       </SectionHeader>
 
@@ -118,7 +120,7 @@ export function CourseReviews({ courseId }) {
       ) : reviews.length === 0 ? (
         <EmptyMsg>
           <MessageSquare size={28} />
-          لا توجد تقييمات بعد — كن أول من يقيّم هذا الكورس!
+          {t('courseDetails.noReviewsCourse')}
         </EmptyMsg>
       ) : (
         <Content>
@@ -129,7 +131,7 @@ export function CourseReviews({ courseId }) {
                   {review.user?.name?.charAt(0) ?? <User size={16} />}
                 </Avatar>
                 <div>
-                  <ReviewerName>{review.user?.name ?? 'مجهول'}</ReviewerName>
+                  <ReviewerName>{review.user?.name ?? t('teachers.anonymous')}</ReviewerName>
                   <StarRating rating={review.rating} showText={false} />
                 </div>
               </ReviewHeader>

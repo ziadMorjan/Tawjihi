@@ -1,26 +1,43 @@
 // src/pages/Auth/Register/index.jsx
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as yup from 'yup';
 import { PATH } from '../../../constants';
 import { Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
 import { useAuth } from '../../../features/auth';
 import { Button, Input, Badge } from '../../../shared/components';
-import {AuthLayout} from "../../../features/auth/components/AuthLayout"
-import {studentSchema , teacherSchema} from "../../../features/auth/validations/register.schema"
+import { AuthLayout } from "../../../features/auth/components/AuthLayout";
 import {
   FormHeader, FormTitle, FormSubtitle,
   Divider, OAuthButton, FooterText, ErrorBanner,
 } from '../../../features/auth/components/AuthLayout.styles';
 
-
 export default function Register() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { register: registerUser, isRegisterLoading, registerError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState('user');
   const [cvFileName, setCvFileName] = useState('');
+
+  // Schema الطالب
+  const studentSchema = useMemo(() => yup.object({
+    name:            yup.string().required(t('validation.nameRequired')),
+    email:           yup.string().email(t('validation.emailInvalid')).required(t('validation.emailRequired')),
+    phone:           yup.string().required(t('validation.phoneRequired')),
+    password:        yup.string().min(8, t('validation.passwordMin')).required(t('validation.passwordRequired')),
+    confirmPassword: yup.string()
+      .oneOf([yup.ref('password')], t('validation.passwordsMustMatch'))
+      .required(t('validation.confirmPasswordRequired')),
+  }), [t]);
+
+  // Schema المعلم — يضيف CV
+  const teacherSchema = useMemo(() => studentSchema.shape({
+    cv: yup.mixed().required(t('validation.cvRequired')),
+  }), [studentSchema, t]);
 
   const schema = selectedRole === 'teacher' ? teacherSchema : studentSchema;
 
@@ -48,7 +65,6 @@ export default function Register() {
 
   const onSubmit = async (formData) => {
     try {
-
       if (selectedRole === 'teacher') {
         const fd = new FormData();
         Object.keys(formData).forEach(key => {
@@ -58,7 +74,7 @@ export default function Register() {
         fd.append('role', 'teacher');
         await registerUser(fd);
         navigate(PATH.login, {
-          state: { message: 'تم إرسال طلبك، انتظر موافقة الإدارة' }
+          state: { message: t('auth.teacherRequestSent') }
         });
       } else {
         await registerUser({ ...formData, role: 'user' });
@@ -73,17 +89,17 @@ export default function Register() {
 
   return (
     <AuthLayout
-      panelTitle="انضم إلى توجيهي"
-      panelSubtitle="آلاف الطلاب يدرسون معنا كل يوم"
+      panelTitle={t('auth.joinTawjihi')}
+      panelSubtitle={t('auth.joinTawjihiSub')}
     >
       <FormHeader>
-        <FormTitle>إنشاء حساب جديد</FormTitle>
-        <FormSubtitle>أدخل بياناتك لإنشاء حسابك</FormSubtitle>
+        <FormTitle>{t('auth.registerHeadline')}</FormTitle>
+        <FormSubtitle>{t('auth.registerSub')}</FormSubtitle>
       </FormHeader>
 
       {/* Role Selector */}
       <div style={{ display: 'flex', gap: 8 }}>
-        {[{ value: 'user', label: 'طالب' }, { value: 'teacher', label: 'معلم' }].map(({ value, label }) => (
+        {[{ value: 'user', label: t('auth.studentRole') }, { value: 'teacher', label: t('auth.teacherRole') }].map(({ value, label }) => (
           <button
             key={value}
             type="button"
@@ -105,7 +121,7 @@ export default function Register() {
       </div>
 
       {selectedRole === 'teacher' && (
-        <Badge variant="warning">طلب المعلم يحتاج موافقة الإدارة قبل التفعيل</Badge>
+        <Badge variant="warning">{t('auth.teacherPendingApproval')}</Badge>
       )}
 
       {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
@@ -116,7 +132,7 @@ export default function Register() {
       >
         <Input
           id="name" type="text"
-          label="الاسم الكامل" placeholder="محمد أحمد"
+          label={t('auth.name')} placeholder={t('auth.namePlaceholder')}
           leftIcon={<User size={18} />}
           error={errors.name?.message}
           {...register('name')}
@@ -124,7 +140,7 @@ export default function Register() {
 
         <Input
           id="email" type="email"
-          label="البريد الإلكتروني" placeholder="example@email.com"
+          label={t('auth.email')} placeholder="example@email.com"
           leftIcon={<Mail size={18} />}
           error={errors.email?.message}
           dir="ltr"
@@ -133,7 +149,7 @@ export default function Register() {
 
         <Input
           id="phone" type="tel"
-          label="رقم الهاتف" placeholder="0599123456"
+          label={t('profile.phoneLabel')} placeholder="0599123456"
           leftIcon={<Phone size={18} />}
           error={errors.phone?.message}
           dir="ltr"
@@ -143,7 +159,7 @@ export default function Register() {
         <Input
           id="password"
           type={showPassword ? 'text' : 'password'}
-          label="كلمة المرور" placeholder="8 أحرف على الأقل"
+          label={t('auth.password')} placeholder={t('profile.minChar')}
           leftIcon={<Lock size={18} />}
           error={errors.password?.message}
           rightIcon={
@@ -157,7 +173,7 @@ export default function Register() {
 
         <Input
           id="confirmPassword" type="password"
-          label="تأكيد كلمة المرور" placeholder="••••••••"
+          label={t('auth.confirmPassword')} placeholder="••••••••"
           leftIcon={<Lock size={18} />}
           error={errors.confirmPassword?.message}
           {...register('confirmPassword')}
@@ -180,7 +196,7 @@ export default function Register() {
               }}
             >
               <Upload size={18} />
-              {cvFileName || 'رفع السيرة الذاتية (PDF)'}
+              {cvFileName || t('auth.uploadCv')}
             </label>
             <input
               id="cv-upload"
@@ -198,24 +214,24 @@ export default function Register() {
         )}
 
         <Button type="submit" fullWidth isLoading={isRegisterLoading} size="lg">
-          إنشاء الحساب
+          {t('auth.registerBtn')}
         </Button>
       </form>
 
-      <Divider>أو</Divider>
+      <Divider>{t('auth.or')}</Divider>
 
       <OAuthButton
         type="button"
         onClick={() => { window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`; }}
       >
         <img src="/assets/img/google.png" alt="Google" width={20} height={20} />
-        التسجيل عبر Google
+        {t('auth.googleRegister')}
       </OAuthButton>
 
       <FooterText>
-        لديك حساب؟{' '}
+        {t('auth.haveAccount')}{' '}
         <button type="button" onClick={() => navigate(PATH.login)}>
-          تسجيل الدخول
+          {t('auth.loginTitle')}
         </button>
       </FooterText>
     </AuthLayout>

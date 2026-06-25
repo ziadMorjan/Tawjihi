@@ -1,5 +1,6 @@
 // src/pages/Courses/index.jsx
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import styled from "styled-components";
 import { FiltersPanel } from "../../features/courses/components/FiltersPanel";
@@ -116,6 +117,7 @@ const ActiveFilters = styled.div`
 
 /* ─── Component ─── */
 export default function Courses() {
+  const { t } = useTranslation();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
@@ -154,9 +156,9 @@ const totalItems = rawData?.pagination?.totalResults ?? courses.length;
     <MainLayout>
       <PageWrapper>
         <PageHeader>
-          <PageTitle>جميع الكورسات</PageTitle>
+          <PageTitle>{t('courses.title')}</PageTitle>
           <PageSubtitle>
-            اكتشف كورساتنا الشاملة لجميع مواد التوجيهي
+            {t('home.heroSubtitle')}
           </PageSubtitle>
         </PageHeader>
 
@@ -164,7 +166,7 @@ const totalItems = rawData?.pagination?.totalResults ?? courses.length;
         <TopBar>
           <SearchWrapper>
             <Input
-              placeholder="ابحث عن كورس..."
+              placeholder={t('nav.searchPlaceholder')}
               value={searchInput}
               onChange={handleSearchChange}
               leftIcon={<Search size={18} />}
@@ -173,7 +175,7 @@ const totalItems = rawData?.pagination?.totalResults ?? courses.length;
 
           <MobileFilterBtn onClick={() => setMobileFiltersOpen(true)}>
             <SlidersHorizontal size={16} />
-            فلترة
+            {t('courses.filterAll')}
             {hasActiveFilters && (
               <Badge
                 variant="primary"
@@ -214,10 +216,10 @@ const totalItems = rawData?.pagination?.totalResults ?? courses.length;
             <ResultsMeta>
               <ResultsCount>
                 {isLoading ? (
-                  "جارٍ التحميل..."
+                  t('common.loading')
                 ) : (
                   <>
-                    عُثر على <strong>{totalItems}</strong> كورس
+                    <strong>{totalItems}</strong> {t('courses.title')}
                   </>
                 )}
               </ResultsCount>

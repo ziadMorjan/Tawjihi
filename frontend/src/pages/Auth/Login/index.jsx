@@ -1,7 +1,7 @@
 // src/pages/Auth/Login/index.jsx
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PATH } from '../../../constants';
@@ -21,6 +21,7 @@ import { schemaLogin } from '../../../features/auth/validations/login.schema';
 export default function Login() {
   const navigate  = useNavigate();
   const location  = useLocation();
+  const { t }     = useTranslation();
   const { login, isLoginLoading, loginError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const from = location.state?.from?.pathname || '/';
@@ -44,12 +45,12 @@ export default function Login() {
 
   return (
     <AuthLayout
-      panelTitle="مرحباً بعودتك"
-      panelSubtitle="سجّل دخولك للوصول إلى كورساتك"
+      panelTitle={t('auth.welcomeBack')}
+      panelSubtitle={t('auth.welcomeBackSub')}
     >
       <FormHeader>
-        <FormTitle>تسجيل الدخول</FormTitle>
-        <FormSubtitle>أدخل بياناتك للمتابعة</FormSubtitle>
+        <FormTitle>{t('auth.loginTitle')}</FormTitle>
+        <FormSubtitle>{t('auth.enterDetails')}</FormSubtitle>
       </FormHeader>
 
       {errorMessage && <ErrorBanner>{errorMessage}</ErrorBanner>}
@@ -61,7 +62,7 @@ export default function Login() {
         <Input
           id="email"
           type="email"
-          label="البريد الإلكتروني"
+          label={t('auth.email')}
           placeholder="example@email.com"
           leftIcon={<Mail size={18} />}
           error={errors.email?.message}
@@ -72,7 +73,7 @@ export default function Login() {
         <Input
           id="password"
           type={showPassword ? 'text' : 'password'}
-          label="كلمة المرور"
+          label={t('auth.password')}
           placeholder="••••••••"
           leftIcon={<Lock size={18} />}
           error={errors.password?.message}
@@ -94,29 +95,29 @@ export default function Login() {
             onClick={() => navigate(PATH.forgotPassword)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#2563EB' }}
           >
-            نسيت كلمة المرور؟
+            {t('auth.forgotPassword')}
           </button>
         </div>
 
         <Button type="submit" fullWidth isLoading={isLoginLoading} size="lg">
-          تسجيل الدخول
+          {t('auth.loginBtn')}
         </Button>
       </form>
 
-      <Divider>أو</Divider>
+      <Divider>{t('auth.or')}</Divider>
 
       <OAuthButton
         type="button"
         onClick={() => { window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`; }}
       >
         <img src="/assets/img/google.png" alt="Google" width={20} height={20} />
-        المتابعة عبر Google
+        {t('auth.continueWithGoogle')}
       </OAuthButton>
 
       <FooterText>
-        ليس لديك حساب؟{' '}
+        {t('auth.noAccount')}{' '}
         <button type="button" onClick={() => navigate(PATH.register)}>
-          إنشاء حساب جديد
+          {t('auth.registerBtn')}
         </button>
       </FooterText>
     </AuthLayout>

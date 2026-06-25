@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { PATH } from "../../constants";
 import { ShoppingCart, Trash2, Tag } from "lucide-react";
 import { MainLayout } from "../../shared/components/layout/MainLayout";
@@ -30,6 +31,7 @@ import {
 
 export default function CartList() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { cartItems, totalPrice, totalPriceAfterDiscount, isLoading } =
     useCart();
   const {
@@ -100,9 +102,9 @@ export default function CartList() {
         <PageWrapper>
           <EmptyState>
             <ShoppingCart size={64} />
-            <EmptyTitle>سلتك فارغة</EmptyTitle>
-            <EmptyText>لم تضف أي كورسات بعد</EmptyText>
-            <Button onClick={() => navigate(PATH.courses)}>تصفح الكورسات</Button>
+            <EmptyTitle>{t('cart.empty')}</EmptyTitle>
+            <EmptyText>{t('courses.noResults')}</EmptyText>
+            <Button onClick={() => navigate(PATH.courses)}>{t('cart.browseBtn')}</Button>
           </EmptyState>
         </PageWrapper>
       </MainLayout>
@@ -113,9 +115,9 @@ export default function CartList() {
     <MainLayout>
       <PageWrapper>
         <PageTitle>
-          سلة المشتريات
+          {t('cart.title')}
           <Badge variant="primary" style={{ marginRight: 12, fontSize: 14 }}>
-            {cartItems.length} كورس
+            {cartItems.length} {t('courses.title')}
           </Badge>
         </PageTitle>
 
@@ -150,7 +152,7 @@ export default function CartList() {
                     {/* تعديل عرض السعر هنا */}
                     <ItemPrice>
                       {currentPrice === 0 ? (
-                        <Badge variant="success">مجاني</Badge>
+                        <Badge variant="success">{t('courses.free')}</Badge>
                       ) : (
                         <div
                           style={{
@@ -181,7 +183,7 @@ export default function CartList() {
                     onClick={() => removeFromCart(id)}
                     disabled={isRemoveLoading}
                   >
-                    <Trash2 size={14} /> حذف
+                    <Trash2 size={14} /> {t('common.delete')}
                   </RemoveBtn>
                 </CartItem>
               );
@@ -194,29 +196,29 @@ export default function CartList() {
                 isLoading={isClearLoading}
                 style={{ alignSelf: "flex-start", color: "#DC2626" }}
               >
-                تفريغ السلة
+                {t('cart.remove')}
               </Button>
             )}
           </CartItems>
 
           <SummaryCard>
-            <SummaryTitle>ملخص الطلب</SummaryTitle>
+            <SummaryTitle>{t('cart.total')}</SummaryTitle>
 
             <SummaryRow>
-              <span>سعر الكورسات ({cartItems.length})</span>
+              <span>{t('cart.title')} ({cartItems.length})</span>
               <span>{totalPrice} ₪</span>
             </SummaryRow>
 
             {courseDiscount > 0 && (
               <SummaryRow>
-                <span>خصم الكورسات</span>
+                <span>{t('courses.price')}</span>
                 <span style={{ color: "#16A34A" }}>-{courseDiscount.toFixed(2)} ₪</span>
               </SummaryRow>
             )}
 
             {couponDiscount > 0 && (
               <SummaryRow>
-                <span>خصم الكوبون</span>
+                <span>{t('courseDetails.shareBtn')}</span>
                 <span style={{ color: "#16A34A" }}>
                   -{couponDiscount.toFixed(2)} ₪
                 </span>
@@ -224,13 +226,13 @@ export default function CartList() {
             )}
 
             <SummaryRow className="total">
-              <span>الإجمالي</span>
+              <span>{t('cart.total')}</span>
               <span>{finalPrice.toFixed(2)} ₪</span>
             </SummaryRow>
 
             <CouponRow>
               <Input
-                placeholder="كود الخصم"
+                placeholder={t('common.search')}
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 leftIcon={<Tag size={16} />}
@@ -244,7 +246,7 @@ export default function CartList() {
                 disabled={!couponCode.trim()}
                 style={{ flexShrink: 0 }}
               >
-                تطبيق
+                {t('common.confirm')}
               </Button>
             </CouponRow>
 
@@ -257,7 +259,7 @@ export default function CartList() {
                 checkout(ids);
               }}
             >
-              إتمام الشراء — {finalPrice.toFixed(2)} ₪
+              {t('cart.checkout')} — {finalPrice.toFixed(2)} ₪
             </Button>
 
             <p
