@@ -240,7 +240,7 @@ export default function CourseDetails() {
         >
           {t('courseDetails.includes')}
         </p>
-        <CourseIncludes lessonsCount={lessonsCount} />
+        <CourseIncludes courseId={courseId} lessonsCount={lessonsCount} />
       </div>
     </CardBody>
   );
