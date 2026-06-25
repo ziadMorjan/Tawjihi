@@ -270,9 +270,12 @@
     "coursesTab": "Courses",
     "teachersTab": "Teachers",
     "noResults": "No Results Found",
-    "noResultsSub": "Try different search keywords"
+    "noResultsSub": "Try different search keywords",
+    "searchEmpty": "Search for a course or teacher",
+    "searchEmptySub": "Type in the search bar the keyword you are looking for and results will appear here"
   },
   "common": {
+    "all": "All",
     "loading": "Loading...",
     "error": "Something went wrong",
     "retry": "Retry",

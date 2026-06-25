@@ -141,7 +141,7 @@ export function Navbar() {
             <Search size={18} />
             <SearchInput
               type="text"
-              placeholder="ابحث عن كورس أو معلم..."
+              placeholder={t('nav.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -170,13 +170,13 @@ export function Navbar() {
             <SearchDropdown>
               {isLoading && (
                 <div style={{ padding: '16px', textAlign: 'center', color: '#888' }}>
-                  جاري البحث...
+                  {t('nav.searching')}
                 </div>
               )}
 
               {!isLoading && !hasResults && (
                 <div style={{ padding: '16px', textAlign: 'center', color: '#888' }}>
-                  لا توجد نتائج تطابق "{debouncedSearch}"
+                  {t('nav.noResults')} "{debouncedSearch}"
                 </div>
               )}
 
@@ -184,7 +184,7 @@ export function Navbar() {
                 <>
                   {courses.length > 0 && (
                     <DropSection>
-                      <DropSectionTitle>الكورسات</DropSectionTitle>
+                      <DropSectionTitle>{t('courses.title')}</DropSectionTitle>
                       {courses.slice(0, 3).map((course) => (
                         <DropResult
                           key={course._id}
@@ -211,7 +211,7 @@ export function Navbar() {
 
                   {teachers.length > 0 && (
                     <DropSection>
-                      <DropSectionTitle>المعلمون</DropSectionTitle>
+                      <DropSectionTitle>{t('teachers.title')}</DropSectionTitle>
                       {teachers.slice(0, 3).map((teacher) => (
                         <DropResult
                           key={teacher._id}
@@ -229,7 +229,7 @@ export function Navbar() {
                           </DropResultImg>
                           <DropResultInfo>
                             <DropResultName>{teacher.name}</DropResultName>
-                            <DropResultSub>معلم معتمد</DropResultSub>
+                            <DropResultSub>{t('teachers.certified')}</DropResultSub>
                           </DropResultInfo>
                         </DropResult>
                       ))}
@@ -237,7 +237,7 @@ export function Navbar() {
                   )}
 
                   <DropViewAll onClick={handleSearchSubmit}>
-                    عرض كل النتائج ({courses.length + teachers.length})
+                    {t('nav.viewAll')} ({courses.length + teachers.length})
                   </DropViewAll>
                 </>
               )}

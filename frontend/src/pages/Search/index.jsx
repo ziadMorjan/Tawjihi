@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Users, Search, Frown } from 'lucide-react';
 import { MainLayout } from '../../shared/components/layout/MainLayout';
 import { CourseCard } from '../../features/courses/components/CourseCard';
@@ -15,15 +16,16 @@ import {
   SkeletonCard,
 } from './Search.styles';
 
-const TABS = [
-  { key: 'all',      label: 'الكل' },
-  { key: 'courses',  label: 'الكورسات', icon: <BookOpen size={14} /> },
-  { key: 'teachers', label: 'المعلمون', icon: <Users    size={14} /> },
+const TABS = (t) => [
+  { key: 'all',      label: t('common.all') },
+  { key: 'courses',  label: t('nav.courses'), icon: <BookOpen size={14} /> },
+  { key: 'teachers', label: t('nav.teachers'), icon: <Users    size={14} /> },
 ];
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const navigate       = useNavigate();
+  const { t }          = useTranslation();
 
   const rawQuery = searchParams.get('q') ?? '';
   const [tab, setTab] = useState('all');
@@ -50,14 +52,14 @@ export default function SearchPage() {
         <SearchHeader>
           <SearchTitle>
             {rawQuery
-              ? <>نتائج البحث عن: <span>"{rawQuery}"</span></>
-              : 'البحث'}
+              ? <>{t('search.title')}: <span>"{rawQuery}"</span></>
+              : t('search.title')}
           </SearchTitle>
           {!isLoading && debouncedQuery && (
             <SearchMeta>
               {hasResults
-                ? `${totalCount} نتيجة`
-                : 'لا توجد نتائج'}
+                ? `${totalCount} ${t('search.results')}`
+                : t('search.noResults')}
             </SearchMeta>
           )}
         </SearchHeader>
@@ -65,22 +67,22 @@ export default function SearchPage() {
         {/* ── Tabs ── */}
         {debouncedQuery && (
           <Tabs>
-            {TABS.map(t => {
-              const count = t.key === 'courses'
+            {TABS(t).map(tabItem => {
+              const count = tabItem.key === 'courses'
                 ? courses.length
-                : t.key === 'teachers'
+                : tabItem.key === 'teachers'
                   ? teachers.length
                   : totalCount;
               return (
                 <Tab
-                  key={t.key}
-                  $active={tab === t.key}
-                  onClick={() => setTab(t.key)}
+                  key={tabItem.key}
+                  $active={tab === tabItem.key}
+                  onClick={() => setTab(tabItem.key)}
                 >
-                  {t.icon}
-                  {t.label}
+                  {tabItem.icon}
+                  {tabItem.label}
                   {!isLoading && count > 0 && (
-                    <TabCount $active={tab === t.key}>{count}</TabCount>
+                    <TabCount $active={tab === tabItem.key}>{count}</TabCount>
                   )}
                 </Tab>
               );
@@ -103,10 +105,8 @@ export default function SearchPage() {
         {!debouncedQuery && !isLoading && (
           <EmptyState>
             <Search size={64} strokeWidth={1.2} />
-            <EmptyTitle>ابحث عن كورس أو معلم</EmptyTitle>
-            <EmptyText>
-              اكتب في شريط البحث الكلمة التي تبحث عنها وستظهر النتائج هنا
-            </EmptyText>
+            <EmptyTitle>{t('search.searchEmpty')}</EmptyTitle>
+            <EmptyText>{t('search.searchEmptySub')}</EmptyText>
           </EmptyState>
         )}
 
@@ -114,10 +114,9 @@ export default function SearchPage() {
         {noResults && (
           <EmptyState>
             <Frown size={64} strokeWidth={1.2} />
-            <EmptyTitle>لا توجد نتائج</EmptyTitle>
+            <EmptyTitle>{t('search.noResults')}</EmptyTitle>
             <EmptyText>
-              لم نجد أي كورسات أو معلمين تطابق "{rawQuery}"،
-              حاول بكلمة أخرى
+              {t('search.noResultsSub')}
             </EmptyText>
           </EmptyState>
         )}
@@ -127,7 +126,7 @@ export default function SearchPage() {
           <div>
             <SectionTitle>
               <BookOpen size={20} />
-              الكورسات ({courses.length})
+              {t('nav.courses')} ({courses.length})
             </SectionTitle>
             <CoursesGrid>
               {courses.map(course => (
@@ -142,7 +141,7 @@ export default function SearchPage() {
           <div>
             <SectionTitle>
               <Users size={20} />
-              المعلمون ({teachers.length})
+              {t('nav.teachers')} ({teachers.length})
             </SectionTitle>
             <TeachersGrid>
               {teachers.map(teacher => (
@@ -157,7 +156,7 @@ export default function SearchPage() {
                     }
                   </TeacherAvatar>
                   <TeacherName>{teacher.name}</TeacherName>
-                  <TeacherRole>معلم معتمد</TeacherRole>
+                  <TeacherRole>{t('teachers.certified')}</TeacherRole>
                 </TeacherCard>
               ))}
             </TeachersGrid>
