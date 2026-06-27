@@ -54,18 +54,22 @@ export default function AppRoutes() {
           <Route path={PATH.oauthSuccess}                 element={<OAuthSuccess />} />
 
           {/* ── Guest-only (redirect if already logged in) ── */}
-          <Route path={PATH.login}          element={<GuestRoute><Login /></GuestRoute>} />
-          <Route path={PATH.register}       element={<GuestRoute><Register /></GuestRoute>} />
-          <Route path={PATH.forgotPassword} element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+          <Route element={<GuestRoute />}>
+            <Route path={PATH.login}          element={<Login />} />
+            <Route path={PATH.register}       element={<Register />} />
+            <Route path={PATH.forgotPassword} element={<ForgotPassword />} />
+          </Route>
 
           {/* ── Protected (require authentication) ── */}
-          <Route path={PATH.cart}           element={<ProtectedRoute><CartList /></ProtectedRoute>} />
-          <Route path={PATH.wishlist}       element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
-          <Route path={PATH.myCourses}      element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
-          <Route path={PATH.learn()}        element={<ProtectedRoute><VideoPage /></ProtectedRoute>} />
-          <Route path={PATH.profile}        element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path={PATH.editProfile}    element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-          <Route path={PATH.changePassword} element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+          <Route element={<ProtectedRoute />}>
+            <Route path={PATH.cart}           element={<CartList />} />
+            <Route path={PATH.wishlist}       element={<Wishlist />} />
+            <Route path={PATH.myCourses}      element={<MyCourses />} />
+            <Route path={PATH.learn()}        element={<VideoPage />} />
+            <Route path={PATH.profile}        element={<Profile />} />
+            <Route path={PATH.editProfile}    element={<EditProfile />} />
+            <Route path={PATH.changePassword} element={<ChangePassword />} />
+          </Route>
 
           {/* ── Search ── */}
           <Route path={PATH.search}       element={<Search />} />

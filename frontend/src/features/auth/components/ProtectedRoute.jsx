@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../../../shared/components';
 import { PATH } from '../../../constants';
@@ -6,7 +6,7 @@ import { PATH } from '../../../constants';
 // ProtectedRoute — يمنع غير المسجلين
 // GuestRoute    — يمنع المسجلين من دخول صفحات Auth
 
-export function ProtectedRoute({ children, allowedRoles }) {
+export function ProtectedRoute({ allowedRoles }) {
   const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
@@ -26,11 +26,11 @@ export function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to={PATH.home} replace />;
   }
 
-  return children;
+  return <Outlet />;
 }
 
 // صفحات Auth فقط — المسجل يُعاد توجيهه للـ Home
-export function GuestRoute({ children }) {
+export function GuestRoute() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -45,5 +45,5 @@ export function GuestRoute({ children }) {
     return <Navigate to={PATH.home} replace />;
   }
 
-  return children;
+  return <Outlet />;
 }
