@@ -129,7 +129,7 @@ export const verifyResetCod = asyncErrorHandler(async (req, res) => {
 		resetPasswordCodeExpired: { $gte: Date.now() },
 	});
 
-	if (!user) throw new CustomError(req.__('auth.user_not_found'), 404);
+	if (!user) throw new CustomError(req.__('validation.invalid_reset_code'), 400);
 
 	user.resetPasswordCodeVerified = true;
 	await user.save();

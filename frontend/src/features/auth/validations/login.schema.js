@@ -8,6 +8,6 @@ export const getLoginSchema = (t) => yup.object({
     .required(t('validation.emailRequired')),
   password: yup
     .string()
-    .min(8, t('validation.passwordMin'))
-    .required(t('validation.passwordRequired')),
+    .required(t('validation.passwordRequired'))
+    .min(8, t('validation.passwordMin')),
 });

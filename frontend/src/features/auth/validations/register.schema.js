@@ -6,10 +6,10 @@ export const getRegisterSchema = (t) => {
     name:            yup.string().required(t('validation.nameRequired')),
     email:           yup.string().email(t('validation.emailInvalid')).required(t('validation.emailRequired')),
     phone:           yup.string().required(t('validation.phoneRequired')),
-    password:        yup.string().min(8, t('validation.passwordMin')).required(t('validation.passwordRequired')),
+    password:        yup.string().required(t('validation.passwordRequired')).min(8, t('validation.passwordMin')),
     confirmPassword: yup.string()
-      .oneOf([yup.ref('password')], t('validation.passwordsMustMatch'))
-      .required(t('validation.confirmPasswordRequired')),
+      .required(t('validation.confirmPasswordRequired'))
+      .oneOf([yup.ref('password'), ''], t('validation.passwordsMustMatch')),
   });
 
   const teacherSchema = studentSchema.shape({
