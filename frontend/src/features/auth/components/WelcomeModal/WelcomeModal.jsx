@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../../../shared/hooks/useLanguage';
 import { PATH } from '../../../../constants';
@@ -37,9 +37,12 @@ export function WelcomeModal() {
   const navigate = useNavigate();
   const { user, welcomeReward, clearWelcomeReward } = useAuth();
   const markedRef = useRef(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const dateLocale = isAr ? 'ar-EG' : 'en-US';
+  const { coupon, discount, expire } = welcomeReward ?? {};
 
+  
   const handleClose = useCallback(async () => {
     if (markedRef.current) return;
     markedRef.current = true;
@@ -70,16 +73,25 @@ export function WelcomeModal() {
     };
   }, [welcomeReward, handleClose]);
 
-  const copyToClipboard = () => {
+  const copyToClipboard = useCallback(() => {
+    if (!coupon) return;
     navigator.clipboard?.writeText(coupon);
-    const el = document.getElementById('wm-coupon-code');
-    if (el) {
-      el.classList.add('copied');
-      setTimeout(() => el.classList.remove('copied'), 1500);
-    }
-  };
+    setIsCopied(true);
+  }, [coupon]);
 
-  const { coupon, discount, expire } = welcomeReward ?? {};
+  useEffect(() => {
+    if (!isCopied) return;
+    const timer = setTimeout(() => setIsCopied(false), 1500);
+    return () => clearTimeout(timer);
+  }, [isCopied]);
+
+  // إعادة تعيين markedRef عند إغلاق/تصفير الترحيب لمنع حظر الإغلاق في المرات القادمة
+  useEffect(() => {
+    if (!welcomeReward) {
+      markedRef.current = false;
+    }
+  }, [welcomeReward]);
+
 
   const expireDate = expire
     ? new Date(expire).toLocaleDateString(dateLocale, {
@@ -137,6 +149,7 @@ export function WelcomeModal() {
                 id="wm-coupon-code"
                 onClick={copyToClipboard}
                 title={t('welcomeModal.copyTooltip')}
+                className={isCopied ? 'copied' : ''}
               >
                 <CouponText>{coupon}</CouponText>
                 <CopyHint>{t('welcomeModal.copyBtn')}</CopyHint>

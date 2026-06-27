@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react'; 
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { authApi } from '../api/authApi';
 
@@ -18,7 +18,6 @@ export function AuthProvider({ children }) {
       return data?.data ?? data?.user ?? data;
     },
     retry: false,
-
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: true,  
@@ -48,7 +47,8 @@ export function AuthProvider({ children }) {
   const registerMutation = useMutation({
     mutationFn: authApi.register,
     onSuccess: (data) => {
-      const userData = data?.user ?? data?.data?.user;
+      // توحيد منطق قراءة بيانات المستخدم مع الـ login
+      const userData = data?.user ?? data?.data?.user ?? data;
       if (userData) queryClient.setQueryData(AUTH_QUERY_KEY, userData);
 
       if (data?.welcomeReward) {
@@ -57,7 +57,8 @@ export function AuthProvider({ children }) {
     },
   });
 
-  const value = {
+  // تغليف القيمة بـ useMemo لتجنب ريندرات عشوائية في التطبيق
+  const value = useMemo(() => ({
     user:            user ?? null,
     isAuthenticated: !!user,
     isLoading,
@@ -78,7 +79,20 @@ export function AuthProvider({ children }) {
 
     welcomeReward,
     clearWelcomeReward,
-  };
+  }), [
+    user,
+    isLoading,
+    loginMutation.mutateAsync,
+    loginMutation.isPending,
+    loginMutation.error,
+    logoutMutation.mutate,
+    logoutMutation.isPending,
+    registerMutation.mutateAsync,
+    registerMutation.isPending,
+    registerMutation.error,
+    welcomeReward,
+    clearWelcomeReward,
+  ]);
 
   return (
     <AuthContext.Provider value={value}>
