@@ -1,11 +1,13 @@
 import * as yup from 'yup';
-export const schemaLogin = yup.object({
+
+// دالة توليد الـ Schema لدعم الترجمة الديناميكية (i18n)
+export const getLoginSchema = (t) => yup.object({
   email: yup
     .string()
-    .email('البريد الإلكتروني غير صحيح')
-    .required('البريد الإلكتروني مطلوب'),
+    .email(t('validation.emailInvalid'))
+    .required(t('validation.emailRequired')),
   password: yup
     .string()
-    .min(8, 'كلمة المرور 8 أحرف على الأقل')
-    .required('كلمة المرور مطلوبة'),
+    .min(8, t('validation.passwordMin'))
+    .required(t('validation.passwordRequired')),
 });
