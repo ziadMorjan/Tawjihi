@@ -2,12 +2,11 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as yup from 'yup';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { PATH } from '../../../constants';
 import { Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
-import { useAuth } from '../../../features/auth';
+import { useAuth, authApi, getRegisterSchema } from '../../../features/auth';
 import { Button, Input, Badge } from '../../../shared/components';
 import { AuthLayout } from "../../../features/auth/components/AuthLayout";
 import {
@@ -23,22 +22,8 @@ export default function Register() {
   const [selectedRole, setSelectedRole] = useState('user');
   const [cvFileName, setCvFileName] = useState('');
 
-  // Schema الطالب
-  const studentSchema = useMemo(() => yup.object({
-    name:            yup.string().required(t('validation.nameRequired')),
-    email:           yup.string().email(t('validation.emailInvalid')).required(t('validation.emailRequired')),
-    phone:           yup.string().required(t('validation.phoneRequired')),
-    password:        yup.string().min(8, t('validation.passwordMin')).required(t('validation.passwordRequired')),
-    confirmPassword: yup.string()
-      .oneOf([yup.ref('password')], t('validation.passwordsMustMatch'))
-      .required(t('validation.confirmPasswordRequired')),
-  }), [t]);
-
-  // Schema المعلم — يضيف CV
-  const teacherSchema = useMemo(() => studentSchema.shape({
-    cv: yup.mixed().required(t('validation.cvRequired')),
-  }), [studentSchema, t]);
-
+  // جلب الـ Schemas مترجمة ديناميكياً من المجلد المخصص لها
+  const { studentSchema, teacherSchema } = useMemo(() => getRegisterSchema(t), [t]);
   const schema = selectedRole === 'teacher' ? teacherSchema : studentSchema;
 
   const {
@@ -49,6 +34,11 @@ export default function Register() {
     reset,
   } = useForm({ resolver: yupResolver(schema) });
 
+  // تسجيل حقل الـ CV يدوياً في React Hook Form لأنه ليس إدخالاً تقليدياً
+  useEffect(() => {
+    register('cv');
+  }, [register]);
+
   const handleRoleChange = (role) => {
     setSelectedRole(role);
     reset();
@@ -58,7 +48,8 @@ export default function Register() {
   const handleCvChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setValue('cv', file);
+      // shouldValidate: true لإزالة الخطأ فور اختيار الملف
+      setValue('cv', file, { shouldValidate: true });
       setCvFileName(file.name);
     }
   };
@@ -222,7 +213,7 @@ export default function Register() {
 
       <OAuthButton
         type="button"
-        onClick={() => { window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`; }}
+        onClick={authApi.googleAuth}
       >
         <img src="/assets/img/google.png" alt="Google" width={20} height={20} />
         {t('auth.googleRegister')}
@@ -230,9 +221,9 @@ export default function Register() {
 
       <FooterText>
         {t('auth.haveAccount')}{' '}
-        <button type="button" onClick={() => navigate(PATH.login)}>
+        <Link to={PATH.login}>
           {t('auth.loginTitle')}
-        </button>
+        </Link>
       </FooterText>
     </AuthLayout>
   );

@@ -2,21 +2,17 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { PATH } from '../../../constants';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../../../features/auth';
+import { useAuth, authApi, getLoginSchema } from '../../../features/auth';
 import { Button, Input } from '../../../shared/components';
 import {AuthLayout} from "../../../features/auth/components/AuthLayout"
 import {
   FormHeader, FormTitle, FormSubtitle,
   Divider, OAuthButton, FooterText, ErrorBanner,
 } from '../../../features/auth/components/AuthLayout.styles';
-
-import { schemaLogin } from '../../../features/auth/validations/login.schema';
-
-
 
 export default function Login() {
   const navigate  = useNavigate();
@@ -26,11 +22,14 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const from = location.state?.from?.pathname || '/';
 
+  // جلب مخطط التحقق مترجماً ديناميكياً
+  const schema = useMemo(() => getLoginSchema(t), [t]);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schemaLogin) });
+  } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmit = async (formData) => {
     try {
@@ -90,13 +89,12 @@ export default function Login() {
         />
 
         <div style={{ textAlign: 'left' }}>
-          <button
-            type="button"
-            onClick={() => navigate(PATH.forgotPassword)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#2563EB' }}
+          <Link
+            to={PATH.forgotPassword}
+            style={{ fontSize: 14, color: '#2563EB', textDecoration: 'none' }}
           >
             {t('auth.forgotPassword')}
-          </button>
+          </Link>
         </div>
 
         <Button type="submit" fullWidth isLoading={isLoginLoading} size="lg">
@@ -108,7 +106,7 @@ export default function Login() {
 
       <OAuthButton
         type="button"
-        onClick={() => { window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`; }}
+        onClick={authApi.googleAuth}
       >
         <img src="/assets/img/google.png" alt="Google" width={20} height={20} />
         {t('auth.continueWithGoogle')}
@@ -116,9 +114,9 @@ export default function Login() {
 
       <FooterText>
         {t('auth.noAccount')}{' '}
-        <button type="button" onClick={() => navigate(PATH.register)}>
+        <Link to={PATH.register}>
           {t('auth.registerBtn')}
-        </button>
+        </Link>
       </FooterText>
     </AuthLayout>
   );
