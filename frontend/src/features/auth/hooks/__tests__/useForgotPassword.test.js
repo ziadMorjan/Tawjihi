@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import { setupServer } from 'msw/node';
@@ -106,12 +106,11 @@ describe('useForgotPassword Custom Hook', () => {
       result.current.forgotPasswordMutation.mutate('success@example.com');
     });
 
-    // الانتظار حتى انتهاء العملية وتحديث الحالة (State)
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+    // الانتظار بذكاء حتى يتغير رقم الخطوة لـ 2
+    await waitFor(() => {
+      expect(result.current.step).toBe(2);
     });
 
-    expect(result.current.step).toBe(2);
     expect(result.current.userEmail).toBe('success@example.com');
     expect(result.current.errorMessage).toBeNull();
   });
@@ -124,12 +123,12 @@ describe('useForgotPassword Custom Hook', () => {
       result.current.forgotPasswordMutation.mutate('fail@example.com');
     });
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+    // الانتظار بذكاء حتى تظهر رسالة الخطأ المتوقعة
+    await waitFor(() => {
+      expect(result.current.errorMessage).toBe('البريد الإلكتروني غير مسجل');
     });
 
     expect(result.current.step).toBe(1);
-    expect(result.current.errorMessage).toBe('البريد الإلكتروني غير مسجل');
   });
 
   // 4. فحص نجاح التحقق من كود الاستعادة والانتقال للخطوة الثالثة
@@ -137,14 +136,14 @@ describe('useForgotPassword Custom Hook', () => {
     const { result } = renderHook(() => useForgotPassword(), { wrapper });
 
     act(() => {
-      result.current.verifyCodeMutation.mutate({ resetCode: '123456' });
+      result.current.verifyCodeMutation.mutate('123456');
     });
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+    // الانتظار بذكاء حتى ينتقل للخطوة 3
+    await waitFor(() => {
+      expect(result.current.step).toBe(3);
     });
 
-    expect(result.current.step).toBe(3);
     expect(result.current.errorMessage).toBeNull();
   });
 
@@ -153,14 +152,13 @@ describe('useForgotPassword Custom Hook', () => {
     const { result } = renderHook(() => useForgotPassword(), { wrapper });
 
     act(() => {
-      result.current.verifyCodeMutation.mutate({ resetCode: '000000' });
+      result.current.verifyCodeMutation.mutate('000000');
     });
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+    // الانتظار بذكاء حتى تظهر رسالة الخطأ
+    await waitFor(() => {
+      expect(result.current.errorMessage).toBe('كود التحقق غير صحيح أو منتهي الصلاحية');
     });
-
-    expect(result.current.errorMessage).toBe('كود التحقق غير صحيح أو منتهي الصلاحية');
   });
 
   // 6. فحص نجاح تغيير كلمة المرور والتوجيه لصفحة تسجيل الدخول
@@ -175,11 +173,11 @@ describe('useForgotPassword Custom Hook', () => {
       });
     });
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+    // الانتظار بذكاء حتى يتم استدعاء دالة التوجيه لصفحة تسجيل الدخول
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith(PATH.login, { replace: true });
     });
 
     expect(result.current.errorMessage).toBeNull();
-    expect(mockNavigate).toHaveBeenCalledWith(PATH.login, { replace: true });
   });
 });
