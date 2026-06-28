@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { lightTheme } from '../../../../design-system';
 import Register from '../index';
-import { useAuth, authApi } from '../../../../features/auth';
+import { useAuth } from '../../../../features/auth';
 import { PATH } from '../../../../constants';
 
 // 1. محاكاة التوجيه
