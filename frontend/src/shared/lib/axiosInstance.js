@@ -8,6 +8,18 @@ export const axiosInstance = axios.create({
   withCredentials: true, // مرة واحدة هنا — مش في كل request
 });
 
+// اعتراض الطلبات لإضافة لغة الموقع الحالية في الـ Headers لكي يفهمها السيرفر ويرد بالترجمة الصحيحة
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const lang = localStorage.getItem('tawjihi-language') || 'ar';
+    config.headers['Accept-Language'] = lang;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 
 axiosInstance.interceptors.response.use(
   (response) => response,
