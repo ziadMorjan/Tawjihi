@@ -27,6 +27,15 @@ export const PATH = {
   editProfile:     '/user/edit-profile',
   changePassword:  '/user/change-password',
 
+  // ── Notifications ────────────────────────────────────────────────────────────
+  notifications:   '/notifications',
+
+  // ── Admin ────────────────────────────────────────────────────────────────────
+  adminDashboard:  '/admin/dashboard',
+
+  // ── Teacher ──────────────────────────────────────────────────────────────────
+  teacherDashboard: '/teacher/dashboard',
+
   // ── Search ───────────────────────────────────────────────────────────────────
   search:          '/search',
 

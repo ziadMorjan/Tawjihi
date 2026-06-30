@@ -22,7 +22,10 @@ const VideoPage      = lazy(() => import('../pages/VideoPage'));
 const Profile        = lazy(() => import('../pages/Profile'));
 const EditProfile    = lazy(() => import('../pages/EditProfile'));
 const ChangePassword = lazy(() => import('../pages/ChangePassword'));
-const NotFound       = lazy(() => import('../pages/NotFound'));
+const Notifications  = lazy(() => import('../pages/Notifications'));
+const AdminDashboard  = lazy(() => import('../pages/AdminDashboard'));
+const TeacherDashboard = lazy(() => import('../pages/TeacherDashboard'));
+const NotFound        = lazy(() => import('../pages/NotFound'));
 const Search         = lazy(() => import('../pages/Search'));
 
 // ─── Fallback spinner shown while a lazy chunk is loading ─────────────────────
@@ -66,6 +69,17 @@ export default function AppRoutes() {
           <Route path={PATH.profile}        element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path={PATH.editProfile}    element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
           <Route path={PATH.changePassword} element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+          <Route path={PATH.notifications} element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+          <Route path={PATH.adminDashboard} element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path={PATH.teacherDashboard} element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <TeacherDashboard />
+            </ProtectedRoute>
+          } />
 
           {/* ── Search ── */}
           <Route path={PATH.search}       element={<Search />} />

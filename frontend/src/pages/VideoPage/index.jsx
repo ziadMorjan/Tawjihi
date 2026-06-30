@@ -509,6 +509,49 @@ export default function VideoPage() {
                             <ReviewText>{comment.content}</ReviewText>
                           )
                         )}
+
+                        {/* replies */}
+                        {comment.replies?.length > 0 && (
+                          <div style={{
+                            marginTop: 12, paddingTop: 12,
+                            borderTop: "1px solid #E2E8F0",
+                            display: "flex", flexDirection: "column", gap: 10,
+                          }}>
+                            {comment.replies.map((r, idx) => (
+                              <div key={r._id || idx} style={{
+                                display: "flex", alignItems: "flex-start", gap: 8,
+                                paddingInlineStart: 8,
+                                borderInlineStart: "2px solid #E2E8F0",
+                              }}>
+                                <div style={{
+                                  width: 24, height: 24,
+                                  borderRadius: "50%",
+                                  background: "#F1F5F9",
+                                  display: "flex", alignItems: "center", justifyContent: "center",
+                                  fontSize: 9, fontWeight: 700,
+                                  color: "#94A3B8", flexShrink: 0,
+                                }}>
+                                  {r.user?.name?.charAt(0) ?? "?"}
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                    <span style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>
+                                      {r.user?.name ?? "معلم"}
+                                    </span>
+                                    {r.createdAt && (
+                                      <span style={{ fontSize: 10, color: "#94A3B8" }}>
+                                        {new Date(r.createdAt).toLocaleDateString("ar-SA", { month: "short", day: "numeric" })}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p style={{ fontSize: 13, color: "#475569", margin: "2px 0 0", lineHeight: 1.5 }}>
+                                    {r.text}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </ReviewCard>
                     );
                   })

@@ -36,7 +36,7 @@ export const updateSubjectValidator = [
 		.isLength({ min: 3 })
 		.withMessage((value, { req }) => req.__('validation.name_min_length'))
 		.custom(async (value, { req }) => {
-			const subject = await Subject.findOne({ name: value });
+			const subject = await Subject.findOne({ name: value, _id: { $ne: req.params.id } });
 			if (subject) {
 				throw new CustomError(req.__('validation.subject_already_exists'), 400);
 			}

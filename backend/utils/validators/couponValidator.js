@@ -42,7 +42,7 @@ export const updateCouponValidator = [
 		.notEmpty()
 		.withMessage((value, { req }) => req.__('validation.name_required'))
 		.custom(async (value, { req }) => {
-			const coupon = await Coupon.findOne({ name: value });
+			const coupon = await Coupon.findOne({ name: value, _id: { $ne: req.params.id } });
 			if (coupon) {
 				throw new CustomError(req.__('validation.coupon_already_exists'), 400);
 			}
