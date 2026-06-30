@@ -69,13 +69,13 @@ async function generateWithFallback(genAI, prompt, primaryModel) {
 						const waitMs = Math.pow(2, attempt) * 1000;
 						console.warn(
 							`[AI] Model "${modelName}" returned ${err.status}. ` +
-							`Retrying in ${waitMs / 1000}s... (attempt ${attempt}/${MAX_RETRIES})`,
+								`Retrying in ${waitMs / 1000}s... (attempt ${attempt}/${MAX_RETRIES})`,
 						);
 						await sleep(waitMs);
 					} else {
 						console.warn(
 							`[AI] Model "${modelName}" exhausted all ${MAX_RETRIES} retries. ` +
-							'Trying next fallback model...',
+								'Trying next fallback model...',
 						);
 					}
 				} else {
@@ -197,8 +197,8 @@ Return the response strictly as a JSON object matching this structure:
 				? req.__('generic.ai_overloaded') ||
 					'The AI service is busy. Please try again in a minute.'
 				: req.__('generic.ai_generation_failed') ||
-				    'Failed to generate AI content. Please try again.',
-					    overloaded ? 503 : 500,
+					'Failed to generate AI content. Please try again.',
+			overloaded ? 503 : 500,
 		);
 	}
 });

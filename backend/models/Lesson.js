@@ -57,7 +57,7 @@ lessonSchema.post(/delete/i, async (doc, next) => {
 		}
 	}
 
-	if (doc.resources.length !== 0) {
+	if (doc.resources && doc.resources.length !== 0) {
 		const promises = doc.resources.map((resource) => {
 			if (resource.includes('cloudinary')) {
 				const publicKey = extractPublicId(resource);

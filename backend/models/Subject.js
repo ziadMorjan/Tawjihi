@@ -16,10 +16,19 @@ const subjectSchema = new mongoose.Schema(
 			minlength: 10,
 			maxlength: 1000,
 		},
+		branch: {
+			type: mongoose.Types.ObjectId,
+			ref: 'Branch',
+		},
 	},
 	{
 		timestamps: true,
 	},
 );
+
+subjectSchema.pre(/^find/, function (next) {
+	this.populate({ path: 'branch', select: 'name' });
+	next();
+});
 
 export default mongoose.model('Subject', subjectSchema);

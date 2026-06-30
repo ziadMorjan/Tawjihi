@@ -1,0 +1,13 @@
+[dotenv@17.2.1] injecting env (13) from config.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.1] injecting env (0) from config.env -- tip: 📡 version env with Radar: https://dotenvx.com/radar
+Environment: development
+Server is running on http://localhost:5000
+MongoDB connected successfully : tawjihi
+[0mPOST /api/v1/auth/login [33m400[0m 330.579 ms - 520[0m
+[0mGET /api/v1/admin/stats [32m200[0m 51.588 ms - 117[0m
+[0mPOST /api/v1/auth/login [32m200[0m 254.679 ms - 757[0m
+[0mGET /api/v1/admin/stats [33m403[0m 10.145 ms - 1218[0m
+[0mGET /api/v1/admin/stats [33m403[0m 9.654 ms - 1218[0m
+[0mGET /api/v1/teacher/stats [32m200[0m 30.904 ms - 82[0m
+[0mPOST /api/v1/notifications/send-to-students [33m404[0m 2.994 ms - 2061[0m
+[0mPOST /api/v1/notifications/send-to-students [33m404[0m 2.472 ms - 2061[0m
