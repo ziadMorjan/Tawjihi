@@ -4,6 +4,7 @@ import { PATH } from '../../../constants';
 import {
   ShoppingCart, Heart, BookOpen, User,
   LogOut, Settings, Moon, Sun, Languages,
+  LayoutDashboard,
   X,
   Search,
 } from 'lucide-react';
@@ -24,9 +25,13 @@ import {
 } from './Navbar.styles';
 import { useAuth } from '../../../features/auth';
 import { useCourseActions } from '../../../features/courses/hooks/useCourseActions';
+import { NotificationBell } from '../../../features/notifications/components/NotificationBell';
+import { useNotificationToasts } from '../../../features/notifications/hooks/useNotificationToasts';
+import { NotificationToastContainer } from '../../../features/notifications/components/NotificationToast';
 import {Button} from "../../../shared/components/Button";
 import { toast } from 'react-toastify';
 export function Navbar() {
+  const { toasts, dismiss } = useNotificationToasts();
   const navigate  = useNavigate();
   const location  = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
@@ -108,6 +113,7 @@ export function Navbar() {
   };
 
   return (
+    <>
     <NavWrapper>
       <NavInner>
 
@@ -249,6 +255,20 @@ export function Navbar() {
 
           {isAuthenticated ? (
             <>
+              <NotificationBell />
+              {(user?.role === 'admin' || user?.role === 'teacher') && (
+                <CartBtn
+                  onClick={() =>
+                    navigate(
+                      user?.role === 'admin' ? PATH.adminDashboard : PATH.teacherDashboard
+                    )
+                  }
+                  aria-label="لوحة التحكم"
+                  title="لوحة التحكم"
+                >
+                  <LayoutDashboard size={20} />
+                </CartBtn>
+              )}
               <CartBtn onClick={() => navigate(PATH.cart)} aria-label={t('nav.cart')}>
                 <ShoppingCart size={20} />
                 {cartItems.length > 0 && (
@@ -346,5 +366,7 @@ export function Navbar() {
 
       </NavInner>
     </NavWrapper>
+    <NotificationToastContainer toasts={toasts} onDismiss={dismiss} />
+    </>
   );
 }

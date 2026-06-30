@@ -1,5 +1,24 @@
 import mongoose from 'mongoose';
 
+const replySchema = new mongoose.Schema(
+	{
+		text: {
+			type: String,
+			required: true,
+			trim: true,
+			maxlength: 500,
+		},
+		user: {
+			type: mongoose.Types.ObjectId,
+			ref: 'User',
+			required: true,
+		},
+	},
+	{
+		timestamps: true,
+	},
+);
+
 const commentSchema = new mongoose.Schema(
 	{
 		lesson: {
@@ -18,6 +37,7 @@ const commentSchema = new mongoose.Schema(
 			trim: true,
 			maxlength: [500, 'Review comment must be less than 500 characters'],
 		},
+		replies: [replySchema],
 	},
 	{
 		timestamps: true,
@@ -27,11 +47,16 @@ const commentSchema = new mongoose.Schema(
 commentSchema.pre(/^find/, function (next) {
 	this.populate({
 		path: 'lesson',
-		select: 'name',
+		select: 'name course',
 	});
 
 	this.populate({
 		path: 'user',
+		select: 'name coverImage',
+	});
+
+	this.populate({
+		path: 'replies.user',
 		select: 'name coverImage',
 	});
 

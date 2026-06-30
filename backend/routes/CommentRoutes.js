@@ -23,6 +23,10 @@ import {
 	getComment,
 	updateComment,
 	deleteComment,
+	replyOnComment,
+	getTeacherComments,
+	editReply,
+	deleteReply,
 } from '../controllers/CommentController.js';
 
 const router = express.Router({ mergeParams: true });
@@ -38,6 +42,13 @@ router
 		createCommentValidator,
 		createComment,
 	);
+
+router.get('/teacher', protect, allowedTo('teacher'), getTeacherComments);
+
+router.post('/:id/reply', protect, allowedTo('teacher'), replyOnComment);
+
+router.patch('/:id/replies/:replyId', protect, allowedTo('teacher'), editReply);
+router.delete('/:id/replies/:replyId', protect, allowedTo('teacher'), deleteReply);
 
 router
 	.route('/:id')
