@@ -75,16 +75,12 @@ export default function AppRoutes() {
             <Route path={PATH.notifications}  element={<Notifications />} />
           </Route>
 
-          <Route path={PATH.adminDashboard} element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path={PATH.teacherDashboard} element={
-            <ProtectedRoute allowedRoles={['teacher']}>
-              <TeacherDashboard />
-            </ProtectedRoute>
-          } />
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path={PATH.adminDashboard} element={<AdminDashboard />} />
+          </Route>
+          <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
+            <Route path={PATH.teacherDashboard} element={<TeacherDashboard />} />
+          </Route>
 
           {/* ── Search ── */}
           <Route path={PATH.search}       element={<Search />} />
