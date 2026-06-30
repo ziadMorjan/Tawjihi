@@ -79,5 +79,35 @@
 
 ---
 
-### [ميزة 2] الميزات القادمة (مساحة مخصصة للإضافة)
-*(قم بإضافة توثيق ميزات الدورات `courses` أو الملف الشخصي `user` هنا فور كتابة اختبارات لها لتتبع نفس الأسلوب).*
+### [ميزة 2] الدورات التدريسية (Courses Feature)
+
+تمت تغطية هذه الميزة بالكامل عبر 8 ملفات اختبار تحتوي على 60 فحصاً ناجحاً.
+
+#### أ. خريطة ملفات اختبار الـ Courses:
+
+* **اختبارات الـ Hooks (جلب البيانات):**
+  * `src/features/courses/hooks/__tests__/useCourses.test.js` (جلب قائمة الكورسات مع الفلاتر عبر MSW).
+  * `src/features/courses/hooks/__tests__/useCourse.test.js` (جلب كورس واحد بالـ ID والـ select transformer).
+  * `src/features/courses/hooks/__tests__/useFiltersData.test.js` (جلب المواد الدراسية والفروع — `useSubjects` و `useBranches`).
+
+* **اختبارات الـ Hooks (منطق الفلترة والـ URL):**
+  * `src/features/courses/hooks/__tests__/useCoursesFilters.test.js` (إدارة الفلاتر عبر URL params — `setFilter`, `setPage`, `clearFilters`, `hasActiveFilters`).
+
+* **اختبارات الـ Hooks (العمليات والتفاعل):**
+  * `src/features/courses/hooks/__tests__/useCourseActions.test.js` (منطق `isInCart`, `isInWishlist`, `toggleCart`, `toggleWishlist`).
+  * `src/features/courses/hooks/__tests__/useCourseCheckout.test.js` (عملية الدفع — التوجيه لـ Stripe، معالجة الفشل).
+
+* **اختبارات المكونات (UI Components):**
+  * `src/features/courses/components/CourseCard/__tests__/StarRating.test.jsx` (دالة `calculateStars` + مكون التقييم بالنجوم).
+  * `src/features/courses/components/CourseCard/__tests__/CourseCard.test.jsx` (عرض بيانات الكورس، الأسعار، الكارت، المفضلة، التنقل).
+
+#### ب. ملاحظات بيئة الاختبار الخاصة بالميزة:
+
+* **`window.scrollTo` غير مدعوم في JSDOM:** عند تشغيل `setPage`، يظهر `console.error: Not implemented: window.scrollTo`. هذا سلوك طبيعي ومتوقع في بيئة الاختبار ولا يؤثر على نتيجة الفحوصات، لأن `scrollTo` هو side effect بصري فقط ولا يتحكم في منطق الـ URL.
+* **MSW لاختبار الـ Hooks مع API:** الهوكات التي تتصل بالـ API (`useCourses`, `useCourse`, `useFiltersData`) تُختبر عبر MSW لضمان اختبار المسار الكامل من الهوك حتى `axios`.
+* **محاكاة Cart و Wishlist في `useCourseActions`:** يتم mock الـ cart و wishlist hooks لأنهم يعتمدون على `AuthContext` ويتطلبان user مسجلاً، مما يجعل المحاكاة أبسط وأكثر عزلاً.
+
+---
+
+### [ميزة 3] الميزات القادمة (مساحة مخصصة للإضافة)
+*(قم بإضافة توثيق ميزات الملف الشخصي `user` أو السلة `cart` هنا فور كتابة اختبارات لها لتتبع نفس الأسلوب).*
