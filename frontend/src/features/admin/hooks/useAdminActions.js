@@ -14,16 +14,7 @@ export const NEWS_KEY = ['news'];
 export function useAdminActions() {
   const queryClient = useQueryClient();
 
-  const invalidateAll = () => {
-    queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY });
-    queryClient.invalidateQueries({ queryKey: PENDING_TEACHERS_KEY });
-    queryClient.invalidateQueries({ queryKey: ALL_USERS_KEY });
-    queryClient.invalidateQueries({ queryKey: ALL_COURSES_KEY });
-    queryClient.invalidateQueries({ queryKey: BRANCHES_KEY });
-    queryClient.invalidateQueries({ queryKey: SUBJECTS_KEY });
-    queryClient.invalidateQueries({ queryKey: COUPONS_KEY });
-    queryClient.invalidateQueries({ queryKey: NEWS_KEY });
-  };
+
 
   const approveTeacher = useMutation({
     mutationFn: adminApi.approveTeacher,

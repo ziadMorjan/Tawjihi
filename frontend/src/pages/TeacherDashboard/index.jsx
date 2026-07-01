@@ -15,7 +15,6 @@ import {
 } from '../../features/teacher';
 import { teacherApi } from '../../features/teacher';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '../../features/auth';
 import { useBranches, useSubjects } from '../../features/admin';
 import { Button } from '../../shared/components/Button';
 
@@ -720,7 +719,6 @@ function OverviewTab() {
 }
 
 function CoursesTab() {
-  const { user } = useAuth();
   const { courses, isLoading } = useTeacherCourses();
   const { deleteCourse, updateCourse, createCourse, isDeleting, isCreating, isUpdating } = useTeacherActions();
   const { subjects } = useSubjects();
@@ -855,7 +853,6 @@ function CoursesTab() {
 }
 
 function CommentsTab() {
-  const { user } = useAuth();
   const { courses, isLoading: coursesLoading } = useTeacherCourses();
   const {
     replyToComment, isReplying,

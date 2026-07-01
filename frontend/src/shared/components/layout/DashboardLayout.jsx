@@ -1,13 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled, { css } from 'styled-components';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import styled, { css } from "styled-components";
 import {
-  ChevronRight, ChevronLeft, LogOut, Sun, Moon, Menu, X, ArrowLeftFromLine,
-} from 'lucide-react';
-import { useThemeMode } from '../../../features/theme/ThemeContext';
-import { useLanguage } from '../../hooks/useLanguage';
-import { useAuth } from '../../../features/auth';
-import { PATH } from '../../../constants';
+  ChevronRight,
+  ChevronLeft,
+  LogOut,
+  Sun,
+  Moon,
+  Menu,
+  X,
+  ArrowLeftFromLine,
+} from "lucide-react";
+import { useThemeMode } from "../../../features/theme/ThemeContext";
+import { useLanguage } from "../../hooks/useLanguage";
+import { useAuth } from "../../../features/auth";
+import { PATH } from "../../../constants";
 
 const SIDEBAR_EXPANDED = 240;
 const SIDEBAR_COLLAPSED = 64;
@@ -21,12 +28,15 @@ const Layout = styled.div`
 const Sidebar = styled.aside`
   position: fixed;
   top: 0;
-  ${({ $isAr }) => ($isAr ? 'right: 0;' : 'left: 0;')}
+  ${({ $isAr }) => ($isAr ? "right: 0;" : "left: 0;")}
   height: 100vh;
-  width: ${({ $collapsed }) => ($collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED)}px;
+  width: ${({ $collapsed }) =>
+    $collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED}px;
   background: ${({ theme }) => theme.colors.bgPrimary};
-  border-${({ $isAr }) => ($isAr ? 'left' : 'right')}: 1px solid ${({ theme }) => theme.colors.border};
-  display: flex;
+  ${({ $isAr, theme }) =>
+    $isAr
+      ? `border-left: 1px solid ${theme.colors.border};`
+      : `border-right: 1px solid ${theme.colors.border};`} display: flex;
   flex-direction: column;
   z-index: 100;
   transition: width 0.25s ease;
@@ -43,7 +53,7 @@ const MobileOverlay = styled.div`
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     z-index: 99;
   }
 `;
@@ -55,13 +65,15 @@ const MobileDrawer = styled.aside`
     flex-direction: column;
     position: fixed;
     top: 0;
-    ${({ $isAr }) => ($isAr ? 'right: 0;' : 'left: 0;')}
+    ${({ $isAr }) => ($isAr ? "right: 0;" : "left: 0;")}
     height: 100vh;
     width: ${SIDEBAR_EXPANDED}px;
     background: ${({ theme }) => theme.colors.bgPrimary};
-    border-${({ $isAr }) => ($isAr ? 'left' : 'right')}: 1px solid ${({ theme }) => theme.colors.border};
-    z-index: 100;
-    transform: translateX(${({ $isAr, $open }) => ($open ? '0' : $isAr ? '100%' : '-100%')});
+${({ $isAr, theme }) => $isAr 
+  ? `border-left: 1px solid ${theme.colors.border};` 
+  : `border-right: 1px solid ${theme.colors.border};`
+}    z-index: 100;
+    transform: translateX(${({ $isAr, $open }) => ($open ? "0" : $isAr ? "100%" : "-100%")});
     transition: transform 0.25s ease;
   }
 `;
@@ -106,11 +118,15 @@ const MainContent = styled.main`
 const LogoWrap = styled.div`
   display: flex;
   align-items: center;
-  justify-content: ${({ $collapsed }) => $collapsed ? 'center' : 'space-between'};
+  justify-content: ${({ $collapsed }) =>
+    $collapsed ? "center" : "space-between"};
   gap: ${({ theme }) => theme.spacing[3]};
-  padding: ${({ theme, $collapsed }) => $collapsed ? `${theme.spacing[3]} ${theme.spacing[3]}` : `${theme.spacing[4]} ${theme.spacing[4]}`};
+  padding: ${({ theme, $collapsed }) =>
+    $collapsed
+      ? `${theme.spacing[3]} ${theme.spacing[3]}`
+      : `${theme.spacing[4]} ${theme.spacing[4]}`};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  min-height: ${({ $collapsed }) => $collapsed ? 'auto' : '56px'};
+  min-height: ${({ $collapsed }) => ($collapsed ? "auto" : "56px")};
   cursor: pointer;
 
   img {
@@ -143,7 +159,11 @@ const ToggleRow = styled.button`
 const LogoText = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.accent});
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.colors.primary},
+    ${({ theme }) => theme.colors.accent}
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -183,21 +203,24 @@ const NavList = styled.nav`
 const NavItem = styled.button`
   display: flex;
   align-items: center;
-  gap: ${({ theme, $collapsed }) => $collapsed ? 0 : theme.spacing[3]};
+  gap: ${({ theme, $collapsed }) => ($collapsed ? 0 : theme.spacing[3])};
   padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[3]}`};
   border: none;
   border-radius: ${({ theme }) => theme.borderRadius.lg};
   background: ${({ $active, theme }) =>
-    $active ? theme.colors.primaryLight : 'transparent'};
+    $active ? theme.colors.primaryLight : "transparent"};
   color: ${({ $active, theme }) =>
     $active ? theme.colors.primary : theme.colors.textSecondary};
   cursor: pointer;
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   font-family: inherit;
   font-weight: ${({ $active, theme }) =>
-    $active ? theme.typography.fontWeight.semibold : theme.typography.fontWeight.medium};
-  justify-content: ${({ $collapsed }) => $collapsed ? 'center' : 'flex-start'};
-  text-align: ${({ $collapsed }) => $collapsed ? 'center' : 'right'};
+    $active
+      ? theme.typography.fontWeight.semibold
+      : theme.typography.fontWeight.medium};
+  justify-content: ${({ $collapsed }) =>
+    $collapsed ? "center" : "flex-start"};
+  text-align: ${({ $collapsed }) => ($collapsed ? "center" : "right")};
   width: 100%;
   white-space: nowrap;
   transition: all 0.15s;
@@ -206,9 +229,10 @@ const NavItem = styled.button`
   ${({ $active, $isAr, theme }) =>
     $active
       ? css`
-          box-shadow: inset ${$isAr ? '-2px' : '2px'} 0 0 0 ${theme.colors.accent};
+          box-shadow: inset ${$isAr ? "-2px" : "2px"} 0 0 0
+            ${theme.colors.accent};
         `
-      : ''}
+      : ""}
 
   &:hover {
     background: ${({ theme }) => theme.colors.bgTertiary};
@@ -226,8 +250,11 @@ const NavLabel = styled.span`
   overflow: hidden;
   white-space: nowrap;
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
-  max-width: ${({ $visible }) => ($visible ? '200px' : '0')};
-  transition: opacity 0.15s, max-width 0.15s, padding 0.15s;
+  max-width: ${({ $visible }) => ($visible ? "200px" : "0")};
+  transition:
+    opacity 0.15s,
+    max-width 0.15s,
+    padding 0.15s;
 `;
 
 const BadgeDot = styled.span`
@@ -258,8 +285,9 @@ const SideFooter = styled.div`
 const UserRow = styled.div`
   display: flex;
   align-items: center;
-  justify-content: ${({ $collapsed }) => $collapsed ? 'center' : 'flex-start'};
-  gap: ${({ theme, $collapsed }) => $collapsed ? 0 : theme.spacing[2]};
+  justify-content: ${({ $collapsed }) =>
+    $collapsed ? "center" : "flex-start"};
+  gap: ${({ theme, $collapsed }) => ($collapsed ? 0 : theme.spacing[2])};
   padding: ${({ theme }) => theme.spacing[2]};
 `;
 
@@ -290,8 +318,11 @@ const UserInfo = styled.div`
   overflow: hidden;
   white-space: nowrap;
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
-  max-width: ${({ $visible }) => ($visible ? '200px' : '0')};
-  transition: opacity 0.15s, max-width 0.15s, padding 0.15s;
+  max-width: ${({ $visible }) => ($visible ? "200px" : "0")};
+  transition:
+    opacity 0.15s,
+    max-width 0.15s,
+    padding 0.15s;
 `;
 
 const UserName = styled.div`
@@ -309,8 +340,9 @@ const UserRole = styled.div`
 const IconBtn = styled.button`
   display: flex;
   align-items: center;
-  justify-content: ${({ $collapsed }) => $collapsed ? 'center' : 'flex-start'};
-  gap: ${({ theme, $collapsed }) => $collapsed ? 0 : theme.spacing[2]};
+  justify-content: ${({ $collapsed }) =>
+    $collapsed ? "center" : "flex-start"};
+  gap: ${({ theme, $collapsed }) => ($collapsed ? 0 : theme.spacing[2])};
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   border: none;
   border-radius: ${({ theme }) => theme.borderRadius.lg};
@@ -340,8 +372,11 @@ const IconLabel = styled.span`
   overflow: hidden;
   white-space: nowrap;
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
-  max-width: ${({ $visible }) => ($visible ? '200px' : '0')};
-  transition: opacity 0.15s, max-width 0.15s, padding 0.15s;
+  max-width: ${({ $visible }) => ($visible ? "200px" : "0")};
+  transition:
+    opacity 0.15s,
+    max-width 0.15s,
+    padding 0.15s;
 `;
 
 const HamburgerBtn = styled.button`
@@ -360,15 +395,20 @@ const HamburgerBtn = styled.button`
   }
 `;
 
-export default function DashboardLayout({ navItems, activeNav, onNavChange, children }) {
+export default function DashboardLayout({
+  navItems,
+  activeNav,
+  onNavChange,
+  children,
+}) {
   const navigate = useNavigate();
-  const { isAr, t } = useLanguage();
+  const { isAr } = useLanguage();
   const { isDark, toggle } = useThemeMode();
   const { user, logout } = useAuth();
 
   const [collapsed, setCollapsed] = useState(() => {
     try {
-      return localStorage.getItem('dashboard-sidebar-collapsed') === 'true';
+      return localStorage.getItem("dashboard-sidebar-collapsed") === "true";
     } catch {
       return false;
     }
@@ -376,22 +416,36 @@ export default function DashboardLayout({ navItems, activeNav, onNavChange, chil
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('dashboard-sidebar-collapsed', collapsed);
+    localStorage.setItem("dashboard-sidebar-collapsed", collapsed);
   }, [collapsed]);
 
-  const initials = user?.name?.charAt(0)?.toUpperCase() ?? '؟';
+  const initials = user?.name?.charAt(0)?.toUpperCase() ?? "؟";
 
   const roleLabel =
-    user?.role === 'admin' ? 'مدير' :
-    user?.role === 'teacher' ? 'معلم' : 'مستخدم';
+    user?.role === "admin"
+      ? "مدير"
+      : user?.role === "teacher"
+        ? "معلم"
+        : "مستخدم";
 
   const renderSidebarContent = (isMobile) => (
     <>
-      <LogoWrap $collapsed={collapsed} onClick={() => { navigate(PATH.home); if (isMobile) setMobileOpen(false); }}>
+      <LogoWrap
+        $collapsed={collapsed}
+        onClick={() => {
+          navigate(PATH.home);
+          if (isMobile) setMobileOpen(false);
+        }}
+      >
         <img src="/assets/img/logo.png" alt="Tawjihi" />
         <LogoText>توجيهي</LogoText>
         {!isMobile && !collapsed && (
-          <ToggleBtn onClick={(e) => { e.stopPropagation(); setCollapsed(true); }}>
+          <ToggleBtn
+            onClick={(e) => {
+              e.stopPropagation();
+              setCollapsed(true);
+            }}
+          >
             {isAr ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </ToggleBtn>
         )}
@@ -410,7 +464,10 @@ export default function DashboardLayout({ navItems, activeNav, onNavChange, chil
             $active={activeNav === item.key}
             $collapsed={collapsed}
             $isAr={isAr}
-            onClick={() => { onNavChange(item.key); if (isMobile) setMobileOpen(false); }}
+            onClick={() => {
+              onNavChange(item.key);
+              if (isMobile) setMobileOpen(false);
+            }}
           >
             <item.icon />
             <NavLabel $visible={!collapsed || isMobile}>{item.label}</NavLabel>
@@ -427,7 +484,7 @@ export default function DashboardLayout({ navItems, activeNav, onNavChange, chil
             {user?.coverImage ? <img src={user.coverImage} alt="" /> : initials}
           </UserAvatar>
           <UserInfo $visible={!collapsed || isMobile}>
-            <UserName>{user?.name || ''}</UserName>
+            <UserName>{user?.name || ""}</UserName>
             <UserRole>{roleLabel}</UserRole>
           </UserInfo>
         </UserRow>
@@ -435,7 +492,7 @@ export default function DashboardLayout({ navItems, activeNav, onNavChange, chil
         <IconBtn $collapsed={collapsed} onClick={toggle}>
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
           <IconLabel $visible={!collapsed || isMobile}>
-            {isDark ? 'وضع فاتح' : 'وضع داكن'}
+            {isDark ? "وضع فاتح" : "وضع داكن"}
           </IconLabel>
         </IconBtn>
 
@@ -450,7 +507,7 @@ export default function DashboardLayout({ navItems, activeNav, onNavChange, chil
             logout();
             navigate(PATH.home);
           }}
-          style={{ color: '#DC2626' }}
+          style={{ color: "#DC2626" }}
         >
           <LogOut size={18} />
           <IconLabel $visible={!collapsed || isMobile}>تسجيل خروج</IconLabel>
@@ -477,11 +534,30 @@ export default function DashboardLayout({ navItems, activeNav, onNavChange, chil
         <HamburgerBtn onClick={() => setMobileOpen((p) => !p)}>
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </HamburgerBtn>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/assets/img/logo.png" alt="Tawjihi" style={{ width: 28, height: 28, objectFit: 'contain' }} />
-          <span style={{ fontWeight: 700, fontSize: 15, background: 'linear-gradient(135deg, var(--primary, #0B6B8A), var(--accent, #C8893A))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>توجيهي</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <img
+            src="/assets/img/logo.png"
+            alt="Tawjihi"
+            style={{ width: 28, height: 28, objectFit: "contain" }}
+          />
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 15,
+              background:
+                "linear-gradient(135deg, var(--primary, #0B6B8A), var(--accent, #C8893A))",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            توجيهي
+          </span>
         </div>
-        <HamburgerBtn as="button" onClick={toggle} style={{ border: 'none', width: 36, height: 36 }}>
+        <HamburgerBtn
+          as="button"
+          onClick={toggle}
+          style={{ border: "none", width: 36, height: 36 }}
+        >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </HamburgerBtn>
       </MobileHeader>

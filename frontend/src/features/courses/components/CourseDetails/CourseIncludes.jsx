@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { PlayCircle, BookOpen, Award, Infinity, Monitor } from 'lucide-react';
+import { PlayCircle, BookOpen, Infinity, Monitor } from 'lucide-react';
 import { axiosInstance } from '../../../../shared/lib/axiosInstance';
 
 const Grid = styled.div`

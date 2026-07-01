@@ -16,7 +16,6 @@ import {
   SectionTitle,
 } from "./CourseDetails.styles";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { PATH } from "../../../../constants";
 
 const formatDuration = (seconds) => {
@@ -141,7 +140,6 @@ const Count = styled.span`
 export function CourseCurriculum({ courseId, isEnrolled }) {
   const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ["lessons", courseId],
     queryFn: () => fetchLessons(courseId),
