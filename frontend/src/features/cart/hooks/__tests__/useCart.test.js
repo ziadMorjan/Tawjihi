@@ -4,12 +4,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { useCart } from '../useCart';
+import { useAuth } from '../../../auth';
+
 
 // ── محاكاة AuthContext — الهوك يحتاج user لتفعيل الـ query ──────────────────
 jest.mock('../../../auth', () => ({
   useAuth: jest.fn(),
 }));
-import { useAuth } from '../../../auth';
 
 // ── بيانات وهمية ─────────────────────────────────────────────────────────────
 const mockCart = {
@@ -106,7 +107,7 @@ describe('useCart Hook', () => {
     useAuth.mockReturnValue({ user: { _id: 'u1' } });
     server.use(
       http.get('*/cart', () =>
-        HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+        HttpResponse.json({ message: 'Internal Server Error' }, { status: 500 })
       )
     );
 
