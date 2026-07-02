@@ -158,5 +158,33 @@
 
 ---
 
-### [ميزة 5] الميزات القادمة (مساحة مخصصة للإضافة)
-*(قم بإضافة توثيق ميزات الدروس `lessons` أو التقييمات `reviews` هنا فور كتابة اختبارات لها لتتبع نفس الأسلوب).*
+### [ميزة 5] الدروس والمحتوى الذكي والتعليقات (Lessons & Comments Feature)
+
+تمت تغطية هذه الميزة بالكامل عبر 8 ملفات اختبار تحتوي على 31 فحصاً ناجحاً.
+
+#### أ. خريطة ملفات اختبار الـ Lessons & Comments:
+
+* **اختبارات الـ Hooks (الدروس - Lessons):**
+  * `src/features/lessons/hooks/__tests__/useLessons.test.js` (جلب قائمة دروس الكورس وحالات الفشل والنجاح عبر MSW).
+  * `src/features/lessons/hooks/__tests__/useGenerateAI.test.js` (توليد الملخص والبطاقات التفاؤلية بالذكاء الاصطناعي مع إبطال كاش الدروس وتحديث الـ UI).
+
+* **اختبارات الـ Hooks (التعليقات - Comments):**
+  * `src/features/comments/hooks/__tests__/useComments.test.js` (جلب تعليقات درس معين عبر MSW).
+  * `src/features/comments/hooks/__tests__/useAddComment.test.js` (إضافة تعليق جديد وإبطال كاش التعليقات تلقائياً).
+  * `src/features/comments/hooks/__tests__/useEditComment.test.js` (تعديل محتوى تعليق وإرسال التعديل للسيرفر).
+  * `src/features/comments/hooks/__tests__/useDeleteComment.test.js` (حذف التعليق تفاؤلياً - Optimistic Delete والتراجع التلقائي - Rollback في حال فشل السيرفر).
+
+* **اختبارات المكونات (UI Components):**
+  * `src/features/lessons/components/AISummary/__tests__/AISummary.test.jsx` (عرض ملخص الذكاء الاصطناعي Markdown، التوليد، ونسخ الملخص إلى الحافظة).
+  * `src/features/lessons/components/Flashcards/__tests__/Flashcards.test.jsx` (عرض البطاقات التعليمية، التنقل بينها في الواجهات العربية/الإنجليزية RTL/LTR، وحالات القلب).
+
+#### ب. ملاحظات بيئة الاختبار الخاصة بالميزة:
+
+* **محاكاة الـ ES Modules (مكتبة react-markdown):** مكتبة `react-markdown` تُصدر كـ ES Module وتفشل في بيئة Jest الافتراضية؛ قمنا بمحاكاتها بشكل كامل باستخدام Mock بسيط يرجع محتواها النصي مباشرة.
+* **مزامنة الحذف التفاؤلي (Optimistic Update Async):** يحتوي الحذف التفاؤلي على استدعاءات `cancelQueries` غير المتزامنة مما يتطلب استخدام `await waitFor` لفحص قيم الكاش بشكل دقيق وتجنب الفحص المتزامن قبل التحديث الفعلي.
+* **محاكاة لغة الواجهة وتمرير المعاملات (Progress translation):** يتم محاكاة دالة الترجمة ومحور لغة الواجهة (RTL/LTR) لفحص تصرف أزرار التحكم بالبطاقات بشكل صحيح حسب الاتجاه.
+
+---
+
+### [ميزة 6] الميزات القادمة (مساحة مخصصة للإضافة)
+*(قم بإضافة توثيق ميزات التقييمات `reviews` أو الإشعارات هنا فور كتابة اختبارات لها لتتبع نفس الأسلوب).*
