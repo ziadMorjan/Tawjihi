@@ -34,13 +34,16 @@ const getTeacherAudience = async (teacherId) => {
 
 export const getMyNotifications = asyncErrorHandler(async (req, res) => {
 	const limit = parseLimit(req.query.limit, 30);
+	const skip = Math.max(0, Number.parseInt(req.query.skip, 10) || 0);
 	const unreadOnly = req.query.unreadOnly === 'true';
 
 	const filter = { recipient: req.user._id };
 	if (unreadOnly) filter.isRead = false;
+	if (req.query.type) filter.type = req.query.type;
 
 	const docs = await Notification.find(filter)
 		.sort({ createdAt: -1 })
+		.skip(skip)
 		.limit(limit)
 		.populate({ path: 'createdBy', select: 'name role' });
 
@@ -113,7 +116,7 @@ export const broadcastNotification = asyncErrorHandler(async (req, res) => {
 	const docs = targetUserIds.map((recipientId) => ({
 		recipient: recipientId,
 		createdBy: req.user._id,
-		type: 'message',
+		type: req.body.type || 'message',
 		title: title.trim(),
 		body: typeof body === 'string' ? body.trim() : undefined,
 		link: typeof link === 'string' ? link.trim() : undefined,
@@ -124,5 +127,45 @@ export const broadcastNotification = asyncErrorHandler(async (req, res) => {
 	res.status(201).json({
 		status: 'success',
 		data: { created: docs.length },
+	});
+});
+
+export const sendNotificationToStudents = asyncErrorHandler(async (req, res) => {
+	const { title, message, type } = req.body;
+
+	if (!title || !title.trim()) throw new CustomError('title is required', 400);
+	if (!message || !message.trim()) throw new CustomError('message is required', 400);
+
+	const teacherCourses = await Course.find({ teacher: req.user._id }).select('_id');
+	if (!teacherCourses.length) {
+		return res.status(200).json({
+			status: 'success',
+			data: { sentTo: 0 },
+		});
+	}
+
+	const courseIds = teacherCourses.map((c) => c._id);
+	const studentIds = await Enrollment.distinct('user', { course: { $in: courseIds } });
+
+	if (!studentIds.length) {
+		return res.status(200).json({
+			status: 'success',
+			data: { sentTo: 0 },
+		});
+	}
+
+	const docs = studentIds.map((recipientId) => ({
+		recipient: recipientId,
+		createdBy: req.user._id,
+		type: type || 'message',
+		title: title.trim(),
+		body: message.trim(),
+	}));
+
+	await Notification.insertMany(docs, { ordered: false });
+
+	res.status(201).json({
+		status: 'success',
+		data: { sentTo: docs.length },
 	});
 });

@@ -1,20 +1,11 @@
-import { Outlet } from "react-router-dom";
-import { Suspense } from "react";
-import Loading from "./components/Loading";
-import DashboardApp from "./dashboard/App";
-import { MaterialUIControllerProvider } from "./dashboard/context";
+// src/App.js
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes';
 
-function App() {
-  
+export default function App() {
   return (
-    <Suspense fallback={<Loading />}>
-      <Outlet />
-      
-      {/* <MaterialUIControllerProvider>
-        <DashboardApp />
-      </MaterialUIControllerProvider> */}
-    </Suspense>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
-
-export default App;

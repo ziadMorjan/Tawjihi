@@ -19,6 +19,7 @@ import {
 	resetPassword,
 	logout,
 	getToken,
+	markWelcomeSeen,
 } from '../controllers/AuthController.js';
 
 import { uploadUserFiles, handleUserFiles } from '../controllers/UserController.js';
@@ -66,5 +67,8 @@ router.patch('/resetPassword', resetPasswordValidator, resetPassword);
 
 router.get('/logout', protect, logout);
 router.get('/token', protect, getToken);
+
+// تحديث Flag بعد مشاهدة الـ Welcome Popup
+router.patch('/welcome-seen', protect, markWelcomeSeen);
 
 export default router;

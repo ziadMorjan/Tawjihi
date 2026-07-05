@@ -36,7 +36,7 @@ export const updateBranchValidator = [
 		.isLength({ min: 3 })
 		.withMessage((value, { req }) => req.__('validation.name_min_length'))
 		.custom(async (value, { req }) => {
-			const branch = await Branch.findOne({ name: value });
+			const branch = await Branch.findOne({ name: value, _id: { $ne: req.params.id } });
 			if (branch) {
 				throw new CustomError(req.__('validation.branch_already_exists'), 400);
 			}

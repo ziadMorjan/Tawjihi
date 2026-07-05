@@ -1,3 +1,7 @@
 node_modules/
 config.env
 uploads/
+
+config-loak.env
+backend.xml
+repomix-output.xml

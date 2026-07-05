@@ -5,6 +5,7 @@ import {
 	markAllMyNotificationsRead,
 	markNotificationRead,
 	broadcastNotification,
+	sendNotificationToStudents,
 } from '../controllers/NotificationController.js';
 
 const router = express.Router();
@@ -13,5 +14,6 @@ router.get('/me', protect, getMyNotifications);
 router.patch('/me/read-all', protect, markAllMyNotificationsRead);
 router.patch('/:id/read', protect, markNotificationRead);
 router.post('/broadcast', protect, allowedTo('admin', 'teacher'), broadcastNotification);
+router.post('/send-to-students', protect, allowedTo('teacher'), sendNotificationToStudents);
 
 export default router;

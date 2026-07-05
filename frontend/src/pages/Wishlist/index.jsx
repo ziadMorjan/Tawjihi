@@ -1,92 +1,107 @@
-//react
-import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { PATH } from '../../constants';
+import { Heart } from 'lucide-react';
+import styled from 'styled-components';
+import { MainLayout } from '../../shared/components/layout/MainLayout';
+import { Button, Badge } from '../../shared/components';
+import { CourseCard } from '../../features/courses/components/CourseCard';
+import { CourseCardSkeleton } from '../../features/courses/components/CourseCard/CourseCardSkeleton';
+import { useWishlist } from '../../features/wishlist';
 
-//hooks
-import { useCRUD } from "../../hooks/useCRUD";
+const PageWrapper = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing[10]} ${theme.spacing[6]}`};
+  ${({ theme }) => theme.media.maxMd} {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[4]}`};
+  }
+`;
 
-//components
-import {CourseCard } from "../../components/card/courseCard";
-import { Containers } from "../../components/Container";
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
 
-//axios
-import axios from "axios";
-//URL
-import { API_URL } from "../../config";
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { NavBar } from "../../layout/navBar";
-//MUI library
+const PageTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
 
-//toast
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: ${({ theme }) => theme.spacing[6]};
+`;
 
-const WishList = () => {
-  const { wishlist, setWishList } = useCRUD(); // ✅ استخدم wishList الصحيح
-  const [isLoading, setIsLoading] = useState(false);
+const EmptyState = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[6]}`};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  svg { color: ${({ theme }) => theme.colors.textMuted}; }
+`;
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setIsLoading(true)
-        const res = await axios.get(`${API_URL}/wishlist`, {
-          withCredentials: true,
-        });
-        setWishList(res.data.wishlist);
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false)
-      }
-    };
-    getData();
-  }, []);
+export default function Wishlist() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { wishlistIds, courses, isLoading, isCoursesSuccess } = useWishlist();
+
+  // تحديد ما إذا كانت القائمة فارغة بعد انتهاء التحميل
+  const isEmpty = wishlistIds.length === 0 || (isCoursesSuccess && courses.length === 0);
 
   return (
-    <div>
-      <ToastContainer />
+    <MainLayout>
+      <PageWrapper>
+        {/* الهيدر يعرض دائماً طالما الصفحة ليست فارغة */}
+        {!isEmpty && (
+          <Header>
+            <PageTitle>
+              <Heart size={28} color="#DC2626" fill="#DC2626" />
+              {t('wishlist.title')}
+              {!isLoading && <Badge variant="danger">{courses.length}</Badge>}
+            </PageTitle>
 
-      <LogoAndButton />
-      <NavBar />
-      <Containers>
+            <Button variant="ghost" size="sm" onClick={() => navigate(PATH.courses)}>
+              {t('wishlist.browseBtn')}
+            </Button>
+          </Header>
+        )}
 
-        <h2 style={{ textAlign: "center", margin: "16px" }}>قائمة المفضلة</h2>
-
-        <div
-          className="wishlist-grid"
-          style={{ display: "flex", flexWrap: "wrap" }}
-        >
-
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
-
-          ) : wishlist.length === 0 ? (
-            <p style={{ textAlign: "center" , width: "100%" }}>لا توجد عناصر.</p>
-
-          ) : (
-            wishlist.map((item) => (
-              <CourseCard
-                key={item._id}
-                item={item}
-                id={item._id}
-                imgSrc={item.img || "/assets/img/logo.png"}
-                name={item.name}
-                starIcon={item.averageRating}
-                price={item.price}
-                priceAfterDiscount={item.priceAfterDiscount}
-                teacherName={item.teacher?.name}
-                teacherImg={item.teacher?.img || "/assets/img/logo.png"}
-                branch={item.branches.map((b) => b.name).join(" | ")}
-                subject={item.subject?.name}
-              />
-            ))
-          )
-          }
-        </div>
-
-      </Containers>
-    </div>
+        {/* دمج منطق عرض المحتوى في مكان واحد */}
+        {isLoading ? (
+          <Grid>
+            {Array.from({ length: wishlistIds.length || 3 }).map((_, i) => (
+              <CourseCardSkeleton key={i} />
+            ))}
+          </Grid>
+        ) : isEmpty ? (
+          <EmptyState>
+            <Heart size={64} />
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A' }}>
+              {t('wishlist.empty')}
+            </h2>
+            <p style={{ color: '#475569' }}>{t('courses.noResults')}</p>
+            <Button onClick={() => navigate(PATH.courses)}>{t('wishlist.browseBtn')}</Button>
+          </EmptyState>
+        ) : (
+          <Grid>
+            {courses.map((course) => (
+              <CourseCard key={course._id} course={course} />
+            ))}
+          </Grid>
+        )}
+      </PageWrapper>
+    </MainLayout>
   );
-};
-
-export default WishList;
+}

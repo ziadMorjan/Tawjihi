@@ -1,251 +1,247 @@
-"use client";
-
-import { useParams } from "react-router-dom";
-import { useState } from "react";
-import { API_URL } from "../../config";
-import { useProfileApi } from "../../hooks/useProfileApi";
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { NavBar } from "../../layout/navBar";
-import { Containers } from "../../components/Container";
-import { useApi } from "../../hooks/useApi";
-import { CourseCard } from "../../components/card/courseCard";
-import { CardSkeleton } from "../../components/Loading/LoadingCard";
-import { Typography } from "@mui/material";
-import Paginations from "../../components/paginations";
-import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
-import { paginate } from "../../utils/pagination";
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { PATH } from '../../constants';
+import { Star, BookOpen, MessageSquare, Trash2 } from 'lucide-react';
+import { MainLayout }      from '../../shared/components/layout/MainLayout';
+import { Button, Badge, Spinner } from '../../shared/components';
+import { CourseCard }      from '../../features/courses/components/CourseCard';
+import { CourseCardSkeleton } from '../../features/courses/components/CourseCard/CourseCardSkeleton';
+import { StarRating }      from '../../features/courses/components/CourseCard/StarRating';
+import { useAuth }         from '../../features/auth';
 import {
-  AboutText,
-  ContactCard,
-  ContactGrid,
-  ContactIcon,
-  ContactText,
-  ContentWrapper,
-  CourseCardWrapper,
-  CoursesGrid,
-  CoursesSection,
-  Divider,
-  EmptyIcon,
-  EmptyState,
-  EmptyText,
-  ErrorState,
-  FilterSection,
-  HeroSection,
-  LoadingGrid,
-  ModernDownloadButton,
-  OnlineIndicator,
-  PaginationWrapper,
-  ProfileHeader,
-  ProfileHeroCard,
-  ProfileImage,
-  ProfileImageContainer,
-  ProfileInfo,
-  SectionCard,
-  SectionContainer,
-  SectionContent,
-  SectionHeader,
-  SectionIcon,
-  SectionTitle,
-  StatCard,
-  StatLabel,
-  StatNumber,
-  StatsContainer,
-  TeacherName,
-  TeacherProfileWrapper,
-} from "./style";
+  useTeacher,
+  useTeacherCourses,
+  useTeacherReviews,
+  useAddTeacherReview,
+  useDeleteTeacherReview,
+} from '../../features/teachers';
+import {
+  PageWrapper, HeroSection, HeroInner, TeacherAvatar,
+  TeacherInfo, TeacherName, TeacherDesc, StatsRow,
+  StatItem, StatValue, StatLabel, ContentWrapper,
+  Section, SectionTitle, CoursesGrid, ReviewCard,
+  ReviewHeader, ReviewAvatar, ReviewerName, ReviewText,
+  AddReviewForm, EmptyMsg,
+} from './TeacherProfile.styles';
 
-function TeacherProfile() {
-  const { id } = useParams();
-  const { data, isLoading, error } = useProfileApi(`${API_URL}/users/${id}`);
-  const profileData = data.doc;
+export default function TeacherProfile() {
+  const { id }   = useParams();
+  const navigate = useNavigate();
+  const { t }    = useTranslation();
+  const { user } = useAuth();
 
-  const { data: fetchedCourses = [] } = useApi(`${API_URL}/courses/`);
+  const [rating,  setRating]  = useState(0);
+  const [comment, setComment] = useState('');
 
-  const teacherCourses = fetchedCourses.filter(
-    (course) => course?.teacher._id === id
-  );
+  const { data: teacher,  isLoading: teacherLoading  } = useTeacher(id);
+  const { data: courses,  isLoading: coursesLoading  } = useTeacherCourses(id);
+  const { data: reviews = [], isLoading: reviewsLoading } = useTeacherReviews(id);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const addReview    = useAddTeacherReview(id);
+  const deleteReview = useDeleteTeacherReview(id);
 
-  const { currentItems, totalPages } = paginate(
-    teacherCourses,
-    currentPage,
-    itemsPerPage
-  );
+  const handleSubmitReview = async () => {
+    if (!rating || !comment.trim()) return;
+    await addReview.mutateAsync({ rating, comment });
+    setRating(0);
+    setComment('');
+  };
+
+  if (teacherLoading) {
+    return (
+      <MainLayout>
+        <div style={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Spinner size="lg" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!teacher) {
+    return (
+      <MainLayout>
+        <div style={{ height: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+          <p style={{ color: '#475569' }}>{t('teachers.notFound')}</p>
+          <Button onClick={() => navigate(PATH.teachers)}>{t('teachers.backToTeachers')}</Button>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
-    <TeacherProfileWrapper>
-      <ContentWrapper>
-        <LogoAndButton />
-        <NavBar />
+    <MainLayout>
+      <PageWrapper>
 
-        {/* Hero Section */}
-        <HeroSection className="img-sec">
-          <Containers>
-            <ProfileHeroCard>
-              <ProfileHeader>
-                <ProfileImageContainer>
-                  <ProfileImage
-                    src={profileData?.coverImage}
-                    alt={`صورة ${profileData?.name}`}
-                  />
-                  <OnlineIndicator />
-                </ProfileImageContainer>
+        {/* Hero */}
+        <HeroSection>
+          <HeroInner>
+            <TeacherAvatar>
+              {teacher.coverImage
+                ? <img src={teacher.coverImage} alt={teacher.name} />
+                : <span>{teacher.name?.charAt(0)?.toUpperCase()}</span>
+              }
+            </TeacherAvatar>
 
-                <ProfileInfo>
-                  <TeacherName>{profileData?.name}</TeacherName>
+            <TeacherInfo>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <TeacherName>{teacher.name}</TeacherName>
+                <Badge variant="primary">{t('teachers.certified')}</Badge>
+              </div>
 
-                  <ContactGrid>
-                    <ContactCard>
-                      <ContactIcon>✉️</ContactIcon>
-                      <ContactText>{profileData?.email}</ContactText>
-                    </ContactCard>
-                    <ContactCard>
-                      <ContactIcon>📱</ContactIcon>
-                      <ContactText>{profileData?.phone}</ContactText>
-                    </ContactCard>
-                  </ContactGrid>
+              {teacher.description && (
+                <TeacherDesc>{teacher.description}</TeacherDesc>
+              )}
 
-                  <StatsContainer>
-                    <StatCard>
-                      <StatNumber>{teacherCourses.length}</StatNumber>
-                      <StatLabel>الدورات</StatLabel>
-                    </StatCard>
-                    <StatCard>
-                      <StatNumber>4.8</StatNumber>
-                      <StatLabel>التقييم</StatLabel>
-                    </StatCard>
-                    <StatCard>
-                      <StatNumber>1,250</StatNumber>
-                      <StatLabel>الطلاب</StatLabel>
-                    </StatCard>
-                  </StatsContainer>
-                </ProfileInfo>
-              </ProfileHeader>
-            </ProfileHeroCard>
-          </Containers>
+              <StatsRow>
+                {teacher.averageRating > 0 && (
+                  <StatItem>
+                    <StatValue style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#F59E0B' }}>
+                      <Star size={16} fill="#F59E0B" color="#F59E0B" />
+                      {teacher.averageRating?.toFixed(1)}
+                    </StatValue>
+                    <StatLabel>{t('teachers.averageRating')}</StatLabel>
+                  </StatItem>
+                )}
+                {teacher.reviewsQuantity > 0 && (
+                  <StatItem>
+                    <StatValue>{teacher.reviewsQuantity}</StatValue>
+                    <StatLabel>{t('teachers.reviewsCount')}</StatLabel>
+                  </StatItem>
+                )}
+                {courses?.length > 0 && (
+                  <StatItem>
+                    <StatValue>{courses.length}</StatValue>
+                    <StatLabel>{t('teachers.coursesCount')}</StatLabel>
+                  </StatItem>
+                )}
+              </StatsRow>
+            </TeacherInfo>
+          </HeroInner>
         </HeroSection>
 
-        <Divider />
+        <ContentWrapper>
 
-        {/* About Section */}
-        <SectionContainer>
-          <Containers>
-            <SectionCard>
-              <SectionHeader>
-                <SectionTitle>
-                  <SectionIcon>👨‍🏫</SectionIcon>
-                  نبذة عن المدرس
-                </SectionTitle>
-              </SectionHeader>
-              <SectionContent className="about-sec">
-                <AboutText>
-                  {profileData?.description || "لا توجد نبذة متاحة حاليًا."}
-                </AboutText>
-                {profileData?.cv && (
-                  <ModernDownloadButton
-                    href={profileData.cv}
-                    download={`${profileData.name}_CV.pdf`}
-                  >
-                    <span>📄</span>
-                    عرض السيرة الذاتية
-                  </ModernDownloadButton>
-                )}
-              </SectionContent>
-            </SectionCard>
-          </Containers>
-        </SectionContainer>
+          {/* Courses */}
+          <Section>
+            <SectionTitle>
+              <BookOpen size={20} color="#1B4FD8" />
+              {t('teachers.teacherCourses')} ({courses?.length ?? 0})
+            </SectionTitle>
 
-        <Divider />
+            {coursesLoading ? (
+              <CoursesGrid>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <CourseCardSkeleton key={i} />
+                ))}
+              </CoursesGrid>
+            ) : courses?.length === 0 ? (
+              <EmptyMsg>{t('teachers.noCourses')}</EmptyMsg>
+            ) : (
+              <CoursesGrid>
+                {courses.map(course => (
+                  <CourseCard key={course._id} course={course} />
+                ))}
+              </CoursesGrid>
+            )}
+          </Section>
 
-        {/* Courses Section */}
-        <SectionContainer>
-          <Containers>
-            <SectionCard>
-              <SectionHeader>
-                <SectionTitle>
-                  <SectionIcon>📚</SectionIcon>
-                  الدورات ({teacherCourses.length})
-                </SectionTitle>
-              </SectionHeader>
-              <SectionContent>
-                <CoursesSection>
-                  {teacherCourses.length ? (
-                    <FilterSection>
-                      <FilterMenuItem
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        order={false}
+          {/* Reviews */}
+          <Section>
+            <SectionTitle>
+              <MessageSquare size={20} color="#1B4FD8" />
+              {t('teachers.studentReviews')} ({reviews.length})
+            </SectionTitle>
+
+            {/* Add Review */}
+            {user && user.role === 'user' && (
+              <AddReviewForm>
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+                  {t('teachers.rateTeacher')}
+                </p>
+
+                {/* Stars */}
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {[1,2,3,4,5].map(s => (
+                    <button
+                      key={s} type="button"
+                      onClick={() => setRating(s)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+                    >
+                      <Star
+                        size={24}
+                        fill={s <= rating ? '#F59E0B' : 'none'}
+                        color={s <= rating ? '#F59E0B' : '#CBD5E1'}
                       />
-                    </FilterSection>
-                  ) : null}
+                    </button>
+                  ))}
+                </div>
 
-                  {isLoading ? (
-                    <LoadingGrid>
-                      {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="skeleton-card">
-                          <CardSkeleton />
-                        </div>
-                      ))}
-                    </LoadingGrid>
-                  ) : error ? (
-                    <ErrorState>
-                      <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>
-                        ❌
+                <textarea
+                  value={comment}
+                  onChange={e => setComment(e.target.value)}
+                  placeholder={t('teachers.reviewPlaceholder')}
+                  rows={3}
+                  style={{
+                    width: '100%', padding: '10px 14px',
+                    border: '1.5px solid #E2E8F0', borderRadius: 10,
+                    fontFamily: 'inherit', fontSize: 14,
+                    resize: 'vertical', outline: 'none',
+                  }}
+                />
+
+                <Button
+                  size="sm"
+                  onClick={handleSubmitReview}
+                  isLoading={addReview.isPending}
+                  disabled={!rating || !comment.trim()}
+                  style={{ alignSelf: 'flex-start' }}
+                >
+                  {t('teachers.submitReview')}
+                </Button>
+              </AddReviewForm>
+            )}
+
+            {/* Reviews List */}
+            {reviewsLoading ? (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+                <Spinner size="md" />
+              </div>
+            ) : reviews.length === 0 ? (
+              <EmptyMsg>{t('teachers.noReviews')}</EmptyMsg>
+            ) : (
+              reviews.map(review => {
+                const isOwner = user?._id === review.user?._id;
+                return (
+                  <ReviewCard key={review._id}>
+                    <ReviewHeader>
+                      <ReviewAvatar>
+                        {review.user?.name?.charAt(0) ?? '؟'}
+                      </ReviewAvatar>
+                      <div style={{ flex: 1 }}>
+                        <ReviewerName>{review.user?.name ?? t('teachers.anonymous')}</ReviewerName>
+                        <StarRating rating={review.rating} showText={false} />
                       </div>
-                      <Typography color="error">
-                        فشل في تحميل الدورات
-                      </Typography>
-                    </ErrorState>
-                  ) : teacherCourses.length === 0 ? (
-                    <EmptyState>
-                      <EmptyIcon>📚</EmptyIcon>
-                      <EmptyText>لا توجد دورات متاحة حاليًا.</EmptyText>
-                    </EmptyState>
-                  ) : (
-                    <CoursesGrid>
-                      {currentItems.map((item) => (
-                        <CourseCardWrapper key={item._id}>
-                          <CourseCard
-                            item={item}
-                            id={item._id}
-                            imgSrc={item.img || "/assets/img/logo.png"}
-                            name={item.name}
-                            starIcon={item.averageRating}
-                            price={item.price}
-                            priceAfterDiscount={item.priceAfterDiscount}
-                            teacherName={item.teacher?.name}
-                            teacherImg={
-                              item.teacher?.img || "/assets/img/logo.png"
-                            }
-                            branch={item.branches
-                              .map((b) => b.name)
-                              .join(" | ")}
-                            subject={item.subject?.name}
-                          />
-                        </CourseCardWrapper>
-                      ))}
-                    </CoursesGrid>
-                  )}
+                      {isOwner && (
+                        <button
+                          onClick={() => deleteReview.mutate(review._id)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 4 }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </ReviewHeader>
+                    {review.comment && (
+                      <ReviewText>{review.comment}</ReviewText>
+                    )}
+                  </ReviewCard>
+                );
+              })
+            )}
+          </Section>
 
-                  {totalPages > 1 && (
-                    <PaginationWrapper>
-                      <Paginations
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        setCurrentPage={setCurrentPage}
-                      />
-                    </PaginationWrapper>
-                  )}
-                </CoursesSection>
-              </SectionContent>
-            </SectionCard>
-          </Containers>
-        </SectionContainer>
-      </ContentWrapper>
-    </TeacherProfileWrapper>
+        </ContentWrapper>
+      </PageWrapper>
+    </MainLayout>
   );
 }
-
-export default TeacherProfile;

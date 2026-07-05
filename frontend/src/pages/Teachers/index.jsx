@@ -1,101 +1,155 @@
-import { useState } from "react";
-// style
-import { StyledTeachersPage } from "./style";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { PATH } from '../../constants';
+import { Users, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MainLayout }  from '../../shared/components/layout/MainLayout';
+import { useTeachers } from '../../features/teachers';
+import { Pagination }  from '../../features/courses/components/Pagination';
+import {
+  PageWrapper, PageHeader, PageTitle, PageSubtitle,
+  TeachersGrid, TeacherCard, TeacherAvatar, TeacherName,
+  TeacherDesc, TeacherStats, StatItem, StatValue, StatLabel,
+  EmptyState,
+  SkeletonCard, SkeletonAvatar, SkeletonLine, SkeletonStats, SkeletonStatItem,
+} from './Teachers.styles';
 
-// Api url
-import { API_URL } from "../../config";
+const LIMIT = 12;
 
-// Layouts
-import { NavBar } from "../../layout/navBar";
-import Footer from "../../layout/footer";
-
-// Hooks
-import { useApi } from "../../hooks/useApi";
-
-// Components
-import { LogoAndButton } from "../../components/LogoAndButton";
-import { Containers } from "../../components/Container";
-import { TeacherCard } from "../../components/card/teacherCard";
-import Paginations from "../../components/paginations";
-import FilterMenuItem from "../../components/MenuItem/FilterMenuItem";
-
-//utils
-import { paginate } from "../../utils/pagination";
-import { WrapperCards } from "../Main/style";
-import { SkeletonTeacherCard } from "../../components/Loading/SkeletonTeacherCard";
-
-function Teachers() {
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useApi(`${API_URL}/users/?role=teacher`);
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
-
-  // Use paginate util
-  const { currentItems, totalPages } = paginate(
-    data,
-    currentPage,
-    itemsPerPage
-  );
-
+function TeacherCardSkeleton() {
   return (
-    <StyledTeachersPage>
-      <LogoAndButton />
-      <NavBar />
-
-      <section>
-        <Containers>
-          <WrapperCards>
-          <div className="num-of-pages">
-            <FilterMenuItem
-              currentPage={currentPage}
-              totalPages={totalPages}
-              order={false}
-            />
-          </div>
-          <div className="teachers">
-            {isLoading ? (
-              Array.from({ length: 3 }).map((_, i) => <SkeletonTeacherCard key={i} />)
-            ) : error ? (
-              <p>Error: {error.message}</p>
-            ) : data.length === 0 ? (
-              <p>.لا يوجد معلمين</p>
-            ) : (
-              <>
-                {/* Teachers list */}
-                <div className="teachers-list">
-                  {currentItems.map((teacher, index) => (
-                    <TeacherCard
-                      key={teacher._id || index}
-                      imgSrc={teacher.coverImage || "/assets/img/logo.png"}
-                      name={teacher.name}
-                      starIcon={teacher.averageRating}
-                      id={teacher._id}
-                    />
-                  ))}
-                </div>
-
-                {/* Pagination buttons */}
-                {totalPages > 1 && (
-                  <Paginations
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    setCurrentPage={setCurrentPage}
-                  />
-                )}
-              </>
-            )}
-          </div>
-          </WrapperCards>
-        </Containers>
-      </section>
-      <Footer />
-    </StyledTeachersPage>
+    <SkeletonCard>
+      <SkeletonAvatar />
+      <SkeletonLine height="18px" width="60%" />
+      <SkeletonLine height="13px" width="85%" />
+      <SkeletonLine height="13px" width="70%" />
+      <SkeletonStats>
+        <SkeletonStatItem>
+          <SkeletonLine height="16px" width="40px" />
+          <SkeletonLine height="11px" width="32px" />
+        </SkeletonStatItem>
+        <SkeletonStatItem>
+          <SkeletonLine height="16px" width="40px" />
+          <SkeletonLine height="11px" width="32px" />
+        </SkeletonStatItem>
+      </SkeletonStats>
+    </SkeletonCard>
   );
 }
 
-export default Teachers;
+const fadeUp = {
+  hidden:  { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+};
+
+const stagger = {
+  hidden:  {},
+  visible: { transition: { staggerChildren: 0.07 } },
+};
+
+export default function Teachers() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = useTeachers({ page, limit: LIMIT });
+
+  const teachers   = data?.teachers   ?? [];
+  const pagination = data?.pagination ?? null;
+  const totalPages = pagination?.totalPages ?? 1;
+  const totalItems = pagination?.totalResults ?? teachers.length;
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <MainLayout>
+      <PageWrapper>
+        <PageHeader>
+          <PageTitle>{t('teachers.title')}</PageTitle>
+          <PageSubtitle>
+            {t('home.heroSubtitle')}
+          </PageSubtitle>
+          {!isLoading && totalItems > 0 && (
+            <p style={{ marginTop: 8, fontSize: '0.875rem', color: 'var(--text-muted, #94A3B8)' }}>
+              {totalItems} {t('teachers.certified')}
+            </p>
+          )}
+        </PageHeader>
+
+        {isLoading ? (
+          <TeachersGrid>
+            {Array.from({ length: LIMIT }).map((_, i) => (
+              <TeacherCardSkeleton key={i} />
+            ))}
+          </TeachersGrid>
+        ) : teachers.length === 0 ? (
+          <EmptyState>
+            <Users size={64} />
+            <p style={{ fontSize: 16 }}>{t('teachers.noResults')}</p>
+          </EmptyState>
+        ) : (
+          <>
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              animate="visible"
+              key={page}   /* إعادة تشغيل الأنيميشن عند تغيير الصفحة */
+            >
+              <TeachersGrid>
+                {teachers.map((teacher) => (
+                  <motion.div key={teacher._id} variants={fadeUp}>
+                    <TeacherCard
+                      onClick={() => navigate(PATH.teacherProfile(teacher._id))}
+                    >
+                      <TeacherAvatar>
+                        {teacher.coverImage
+                          ? <img src={teacher.coverImage} alt={teacher.name} />
+                          : <span>{teacher.name?.charAt(0)?.toUpperCase()}</span>
+                        }
+                      </TeacherAvatar>
+
+                      <TeacherName>{teacher.name}</TeacherName>
+
+                      {teacher.description && (
+                        <TeacherDesc>{teacher.description}</TeacherDesc>
+                      )}
+
+                      <TeacherStats>
+                        {teacher.averageRating > 0 && (
+                          <StatItem>
+                            <StatValue style={{ color: '#F59E0B', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <Star size={14} fill="#F59E0B" color="#F59E0B" />
+                              {teacher.averageRating?.toFixed(1)}
+                            </StatValue>
+                            <StatLabel>{t('common.ratingOf')}</StatLabel>
+                          </StatItem>
+                        )}
+                        {teacher.reviewsQuantity > 0 && (
+                          <StatItem>
+                            <StatValue>{teacher.reviewsQuantity}</StatValue>
+                            <StatLabel>{t('courses.students')}</StatLabel>
+                          </StatItem>
+                        )}
+                      </TeacherStats>
+                    </TeacherCard>
+                  </motion.div>
+                ))}
+              </TeachersGrid>
+            </motion.div>
+
+            {/* ── Pagination ── */}
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
+      </PageWrapper>
+    </MainLayout>
+  );
+}

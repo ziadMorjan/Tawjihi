@@ -19,10 +19,17 @@ const enrollmentSchema = new mongoose.Schema(
 	},
 );
 
+// الـ Middleware المحدث والمحصن لجلب البيانات كاملة للـ Frontend
 enrollmentSchema.pre(/^find/, function (next) {
 	this.populate({
 		path: 'course',
-		select: 'name',
+		// 1. أضفنا coverImage و teacher إلى الـ select
+		select: 'name coverImage teacher',
+		// 2. قمنا بعمل تداخل (Nested Populate) لجلب اسم المدرس الفعلي من جدول المستخدمين
+		populate: {
+			path: 'teacher',
+			select: 'name',
+		},
 	});
 
 	this.populate({
