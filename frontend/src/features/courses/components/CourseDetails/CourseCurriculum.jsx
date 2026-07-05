@@ -17,6 +17,7 @@ import {
 } from "./CourseDetails.styles";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../constants";
+import { useLanguage } from "../../../../shared/hooks/useLanguage";
 
 const formatDuration = (seconds) => {
   if (!seconds || seconds <= 0) return null;
@@ -140,6 +141,7 @@ const Count = styled.span`
 export function CourseCurriculum({ courseId, isEnrolled }) {
   const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { data, isLoading } = useQuery({
     queryKey: ["lessons", courseId],
     queryFn: () => fetchLessons(courseId),
@@ -159,7 +161,7 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
           <SectionIcon>
             <BookOpen size={16} />
           </SectionIcon>
-          <SectionTitle>محتوى الكورس</SectionTitle>
+          <SectionTitle>{t('courseDetails.courseContent')}</SectionTitle>
         </SectionHeader>
         <Content>
           {Array.from({ length: 4 }).map((_, i) => (
@@ -178,8 +180,8 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
         <SectionIcon>
           <BookOpen size={16} />
         </SectionIcon>
-        <SectionTitle>محتوى الكورس</SectionTitle>
-        <Count>({lessons.length} درس)</Count>
+        <SectionTitle>{t('courseDetails.courseContent')}</SectionTitle>
+        <Count>({t('courseDetails.lessonsCount', { count: lessons.length })})</Count>
       </SectionHeader>
 
       <Content>
@@ -222,11 +224,11 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
           <ShowMoreBtn onClick={() => setShowAll((p) => !p)}>
             {showAll ? (
               <>
-                <ChevronUp size={16} /> عرض أقل
+                <ChevronUp size={16} /> {t('courseDetails.showLess')}
               </>
             ) : (
               <>
-                <ChevronDown size={16} /> عرض {lessons.length - 5} دروس إضافية
+                <ChevronDown size={16} /> {t('courseDetails.showMoreLessons', { count: lessons.length - 5 })}
               </>
             )}
           </ShowMoreBtn>

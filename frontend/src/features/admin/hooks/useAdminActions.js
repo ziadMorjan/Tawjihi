@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { adminApi } from '../api/adminApi';
 import { ADMIN_STATS_QUERY_KEY } from './useAdminStats';
+import { useLanguage } from '../../../shared/hooks/useLanguage';
 
 export const PENDING_TEACHERS_KEY = ['pending-teachers'];
 export const ALL_USERS_KEY = ['all-users'];
@@ -13,17 +14,16 @@ export const NEWS_KEY = ['news'];
 
 export function useAdminActions() {
   const queryClient = useQueryClient();
-
-
+  const { t } = useLanguage();
 
   const approveTeacher = useMutation({
     mutationFn: adminApi.approveTeacher,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: PENDING_TEACHERS_KEY });
-      toast.success('تم قبول المعلم بنجاح');
+      toast.success(t('adminDashboard.toasts.teacherApproved'));
     },
-    onError: () => toast.error('فشل قبول المعلم'),
+    onError: () => toast.error(t('adminDashboard.toasts.teacherApproveFail')),
   });
 
   const rejectTeacher = useMutation({
@@ -31,9 +31,9 @@ export function useAdminActions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: PENDING_TEACHERS_KEY });
-      toast.success('تم رفض المعلم');
+      toast.success(t('adminDashboard.toasts.teacherRejected'));
     },
-    onError: () => toast.error('فشل رفض المعلم'),
+    onError: () => toast.error(t('adminDashboard.toasts.teacherRejectFail')),
   });
 
   const deleteUser = useMutation({
@@ -41,9 +41,9 @@ export function useAdminActions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ALL_USERS_KEY });
-      toast.success('تم حذف المستخدم');
+      toast.success(t('adminDashboard.toasts.userDeleted'));
     },
-    onError: () => toast.error('فشل حذف المستخدم'),
+    onError: () => toast.error(t('adminDashboard.toasts.userDeleteFail')),
   });
 
   const deleteCourse = useMutation({
@@ -51,9 +51,9 @@ export function useAdminActions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ALL_COURSES_KEY });
-      toast.success('تم حذف الكورس');
+      toast.success(t('adminDashboard.toasts.courseDeleted'));
     },
-    onError: () => toast.error('فشل حذف الكورس'),
+    onError: () => toast.error(t('adminDashboard.toasts.courseDeleteFail')),
   });
 
   const updateUser = useMutation({
@@ -61,27 +61,27 @@ export function useAdminActions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ALL_USERS_KEY });
-      toast.success('تم تحديث المستخدم');
+      toast.success(t('adminDashboard.toasts.userUpdated'));
     },
-    onError: () => toast.error('فشل تحديث المستخدم'),
+    onError: () => toast.error(t('adminDashboard.toasts.userUpdateFail')),
   });
 
   const createBranch = useMutation({
     mutationFn: adminApi.createBranch,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: BRANCHES_KEY });
-      toast.success('تم إضافة الفرع');
+      toast.success(t('adminDashboard.toasts.branchCreated'));
     },
-    onError: () => toast.error('فشل إضافة الفرع'),
+    onError: () => toast.error(t('adminDashboard.toasts.branchCreateFail')),
   });
 
   const updateBranch = useMutation({
     mutationFn: adminApi.updateBranch,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: BRANCHES_KEY });
-      toast.success('تم تحديث الفرع');
+      toast.success(t('adminDashboard.toasts.branchUpdated'));
     },
-    onError: () => toast.error('فشل تحديث الفرع'),
+    onError: () => toast.error(t('adminDashboard.toasts.branchUpdateFail')),
   });
 
   const deleteBranch = useMutation({
@@ -89,54 +89,54 @@ export function useAdminActions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: BRANCHES_KEY });
       queryClient.invalidateQueries({ queryKey: SUBJECTS_KEY });
-      toast.success('تم حذف الفرع');
+      toast.success(t('adminDashboard.toasts.branchDeleted'));
     },
-    onError: () => toast.error('فشل حذف الفرع'),
+    onError: () => toast.error(t('adminDashboard.toasts.branchDeleteFail')),
   });
 
   const createSubject = useMutation({
     mutationFn: adminApi.createSubject,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SUBJECTS_KEY });
-      toast.success('تم إضافة المادة');
+      toast.success(t('adminDashboard.toasts.subjectCreated'));
     },
-    onError: () => toast.error('فشل إضافة المادة'),
+    onError: () => toast.error(t('adminDashboard.toasts.subjectCreateFail')),
   });
 
   const updateSubject = useMutation({
     mutationFn: adminApi.updateSubject,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SUBJECTS_KEY });
-      toast.success('تم تحديث المادة');
+      toast.success(t('adminDashboard.toasts.subjectUpdated'));
     },
-    onError: () => toast.error('فشل تحديث المادة'),
+    onError: () => toast.error(t('adminDashboard.toasts.subjectUpdateFail')),
   });
 
   const deleteSubject = useMutation({
     mutationFn: adminApi.deleteSubject,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SUBJECTS_KEY });
-      toast.success('تم حذف المادة');
+      toast.success(t('adminDashboard.toasts.subjectDeleted'));
     },
-    onError: () => toast.error('فشل حذف المادة'),
+    onError: () => toast.error(t('adminDashboard.toasts.subjectDeleteFail')),
   });
 
   const createCoupon = useMutation({
     mutationFn: adminApi.createCoupon,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: COUPONS_KEY });
-      toast.success('تم إضافة الكوبون');
+      toast.success(t('adminDashboard.toasts.couponCreated'));
     },
-    onError: () => toast.error('فشل إضافة الكوبون'),
+    onError: () => toast.error(t('adminDashboard.toasts.couponCreateFail')),
   });
 
   const updateCoupon = useMutation({
     mutationFn: adminApi.updateCoupon,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: COUPONS_KEY });
-      toast.success('تم تحديث الكوبون');
+      toast.success(t('adminDashboard.toasts.couponUpdated'));
     },
-    onError: () => toast.error('فشل تحديث الكوبون'),
+    onError: () => toast.error(t('adminDashboard.toasts.couponUpdateFail')),
   });
 
   const updateCourse = useMutation({
@@ -144,63 +144,63 @@ export function useAdminActions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ALL_COURSES_KEY });
-      toast.success('تم تحديث الكورس');
+      toast.success(t('adminDashboard.toasts.courseUpdated'));
     },
-    onError: () => toast.error('فشل تحديث الكورس'),
+    onError: () => toast.error(t('adminDashboard.toasts.courseUpdateFail')),
   });
 
   const deleteCoupon = useMutation({
     mutationFn: adminApi.deleteCoupon,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: COUPONS_KEY });
-      toast.success('تم حذف الكوبون');
+      toast.success(t('adminDashboard.toasts.couponDeleted'));
     },
-    onError: () => toast.error('فشل حذف الكوبون'),
+    onError: () => toast.error(t('adminDashboard.toasts.couponDeleteFail')),
   });
 
   const createNews = useMutation({
     mutationFn: adminApi.createNews,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: NEWS_KEY });
-      toast.success('تم إضافة الخبر');
+      toast.success(t('adminDashboard.toasts.newsCreated'));
     },
-    onError: () => toast.error('فشل إضافة الخبر'),
+    onError: () => toast.error(t('adminDashboard.toasts.newsCreateFail')),
   });
 
   const updateNews = useMutation({
     mutationFn: adminApi.updateNews,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: NEWS_KEY });
-      toast.success('تم تحديث الخبر');
+      toast.success(t('adminDashboard.toasts.newsUpdated'));
     },
-    onError: () => toast.error('فشل تحديث الخبر'),
+    onError: () => toast.error(t('adminDashboard.toasts.newsUpdateFail')),
   });
 
   const deleteNews = useMutation({
     mutationFn: adminApi.deleteNews,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: NEWS_KEY });
-      toast.success('تم حذف الخبر');
+      toast.success(t('adminDashboard.toasts.newsDeleted'));
     },
-    onError: () => toast.error('فشل حذف الخبر'),
+    onError: () => toast.error(t('adminDashboard.toasts.newsDeleteFail')),
   });
 
   const broadcastNotification = useMutation({
     mutationFn: adminApi.broadcastNotification,
     onSuccess: (res) => {
       const count = res?.data?.created ?? 0;
-      toast.success(`تم إرسال الإشعار لـ ${count} مستخدم`);
+      toast.success(t('adminDashboard.toasts.broadcastSent', { count }));
     },
-    onError: () => toast.error('فشل إرسال الإشعار'),
+    onError: () => toast.error(t('adminDashboard.toasts.broadcastSendFail')),
   });
 
   const broadcastToSpecific = useMutation({
     mutationFn: adminApi.broadcastToSpecific,
     onSuccess: (res) => {
       const count = res?.data?.created ?? 0;
-      toast.success(`تم إرسال الإشعار لـ ${count} مستخدم`);
+      toast.success(t('adminDashboard.toasts.broadcastSent', { count }));
     },
-    onError: () => toast.error('فشل إرسال الإشعار'),
+    onError: () => toast.error(t('adminDashboard.toasts.broadcastSendFail')),
   });
 
   return {

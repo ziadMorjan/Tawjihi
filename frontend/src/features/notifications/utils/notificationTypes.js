@@ -4,17 +4,17 @@ export const NOTIFICATION_TYPES = {
   course: {
     icon: BookOpen,
     color: 'primary',
-    label: 'كورس',
+    labelKey: 'notifications.types.course',
   },
   news: {
     icon: Megaphone,
     color: 'warning',
-    label: 'خبر',
+    labelKey: 'notifications.types.news',
   },
   message: {
     icon: MessageCircle,
     color: 'success',
-    label: 'رسالة',
+    labelKey: 'notifications.types.message',
   },
 };
 

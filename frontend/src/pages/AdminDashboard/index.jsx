@@ -11,7 +11,6 @@ import {
   AreaChart, Area,
   PieChart, Pie, Cell, Legend,
 } from 'recharts';
-import styled from 'styled-components';
 import DashboardLayout from '../../shared/components/layout/DashboardLayout';
 import { useLanguage } from '../../shared/hooks/useLanguage';
 import {
@@ -23,421 +22,20 @@ import { adminApi } from '../../features/admin';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '../../shared/components/Button';
 import { getNotificationTypeConfig } from '../../features/notifications/utils/notificationTypes';
-
-const PageInner = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[6]}`};
-
-  @media (max-width: 600px) {
-    padding: 16px 12px;
-  }
-`;
-
-const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-`;
-
-const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0;
-
-  @media (max-width: 600px) {
-    font-size: 18px;
-  }
-`;
-
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: ${({ theme }) => theme.spacing[4]};
-  margin-bottom: ${({ theme }) => theme.spacing[8]};
-`;
-
-const StatCard = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[4]};
-  padding: ${({ theme }) => theme.spacing[5]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  box-shadow: ${({ theme }) => theme.shadows.card};
-`;
-
-const StatIconWrap = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  background: ${({ theme }) => theme.colors.primaryLight};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.colors.primary};
-  flex-shrink: 0;
-  svg { width: 24px; height: 24px; }
-`;
-
-const StatInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const StatValue = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.2;
-`;
-
-const StatLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
-`;
-
-const ChartCard = styled.div`
-  padding: ${({ theme }) => theme.spacing[5]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  box-shadow: ${({ theme }) => theme.shadows.card};
-  display: flex;
-  flex-direction: column;
-  min-height: 280px;
-`;
-
-const LtrChartWrap = styled.div`
-  direction: ltr;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 600px) {
-    max-width: 100%;
-    overflow-x: auto;
-  }
-`;
-
-const ChartTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0 0 ${({ theme }) => theme.spacing[3]};
-`;
-
-const ChartGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing[4]};
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const ChartGrid3 = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing[4]};
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: ${({ theme }) => theme.spacing[8]} 0 ${({ theme }) => theme.spacing[4]};
-`;
-
-const TableWrap = styled.div`
-  overflow-x: auto;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-`;
-
-const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-`;
-
-const Th = styled.th`
-  text-align: right;
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textMuted};
-  background: ${({ theme }) => theme.colors.bgSecondary};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  white-space: nowrap;
-`;
-
-const Td = styled.td`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  vertical-align: middle;
-`;
-
-const ActionsCell = styled.td`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[2]};
-  align-items: center;
-`;
-
-const ActionBtn = styled.button`
-  width: 32px;
-  height: 32px;
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: transparent;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-  color: ${({ theme, $color }) => theme.colors[$color] || theme.colors.textSecondary};
-  &:hover {
-    background: ${({ theme, $color }) =>
-      $color ? theme.colors[$color] + '18' : theme.colors.bgSecondary};
-  }
-`;
-
-const ConfirmGroup = styled.div`
-  display: flex; align-items: center; gap: 2px;
-`;
-
-const ConfirmBtn = styled.button`
-  display: flex; align-items: center; justify-content: center;
-  padding: 3px; border-radius: 4px; border: none; cursor: pointer;
-  font-family: inherit; line-height: 1;
-  background: ${({ $variant, theme }) => $variant === 'confirm' ? theme.colors.success + '20' : theme.colors.danger + '15'};
-  color: ${({ $variant, theme }) => $variant === 'confirm' ? theme.colors.success : theme.colors.danger};
-  &:hover { opacity: 0.8; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-`;
-
-const ModalOverlay = styled.div`
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200;
-  display: flex; align-items: center; justify-content: center;
-  padding: ${({ theme }) => theme.spacing[4]};
-`;
-
-const ModalContent = styled.div`
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: ${({ theme }) => theme.spacing[8]};
-  width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
-
-  @media (max-width: 600px) {
-    width: 90vw;
-    padding: 16px;
-  }
-`;
-
-const ModalTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0 0 ${({ theme }) => theme.spacing[6]};
-`;
-
-const EmptyState = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing[16]} ${({ theme }) => theme.spacing[4]};
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-`;
-
-const RowHover = styled.tr`
-  transition: background 0.15s;
-  &:hover { background: ${({ theme }) => theme.colors.bgSecondary}; }
-`;
-
-const Badge = styled.span`
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  font-size: 11px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  background: ${({ $type, theme }) =>
-    $type === 'success' ? theme.colors.success + '20' :
-    $type === 'warning' ? theme.colors.warning + '20' :
-    $type === 'danger' ? theme.colors.danger + '20' :
-    theme.colors.primaryLight};
-  color: ${({ $type, theme }) =>
-    $type === 'success' ? theme.colors.success :
-    $type === 'warning' ? theme.colors.warning :
-    $type === 'danger' ? theme.colors.danger :
-    theme.colors.primary};
-`;
-
-const Form = styled.form`
-  max-width: 560px;
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[4]};
-`;
-
-const FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-const Label = styled.label`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const StyledInput = styled.input`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
-  &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary}18;
-  }
-`;
-
-const StyledTextarea = styled.textarea`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
-  resize: vertical;
-  min-height: 120px;
-  &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary}18;
-  }
-`;
-
-const Select = styled.select`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
-  &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary}18;
-  }
-`;
-
-const InlineForm = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[2]};
-  margin-bottom: ${({ theme }) => theme.spacing[4]};
-  align-items: flex-end;
-
-  @media (max-width: 600px) {
-    flex-direction: column;
-    input, select { width: 100%; }
-  }
-`;
-
-const ListCard = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
-`;
-
-const NewsCard = styled.div`
-  padding: ${({ theme }) => theme.spacing[5]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  box-shadow: ${({ theme }) => theme.shadows.card};
-  margin-bottom: ${({ theme }) => theme.spacing[4]};
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[4]};
-
-  @media (max-width: 600px) {
-    flex-direction: column;
-  }
-`;
-
-const NewsImg = styled.img`
-  width: 120px;
-  height: 80px;
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  object-fit: cover;
-  flex-shrink: 0;
-
-  @media (max-width: 600px) {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    aspect-ratio: 3 / 2;
-  }
-`;
-
-const NewsContent = styled.div`
-  flex: 1;
-`;
-
-const NewsTitle = styled.h4`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0 0 ${({ theme }) => theme.spacing[1]};
-`;
-
-const NewsBody = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const SkeletonCard = styled.div`
-  height: 100px;
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  background: ${({ theme }) => theme.colors.bgTertiary};
-  animation: pulse 1.5s ease-in-out infinite;
-  @keyframes pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-  }
-`;
-
-const OldPrice = styled.span`
-  text-decoration: line-through;
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-`;
+import {
+  PageInner, Header, Title,
+  StatsGrid, StatCard, StatIconWrap, StatInfo, StatValue, StatLabel,
+  ChartCard, LtrChartWrap, ChartTitle, ChartGrid, ChartGrid3, SectionTitle,
+  TableWrap, StyledTable, Th, Td, ActionsCell, ActionBtn,
+  ConfirmGroup, ConfirmBtn,
+  ModalOverlay, ModalContent, ModalTitle,
+  EmptyState, RowHover, Badge,
+  Form, FieldGroup, Label, StyledInput, StyledTextarea, Select, InlineForm,
+  ListCard, NewsCard, NewsImg, NewsContent, NewsTitle, NewsBody,
+  SkeletonCard, OldPrice, EmptyMiniData,
+  PreviewCard, PreviewIcon, PreviewContent, PreviewTitle, PreviewBody,
+  HistoryCard, HistoryIcon, HistoryContent, HistoryTitle, HistoryBody, HistoryTime,
+} from './styles';
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -445,16 +43,16 @@ function formatDate(dateStr) {
 
 function formatPrice(p) { return (p?.toLocaleString('ar-SA') || '0') + ' ₪'; }
 
-const NAV_ITEMS = [
-  { key: 0, label: 'نظرة عامة', icon: LayoutDashboard },
-  { key: 1, label: 'المعلمون المعلقون', icon: UserCheck },
-  { key: 2, label: 'المستخدمون', icon: Users },
-  { key: 3, label: 'الكورسات', icon: Layers },
-  { key: 4, label: 'الفروع', icon: GitBranch },
-  { key: 5, label: 'المواد', icon: BookMarked },
-  { key: 6, label: 'الكوبونات', icon: Ticket },
-  { key: 7, label: 'الأخبار', icon: Newspaper },
-  { key: 8, label: 'إرسال إشعار', icon: Bell },
+const NAV_ITEMS = (t) => [
+  { key: 0, label: t('adminDashboard.nav.overview'), icon: LayoutDashboard },
+  { key: 1, label: t('adminDashboard.nav.pendingTeachers'), icon: UserCheck },
+  { key: 2, label: t('adminDashboard.nav.users'), icon: Users },
+  { key: 3, label: t('adminDashboard.nav.courses'), icon: Layers },
+  { key: 4, label: t('adminDashboard.nav.branches'), icon: GitBranch },
+  { key: 5, label: t('adminDashboard.nav.subjects'), icon: BookMarked },
+  { key: 6, label: t('adminDashboard.nav.coupons'), icon: Ticket },
+  { key: 7, label: t('adminDashboard.nav.news'), icon: Newspaper },
+  { key: 8, label: t('adminDashboard.nav.broadcast'), icon: Bell },
 ];
 
 // ── Tab Components ───────────────────────────────────────────────────────────
@@ -480,15 +78,6 @@ const renderPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, name, valu
   );
 };
 
-const EmptyMiniData = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 170px;
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-`;
-
 function calcYAxisWidth(data, key = 'name') {
   if (!data?.length) return 120;
   const longest = Math.max(...data.map((d) => (d[key] || '').length));
@@ -497,17 +86,17 @@ function calcYAxisWidth(data, key = 'name') {
 
 function OverviewTab() {
   const { stats } = useAdminStats();
-  const { isAr } = useLanguage();
+  const { isAr, t } = useLanguage();
   if (!stats) return <SkeletonCard />;
 
   const { charts } = stats;
 
   const cards = [
-    { label: 'إجمالي المستخدمين', value: stats.totalUsers, icon: Users },
-    { label: 'الطلاب', value: stats.totalStudents, icon: GraduationCap },
-    { label: 'المعلمون', value: stats.totalTeachers, icon: BookOpen },
-    { label: 'الكورسات', value: stats.totalCourses, icon: Layers },
-    { label: 'الإيرادات', value: formatPrice(stats.totalRevenue), icon: DollarSign },
+    { label: t('adminDashboard.stats.totalUsers'), value: stats.totalUsers, icon: Users },
+    { label: t('adminDashboard.stats.students'), value: stats.totalStudents, icon: GraduationCap },
+    { label: t('adminDashboard.stats.teachers'), value: stats.totalTeachers, icon: BookOpen },
+    { label: t('adminDashboard.stats.courses'), value: stats.totalCourses, icon: Layers },
+    { label: t('adminDashboard.stats.revenue'), value: formatPrice(stats.totalRevenue), icon: DollarSign },
   ];
 
   return (
@@ -524,14 +113,14 @@ function OverviewTab() {
         ))}
       </StatsGrid>
 
-      <SectionTitle>اتجاهات المنصة</SectionTitle>
+      <SectionTitle>{t('adminDashboard.sections.platformTrends')}</SectionTitle>
 
       <ChartGrid3>
         {!charts.revenueTrend?.length || charts.revenueTrend.length < 2 ? (
-          <ChartCard><ChartTitle>الإيرادات الشهرية</ChartTitle><EmptyMiniData>لا توجد بيانات</EmptyMiniData></ChartCard>
+          <ChartCard><ChartTitle>{t('adminDashboard.sections.monthlyRevenue')}</ChartTitle><EmptyMiniData>{t('adminDashboard.empty.noData')}</EmptyMiniData></ChartCard>
         ) : (
           <ChartCard>
-            <ChartTitle>الإيرادات الشهرية</ChartTitle>
+            <ChartTitle>{t('adminDashboard.sections.monthlyRevenue')}</ChartTitle>
             <ResponsiveContainer width="100%" height={170}>
               <AreaChart data={charts.revenueTrend} margin={{ top: 8, right: 4, bottom: 0, left: 4 }}>
                 {/* <XAxis dataKey="month" tick={{ fontSize: 8 }} tickFormatter={(v) => v.slice(5)} />
@@ -544,10 +133,10 @@ function OverviewTab() {
         )}
 
         {!charts.enrollmentTrend?.length || charts.enrollmentTrend.length < 2 ? (
-          <ChartCard><ChartTitle>الاشتراكات الشهرية</ChartTitle><EmptyMiniData>لا توجد بيانات</EmptyMiniData></ChartCard>
+          <ChartCard><ChartTitle>{t('adminDashboard.sections.monthlyEnrollments')}</ChartTitle><EmptyMiniData>{t('adminDashboard.empty.noData')}</EmptyMiniData></ChartCard>
         ) : (
           <ChartCard>
-            <ChartTitle>الاشتراكات الشهرية</ChartTitle>
+            <ChartTitle>{t('adminDashboard.sections.monthlyEnrollments')}</ChartTitle>
             <ResponsiveContainer width="100%" height={170}>
               <AreaChart data={charts.enrollmentTrend} margin={{ top: 8, right: 4, bottom: 0, left: 4 }}>
                 {/* <XAxis dataKey="month" tick={{ fontSize: 8 }} tickFormatter={(v) => v.slice(5)} />
@@ -560,10 +149,10 @@ function OverviewTab() {
         )}
 
         {!charts.userGrowth?.length || charts.userGrowth.length < 2 ? (
-          <ChartCard><ChartTitle>نمو المستخدمين</ChartTitle><EmptyMiniData>لا توجد بيانات</EmptyMiniData></ChartCard>
+          <ChartCard><ChartTitle>{t('adminDashboard.sections.userGrowth')}</ChartTitle><EmptyMiniData>{t('adminDashboard.empty.noData')}</EmptyMiniData></ChartCard>
         ) : (
           <ChartCard>
-            <ChartTitle>نمو المستخدمين</ChartTitle>
+            <ChartTitle>{t('adminDashboard.sections.userGrowth')}</ChartTitle>
             <ResponsiveContainer width="100%" height={170}>
               <AreaChart data={charts.userGrowth} margin={{ top: 8, right: 4, bottom: 0, left: 4 }}>
                 {/* <XAxis dataKey="month" tick={{ fontSize: 8 }} tickFormatter={(v) => v.slice(5)} />
@@ -576,11 +165,11 @@ function OverviewTab() {
         )}
       </ChartGrid3>
 
-      <SectionTitle>المحتوى</SectionTitle>
+      <SectionTitle>{t('adminDashboard.sections.content')}</SectionTitle>
 
       <ChartGrid>
         <ChartCard>
-          <ChartTitle>الكورسات الأعلى اشتراكاً</ChartTitle>
+          <ChartTitle>{t('adminDashboard.sections.topCourses')}</ChartTitle>
           <LtrChartWrap> 
             <ResponsiveContainer
               width="100%"
@@ -615,7 +204,7 @@ function OverviewTab() {
         </ChartCard>
 
         <ChartCard>
-          <ChartTitle>توزيع المواد</ChartTitle>
+          <ChartTitle>{t('adminDashboard.sections.subjectDistribution')}</ChartTitle>
           <LtrChartWrap>
             <ResponsiveContainer
               width="100%"
@@ -650,11 +239,11 @@ function OverviewTab() {
         </ChartCard>
       </ChartGrid>
 
-      <SectionTitle>المستخدمون</SectionTitle>
+      <SectionTitle>{t('adminDashboard.sections.users')}</SectionTitle>
 
       <ChartGrid3>
         <ChartCard>
-          <ChartTitle>توزيع التقييمات</ChartTitle>
+          <ChartTitle>{t('adminDashboard.sections.ratingDistribution')}</ChartTitle>
           <ResponsiveContainer width="100%" height={190}>
             <BarChart
               data={charts.ratingDistribution}
@@ -669,7 +258,7 @@ function OverviewTab() {
         </ChartCard>
 
         <ChartCard>
-          <ChartTitle>توزيع الأدوار</ChartTitle>
+          <ChartTitle>{t('adminDashboard.sections.roleDistribution')}</ChartTitle>
           <ResponsiveContainer width="100%" height={190}>
             <PieChart>
               <Pie
@@ -697,7 +286,7 @@ function OverviewTab() {
         </ChartCard>
 
         <ChartCard>
-          <ChartTitle>حالة المستخدمين</ChartTitle>
+          <ChartTitle>{t('adminDashboard.sections.userStatus')}</ChartTitle>
           <ResponsiveContainer width="100%" height={190}>
             <PieChart>
               <Pie
@@ -733,41 +322,42 @@ function PendingTeachersTab() {
   const { approveTeacher, rejectTeacher, isApproving, isRejecting } = useAdminActions();
   const { pendingTeachers, isLoading } = usePendingTeachers();
   const [confirm, setConfirm] = useState(null);
+  const { t } = useLanguage();
 
   if (isLoading) return <SkeletonCard />;
-  if (!pendingTeachers.length) return <EmptyState>لا يوجد معلمون معلقون</EmptyState>;
+  if (!pendingTeachers.length) return <EmptyState>{t('adminDashboard.empty.noPendingTeachers')}</EmptyState>;
 
   return (
     <TableWrap>
       <StyledTable>
-        <thead><tr><Th>الاسم</Th><Th>الإيميل</Th><Th>الهاتف</Th><Th>السيرة</Th><Th>الإجراءات</Th></tr></thead>
+        <thead><tr><Th>{t('adminDashboard.table.name')}</Th><Th>{t('adminDashboard.table.email')}</Th><Th>{t('adminDashboard.table.phone')}</Th><Th>{t('adminDashboard.table.cv')}</Th><Th>{t('adminDashboard.table.actions')}</Th></tr></thead>
         <tbody>
-          {pendingTeachers.map((t) => (
-            <RowHover key={t._id}>
-              <Td>{t.name}</Td>
-              <Td>{t.email}</Td>
-              <Td>{t.phone || '—'}</Td>
-              <Td>{t.cv ? <a href={t.cv} target="_blank" rel="noreferrer">عرض</a> : '—'}</Td>
+          {pendingTeachers.map((pt) => (
+            <RowHover key={pt._id}>
+              <Td>{pt.name}</Td>
+              <Td>{pt.email}</Td>
+              <Td>{pt.phone || '—'}</Td>
+              <Td>{pt.cv ? <a href={pt.cv} target="_blank" rel="noreferrer">{t('adminDashboard.actions.view')}</a> : '—'}</Td>
               <ActionsCell>
-                {confirm?.id === t._id && confirm.type === 'approve' ? (
+                {confirm?.id === pt._id && confirm.type === 'approve' ? (
                   <ConfirmGroup>
-                    <ConfirmBtn $variant="confirm" onClick={() => { approveTeacher(t._id); setConfirm(null); }} disabled={isApproving}>
+                    <ConfirmBtn $variant="confirm" onClick={() => { approveTeacher(pt._id); setConfirm(null); }} disabled={isApproving}>
                       {isApproving ? <Loader2 size={13} /> : <Check size={13} />}
                     </ConfirmBtn>
                     <ConfirmBtn $variant="cancel" onClick={() => setConfirm(null)}><X size={13} /></ConfirmBtn>
                   </ConfirmGroup>
                 ) : (
-                  <ActionBtn $color="success" title="قبول" onClick={() => setConfirm({ type: 'approve', id: t._id })}><Check size={16} /></ActionBtn>
+                  <ActionBtn $color="success" title={t('adminDashboard.actions.approve')} onClick={() => setConfirm({ type: 'approve', id: pt._id })}><Check size={16} /></ActionBtn>
                 )}
-                {confirm?.id === t._id && confirm.type === 'reject' ? (
+                {confirm?.id === pt._id && confirm.type === 'reject' ? (
                   <ConfirmGroup>
-                    <ConfirmBtn $variant="confirm" onClick={() => { rejectTeacher(t._id); setConfirm(null); }} disabled={isRejecting}>
+                    <ConfirmBtn $variant="confirm" onClick={() => { rejectTeacher(pt._id); setConfirm(null); }} disabled={isRejecting}>
                       {isRejecting ? <Loader2 size={13} /> : <X size={13} />}
                     </ConfirmBtn>
                     <ConfirmBtn $variant="cancel" onClick={() => setConfirm(null)}><X size={13} /></ConfirmBtn>
                   </ConfirmGroup>
                 ) : (
-                  <ActionBtn $color="danger" title="رفض" onClick={() => setConfirm({ type: 'reject', id: t._id })}><X size={16} /></ActionBtn>
+                  <ActionBtn $color="danger" title={t('adminDashboard.actions.reject')} onClick={() => setConfirm({ type: 'reject', id: pt._id })}><X size={16} /></ActionBtn>
                 )}
               </ActionsCell>
             </RowHover>
@@ -783,6 +373,7 @@ function UsersTab() {
   const { users, isLoading } = useAllUsers();
   const [search, setSearch] = useState('');
   const [confirm, setConfirm] = useState(null);
+  const { t } = useLanguage();
 
   const filtered = search
     ? users.filter((u) => u.name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase()))
@@ -794,7 +385,7 @@ function UsersTab() {
     <div>
       <div style={{ marginBottom: 16 }}>
         <StyledInput
-          placeholder="بحث بالاسم أو الإيميل..."
+          placeholder={t('adminDashboard.search.users')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ maxWidth: 320 }}
@@ -802,11 +393,11 @@ function UsersTab() {
       </div>
 
       {!filtered.length ? (
-        <EmptyState>{search ? 'لا توجد نتائج بحث' : 'لا يوجد مستخدمون'}</EmptyState>
+        <EmptyState>{search ? t('adminDashboard.empty.noSearchResults') : t('adminDashboard.empty.noUsers')}</EmptyState>
       ) : (
         <TableWrap>
           <StyledTable>
-            <thead><tr><Th>الصورة</Th><Th>الاسم</Th><Th>الإيميل</Th><Th>الهاتف</Th><Th>تاريخ الانضمام</Th><Th>الإجراءات</Th></tr></thead>
+            <thead><tr><Th>{t('adminDashboard.table.image')}</Th><Th>{t('adminDashboard.table.name')}</Th><Th>{t('adminDashboard.table.email')}</Th><Th>{t('adminDashboard.table.phone')}</Th><Th>{t('adminDashboard.table.joinDate')}</Th><Th>{t('adminDashboard.table.actions')}</Th></tr></thead>
             <tbody>
               {filtered.map((u) => (
                 <RowHover key={u._id}>
@@ -826,7 +417,7 @@ function UsersTab() {
                         <ConfirmBtn $variant="cancel" onClick={() => setConfirm(null)}><X size={13} /></ConfirmBtn>
                       </ConfirmGroup>
                     ) : (
-                      <ActionBtn $color="danger" title="حذف" onClick={() => setConfirm(u._id)}><Trash2 size={16} /></ActionBtn>
+                      <ActionBtn $color="danger" title={t('adminDashboard.actions.delete')} onClick={() => setConfirm(u._id)}><Trash2 size={16} /></ActionBtn>
                     )}
                   </ActionsCell>
                 </RowHover>
@@ -844,6 +435,7 @@ function CoursesTab() {
   const { courses, isLoading } = useAllCourses();
   const [search, setSearch] = useState('');
   const [confirm, setConfirm] = useState(null);
+  const { t } = useLanguage();
 
   const filtered = search
     ? courses.filter((c) => c.name?.toLowerCase().includes(search.toLowerCase()) || c.teacher?.name?.toLowerCase().includes(search.toLowerCase()))
@@ -855,7 +447,7 @@ function CoursesTab() {
     <div>
       <div style={{ marginBottom: 16 }}>
         <StyledInput
-          placeholder="بحث بالاسم أو المعلم..."
+          placeholder={t('adminDashboard.search.courses')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ maxWidth: 320 }}
@@ -863,11 +455,11 @@ function CoursesTab() {
       </div>
 
       {!filtered.length ? (
-        <EmptyState>{search ? 'لا توجد نتائج بحث' : 'لا توجد كورسات'}</EmptyState>
+        <EmptyState>{search ? t('adminDashboard.empty.noSearchResults') : t('adminDashboard.empty.noCourses')}</EmptyState>
       ) : (
         <TableWrap>
           <StyledTable>
-            <thead><tr><Th>الصورة</Th><Th>العنوان</Th><Th>المعلم</Th><Th>المادة</Th><Th>السعر</Th><Th>التقييم</Th><Th>الإجراءات</Th></tr></thead>
+            <thead><tr><Th>{t('adminDashboard.table.image')}</Th><Th>{t('adminDashboard.table.title')}</Th><Th>{t('adminDashboard.table.teacher')}</Th><Th>{t('adminDashboard.table.subject')}</Th><Th>{t('adminDashboard.table.price')}</Th><Th>{t('adminDashboard.table.rating')}</Th><Th>{t('adminDashboard.table.actions')}</Th></tr></thead>
             <tbody>
               {filtered.map((c) => (
                 <RowHover key={c._id}>
@@ -890,7 +482,7 @@ function CoursesTab() {
                         <ConfirmBtn $variant="cancel" onClick={() => setConfirm(null)}><X size={13} /></ConfirmBtn>
                       </ConfirmGroup>
                     ) : (
-                      <ActionBtn $color="danger" title="حذف" onClick={() => setConfirm(c._id)}><Trash2 size={16} /></ActionBtn>
+                      <ActionBtn $color="danger" title={t('adminDashboard.actions.delete')} onClick={() => setConfirm(c._id)}><Trash2 size={16} /></ActionBtn>
                     )}
                   </ActionsCell>
                 </RowHover>
@@ -910,6 +502,7 @@ function BranchesTab() {
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
   const [confirm, setConfirm] = useState(null);
+  const { t } = useLanguage();
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -932,10 +525,10 @@ function BranchesTab() {
   return (
     <div>
       <InlineForm as="form" onSubmit={handleAdd}>
-        <StyledInput value={name} onChange={(e) => setName(e.target.value)} placeholder="اسم الفرع" required style={{ flex: 1 }} />
-        <Button type="submit" variant="primary" size="sm" leftIcon={isCreatingBranch ? <Loader2 size={14} /> : <Plus size={14} />} isLoading={isCreatingBranch} disabled={!name.trim()}>إضافة</Button>
+        <StyledInput value={name} onChange={(e) => setName(e.target.value)} placeholder={t('adminDashboard.form.branchName')} required style={{ flex: 1 }} />
+        <Button type="submit" variant="primary" size="sm" leftIcon={isCreatingBranch ? <Loader2 size={14} /> : <Plus size={14} />} isLoading={isCreatingBranch} disabled={!name.trim()}>{t('adminDashboard.actions.add')}</Button>
       </InlineForm>
-      {branches.length === 0 && <EmptyState>لا توجد فروع</EmptyState>}
+      {branches.length === 0 && <EmptyState>{t('adminDashboard.empty.noBranches')}</EmptyState>}
       {branches.map((b) => (
         <ListCard key={b._id}>
           {editingId === b._id ? (
@@ -951,7 +544,7 @@ function BranchesTab() {
             <>
               <span style={{ cursor: 'pointer' }} onClick={() => startEdit(b)}>{b.name}</span>
               <div style={{ display: 'flex', gap: 4 }}>
-                <ActionBtn $color="primary" title="تعديل" onClick={() => startEdit(b)}><Edit3 size={16} /></ActionBtn>
+                <ActionBtn $color="primary" title={t('adminDashboard.actions.edit')} onClick={() => startEdit(b)}><Edit3 size={16} /></ActionBtn>
                 {confirm === b._id ? (
                   <ConfirmGroup>
                     <ConfirmBtn $variant="confirm" onClick={() => { deleteBranch(b._id); setConfirm(null); }} disabled={isDeletingBranch}>
@@ -960,7 +553,7 @@ function BranchesTab() {
                     <ConfirmBtn $variant="cancel" onClick={() => setConfirm(null)}><X size={13} /></ConfirmBtn>
                   </ConfirmGroup>
                 ) : (
-                  <ActionBtn $color="danger" title="حذف" onClick={() => setConfirm(b._id)}><Trash2 size={16} /></ActionBtn>
+                  <ActionBtn $color="danger" title={t('adminDashboard.actions.delete')} onClick={() => setConfirm(b._id)}><Trash2 size={16} /></ActionBtn>
                 )}
               </div>
             </>
@@ -981,6 +574,7 @@ function SubjectsTab() {
   const [editName, setEditName] = useState('');
   const [editBranch, setEditBranch] = useState('');
   const [confirm, setConfirm] = useState(null);
+  const { t } = useLanguage();
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -1004,14 +598,14 @@ function SubjectsTab() {
   return (
     <div>
       <InlineForm as="form" onSubmit={handleAdd}>
-        <StyledInput value={name} onChange={(e) => setName(e.target.value)} placeholder="اسم المادة" required />
+        <StyledInput value={name} onChange={(e) => setName(e.target.value)} placeholder={t('adminDashboard.form.subjectName')} required />
         <Select value={branch} onChange={(e) => setBranch(e.target.value)}>
-          <option value="">بدون فرع</option>
+          <option value="">{t('adminDashboard.form.noBranch')}</option>
           {branches.map((b) => <option key={b._id} value={b._id}>{b.name}</option>)}
         </Select>
-        <Button type="submit" variant="primary" size="sm" leftIcon={isCreatingSubject ? <Loader2 size={14} /> : <Plus size={14} />} isLoading={isCreatingSubject} disabled={!name.trim()}>إضافة</Button>
+        <Button type="submit" variant="primary" size="sm" leftIcon={isCreatingSubject ? <Loader2 size={14} /> : <Plus size={14} />} isLoading={isCreatingSubject} disabled={!name.trim()}>{t('adminDashboard.actions.add')}</Button>
       </InlineForm>
-      {subjects.length === 0 && <EmptyState>لا توجد مواد</EmptyState>}
+      {subjects.length === 0 && <EmptyState>{t('adminDashboard.empty.noSubjects')}</EmptyState>}
       {subjects.map((s) => (
         <ListCard key={s._id}>
           {editingId === s._id ? (
@@ -1019,7 +613,7 @@ function SubjectsTab() {
               <StyledInput value={editName} onChange={(e) => setEditName(e.target.value)} style={{ flex: 1 }} autoFocus
                 onKeyDown={(e) => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') setEditingId(null); }} />
               <Select value={editBranch} onChange={(e) => setEditBranch(e.target.value)} style={{ width: 140 }}>
-                <option value="">بدون فرع</option>
+                <option value="">{t('adminDashboard.form.noBranch')}</option>
                 {branches.map((b) => <option key={b._id} value={b._id}>{b.name}</option>)}
               </Select>
               <ConfirmBtn $variant="confirm" onClick={saveEdit} disabled={isUpdatingSubject || !editName.trim()}>
@@ -1033,7 +627,7 @@ function SubjectsTab() {
                 {s.name} {s.branch?.name ? <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>({s.branch?.name})</span> : ''}
               </span>
               <div style={{ display: 'flex', gap: 4 }}>
-                <ActionBtn $color="primary" title="تعديل" onClick={() => startEdit(s)}><Edit3 size={16} /></ActionBtn>
+                <ActionBtn $color="primary" title={t('adminDashboard.actions.edit')} onClick={() => startEdit(s)}><Edit3 size={16} /></ActionBtn>
                 {confirm === s._id ? (
                   <ConfirmGroup>
                     <ConfirmBtn $variant="confirm" onClick={() => { deleteSubject(s._id); setConfirm(null); }} disabled={isDeletingSubject}>
@@ -1042,7 +636,7 @@ function SubjectsTab() {
                     <ConfirmBtn $variant="cancel" onClick={() => setConfirm(null)}><X size={13} /></ConfirmBtn>
                   </ConfirmGroup>
                 ) : (
-                  <ActionBtn $color="danger" title="حذف" onClick={() => setConfirm(s._id)}><Trash2 size={16} /></ActionBtn>
+                  <ActionBtn $color="danger" title={t('adminDashboard.actions.delete')} onClick={() => setConfirm(s._id)}><Trash2 size={16} /></ActionBtn>
                 )}
               </div>
             </>
@@ -1064,6 +658,7 @@ function CouponsTab() {
   const [editDiscount, setEditDiscount] = useState('');
   const [editExpire, setEditExpire] = useState('');
   const [confirm, setConfirm] = useState(null);
+  const { t } = useLanguage();
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -1093,14 +688,14 @@ function CouponsTab() {
       {editCoupon && (
         <ModalOverlay onClick={() => setEditCoupon(null)}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalTitle>تعديل الكوبون</ModalTitle>
+            <ModalTitle>{t('adminDashboard.coupons.editTitle')}</ModalTitle>
             <Form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-              <FieldGroup><Label>الاسم</Label><StyledInput value={editName} onChange={(e) => setEditName(e.target.value)} required /></FieldGroup>
-              <FieldGroup><Label>نسبة الخصم (%)</Label><StyledInput type="number" value={editDiscount} onChange={(e) => setEditDiscount(e.target.value)} min="1" max="100" required /></FieldGroup>
-              <FieldGroup><Label>تاريخ الانتهاء</Label><StyledInput type="date" value={editExpire} onChange={(e) => setEditExpire(e.target.value)} required /></FieldGroup>
+              <FieldGroup><Label>{t('adminDashboard.form.name')}</Label><StyledInput value={editName} onChange={(e) => setEditName(e.target.value)} required /></FieldGroup>
+              <FieldGroup><Label>{t('adminDashboard.form.discountPercent')}</Label><StyledInput type="number" value={editDiscount} onChange={(e) => setEditDiscount(e.target.value)} min="1" max="100" required /></FieldGroup>
+              <FieldGroup><Label>{t('adminDashboard.form.expireDate')}</Label><StyledInput type="date" value={editExpire} onChange={(e) => setEditExpire(e.target.value)} required /></FieldGroup>
               <div style={{ display: 'flex', gap: 8 }}>
-                <Button type="submit" variant="primary" size="sm" isLoading={isUpdatingCoupon} disabled={!editName.trim() || !editDiscount || !editExpire}>حفظ</Button>
-                <Button type="button" variant="ghost" size="sm" onClick={() => setEditCoupon(null)}>إلغاء</Button>
+                <Button type="submit" variant="primary" size="sm" isLoading={isUpdatingCoupon} disabled={!editName.trim() || !editDiscount || !editExpire}>{t('adminDashboard.actions.save')}</Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setEditCoupon(null)}>{t('adminDashboard.actions.cancel')}</Button>
               </div>
             </Form>
           </ModalContent>
@@ -1109,24 +704,24 @@ function CouponsTab() {
 
       <Form onSubmit={handleAdd} style={{ marginBottom: 24 }}>
         <FieldGroup>
-          <Label>الاسم</Label>
+          <Label>{t('adminDashboard.form.name')}</Label>
           <StyledInput value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: SAVE20" required />
         </FieldGroup>
         <FieldGroup>
-          <Label>نسبة الخصم (%)</Label>
+          <Label>{t('adminDashboard.form.discountPercent')}</Label>
           <StyledInput type="number" value={discount} onChange={(e) => setDiscount(e.target.value)} placeholder="20" min="1" max="100" required />
         </FieldGroup>
         <FieldGroup>
-          <Label>تاريخ الانتهاء</Label>
+          <Label>{t('adminDashboard.form.expireDate')}</Label>
           <StyledInput type="date" value={expire} onChange={(e) => setExpire(e.target.value)} required />
         </FieldGroup>
-        <Button type="submit" variant="primary" size="sm" leftIcon={isCreatingCoupon ? <Loader2 size={14} /> : <Plus size={14} />} isLoading={isCreatingCoupon} disabled={!name.trim() || !discount || !expire}>إضافة كوبون</Button>
+        <Button type="submit" variant="primary" size="sm" leftIcon={isCreatingCoupon ? <Loader2 size={14} /> : <Plus size={14} />} isLoading={isCreatingCoupon} disabled={!name.trim() || !discount || !expire}>{t('adminDashboard.coupons.addButton')}</Button>
       </Form>
-      {coupons.length === 0 && <EmptyState>لا توجد كوبونات</EmptyState>}
+      {coupons.length === 0 && <EmptyState>{t('adminDashboard.empty.noCoupons')}</EmptyState>}
       {coupons.length > 0 && (
         <TableWrap>
           <StyledTable>
-            <thead><tr><Th>الاسم</Th><Th>الخصم</Th><Th>تاريخ الانتهاء</Th><Th>الحالة</Th><Th>الإجراءات</Th></tr></thead>
+            <thead><tr><Th>{t('adminDashboard.table.name')}</Th><Th>{t('adminDashboard.table.discount')}</Th><Th>{t('adminDashboard.table.expireDate')}</Th><Th>{t('adminDashboard.table.status')}</Th><Th>{t('adminDashboard.table.actions')}</Th></tr></thead>
             <tbody>
               {coupons.map((c) => {
                 const expired = new Date(c.expire) < new Date();
@@ -1135,9 +730,9 @@ function CouponsTab() {
                     <Td><strong>{c.name}</strong></Td>
                     <Td>{c.discount}%</Td>
                     <Td>{formatDate(c.expire)}</Td>
-                    <Td>{expired ? <Badge $type="danger">منتهي الصلاحية</Badge> : <Badge $type="success">فعّال</Badge>}</Td>
+                    <Td>{expired ? <Badge $type="danger">{t('adminDashboard.coupons.expired')}</Badge> : <Badge $type="success">{t('adminDashboard.coupons.active')}</Badge>}</Td>
                     <ActionsCell>
-                      <ActionBtn $color="primary" title="تعديل" onClick={() => openEdit(c)}><Edit3 size={16} /></ActionBtn>
+                      <ActionBtn $color="primary" title={t('adminDashboard.actions.edit')} onClick={() => openEdit(c)}><Edit3 size={16} /></ActionBtn>
                       {confirm === c._id ? (
                         <ConfirmGroup>
                           <ConfirmBtn $variant="confirm" onClick={() => handleDelete(c._id)} disabled={isDeletingCoupon}>
@@ -1146,7 +741,7 @@ function CouponsTab() {
                           <ConfirmBtn $variant="cancel" onClick={() => setConfirm(null)}><X size={13} /></ConfirmBtn>
                         </ConfirmGroup>
                       ) : (
-                        <ActionBtn $color="danger" title="حذف" onClick={() => setConfirm(c._id)}><Trash2 size={16} /></ActionBtn>
+                        <ActionBtn $color="danger" title={t('adminDashboard.actions.delete')} onClick={() => setConfirm(c._id)}><Trash2 size={16} /></ActionBtn>
                       )}
                     </ActionsCell>
                   </RowHover>
@@ -1171,6 +766,7 @@ function NewsTab() {
   const [editContent, setEditContent] = useState('');
   const [editFile, setEditFile] = useState(null);
   const [confirm, setConfirm] = useState(null);
+  const { t } = useLanguage();
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -1204,14 +800,14 @@ function NewsTab() {
       {editNews && (
         <ModalOverlay onClick={() => setEditNews(null)}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalTitle>تعديل الخبر</ModalTitle>
+            <ModalTitle>{t('adminDashboard.news.editTitle')}</ModalTitle>
             <Form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-              <FieldGroup><Label>العنوان</Label><StyledInput value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required /></FieldGroup>
-              <FieldGroup><Label>المحتوى</Label><StyledTextarea value={editContent} onChange={(e) => setEditContent(e.target.value)} required /></FieldGroup>
-              <FieldGroup><Label>صورة (اختياري)</Label><StyledInput type="file" accept="image/*" onChange={(e) => setEditFile(e.target.files[0] || null)} /></FieldGroup>
+              <FieldGroup><Label>{t('adminDashboard.form.title')}</Label><StyledInput value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required /></FieldGroup>
+              <FieldGroup><Label>{t('adminDashboard.form.content')}</Label><StyledTextarea value={editContent} onChange={(e) => setEditContent(e.target.value)} required /></FieldGroup>
+              <FieldGroup><Label>{t('adminDashboard.form.imageOptional')}</Label><StyledInput type="file" accept="image/*" onChange={(e) => setEditFile(e.target.files[0] || null)} /></FieldGroup>
               <div style={{ display: 'flex', gap: 8 }}>
-                <Button type="submit" variant="primary" size="sm" isLoading={isUpdatingNews} disabled={!editTitle.trim() || !editContent.trim()}>حفظ</Button>
-                <Button type="button" variant="ghost" size="sm" onClick={() => setEditNews(null)}>إلغاء</Button>
+                <Button type="submit" variant="primary" size="sm" isLoading={isUpdatingNews} disabled={!editTitle.trim() || !editContent.trim()}>{t('adminDashboard.actions.save')}</Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setEditNews(null)}>{t('adminDashboard.actions.cancel')}</Button>
               </div>
             </Form>
           </ModalContent>
@@ -1220,20 +816,20 @@ function NewsTab() {
 
       <Form onSubmit={handleAdd} style={{ marginBottom: 24 }}>
         <FieldGroup>
-          <Label>العنوان</Label>
+          <Label>{t('adminDashboard.form.title')}</Label>
           <StyledInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder="عنوان الخبر" required />
         </FieldGroup>
         <FieldGroup>
-          <Label>المحتوى</Label>
+          <Label>{t('adminDashboard.form.content')}</Label>
           <StyledTextarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="نص الخبر" required />
         </FieldGroup>
         <FieldGroup>
-          <Label>صورة (اختياري)</Label>
+          <Label>{t('adminDashboard.form.imageOptional')}</Label>
           <StyledInput type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0] || null)} />
         </FieldGroup>
-        <Button type="submit" variant="primary" size="sm" leftIcon={isCreatingNews ? <Loader2 size={14} /> : <Plus size={14} />} isLoading={isCreatingNews} disabled={!title.trim() || !content.trim()}>إضافة خبر</Button>
+        <Button type="submit" variant="primary" size="sm" leftIcon={isCreatingNews ? <Loader2 size={14} /> : <Plus size={14} />} isLoading={isCreatingNews} disabled={!title.trim() || !content.trim()}>{t('adminDashboard.news.addButton')}</Button>
       </Form>
-      {news.length === 0 && <EmptyState>لا توجد أخبار</EmptyState>}
+      {news.length === 0 && <EmptyState>{t('adminDashboard.empty.noNews')}</EmptyState>}
       {news.map((n) => (
         <NewsCard key={n._id}>
           {n.coverImage && <NewsImg src={n.coverImage} alt="" />}
@@ -1242,7 +838,7 @@ function NewsTab() {
             <NewsBody>{n.body}</NewsBody>
           </NewsContent>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <ActionBtn $color="primary" title="تعديل" onClick={() => openEdit(n)}><Edit3 size={16} /></ActionBtn>
+            <ActionBtn $color="primary" title={t('adminDashboard.actions.edit')} onClick={() => openEdit(n)}><Edit3 size={16} /></ActionBtn>
             {confirm === n._id ? (
               <ConfirmGroup>
                 <ConfirmBtn $variant="confirm" onClick={() => { deleteNews(n._id); setConfirm(null); }} disabled={isDeletingNews}>
@@ -1251,7 +847,7 @@ function NewsTab() {
                 <ConfirmBtn $variant="cancel" onClick={() => setConfirm(null)}><X size={13} /></ConfirmBtn>
               </ConfirmGroup>
             ) : (
-              <ActionBtn $color="danger" title="حذف" onClick={() => setConfirm(n._id)}><Trash2 size={16} /></ActionBtn>
+              <ActionBtn $color="danger" title={t('adminDashboard.actions.delete')} onClick={() => setConfirm(n._id)}><Trash2 size={16} /></ActionBtn>
             )}
           </div>
         </NewsCard>
@@ -1260,100 +856,9 @@ function NewsTab() {
   );
 }
 
-const PreviewCard = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  padding: ${({ theme }) => theme.spacing[4]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  max-width: 560px;
-`;
-
-const PreviewIcon = styled.div`
-  width: 36px;
-  height: 36px;
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  background: ${({ theme, $color }) => theme.colors[$color] + '15'};
-  color: ${({ theme, $color }) => theme.colors[$color]};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  svg { width: 18px; height: 18px; }
-`;
-
-const PreviewContent = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-const PreviewTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const PreviewBody = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
-  margin-top: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const HistoryCard = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
-  max-width: 560px;
-`;
-
-const HistoryIcon = styled(PreviewIcon)`
-  width: 28px;
-  height: 28px;
-  svg { width: 14px; height: 14px; }
-`;
-
-const HistoryContent = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-const HistoryTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const HistoryBody = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 2px;
-`;
-
-const HistoryTime = styled.div`
-  font-size: 10px;
-  color: ${({ theme }) => theme.colors.textMuted};
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 4px;
-`;
-
 function BroadcastTab() {
   const { broadcastNotification, broadcastToSpecific, isBroadcasting } = useAdminActions();
+  const { t } = useLanguage();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [recipientType, setRecipientType] = useState('all_students');
@@ -1398,35 +903,35 @@ function BroadcastTab() {
     <>
       <Form onSubmit={handleSubmit}>
         <FieldGroup>
-          <Label>العنوان</Label>
-          <StyledInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder="عنوان الإشعار" required />
+          <Label>{t('adminDashboard.form.title')}</Label>
+          <StyledInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('adminDashboard.broadcast.titlePlaceholder')} required />
         </FieldGroup>
         <FieldGroup>
-          <Label>الرسالة</Label>
-          <StyledTextarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="نص الإشعار" required />
+          <Label>{t('adminDashboard.form.message')}</Label>
+          <StyledTextarea value={body} onChange={(e) => setBody(e.target.value)} placeholder={t('adminDashboard.broadcast.bodyPlaceholder')} required />
         </FieldGroup>
         <FieldGroup>
-          <Label>المستهدفون</Label>
+          <Label>{t('adminDashboard.broadcast.recipients')}</Label>
           <Select value={recipientType} onChange={(e) => setRecipientType(e.target.value)}>
-            <option value="all_students">جميع الطلاب</option>
-            <option value="all_teachers">جميع المعلمين</option>
-            <option value="everyone">الجميع (طلاب + معلمين)</option>
+            <option value="all_students">{t('adminDashboard.broadcast.allStudents')}</option>
+            <option value="all_teachers">{t('adminDashboard.broadcast.allTeachers')}</option>
+            <option value="everyone">{t('adminDashboard.broadcast.everyone')}</option>
           </Select>
         </FieldGroup>
         <FieldGroup>
-          <Label>نوع الإشعار</Label>
+          <Label>{t('adminDashboard.broadcast.notifType')}</Label>
           <Select value={notifType} onChange={(e) => setNotifType(e.target.value)}>
-            <option value="message">رسالة</option>
-            <option value="course">كورس</option>
-            <option value="news">خبر</option>
+            <option value="message">{t('notifications.types.message')}</option>
+            <option value="course">{t('notifications.types.course')}</option>
+            <option value="news">{t('notifications.types.news')}</option>
           </Select>
         </FieldGroup>
         <Button type="submit" variant="primary" size="md" leftIcon={isBroadcasting ? <Loader2 size={16} /> : <Send size={16} />} isLoading={isBroadcasting} disabled={!title.trim() || !body.trim()}>
-          إرسال الإشعار
+          {t('adminDashboard.broadcast.sendButton')}
         </Button>
       </Form>
 
-      <SectionTitle style={{ marginTop: 32 }}>معاينة الإشعار</SectionTitle>
+      <SectionTitle style={{ marginTop: 32 }}>{t('adminDashboard.broadcast.previewTitle')}</SectionTitle>
       {(() => {
         const config = getNotificationTypeConfig(notifType);
         const Icon = config.icon;
@@ -1434,7 +939,7 @@ function BroadcastTab() {
           <PreviewCard>
             <PreviewIcon $color={config.color}><Icon /></PreviewIcon>
             <PreviewContent>
-              <PreviewTitle>{title || 'عنوان الإشعار'}</PreviewTitle>
+              <PreviewTitle>{title || t('adminDashboard.broadcast.previewPlaceholder')}</PreviewTitle>
               {body && <PreviewBody>{body}</PreviewBody>}
             </PreviewContent>
           </PreviewCard>
@@ -1443,7 +948,7 @@ function BroadcastTab() {
 
       {sentHistory.length > 0 && (
         <>
-          <SectionTitle style={{ marginTop: 32 }}>آخر الإشعارات المرسلة</SectionTitle>
+          <SectionTitle style={{ marginTop: 32 }}>{t('adminDashboard.broadcast.sentHistory')}</SectionTitle>
           {sentHistory.map((h, i) => {
             const cfg = getNotificationTypeConfig(h.type);
             const HIcon = cfg.icon;
@@ -1468,6 +973,7 @@ function BroadcastTab() {
 
 export default function AdminDashboard() {
   const [activeNav, setActiveNav] = useState(0);
+  const { t } = useLanguage();
 
   const tabs = {
     0: <OverviewTab />,
@@ -1482,9 +988,9 @@ export default function AdminDashboard() {
   };
 
   return (
-    <DashboardLayout navItems={NAV_ITEMS} activeNav={activeNav} onNavChange={setActiveNav}>
+    <DashboardLayout navItems={NAV_ITEMS(t)} activeNav={activeNav} onNavChange={setActiveNav}>
       <PageInner>
-        <Header><Title>لوحة التحكم</Title></Header>
+        <Header><Title>{t('adminDashboard.title')}</Title></Header>
         {tabs[activeNav]}
       </PageInner>
     </DashboardLayout>

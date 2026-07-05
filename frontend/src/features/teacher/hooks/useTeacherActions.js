@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { teacherApi } from '../api/teacherApi';
 import { TEACHER_STATS_QUERY_KEY } from './useTeacherStats';
+import { useLanguage } from '../../../shared/hooks/useLanguage';
 
 export const MY_COURSES_KEY = ['my-courses'];
 export const MY_COMMENTS_KEY = ['my-comments'];
@@ -9,14 +10,15 @@ export const MY_REVIEWS_KEY = ['my-reviews'];
 
 export function useTeacherActions() {
   const queryClient = useQueryClient();
+  const { t } = useLanguage();
 
   const replyToComment = useMutation({
     mutationFn: teacherApi.replyToComment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MY_COMMENTS_KEY });
-      toast.success('تم إضافة الرد بنجاح');
+      toast.success(t('teacherDashboard.toasts.replyAdded'));
     },
-    onError: () => toast.error('فشل إضافة الرد'),
+    onError: () => toast.error(t('teacherDashboard.toasts.replyAddFail')),
   });
 
   const sendNotification = useMutation({
@@ -24,9 +26,9 @@ export function useTeacherActions() {
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: TEACHER_STATS_QUERY_KEY });
       const count = res?.data?.sentTo ?? 0;
-      toast.success(`تم إرسال الإشعار لـ ${count} طالب`);
+      toast.success(t('teacherDashboard.toasts.notificationSent', { count }));
     },
-    onError: () => toast.error('فشل إرسال الإشعار'),
+    onError: () => toast.error(t('teacherDashboard.toasts.notificationSendFail')),
   });
 
   const createCourse = useMutation({
@@ -34,64 +36,64 @@ export function useTeacherActions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MY_COURSES_KEY });
       queryClient.invalidateQueries({ queryKey: TEACHER_STATS_QUERY_KEY });
-      toast.success('تم إنشاء الكورس');
+      toast.success(t('teacherDashboard.toasts.courseCreated'));
     },
-    onError: () => toast.error('فشل إنشاء الكورس'),
+    onError: () => toast.error(t('teacherDashboard.toasts.courseCreateFail')),
   });
 
   const updateCourse = useMutation({
     mutationFn: teacherApi.updateCourse,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MY_COURSES_KEY });
-      toast.success('تم تحديث الكورس');
+      toast.success(t('teacherDashboard.toasts.courseUpdated'));
     },
-    onError: () => toast.error('فشل تحديث الكورس'),
+    onError: () => toast.error(t('teacherDashboard.toasts.courseUpdateFail')),
   });
 
-	const deleteCourse = useMutation({
+ 	const deleteCourse = useMutation({
 		mutationFn: teacherApi.deleteCourse,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: MY_COURSES_KEY });
 			queryClient.invalidateQueries({ queryKey: TEACHER_STATS_QUERY_KEY });
-			toast.success('تم حذف الكورس');
+			toast.success(t('teacherDashboard.toasts.courseDeleted'));
 		},
-		onError: () => toast.error('فشل حذف الكورس'),
+		onError: () => toast.error(t('teacherDashboard.toasts.courseDeleteFail')),
 	});
 
 	const editReply = useMutation({
 		mutationFn: teacherApi.editReply,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: MY_COMMENTS_KEY });
-			toast.success('تم تعديل الرد');
+			toast.success(t('teacherDashboard.toasts.replyEdited'));
 		},
-		onError: () => toast.error('فشل تعديل الرد'),
+		onError: () => toast.error(t('teacherDashboard.toasts.replyEditFail')),
 	});
 
 	const deleteReply = useMutation({
 		mutationFn: teacherApi.deleteReply,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: MY_COMMENTS_KEY });
-			toast.success('تم حذف الرد');
+			toast.success(t('teacherDashboard.toasts.replyDeleted'));
 		},
-		onError: () => toast.error('فشل حذف الرد'),
+		onError: () => toast.error(t('teacherDashboard.toasts.replyDeleteFail')),
 	});
 
 	const deleteComment = useMutation({
 		mutationFn: teacherApi.deleteComment,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: MY_COMMENTS_KEY });
-			toast.success('تم حذف التعليق');
+			toast.success(t('teacherDashboard.toasts.commentDeleted'));
 		},
-		onError: () => toast.error('فشل حذف التعليق'),
+		onError: () => toast.error(t('teacherDashboard.toasts.commentDeleteFail')),
 	});
 
 	const deleteReview = useMutation({
 		mutationFn: teacherApi.deleteReview,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: MY_REVIEWS_KEY });
-			toast.success('تم حذف التقييم');
+			toast.success(t('teacherDashboard.toasts.reviewDeleted'));
 		},
-		onError: () => toast.error('فشل حذف التقييم'),
+		onError: () => toast.error(t('teacherDashboard.toasts.reviewDeleteFail')),
 	});
 
 	return {

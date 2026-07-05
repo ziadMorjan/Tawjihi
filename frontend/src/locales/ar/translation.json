@@ -115,7 +115,11 @@
     "certificate": "شهادة إتمام",
     "downloadableResources": "موارد قابلة للتحميل",
     "studentReviews": "تقييمات الطلاب",
-    "noReviewsCourse": "لا توجد تقييمات بعد — كن أول من يقيّم هذا الكورس!"
+    "noReviewsCourse": "لا توجد تقييمات بعد — كن أول من يقيّم هذا الكورس!",
+    "courseContent": "محتوى الكورس",
+    "lessonsCount": "{{count}} درس",
+    "showLess": "عرض أقل",
+    "showMoreLessons": "عرض {{count}} دروس إضافية"
   },
   "teachers": {
     "title": "المعلمون",
@@ -284,7 +288,20 @@
     "search": "كوبون الخصم",
     "by": "بواسطة",
     "ratingOf": "من 5",
-    "notFound": "الصفحة غير موجودة"
+    "notFound": "الصفحة غير موجودة",
+    "brandName": "توجيهي"
+  },
+  "dashboardLayout": {
+    "unknownInitial": "؟",
+    "roles": {
+      "admin": "مدير",
+      "teacher": "معلم",
+      "user": "مستخدم"
+    },
+    "lightMode": "وضع فاتح",
+    "darkMode": "وضع داكن",
+    "backToSite": "العودة للموقع",
+    "logout": "تسجيل خروج"
   },
   "video": {
     "notEnrolledTitle": "غير مسجل في الدورة",
@@ -348,5 +365,296 @@
     "prev": "السابق",
     "progress": "البطاقة {{current}} من {{total}}",
     "generateFirst": "يرجى توليد التلخيص والبطاقات أولاً باستخدام التبويب المخصص."
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تعليم الكل كمقروء",
+    "empty": "لا توجد إشعارات",
+    "viewAll": "عرض الكل",
+    "now": "الآن",
+    "minutesAgo": "منذ {{count}} دقيقة",
+    "hoursAgo": "منذ {{count}} ساعة",
+    "daysAgo": "منذ {{count}} يوم",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "thisWeek": "هذا الأسبوع",
+    "older": "أقدم",
+    "all": "الكل",
+    "courses": "كورسات",
+    "news": "أخبار",
+    "messages": "رسائل",
+    "types": {
+      "course": "كورس",
+      "news": "خبر",
+      "message": "رسالة"
+    }
+  },
+  "adminDashboard": {
+    "title": "لوحة التحكم",
+    "nav": {
+      "overview": "نظرة عامة",
+      "pendingTeachers": "المعلمون المعلقون",
+      "users": "المستخدمون",
+      "courses": "الكورسات",
+      "branches": "الفروع",
+      "subjects": "المواد",
+      "coupons": "الكوبونات",
+      "news": "الأخبار",
+      "broadcast": "إرسال إشعار"
+    },
+    "stats": {
+      "totalUsers": "إجمالي المستخدمين",
+      "students": "الطلاب",
+      "teachers": "المعلمون",
+      "courses": "الكورسات",
+      "revenue": "الإيرادات"
+    },
+    "sections": {
+      "platformTrends": "اتجاهات المنصة",
+      "monthlyRevenue": "الإيرادات الشهرية",
+      "monthlyEnrollments": "الاشتراكات الشهرية",
+      "userGrowth": "نمو المستخدمين",
+      "content": "المحتوى",
+      "topCourses": "الكورسات الأعلى اشتراكاً",
+      "subjectDistribution": "توزيع المواد",
+      "users": "المستخدمون",
+      "ratingDistribution": "توزيع التقييمات",
+      "roleDistribution": "توزيع الأدوار",
+      "userStatus": "حالة المستخدمين"
+    },
+    "empty": {
+      "noData": "لا توجد بيانات",
+      "noPendingTeachers": "لا يوجد معلمون معلقون",
+      "noUsers": "لا يوجد مستخدمون",
+      "noCourses": "لا توجد كورسات",
+      "noBranches": "لا توجد فروع",
+      "noSubjects": "لا توجد مواد",
+      "noCoupons": "لا توجد كوبونات",
+      "noNews": "لا توجد أخبار",
+      "noSearchResults": "لا توجد نتائج بحث"
+    },
+    "search": {
+      "users": "بحث بالاسم أو الإيميل...",
+      "courses": "بحث بالاسم أو المعلم..."
+    },
+    "table": {
+      "image": "الصورة",
+      "name": "الاسم",
+      "email": "الإيميل",
+      "phone": "الهاتف",
+      "cv": "السيرة",
+      "actions": "الإجراءات",
+      "joinDate": "تاريخ الانضمام",
+      "title": "العنوان",
+      "teacher": "المعلم",
+      "subject": "المادة",
+      "price": "السعر",
+      "rating": "التقييم",
+      "branch": "الفرع",
+      "discount": "الخصم",
+      "expireDate": "تاريخ الانتهاء",
+      "status": "الحالة"
+    },
+    "form": {
+      "branchName": "اسم الفرع",
+      "subjectName": "اسم المادة",
+      "noBranch": "بدون فرع",
+      "name": "الاسم",
+      "discountPercent": "نسبة الخصم (%)",
+      "expireDate": "تاريخ الانتهاء",
+      "title": "العنوان",
+      "content": "المحتوى",
+      "imageOptional": "صورة (اختياري)",
+      "message": "الرسالة"
+    },
+    "actions": {
+      "add": "إضافة",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "view": "عرض",
+      "approve": "قبول",
+      "reject": "رفض"
+    },
+    "coupons": {
+      "editTitle": "تعديل الكوبون",
+      "addButton": "إضافة كوبون",
+      "expired": "منتهي الصلاحية",
+      "active": "فعّال"
+    },
+    "news": {
+      "editTitle": "تعديل الخبر",
+      "addButton": "إضافة خبر"
+    },
+    "broadcast": {
+      "titlePlaceholder": "عنوان الإشعار",
+      "bodyPlaceholder": "نص الإشعار",
+      "recipients": "المستهدفون",
+      "allStudents": "جميع الطلاب",
+      "allTeachers": "جميع المعلمين",
+      "everyone": "الجميع (طلاب + معلمين)",
+      "notifType": "نوع الإشعار",
+      "sendButton": "إرسال الإشعار",
+      "previewTitle": "معاينة الإشعار",
+      "previewPlaceholder": "عنوان الإشعار",
+      "sentHistory": "آخر الإشعارات المرسلة"
+    },
+    "toasts": {
+      "teacherApproved": "تم قبول المعلم بنجاح",
+      "teacherApproveFail": "فشل قبول المعلم",
+      "teacherRejected": "تم رفض المعلم",
+      "teacherRejectFail": "فشل رفض المعلم",
+      "userDeleted": "تم حذف المستخدم",
+      "userDeleteFail": "فشل حذف المستخدم",
+      "courseDeleted": "تم حذف الكورس",
+      "courseDeleteFail": "فشل حذف الكورس",
+      "userUpdated": "تم تحديث المستخدم",
+      "userUpdateFail": "فشل تحديث المستخدم",
+      "branchCreated": "تم إضافة الفرع",
+      "branchCreateFail": "فشل إضافة الفرع",
+      "branchUpdated": "تم تحديث الفرع",
+      "branchUpdateFail": "فشل تحديث الفرع",
+      "branchDeleted": "تم حذف الفرع",
+      "branchDeleteFail": "فشل حذف الفرع",
+      "subjectCreated": "تم إضافة المادة",
+      "subjectCreateFail": "فشل إضافة المادة",
+      "subjectUpdated": "تم تحديث المادة",
+      "subjectUpdateFail": "فشل تحديث المادة",
+      "subjectDeleted": "تم حذف المادة",
+      "subjectDeleteFail": "فشل حذف المادة",
+      "couponCreated": "تم إضافة الكوبون",
+      "couponCreateFail": "فشل إضافة الكوبون",
+      "couponUpdated": "تم تحديث الكوبون",
+      "couponUpdateFail": "فشل تحديث الكوبون",
+      "couponDeleted": "تم حذف الكوبون",
+      "couponDeleteFail": "فشل حذف الكوبون",
+      "courseUpdated": "تم تحديث الكورس",
+      "courseUpdateFail": "فشل تحديث الكورس",
+      "newsCreated": "تم إضافة الخبر",
+      "newsCreateFail": "فشل إضافة الخبر",
+      "newsUpdated": "تم تحديث الخبر",
+      "newsUpdateFail": "فشل تحديث الخبر",
+      "newsDeleted": "تم حذف الخبر",
+      "newsDeleteFail": "فشل حذف الخبر",
+      "broadcastSent": "تم إرسال الإشعار لـ {{count}} مستخدم",
+      "broadcastSendFail": "فشل إرسال الإشعار"
+    }
+  },
+  "teacherDashboard": {
+    "title": "لوحة المعلم",
+    "nav": {
+      "overview": "نظرة عامة",
+      "courses": "كورساتي",
+      "comments": "تعليقات الطلاب",
+      "reviews": "تقييمات طلابي",
+      "sendNotification": "إرسال إشعار"
+    },
+    "stats": {
+      "students": "طلابي",
+      "courses": "كورساتي",
+      "averageRating": "متوسط التقييم"
+    },
+    "sections": {
+      "charts": "الرسوم البيانية",
+      "monthlyEnrollments": "الاشتراكات الشهرية",
+      "courseRatings": "تقييمات الكورسات",
+      "commentsByCourse": "التعليقات حسب الكورس",
+      "monthlyRatings": "التقييمات الشهرية"
+    },
+    "empty": {
+      "noData": "لا توجد بيانات",
+      "noCourses": "لا توجد كورسات بعد",
+      "noCommentsCourse": "لا توجد تعليقات على هذا الكورس",
+      "noComments": "لا توجد تعليقات على كورساتك بعد",
+      "noReviewsCourse": "لا توجد تقييمات على هذا الكورس",
+      "noReviews": "لا توجد تقييمات بعد"
+    },
+    "confirmDelete": "سيتم حذف الكورس \"{{name}}\" وجميع دروسه وبيانات الطلاب المسجلين معه. هل أنت متأكد؟",
+    "form": {
+      "name": "الاسم",
+      "description": "الوصف",
+      "price": "السعر",
+      "priceAfterDiscount": "السعر بعد الخصم (اختياري)",
+      "subject": "المادة",
+      "selectSubject": "اختر المادة",
+      "branches": "الفروع",
+      "courseImage": "صورة الكورس (اختياري)",
+      "title": "العنوان",
+      "message": "الرسالة",
+      "editCourse": "تعديل الكورس",
+      "addCourse": "إضافة كورس جديد"
+    },
+    "actions": {
+      "add": "إضافة",
+      "create": "إنشاء",
+      "update": "تحديث",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "reply": "رد",
+      "send": "إرسال"
+    },
+    "table": {
+      "image": "الصورة",
+      "title": "العنوان",
+      "subject": "المادة",
+      "branch": "الفرع",
+      "price": "السعر",
+      "rating": "التقييم",
+      "actions": "الإجراءات"
+    },
+    "comments": {
+      "filterByCourse": "فلترة حسب الكورس:",
+      "allCourses": "كل الكورسات",
+      "replyPlaceholder": "اكتب ردك...",
+      "editReply": "تعديل الرد",
+      "deleteReply": "حذف الرد",
+      "deleteComment": "حذف التعليق",
+      "student": "طالب",
+      "lesson": "درس",
+      "teacher": "معلم"
+    },
+    "reviews": {
+      "averageRating": "متوسط التقييم",
+      "totalReviews": "إجمالي التقييمات",
+      "student": "الطالب",
+      "rating": "التقييم",
+      "comment": "التعليق",
+      "course": "الكورس",
+      "date": "التاريخ",
+      "actions": "الإجراءات",
+      "deleteReview": "حذف التقييم",
+      "showLess": "عرض أقل",
+      "showMore": "عرض المزيد",
+      "filterByCourse": "فلترة حسب الكورس:",
+      "allCourses": "كل الكورسات"
+    },
+    "sendNotification": {
+      "titlePlaceholder": "عنوان الإشعار",
+      "bodyPlaceholder": "نص الإشعار",
+      "sendToStudents": "إرسال لطلابي",
+      "hint": "سيتم إرسال الإشعار لجميع الطلاب المسجلين في كورساتك"
+    },
+    "toasts": {
+      "replyAdded": "تم إضافة الرد بنجاح",
+      "replyAddFail": "فشل إضافة الرد",
+      "notificationSent": "تم إرسال الإشعار لـ {{count}} طالب",
+      "notificationSendFail": "فشل إرسال الإشعار",
+      "courseCreated": "تم إنشاء الكورس",
+      "courseCreateFail": "فشل إنشاء الكورس",
+      "courseUpdated": "تم تحديث الكورس",
+      "courseUpdateFail": "فشل تحديث الكورس",
+      "courseDeleted": "تم حذف الكورس",
+      "courseDeleteFail": "فشل حذف الكورس",
+      "replyEdited": "تم تعديل الرد",
+      "replyEditFail": "فشل تعديل الرد",
+      "replyDeleted": "تم حذف الرد",
+      "replyDeleteFail": "فشل حذف الرد",
+      "commentDeleted": "تم حذف التعليق",
+      "commentDeleteFail": "فشل حذف التعليق",
+      "reviewDeleted": "تم حذف التقييم",
+      "reviewDeleteFail": "فشل حذف التقييم"
+    }
   }
 }

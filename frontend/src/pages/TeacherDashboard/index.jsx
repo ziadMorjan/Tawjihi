@@ -7,7 +7,6 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, AreaChart, Area,
 } from 'recharts';
-import styled from 'styled-components';
 import DashboardLayout from '../../shared/components/layout/DashboardLayout';
 import { useLanguage } from '../../shared/hooks/useLanguage';
 import {
@@ -17,513 +16,25 @@ import { teacherApi } from '../../features/teacher';
 import { useQuery } from '@tanstack/react-query';
 import { useBranches, useSubjects } from '../../features/admin';
 import { Button } from '../../shared/components/Button';
-
-const PageInner = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[6]}`};
-
-  @media (max-width: 600px) {
-    padding: 16px 12px;
-  }
-`;
-
-const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-`;
-
-const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0;
-
-  @media (max-width: 600px) {
-    font-size: 18px;
-  }
-`;
-
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: ${({ theme }) => theme.spacing[4]};
-  margin-bottom: ${({ theme }) => theme.spacing[8]};
-`;
-
-const StatCard = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[4]};
-  padding: ${({ theme }) => theme.spacing[5]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  box-shadow: ${({ theme }) => theme.shadows.card};
-`;
-
-const StatIconWrap = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  background: ${({ theme }) => theme.colors.primaryLight};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.colors.primary};
-  flex-shrink: 0;
-  svg { width: 24px; height: 24px; }
-`;
-
-const StatInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const StatValue = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.2;
-`;
-
-const StatLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
-`;
-
-const TableWrap = styled.div`
-  overflow-x: auto;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-`;
-
-const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-`;
-
-const Th = styled.th`
-  text-align: right;
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textMuted};
-  background: ${({ theme }) => theme.colors.bgSecondary};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  white-space: nowrap;
-`;
-
-const Td = styled.td`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  vertical-align: middle;
-`;
-
-const ActionsCell = styled.td`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[2]};
-  align-items: center;
-`;
-
-const ActionBtn = styled.button`
-  width: 32px;
-  height: 32px;
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: transparent;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-  color: ${({ theme, $color }) => theme.colors[$color] || theme.colors.textSecondary};
-  &:hover {
-    background: ${({ theme, $color }) => $color ? theme.colors[$color] + '18' : theme.colors.bgSecondary};
-  }
-`;
-
-const EmptyState = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing[16]} ${({ theme }) => theme.spacing[4]};
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-`;
-
-const RowHover = styled.tr`
-  transition: background 0.15s;
-  &:hover { background: ${({ theme }) => theme.colors.bgSecondary}; }
-`;
-
-const Badge = styled.span`
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  font-size: 11px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  background: ${({ $type, theme }) =>
-    $type === 'success' ? theme.colors.success + '20' :
-      $type === 'warning' ? theme.colors.warning + '20' :
-        $type === 'danger' ? theme.colors.danger + '20' : theme.colors.primaryLight};
-  color: ${({ $type, theme }) =>
-    $type === 'success' ? theme.colors.success :
-      $type === 'warning' ? theme.colors.warning :
-        $type === 'danger' ? theme.colors.danger : theme.colors.primary};
-`;
-
-const Form = styled.form`
-  max-width: 560px;
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[4]};
-`;
-
-const FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-const Label = styled.label`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const StyledInput = styled.input`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
-  &:focus { border-color: ${({ theme }) => theme.colors.primary}; box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary}18; }
-`;
-
-const StyledTextarea = styled.textarea`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
-  resize: vertical;
-  min-height: 120px;
-  &:focus { border-color: ${({ theme }) => theme.colors.primary}; box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary}18; }
-`;
-
-const Select = styled.select`
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
-  &:focus { border-color: ${({ theme }) => theme.colors.primary}; box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary}18; }
-`;
-
-/* ── Filter ── */
-const FilterRow = styled.div`
-  display: flex; align-items: center; gap: ${({ theme }) => theme.spacing[3]};
-  margin-bottom: ${({ theme }) => theme.spacing[5]};
-
-  @media (max-width: 600px) {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-`;
-
-const FilterLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textMuted};
-  white-space: nowrap;
-`;
-
-const CourseSelect = styled.select`
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none; cursor: pointer;
-  &:focus { border-color: ${({ theme }) => theme.colors.primary}; }
-`;
-
-/* ── Comment Card ── */
-const CommentCard = styled.div`
-  padding: ${({ theme }) => theme.spacing[5]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-inline-start: 4px solid ${({ theme }) => theme.colors.accent};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  box-shadow: ${({ theme }) => theme.shadows.card};
-  margin-bottom: ${({ theme }) => theme.spacing[4]};
-  transition: box-shadow 0.2s;
-  &:hover { box-shadow: ${({ theme }) => theme.shadows.lg}; }
-`;
-
-const CommentUser = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  margin-bottom: ${({ theme }) => theme.spacing[3]};
-`;
-
-const UserAvatar = styled.div`
-  width: 36px; height: 36px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: ${({ theme }) => theme.colors.primaryLight};
-  display: flex; align-items: center; justify-content: center;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.primary};
-  overflow: hidden;
-  flex-shrink: 0;
-  img { width: 100%; height: 100%; object-fit: cover; }
-`;
-
-const CommentName = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-left: 5px;
-`;
-
-const CommentLesson = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
-`;
-
-const CommentActions = styled.div`
-  margin-inline-start: auto;
-  display: flex; align-items: center; gap: ${({ theme }) => theme.spacing[1]};
-`;
-
-const IconBtn = styled.button`
-  background: none; border: none; cursor: pointer; padding: 4px;
-  border-radius: 6px; color: ${({ theme }) => theme.colors.textMuted};
-  display: flex; align-items: center; font-family: inherit;
-  &:hover { background: ${({ theme }) => theme.colors.bgTertiary}; color: ${({ theme }) => theme.colors.textPrimary}; }
-`;
-
-const ConfirmGroup = styled.div`
-  display: flex; align-items: center; gap: 2px;
-`;
-
-const ConfirmBtn = styled.button`
-  display: flex; align-items: center; justify-content: center;
-  padding: 3px; border-radius: 4px; border: none; cursor: pointer;
-  font-family: inherit; line-height: 1;
-  background: ${({ $variant, theme }) => $variant === 'confirm' ? theme.colors.success + '20' : theme.colors.danger + '15'};
-  color: ${({ $variant, theme }) => $variant === 'confirm' ? theme.colors.success : theme.colors.danger};
-  &:hover { opacity: 0.8; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-`;
-
-const CommentText = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin: 0 0 ${({ theme }) => theme.spacing[3]};
-  line-height: 1.6;
-`;
-
-const ReplyBtn = styled.button`
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.primary};
-  background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
-  &:hover { opacity: 0.8; }
-`;
-
-const ReplyInputWrap = styled.div`
-  margin-top: ${({ theme }) => theme.spacing[3]};
-  display: flex; gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-const ReplyInput = styled.input`
-  flex: 1;
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
-  &:focus { border-color: ${({ theme }) => theme.colors.primary}; box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary}18; }
-`;
-
-/* ── Replies ── */
-const RepliesSection = styled.div`
-  margin-top: ${({ theme }) => theme.spacing[3]};
-  padding-top: ${({ theme }) => theme.spacing[3]};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-  display: flex; flex-direction: column; gap: ${({ theme }) => theme.spacing[3]};
-`;
-
-const ReplyItem = styled.div`
-  display: flex; align-items: flex-start; gap: ${({ theme }) => theme.spacing[2]};
-  position: relative;
-`;
-
-const ReplyThreadLine = styled.div`
-  position: absolute;
-  top: 28px; bottom: -12px;
-  inset-inline-start: 13px;
-  width: 2px;
-  background: ${({ theme }) => theme.colors.border};
-  &:last-child { display: none; }
-`;
-
-const ReplyAvatar = styled.div`
-  width: 28px; height: 28px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: ${({ theme }) => theme.colors.bgTertiary};
-  display: flex; align-items: center; justify-content: center;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  font-size: 10px; color: ${({ theme }) => theme.colors.textMuted};
-  flex-shrink: 0; overflow: hidden; z-index: 1;
-  img { width: 100%; height: 100%; object-fit: cover; }
-`;
-
-const ReplyContent = styled.div`
-  flex: 1; min-width: 0;
-`;
-
-const ReplyHeader = styled.div`
-  display: flex; align-items: center; gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-const ReplyName = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const ReplyTime = styled.span`
-  font-size: 10px; color: ${({ theme }) => theme.colors.textMuted};
-`;
-
-const ReplyActions = styled.div`
-  margin-inline-start: auto;
-  display: flex; align-items: center; gap: 1px;
-`;
-
-const ReplyText = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin: 2px 0 0; line-height: 1.5;
-`;
-
-const EditReplyWrap = styled.div`
-  display: flex; align-items: center; gap: 4px; margin-top: 4px;
-`;
-
-const EditReplyInput = styled.input`
-  flex: 1; min-width: 0;
-  padding: 4px 8px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-family: inherit;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
-  &:focus { border-color: ${({ theme }) => theme.colors.primary}; }
-`;
-
-const EditReplyBtns = styled.div`
-  display: flex; align-items: center; gap: 2px;
-`;
-
-const SkeletonCard = styled.div`
-  height: 100px;
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  background: ${({ theme }) => theme.colors.bgTertiary};
-  animation: pulse 1.5s ease-in-out infinite;
-  @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
-`;
-
-const OldPrice = styled.span`
-  text-decoration: line-through; color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-`;
-
-const Note = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
-  margin: ${({ theme }) => theme.spacing[2]} 0 0;
-`;
-
-const ChartCard = styled.div`
-  padding: ${({ theme }) => theme.spacing[5]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  box-shadow: ${({ theme }) => theme.shadows.card};
-  display: flex;
-  flex-direction: column;
-  min-height: 280px;
-`;
-
-const LtrChartWrap = styled.div`
-  direction: ltr;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 600px) {
-    max-width: 100%;
-    overflow-x: auto;
-  }
-`;
-
-const ChartTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0 0 ${({ theme }) => theme.spacing[3]};
-`;
-
-const ChartGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing[4]};
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: ${({ theme }) => theme.spacing[8]} 0 ${({ theme }) => theme.spacing[4]};
-`;
-
-const EmptyMiniData = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 230px;
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-`;
+import {
+  PageInner, Header, Title,
+  StatsGrid, StatCard, StatIconWrap, StatInfo, StatValue, StatLabel,
+  TableWrap, StyledTable, Th, Td, ActionsCell, ActionBtn,
+  EmptyState, RowHover, Badge,
+  Form, FieldGroup, Label, StyledInput, StyledTextarea, Select,
+  FilterRow, FilterLabel, CourseSelect,
+  CommentCard, CommentUser, UserAvatar, CommentName, CommentLesson,
+  CommentActions, IconBtn, ConfirmGroup, ConfirmBtn, CommentText,
+  ReplyBtn, ReplyInputWrap, ReplyInput,
+  RepliesSection, ReplyItem, ReplyThreadLine, ReplyAvatar,
+  ReplyContent, ReplyHeader, ReplyName, ReplyTime, ReplyActions, ReplyText,
+  EditReplyWrap, EditReplyInput, EditReplyBtns,
+  SkeletonCard, OldPrice, Note,
+  ChartCard, LtrChartWrap, ChartTitle, ChartGrid, SectionTitle, EmptyMiniData,
+  ModalOverlay, ModalContent, ModalTitle,
+  StatsRow, StatBox, StatNumber, ReviewStatLabel,
+  DistBar, DistFill, DistInner,
+} from './styles';
 
 function calcYAxisWidth(data, key = 'name') {
   if (!data?.length) return 80;
@@ -531,59 +42,34 @@ function calcYAxisWidth(data, key = 'name') {
   return Math.min(Math.max(longest * 5.5, 80), 140);
 }
 
-const ModalOverlay = styled.div`
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200;
-  display: flex; align-items: center; justify-content: center;
-  padding: ${({ theme }) => theme.spacing[4]};
-`;
-
-const ModalContent = styled.div`
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: ${({ theme }) => theme.spacing[8]};
-  width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
-
-  @media (max-width: 600px) {
-    width: 90vw;
-    padding: 16px;
-  }
-`;
-
-const ModalTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0 0 ${({ theme }) => theme.spacing[6]};
-`;
-
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function formatPrice(p) { return (p?.toLocaleString('ar-SA') || '0') + ' ₪'; }
 
-const NAV_ITEMS = [
-  { key: 0, label: 'نظرة عامة', icon: LayoutDashboard },
-  { key: 1, label: 'كورساتي', icon: Layers },
-  { key: 2, label: 'تعليقات الطلاب', icon: MessageSquare },
-  { key: 3, label: 'تقييمات طلابي', icon: Star },
-  { key: 4, label: 'إرسال إشعار', icon: Bell },
+const NAV_ITEMS = (t) => [
+  { key: 0, label: t('teacherDashboard.nav.overview'), icon: LayoutDashboard },
+  { key: 1, label: t('teacherDashboard.nav.courses'), icon: Layers },
+  { key: 2, label: t('teacherDashboard.nav.comments'), icon: MessageSquare },
+  { key: 3, label: t('teacherDashboard.nav.reviews'), icon: Star },
+  { key: 4, label: t('teacherDashboard.nav.sendNotification'), icon: Bell },
 ];
 
 // ── Tab Components ───────────────────────────────────────────────────────────
 
 function OverviewTab() {
   const { stats } = useTeacherStats();
-  const { isAr } = useLanguage();
+  const { t, isAr } = useLanguage();
   if (!stats) return <SkeletonCard />;
 
   const { charts } = stats;
 
   const cards = [
-    { label: 'كورساتي', value: stats.totalCourses, icon: Layers },
-    { label: 'طلابي', value: stats.totalStudents, icon: Users },
+    { label: t('teacherDashboard.stats.courses'), value: stats.totalCourses, icon: Layers },
+    { label: t('teacherDashboard.stats.students'), value: stats.totalStudents, icon: Users },
     {
-      label: 'متوسط التقييم',
+      label: t('teacherDashboard.stats.averageRating'),
       value: typeof stats.averageRating === 'number' ? stats.averageRating.toFixed(1) + ' / 5' : '—',
       icon: Star,
     },
@@ -603,14 +89,14 @@ function OverviewTab() {
         ))}
       </StatsGrid>
 
-      <SectionTitle>الرسوم البيانية</SectionTitle>
+      <SectionTitle>{t('teacherDashboard.sections.charts')}</SectionTitle>
 
       <ChartGrid>
         {!charts.enrollmentTrend?.length || charts.enrollmentTrend.length < 2 ? (
-          <ChartCard><ChartTitle>الاشتراكات الشهرية</ChartTitle><EmptyMiniData>لا توجد بيانات</EmptyMiniData></ChartCard>
+          <ChartCard><ChartTitle>{t('teacherDashboard.sections.monthlyEnrollments')}</ChartTitle><EmptyMiniData>{t('teacherDashboard.empty.noData')}</EmptyMiniData></ChartCard>
         ) : (
           <ChartCard>
-            <ChartTitle>الاشتراكات الشهرية</ChartTitle>
+            <ChartTitle>{t('teacherDashboard.sections.monthlyEnrollments')}</ChartTitle>
             <ResponsiveContainer width="100%" height={230}>
               <AreaChart data={charts.enrollmentTrend} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
                 {/* <XAxis dataKey="month" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
@@ -623,7 +109,7 @@ function OverviewTab() {
         )}
 
         <ChartCard>
-          <ChartTitle>تقييمات الكورسات</ChartTitle>
+          <ChartTitle>{t('teacherDashboard.sections.courseRatings')}</ChartTitle>
           <LtrChartWrap>
             <ResponsiveContainer
               width="100%"
@@ -659,7 +145,7 @@ function OverviewTab() {
         </ChartCard>
 
         <ChartCard>
-          <ChartTitle>التعليقات حسب الكورس</ChartTitle>
+          <ChartTitle>{t('teacherDashboard.sections.commentsByCourse')}</ChartTitle>
           <LtrChartWrap>
             <ResponsiveContainer
               width="100%"
@@ -699,10 +185,10 @@ function OverviewTab() {
         </ChartCard>
 
         {!charts.reviewsTrend?.length || charts.reviewsTrend.length < 2 ? (
-          <ChartCard><ChartTitle>التقييمات الشهرية</ChartTitle><EmptyMiniData>لا توجد بيانات</EmptyMiniData></ChartCard>
+          <ChartCard><ChartTitle>{t('teacherDashboard.sections.monthlyRatings')}</ChartTitle><EmptyMiniData>{t('teacherDashboard.empty.noData')}</EmptyMiniData></ChartCard>
         ) : (
           <ChartCard>
-            <ChartTitle>التقييمات الشهرية</ChartTitle>
+            <ChartTitle>{t('teacherDashboard.sections.monthlyRatings')}</ChartTitle>
             <ResponsiveContainer width="100%" height={230}>
               <LineChart data={charts.reviewsTrend} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
                 <XAxis dataKey="month" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
@@ -719,6 +205,7 @@ function OverviewTab() {
 }
 
 function CoursesTab() {
+  const { t } = useLanguage();
   const { courses, isLoading } = useTeacherCourses();
   const { deleteCourse, updateCourse, createCourse, isDeleting, isCreating, isUpdating } = useTeacherActions();
   const { subjects } = useSubjects();
@@ -777,7 +264,7 @@ function CoursesTab() {
   };
 
   const handleDelete = (c) => {
-    const msg = `سيتم حذف الكورس "${c.name}" وجميع دروسه وبيانات الطلاب المسجلين معه. هل أنت متأكد؟`;
+    const msg = t('teacherDashboard.confirmDelete', { name: c.name });
     if (window.confirm(msg)) deleteCourse(c._id);
   };
 
@@ -786,39 +273,39 @@ function CoursesTab() {
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <Button variant="primary" size="sm" leftIcon={<Plus size={14} />} onClick={openAdd}>إضافة كورس</Button>
+        <Button variant="primary" size="sm" leftIcon={<Plus size={14} />} onClick={openAdd}>{t('teacherDashboard.actions.add')}</Button>
       </div>
 
-      {courses.length === 0 && <EmptyState>لا توجد كورسات بعد</EmptyState>}
+      {courses.length === 0 && <EmptyState>{t('teacherDashboard.empty.noCourses')}</EmptyState>}
 
       {(showAdd || editingCourse) && (
         <ModalOverlay onClick={() => { setShowAdd(false); setEditingCourse(null); }}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalTitle>{editingCourse ? 'تعديل الكورس' : 'إضافة كورس جديد'}</ModalTitle>
+            <ModalTitle>{editingCourse ? t('teacherDashboard.form.editCourse') : t('teacherDashboard.form.addCourse')}</ModalTitle>
             <Form onSubmit={handleSave}>
-              <FieldGroup><Label>الاسم</Label><StyledInput value={formName} onChange={(e) => setFormName(e.target.value)} required /></FieldGroup>
-              <FieldGroup><Label>الوصف</Label><StyledTextarea value={formDesc} onChange={(e) => setFormDesc(e.target.value)} /></FieldGroup>
-              <FieldGroup><Label>السعر</Label><StyledInput type="number" value={formPrice} onChange={(e) => setFormPrice(e.target.value)} /></FieldGroup>
-              <FieldGroup><Label>السعر بعد الخصم (اختياري)</Label><StyledInput type="number" value={formPriceAfter} onChange={(e) => setFormPriceAfter(e.target.value)} /></FieldGroup>
+              <FieldGroup><Label>{t('teacherDashboard.form.name')}</Label><StyledInput value={formName} onChange={(e) => setFormName(e.target.value)} required /></FieldGroup>
+              <FieldGroup><Label>{t('teacherDashboard.form.description')}</Label><StyledTextarea value={formDesc} onChange={(e) => setFormDesc(e.target.value)} /></FieldGroup>
+              <FieldGroup><Label>{t('teacherDashboard.form.price')}</Label><StyledInput type="number" value={formPrice} onChange={(e) => setFormPrice(e.target.value)} /></FieldGroup>
+              <FieldGroup><Label>{t('teacherDashboard.form.priceAfterDiscount')}</Label><StyledInput type="number" value={formPriceAfter} onChange={(e) => setFormPriceAfter(e.target.value)} /></FieldGroup>
               <FieldGroup>
-                <Label>المادة</Label>
+                <Label>{t('teacherDashboard.form.subject')}</Label>
                 <Select value={formSubject} onChange={(e) => setFormSubject(e.target.value)}>
-                  <option value="">اختر المادة</option>
+                  <option value="">{t('teacherDashboard.form.selectSubject')}</option>
                   {subjects.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
                 </Select>
               </FieldGroup>
               <FieldGroup>
-                <Label>الفروع</Label>
+                <Label>{t('teacherDashboard.form.branches')}</Label>
                 <Select multiple value={formBranches} onChange={(e) => setFormBranches(Array.from(e.target.selectedOptions, (o) => o.value))}>
                   {branches.map((b) => <option key={b._id} value={b._id}>{b.name}</option>)}
                 </Select>
               </FieldGroup>
-              <FieldGroup><Label>صورة الكورس (اختياري)</Label><StyledInput type="file" accept="image/*" onChange={(e) => setFormFile(e.target.files[0] || null)} /></FieldGroup>
+              <FieldGroup><Label>{t('teacherDashboard.form.courseImage')}</Label><StyledInput type="file" accept="image/*" onChange={(e) => setFormFile(e.target.files[0] || null)} /></FieldGroup>
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button type="submit" variant="primary" size="sm" isLoading={isCreating || isUpdating} disabled={!formName.trim()}>
-                  {editingCourse ? 'تحديث' : 'إنشاء'}
+                  {editingCourse ? t('teacherDashboard.actions.update') : t('teacherDashboard.actions.create')}
                 </Button>
-                <Button type="button" variant="ghost" size="sm" onClick={() => { setShowAdd(false); setEditingCourse(null); }}>إلغاء</Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => { setShowAdd(false); setEditingCourse(null); }}>{t('teacherDashboard.actions.cancel')}</Button>
               </div>
             </Form>
           </ModalContent>
@@ -828,7 +315,7 @@ function CoursesTab() {
       {courses.length > 0 && (
         <TableWrap>
           <StyledTable>
-            <thead><tr><Th>الصورة</Th><Th>العنوان</Th><Th>المادة</Th><Th>الفرع</Th><Th>السعر</Th><Th>التقييم</Th><Th>الإجراءات</Th></tr></thead>
+            <thead><tr><Th>{t('teacherDashboard.table.image')}</Th><Th>{t('teacherDashboard.table.title')}</Th><Th>{t('teacherDashboard.table.subject')}</Th><Th>{t('teacherDashboard.table.branch')}</Th><Th>{t('teacherDashboard.table.price')}</Th><Th>{t('teacherDashboard.table.rating')}</Th><Th>{t('teacherDashboard.table.actions')}</Th></tr></thead>
             <tbody>
               {courses.map((c) => (
                 <RowHover key={c._id}>
@@ -839,8 +326,8 @@ function CoursesTab() {
                   <Td>{c.priceAfterDiscount ? <><span>{formatPrice(c.priceAfterDiscount)}</span> <OldPrice>{formatPrice(c.price)}</OldPrice></> : formatPrice(c.price)}</Td>
                   <Td>{c.averageRating > 0 ? <Badge>{c.averageRating.toFixed(1)}</Badge> : '—'}</Td>
                   <ActionsCell>
-                    <ActionBtn $color="primary" title="تعديل" onClick={() => openEdit(c)}><Edit3 size={16} /></ActionBtn>
-                    <ActionBtn $color="danger" title="حذف" onClick={() => handleDelete(c)} disabled={isDeleting}><Trash2 size={16} /></ActionBtn>
+                    <ActionBtn $color="primary" title={t('teacherDashboard.actions.edit')} onClick={() => openEdit(c)}><Edit3 size={16} /></ActionBtn>
+                    <ActionBtn $color="danger" title={t('teacherDashboard.actions.delete')} onClick={() => handleDelete(c)} disabled={isDeleting}><Trash2 size={16} /></ActionBtn>
                   </ActionsCell>
                 </RowHover>
               ))}
@@ -853,6 +340,7 @@ function CoursesTab() {
 }
 
 function CommentsTab() {
+  const { t } = useLanguage();
   const { courses, isLoading: coursesLoading } = useTeacherCourses();
   const {
     replyToComment, isReplying,
@@ -918,9 +406,9 @@ function CommentsTab() {
       {/* Course filter */}
       {courses.length > 1 && (
         <FilterRow>
-          <FilterLabel>فلترة حسب الكورس:</FilterLabel>
+          <FilterLabel>{t('teacherDashboard.comments.filterByCourse')}:</FilterLabel>
           <CourseSelect value={courseFilter} onChange={(e) => setCourseFilter(e.target.value)}>
-            <option value="">كل الكورسات</option>
+            <option value="">{t('teacherDashboard.comments.allCourses')}</option>
             {courses.map((co) => (
               <option key={co._id} value={co._id}>{co.name}</option>
             ))}
@@ -930,7 +418,7 @@ function CommentsTab() {
 
       {!filteredComments.length ? (
         <EmptyState>
-          {courseFilter ? 'لا توجد تعليقات على هذا الكورس' : 'لا توجد تعليقات على كورساتك بعد'}
+          {courseFilter ? t('teacherDashboard.empty.noCommentsCourse') : t('teacherDashboard.empty.noComments')}
         </EmptyState>
       ) : (
         filteredComments.map((c) => (
@@ -938,8 +426,8 @@ function CommentsTab() {
             <CommentUser>
               <UserAvatar>{c.user?.coverImage ? <img src={c.user.coverImage} alt="" /> : c.user?.name?.charAt(0) || '؟'}</UserAvatar>
               <div>
-                <CommentName>{c.user?.name || 'طالب'}</CommentName>
-                <CommentLesson>{c.lesson?.name || 'درس'} &middot; {formatDate(c.createdAt)}</CommentLesson>
+                <CommentName>{c.user?.name || t('teacherDashboard.comments.student')}</CommentName>
+                <CommentLesson>{c.lesson?.name || t('teacherDashboard.comments.lesson')} &middot; {formatDate(c.createdAt)}</CommentLesson>
               </div>
               <CommentActions>
                 {/* Delete comment */}
@@ -951,7 +439,7 @@ function CommentsTab() {
                     <ConfirmBtn $variant="cancel" onClick={() => setConfirmDelete(null)}><X size={13} /></ConfirmBtn>
                   </ConfirmGroup>
                 ) : (
-                  <IconBtn onClick={() => setConfirmDelete({ type: 'comment', id: c._id })} title="حذف التعليق">
+                  <IconBtn onClick={() => setConfirmDelete({ type: 'comment', id: c._id })} title={t('teacherDashboard.comments.deleteComment')}>
                     <Trash2 size={14} />
                   </IconBtn>
                 )}
@@ -960,15 +448,15 @@ function CommentsTab() {
             <CommentText>{c.content}</CommentText>
 
             <ReplyBtn onClick={() => setReplyOpen(replyOpen === c._id ? null : c._id)}>
-              <MessageSquare size={14} /> {replyOpen === c._id ? 'إلغاء' : 'رد'}
+              <MessageSquare size={14} /> {replyOpen === c._id ? t('teacherDashboard.actions.cancel') : t('teacherDashboard.actions.reply')}
             </ReplyBtn>
 
             {replyOpen === c._id && (
               <ReplyInputWrap>
-                <ReplyInput type="text" placeholder="اكتب ردك..." value={replyText[c._id] || ''}
+                <ReplyInput type="text" placeholder={t('teacherDashboard.comments.replyPlaceholder')} value={replyText[c._id] || ''}
                   onChange={(e) => setReplyText((p) => ({ ...p, [c._id]: e.target.value }))}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleReply(c._id); } }} />
-                <Button variant="primary" size="sm" leftIcon={isReplying ? <Loader2 size={14} /> : <Reply size={14} />} isLoading={isReplying} onClick={() => handleReply(c._id)} disabled={!replyText[c._id]?.trim()}>إرسال</Button>
+                <Button variant="primary" size="sm" leftIcon={isReplying ? <Loader2 size={14} /> : <Reply size={14} />} isLoading={isReplying} onClick={() => handleReply(c._id)} disabled={!replyText[c._id]?.trim()}>{t('teacherDashboard.actions.send')}</Button>
               </ReplyInputWrap>
             )}
 
@@ -983,11 +471,11 @@ function CommentsTab() {
                       <ReplyAvatar>{r.user?.coverImage ? <img src={r.user.coverImage} alt="" /> : r.user?.name?.charAt(0) || '؟'}</ReplyAvatar>
                       <ReplyContent>
                         <ReplyHeader>
-                          <ReplyName>{r.user?.name || 'معلم'}</ReplyName>
+                          <ReplyName>{r.user?.name || t('teacherDashboard.comments.teacher')}</ReplyName>
                           <ReplyTime>{r.createdAt ? new Date(r.createdAt).toLocaleDateString('ar-SA', { month: 'short', day: 'numeric' }) : ''}</ReplyTime>
                           {!isEditing && (
                             <ReplyActions>
-                              <IconBtn onClick={() => { setEditingReply({ commentId: c._id, replyId: r._id }); setEditReplyText(r.text); }} title="تعديل الرد">
+                              <IconBtn onClick={() => { setEditingReply({ commentId: c._id, replyId: r._id }); setEditReplyText(r.text); }} title={t('teacherDashboard.comments.editReply')}>
                                 <Edit3 size={12} />
                               </IconBtn>
                               {isDeleting ? (
@@ -998,7 +486,7 @@ function CommentsTab() {
                                   <ConfirmBtn $variant="cancel" onClick={() => setConfirmDelete(null)}><X size={11} /></ConfirmBtn>
                                 </ConfirmGroup>
                               ) : (
-                                <IconBtn onClick={() => setConfirmDelete({ type: 'reply', id: r._id, commentId: c._id })} title="حذف الرد">
+                                <IconBtn onClick={() => setConfirmDelete({ type: 'reply', id: r._id, commentId: c._id })} title={t('teacherDashboard.comments.deleteReply')}>
                                   <Trash2 size={12} />
                                 </IconBtn>
                               )}
@@ -1032,57 +520,8 @@ function CommentsTab() {
   );
 }
 
-const StatsRow = styled.div`
-  display: flex; gap: ${({ theme }) => theme.spacing[4]};
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-  flex-wrap: wrap;
-`;
-
-const StatBox = styled.div`
-  flex: 1; min-width: 140px;
-  padding: ${({ theme }) => theme.spacing[4]};
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  text-align: center;
-`;
-
-const StatNumber = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.2;
-`;
-
-const ReviewStatLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
-  margin-top: 2px;
-`;
-
-const DistBar = styled.div`
-  display: flex; align-items: center; gap: 6px;
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
-  &:not(:last-child) { margin-bottom: 3px; }
-`;
-
-const DistFill = styled.div`
-  flex: 1; height: 6px;
-  border-radius: 3px;
-  background: ${({ theme }) => theme.colors.bgTertiary};
-  overflow: hidden;
-`;
-
-const DistInner = styled.div`
-  height: 100%;
-  border-radius: 3px;
-  width: ${({ $pct }) => $pct}%;
-  background: ${({ theme }) => theme.colors.accent};
-  transition: width 0.3s;
-`;
-
 function ReviewsTab() {
+  const { t } = useLanguage();
   const { courses, isLoading: coursesLoading } = useTeacherCourses();
   const { deleteReview, isDeletingReview } = useTeacherActions();
   const { reviews, isLoading: reviewsLoading } = useTeacherReviews();
@@ -1123,14 +562,14 @@ function ReviewsTab() {
         <StatsRow>
           <StatBox>
             <StatNumber style={{ color: '#C8893A' }}>{avg}</StatNumber>
-            <ReviewStatLabel>متوسط التقييم</ReviewStatLabel>
+            <ReviewStatLabel>{t('teacherDashboard.reviews.averageRating')}</ReviewStatLabel>
             <div style={{ color: '#C8893A', fontSize: 13, marginTop: 2 }}>
               {'★'.repeat(Math.round(+avg))}{'☆'.repeat(5 - Math.round(+avg))}
             </div>
           </StatBox>
           <StatBox>
             <StatNumber>{filtered.length}</StatNumber>
-            <ReviewStatLabel>إجمالي التقييمات</ReviewStatLabel>
+            <ReviewStatLabel>{t('teacherDashboard.reviews.totalReviews')}</ReviewStatLabel>
           </StatBox>
           <StatBox style={{ textAlign: 'start', minWidth: 180 }}>
             {dist.map((d) => (
@@ -1147,9 +586,9 @@ function ReviewsTab() {
       {/* Course filter */}
       {courses.length > 1 && (
         <FilterRow>
-          <FilterLabel>فلترة حسب الكورس:</FilterLabel>
+          <FilterLabel>{t('teacherDashboard.reviews.filterByCourse')}:</FilterLabel>
           <CourseSelect value={courseFilter} onChange={(e) => setCourseFilter(e.target.value)}>
-            <option value="">كل الكورسات</option>
+            <option value="">{t('teacherDashboard.reviews.allCourses')}</option>
             {courses.map((co) => (
               <option key={co._id} value={co._id}>{co.name}</option>
             ))}
@@ -1159,19 +598,19 @@ function ReviewsTab() {
 
       {!filtered.length ? (
         <EmptyState>
-          {courseFilter ? 'لا توجد تقييمات على هذا الكورس' : 'لا توجد تقييمات بعد'}
+          {courseFilter ? t('teacherDashboard.empty.noReviewsCourse') : t('teacherDashboard.empty.noReviews')}
         </EmptyState>
       ) : (
         <TableWrap>
           <StyledTable>
             <thead>
               <tr>
-                <Th>الطالب</Th>
-                <Th>التقييم</Th>
-                <Th>التعليق</Th>
-                <Th>الكورس</Th>
-                <Th>التاريخ</Th>
-                <Th>الإجراءات</Th>
+                <Th>{t('teacherDashboard.reviews.student')}</Th>
+                <Th>{t('teacherDashboard.reviews.rating')}</Th>
+                <Th>{t('teacherDashboard.reviews.comment')}</Th>
+                <Th>{t('teacherDashboard.reviews.course')}</Th>
+                <Th>{t('teacherDashboard.reviews.date')}</Th>
+                <Th>{t('teacherDashboard.reviews.actions')}</Th>
               </tr>
             </thead>
             <tbody>
@@ -1212,7 +651,7 @@ function ReviewsTab() {
                       {shouldTruncate && (
                         <button onClick={() => toggleComment(r._id)}
                           style={{ background: 'none', border: 'none', color: '#0D7FA3', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', padding: 0, marginInlineStart: 4 }}>
-                          {isExpanded ? 'عرض أقل' : 'عرض المزيد'}
+                          {isExpanded ? t('teacherDashboard.reviews.showLess') : t('teacherDashboard.reviews.showMore')}
                         </button>
                       )}
                     </Td>
@@ -1227,7 +666,7 @@ function ReviewsTab() {
                           <ConfirmBtn $variant="cancel" onClick={() => setConfirmDelete(null)}><X size={13} /></ConfirmBtn>
                         </ConfirmGroup>
                       ) : (
-                        <IconBtn onClick={() => setConfirmDelete(r._id)} title="حذف التقييم">
+                        <IconBtn onClick={() => setConfirmDelete(r._id)} title={t('teacherDashboard.reviews.deleteReview')}>
                           <Trash2 size={14} />
                         </IconBtn>
                       )}
@@ -1244,6 +683,7 @@ function ReviewsTab() {
 }
 
 function SendNotificationTab() {
+  const { t } = useLanguage();
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const { sendNotification, isSending } = useTeacherActions();
@@ -1259,17 +699,17 @@ function SendNotificationTab() {
   return (
     <Form onSubmit={handleSubmit}>
       <FieldGroup>
-        <Label>العنوان</Label>
-        <StyledInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder="عنوان الإشعار" required />
+        <Label>{t('teacherDashboard.form.title')}</Label>
+        <StyledInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('teacherDashboard.sendNotification.titlePlaceholder')} required />
       </FieldGroup>
       <FieldGroup>
-        <Label>الرسالة</Label>
-        <StyledTextarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="نص الإشعار" required />
+        <Label>{t('teacherDashboard.form.message')}</Label>
+        <StyledTextarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('teacherDashboard.sendNotification.bodyPlaceholder')} required />
       </FieldGroup>
       <Button type="submit" variant="primary" size="md" leftIcon={isSending ? <Loader2 size={16} /> : <Send size={16} />} isLoading={isSending} disabled={!title.trim() || !message.trim()}>
-        إرسال لطلابي
+        {t('teacherDashboard.sendNotification.sendToStudents')}
       </Button>
-      <Note>سيتم إرسال الإشعار لجميع الطلاب المسجلين في كورساتك</Note>
+      <Note>{t('teacherDashboard.sendNotification.hint')}</Note>
     </Form>
   );
 }
@@ -1278,6 +718,7 @@ function SendNotificationTab() {
 
 export default function TeacherDashboard() {
   const [activeNav, setActiveNav] = useState(0);
+  const { t } = useLanguage();
 
   const tabs = {
     0: <OverviewTab />,
@@ -1288,9 +729,9 @@ export default function TeacherDashboard() {
   };
 
   return (
-    <DashboardLayout navItems={NAV_ITEMS} activeNav={activeNav} onNavChange={setActiveNav}>
+    <DashboardLayout navItems={NAV_ITEMS(t)} activeNav={activeNav} onNavChange={setActiveNav}>
       <PageInner>
-        <Header><Title>لوحة المعلم</Title></Header>
+        <Header><Title>{t('teacherDashboard.title')}</Title></Header>
         {tabs[activeNav]}
       </PageInner>
     </DashboardLayout>
