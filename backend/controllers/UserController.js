@@ -84,7 +84,10 @@ export const deleteMe = asyncErrorHandler(async (req, res) => {
 
 export const getMe = asyncErrorHandler(async (req, res) => {
 	const user = await User.findById(req.user.id).select('-password -PasswordChangedAt');
-	const cart = await Cart.findOne({ user: user.id });
+	let cart = await Cart.findOne({ user: user.id });
+	if (!cart) {
+		cart = await Cart.create({ user: user.id });
+	}
 	const userToRes = { ...user._doc, ...{ cart: cart.courses } };
 
 	res.status(200).json({
