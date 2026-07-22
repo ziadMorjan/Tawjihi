@@ -24,6 +24,7 @@ import {
 	deleteLesson,
 	uploadLessonVideo,
 	handleVideo,
+	reorderLessons,
 } from '../controllers/LessonController.js';
 
 import resourceRouts from './ResourceRouts.js';
@@ -36,9 +37,18 @@ router.use('/:lessonId/resources', resourceRouts);
 router.use('/:lessonId/comments', commentsRouts);
 router.post('/:lessonId/ai', protect, getOrGenerateAIContent);
 
+router.patch('/reorder', protect, allowedTo('teacher'), reorderLessons);
+
 router
 	.route('/')
-	.get(addCourseIdToReqQuery, getAllLessons)
+	.get(
+		addCourseIdToReqQuery,
+		(req, res, next) => {
+			req.query.sort = req.query.sort || 'order';
+			next();
+		},
+		getAllLessons,
+	)
 	.post(
 		protect,
 		allowedTo('teacher'),

@@ -41,6 +41,14 @@ const lessonSchema = new mongoose.Schema(
 				back: { type: String, required: true },
 			},
 		],
+		order: {
+			type: Number,
+			default: 0,
+		},
+		isFreePreview: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{ timestamps: true },
 );

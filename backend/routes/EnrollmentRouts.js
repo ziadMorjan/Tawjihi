@@ -18,6 +18,7 @@ import {
 	getEnrollment,
 	updateEnrollment,
 	deleteEnrollment,
+	markLessonProgress,
 } from '../controllers/EnrollmentController.js';
 
 const router = express.Router();
@@ -38,5 +39,7 @@ router
 	.get(getEnrollmentValidator, getEnrollment)
 	.patch(protect, allowedTo('admin'), updateEnrollmentValidator, updateEnrollment)
 	.delete(protect, deleteEnrollmentMiddleware, deleteEnrollmentValidator, deleteEnrollment);
+
+router.patch('/:courseId/progress', protect, markLessonProgress);
 
 export default router;

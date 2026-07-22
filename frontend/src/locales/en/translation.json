@@ -573,7 +573,9 @@
       "noCommentsCourse": "No comments on this course",
       "noComments": "No comments on your courses yet",
       "noReviewsCourse": "No reviews on this course",
-      "noReviews": "No reviews yet"
+      "noReviews": "No reviews yet",
+      "noLessons": "No lessons in this course yet",
+      "startBuilding": "Start building your course content by adding the first lesson"
     },
     "confirmDelete": "This will permanently delete \"{{name}}\" and all its lessons and student data. Are you sure?",
     "form": {
@@ -598,7 +600,12 @@
       "delete": "Delete",
       "cancel": "Cancel",
       "reply": "Reply",
-      "send": "Send"
+      "send": "Send",
+      "lessons": "Lessons",
+      "saveOrder": "Save Order",
+      "addLesson": "Add Lesson",
+      "confirmDelete": "Confirm Delete",
+      "manageResources": "Manage Resources"
     },
     "table": {
       "image": "Image",
@@ -607,7 +614,8 @@
       "branch": "Branch",
       "price": "Price",
       "rating": "Rating",
-      "actions": "Actions"
+      "actions": "Actions",
+      "lessons": "Lessons"
     },
     "comments": {
       "filterByCourse": "Filter by course:",
@@ -659,7 +667,61 @@
       "commentDeleted": "Comment deleted",
       "commentDeleteFail": "Failed to delete comment",
       "reviewDeleted": "Review deleted",
-      "reviewDeleteFail": "Failed to delete review"
+      "reviewDeleteFail": "Failed to delete review",
+      "lessonCreated": "Lesson created successfully",
+      "lessonCreateFail": "Failed to create lesson",
+      "lessonUpdated": "Lesson updated successfully",
+      "lessonUpdateFail": "Failed to update lesson",
+      "lessonDeleted": "Lesson deleted",
+      "lessonDeleteFail": "Failed to delete lesson",
+      "orderSaved": "Order saved successfully",
+      "orderSaveFail": "Failed to save order"
+    }
+  },
+  "lessons": {
+    "pageTitle": "Manage Course Lessons",
+    "backToCourses": "Back to Courses",
+    "lessonNumber": "Lesson",
+    "duration": "Duration",
+    "freePreview": "Free Preview",
+    "dragHint": "Drag to reorder",
+    "unsavedOrder": "You have unsaved order changes",
+    "form": {
+      "addLesson": "Add New Lesson",
+      "editLesson": "Edit Lesson",
+      "name": "Lesson Name",
+      "description": "Lesson Description",
+      "video": "Video File",
+      "videoHint": "MP4, MOV, AVI — Max 500MB",
+      "isFreePreview": "Enable Free Preview",
+      "isFreePreviewHint": "Allows non-enrolled students to watch this lesson",
+      "uploading": "Uploading video...",
+      "uploadComplete": "Upload complete",
+      "nameRequired": "Lesson name is required",
+      "descRequired": "Lesson description is required",
+      "videoRequired": "Video file is required",
+      "namePlaceholder": "e.g., Introduction to Calculus",
+      "descPlaceholder": "What will the student learn in this lesson?",
+      "previewCurrentVideo": "Preview current video"
+    },
+    "progress": {
+      "markComplete": "Mark as Complete",
+      "markIncomplete": "Mark as Incomplete",
+      "completed": "Completed"
+    },
+    "resources": {
+      "title": "Lesson Resources",
+      "noResources": "No resources attached to this lesson",
+      "download": "Download",
+      "manageTitle": "Manage resources for lesson:",
+      "nameRequired": "Resource name is required",
+      "fileRequired": "Resource file is required",
+      "confirmDelete": "Are you sure you want to delete this resource?",
+      "delete": "Delete",
+      "addResource": "Add new resource",
+      "namePlaceholder": "Resource name (e.g., Lesson Summary)",
+      "supportedTypes": "Supported types: PDF, Word, PPT, ZIP",
+      "uploadButton": "Upload resource"
     }
   }
 }

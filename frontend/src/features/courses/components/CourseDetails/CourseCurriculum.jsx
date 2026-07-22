@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useQuery } from "@tanstack/react-query";
+import { useLessons } from "../../../../features/lessons/hooks/useLessons";
 import {
   ChevronDown,
   ChevronUp,
@@ -8,6 +9,7 @@ import {
   Lock,
   Clock,
   BookOpen,
+  Eye,
 } from "lucide-react";
 import { axiosInstance } from "../../../../shared/lib/axiosInstance";
 import {
@@ -32,12 +34,6 @@ const shimmer = keyframes`
   100% { background-position: -200% 0; }
 `;
 
-const fetchLessons = async (courseId) => {
-  const { data } = await axiosInstance.get("/lessons", {
-    params: { course: courseId },
-  });
-  return data;
-};
 
 const Content = styled.div`
   display: flex;
@@ -142,16 +138,8 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
   const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { data, isLoading } = useQuery({
-    queryKey: ["lessons", courseId],
-    queryFn: () => fetchLessons(courseId),
-    enabled: !!courseId,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    select: (data) => data?.data ?? data?.lessons ?? data,
-  });
+  const { data: lessons = [], isLoading } = useLessons(courseId);
 
-  const lessons = Array.isArray(data) ? data : [];
   const visibleLessons = showAll ? lessons : lessons.slice(0, 5);
 
   if (isLoading) {
@@ -186,7 +174,7 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
 
       <Content>
         {visibleLessons.map((lesson, index) => {
-          const canAccess = isEnrolled;
+          const canAccess = isEnrolled || lesson.isFreePreview;
 
           return (
             <LessonItem
@@ -203,16 +191,24 @@ export function CourseCurriculum({ courseId, isEnrolled }) {
 
               <LessonInfo>
                 <LessonTitle>{lesson.title ?? lesson.name}</LessonTitle>
-                {lesson.duration > 0 && (
-                  <LessonMeta>
-                    <Clock size={11} />
-                    {formatDuration(lesson.duration)}
-                  </LessonMeta>
-                )}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  {lesson.duration > 0 && (
+                    <LessonMeta>
+                      <Clock size={11} />
+                      {formatDuration(lesson.duration)}
+                    </LessonMeta>
+                  )}
+                  {lesson.isFreePreview && !isEnrolled && (
+                    <LessonMeta style={{ color: '#0D7FA3', fontWeight: 600 }}>
+                      <Eye size={11} />
+                      {t('lessons.freePreview')}
+                    </LessonMeta>
+                  )}
+                </div>
               </LessonInfo>
 
               {canAccess ? (
-                <PlayCircle size={18} color="#2563EB" />
+                <PlayCircle size={18} color={lesson.isFreePreview && !isEnrolled ? "#0D7FA3" : "#2563EB"} />
               ) : (
                 <Lock size={15} color="#94A3B8" />
               )}

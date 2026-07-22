@@ -568,7 +568,9 @@
       "noCommentsCourse": "لا توجد تعليقات على هذا الكورس",
       "noComments": "لا توجد تعليقات على كورساتك بعد",
       "noReviewsCourse": "لا توجد تقييمات على هذا الكورس",
-      "noReviews": "لا توجد تقييمات بعد"
+      "noReviews": "لا توجد تقييمات بعد",
+      "noLessons": "لا توجد دروس في هذا الكورس بعد",
+      "startBuilding": "ابدأ ببناء محتوى كورسك بإضافة أول درس"
     },
     "confirmDelete": "سيتم حذف الكورس \"{{name}}\" وجميع دروسه وبيانات الطلاب المسجلين معه. هل أنت متأكد؟",
     "form": {
@@ -593,7 +595,12 @@
       "delete": "حذف",
       "cancel": "إلغاء",
       "reply": "رد",
-      "send": "إرسال"
+      "send": "إرسال",
+      "lessons": "الدروس",
+      "saveOrder": "حفظ الترتيب",
+      "addLesson": "إضافة درس",
+      "confirmDelete": "تأكيد الحذف",
+      "manageResources": "إدارة المرفقات"
     },
     "table": {
       "image": "الصورة",
@@ -602,7 +609,8 @@
       "branch": "الفرع",
       "price": "السعر",
       "rating": "التقييم",
-      "actions": "الإجراءات"
+      "actions": "الإجراءات",
+      "lessons": "الدروس"
     },
     "comments": {
       "filterByCourse": "فلترة حسب الكورس:",
@@ -654,7 +662,61 @@
       "commentDeleted": "تم حذف التعليق",
       "commentDeleteFail": "فشل حذف التعليق",
       "reviewDeleted": "تم حذف التقييم",
-      "reviewDeleteFail": "فشل حذف التقييم"
+      "reviewDeleteFail": "فشل حذف التقييم",
+      "lessonCreated": "تم إضافة الدرس بنجاح",
+      "lessonCreateFail": "فشل إضافة الدرس",
+      "lessonUpdated": "تم تحديث الدرس بنجاح",
+      "lessonUpdateFail": "فشل تحديث الدرس",
+      "lessonDeleted": "تم حذف الدرس",
+      "lessonDeleteFail": "فشل حذف الدرس",
+      "orderSaved": "تم حفظ الترتيب",
+      "orderSaveFail": "فشل حفظ الترتيب"
+    }
+  },
+  "lessons": {
+    "pageTitle": "إدارة دروس الكورس",
+    "backToCourses": "العودة للكورسات",
+    "lessonNumber": "الدرس",
+    "duration": "المدة",
+    "freePreview": "معاينة مجانية",
+    "dragHint": "اسحب لإعادة الترتيب",
+    "unsavedOrder": "لديك تغييرات غير محفوظة في الترتيب",
+    "form": {
+      "addLesson": "إضافة درس جديد",
+      "editLesson": "تعديل الدرس",
+      "name": "اسم الدرس",
+      "description": "وصف الدرس",
+      "video": "ملف الفيديو",
+      "videoHint": "MP4, MOV, AVI — الحد الأقصى 500 ميجابايت",
+      "isFreePreview": "تفعيل المعاينة المجانية",
+      "isFreePreviewHint": "يسمح للطلاب غير المشتركين بمشاهدة هذا الدرس",
+      "uploading": "جاري رفع الفيديو...",
+      "uploadComplete": "اكتمل الرفع",
+      "nameRequired": "اسم الدرس مطلوب",
+      "descRequired": "وصف الدرس مطلوب",
+      "videoRequired": "ملف الفيديو مطلوب",
+      "namePlaceholder": "مثال: مقدمة في التفاضل والتكامل",
+      "descPlaceholder": "ماذا سيتعلم الطالب في هذا الدرس؟",
+      "previewCurrentVideo": "معاينة الفيديو الحالي"
+    },
+    "progress": {
+      "markComplete": "وضع علامة كمكتمل",
+      "markIncomplete": "إلغاء الاكتمال",
+      "completed": "مكتمل"
+    },
+    "resources": {
+      "title": "مواد الدرس",
+      "noResources": "لا توجد مواد مرفقة لهذا الدرس",
+      "download": "تحميل",
+      "manageTitle": "إدارة مرفقات الدرس:",
+      "nameRequired": "اسم المرفق مطلوب",
+      "fileRequired": "ملف المرفق مطلوب",
+      "confirmDelete": "هل أنت متأكد من حذف هذا المرفق؟",
+      "delete": "حذف",
+      "addResource": "إضافة مرفق جديد",
+      "namePlaceholder": "اسم المرفق (مثال: ملخص الدرس)",
+      "supportedTypes": "الأنواع المدعومة: PDF, Word, PPT, ZIP",
+      "uploadButton": "رفع المرفق"
     }
   }
 }

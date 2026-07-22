@@ -27,6 +27,7 @@ const AdminDashboard  = lazy(() => import('../pages/AdminDashboard'));
 const TeacherDashboard = lazy(() => import('../pages/TeacherDashboard'));
 const NotFound        = lazy(() => import('../pages/NotFound'));
 const Search         = lazy(() => import('../pages/Search'));
+const TeacherCourseLessons = lazy(() => import('../pages/TeacherCourseLessons'));
 
 // ─── Fallback spinner shown while a lazy chunk is loading ─────────────────────
 function PageLoader() {
@@ -80,6 +81,7 @@ export default function AppRoutes() {
           </Route>
           <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
             <Route path={PATH.teacherDashboard} element={<TeacherDashboard />} />
+            <Route path={PATH.teacherCourseLessons()} element={<TeacherCourseLessons />} />
           </Route>
 
           {/* ── Search ── */}

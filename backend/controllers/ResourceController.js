@@ -1,35 +1,48 @@
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
+import { Readable } from 'stream';
 import Lesson from '../models/Lesson.js';
 import CustomError from '../utils/CustomError.js';
 import { asyncErrorHandler } from '../middlewares/errorMiddleware.js';
 import { uploadSingleField } from '../middlewares/uploadsMiddleware.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import cloudinary from '../config/cloudinary.js';
 
 export const uploadContentFile = uploadSingleField('content');
 
-// eslint-disable-next-line require-await
+const uploadToCloudinary = (buffer, options) =>
+	new Promise((resolve, reject) => {
+		const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
+			if (error) reject(error);
+			else resolve(result);
+		});
+		// eslint-disable-next-line node/no-unsupported-features/node-builtins
+		Readable.from(buffer).pipe(stream);
+	});
+
+const allowedMimes = [
+	'application/pdf',
+	'application/msword',
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	'application/zip',
+	'application/x-zip-compressed',
+	'application/vnd.rar',
+	'application/vnd.ms-powerpoint',
+	'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+];
+
 export const handleContentFile = asyncErrorHandler(async (req, res, next) => {
 	if (req.file) {
-		const { mimetype } = req.file;
-		if (!mimetype.endsWith('pdf')) throw new CustomError(req.__('generic.invalid_file'), 400);
-		const unique = crypto.randomUUID();
-		const name = `resource-${unique}-${Date.now()}.pdf`;
-		const uploadDir = path.join(__dirname, '..', 'uploads', 'lessons', 'resources');
-
-		if (!fs.existsSync(uploadDir)) {
-			fs.mkdirSync(uploadDir, { recursive: true });
+		const { mimetype, buffer, originalname } = req.file;
+		
+		if (!allowedMimes.includes(mimetype)) {
+			throw new CustomError('نوع الملف غير مدعوم. يرجى رفع ملفات PDF, Word, PPT أو Zip', 400);
 		}
-		const filePath = path.join(uploadDir, name);
 
-		fs.writeFileSync(filePath, req.file.buffer);
+		const result = await uploadToCloudinary(buffer, {
+			resource_type: 'raw',
+			folder: 'tawjihi/lessons/resources',
+			public_id: `${Date.now()}-${originalname.replace(/\s+/g, '_')}`,
+		});
 
-		req.upload = 'resource';
-		req.filePath = filePath;
+		req.body.content = result.secure_url;
 	}
 	next();
 });
