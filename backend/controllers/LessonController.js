@@ -43,7 +43,7 @@ export const reorderLessons = asyncErrorHandler(async (req, res) => {
 	// lessons: [{ _id: string, order: number }]
 
 	if (!courseId || !Array.isArray(lessons) || lessons.length === 0)
-		throw new CustomError('بيانات غير صالحة', 400);
+		throw new CustomError(req.__('resources.invalid_data'), 400);
 
 	// التحقق أن الكورس يخص المعلم
 	const course = await Course.findById(courseId);
@@ -60,7 +60,7 @@ export const reorderLessons = asyncErrorHandler(async (req, res) => {
 
 	await Lesson.bulkWrite(bulkOps, { ordered: false });
 
-	res.status(200).json({ status: 'success', message: 'تم إعادة الترتيب بنجاح' });
+	res.status(200).json({ status: 'success', message: req.__('resources.reorder_success') });
 });
 
 export const getAllLessons = getAll(Lesson);

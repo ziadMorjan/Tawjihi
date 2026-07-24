@@ -33,7 +33,7 @@ export const handleContentFile = asyncErrorHandler(async (req, res, next) => {
 		const { mimetype, buffer, originalname } = req.file;
 		
 		if (!allowedMimes.includes(mimetype)) {
-			throw new CustomError('نوع الملف غير مدعوم. يرجى رفع ملفات PDF, Word, PPT أو Zip', 400);
+			throw new CustomError(req.__('resources.invalid_file_type'), 400);
 		}
 
 		const result = await uploadToCloudinary(buffer, {

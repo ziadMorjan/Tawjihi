@@ -58,7 +58,10 @@
 		"lesson_on_unowned_course": "هذا الدرس ينتمي إلى دورة لا تخصك"
 	},
 	"resources": {
-		"resource_does_not_belong_to_you": "هذا المورد لا يخصك"
+		"resource_does_not_belong_to_you": "هذا المورد لا يخصك",
+		"invalid_file_type": "نوع الملف غير مدعوم. يرجى رفع ملفات PDF, Word, PPT أو Zip",
+		"invalid_data": "بيانات إعادة الترتيب غير صالحة",
+		"reorder_success": "تم إعادة الترتيب بنجاح"
 	},
 	"reviews": {
 		"no_review_found": "لم يتم العثور على مراجعة بهذا المعرف",

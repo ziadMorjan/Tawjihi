@@ -722,6 +722,21 @@
       "namePlaceholder": "Resource name (e.g., Lesson Summary)",
       "supportedTypes": "Supported types: PDF, Word, PPT, ZIP",
       "uploadButton": "Upload resource"
+    },
+    "actions": {
+      "createSuccess": "Lesson added successfully",
+      "createError": "Failed to add lesson",
+      "updateSuccess": "Lesson updated successfully",
+      "updateError": "Failed to update lesson",
+      "deleteSuccess": "Lesson deleted successfully",
+      "deleteError": "Failed to delete lesson",
+      "reorderSuccess": "Order saved successfully",
+      "reorderError": "Failed to save order",
+      "progressError": "Failed to update progress",
+      "resourceUploadSuccess": "Resource uploaded successfully",
+      "resourceUploadError": "Failed to upload resource",
+      "resourceDeleteSuccess": "Resource deleted successfully",
+      "resourceDeleteError": "Failed to delete resource"
     }
   }
 }

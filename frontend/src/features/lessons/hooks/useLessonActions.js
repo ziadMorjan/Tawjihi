@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { lessonsApi } from '../api/lessonsApi';
 import { LESSONS_QUERY_KEY } from './useLessons';
 
 export function useLessonActions(courseId) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const lessonKey = [...LESSONS_QUERY_KEY, courseId];
 
   const createLesson = useMutation({
@@ -12,9 +14,9 @@ export function useLessonActions(courseId) {
       lessonsApi.createLesson({ formData, onUploadProgress }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKey });
-      toast.success('تم إضافة الدرس بنجاح');
+      toast.success(t('lessons.actions.createSuccess'));
     },
-    onError: () => toast.error('فشل إضافة الدرس'),
+    onError: () => toast.error(t('lessons.actions.createError')),
   });
 
   const updateLesson = useMutation({
@@ -22,27 +24,27 @@ export function useLessonActions(courseId) {
       lessonsApi.updateLesson({ id, formData, onUploadProgress }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKey });
-      toast.success('تم تحديث الدرس بنجاح');
+      toast.success(t('lessons.actions.updateSuccess'));
     },
-    onError: () => toast.error('فشل تحديث الدرس'),
+    onError: () => toast.error(t('lessons.actions.updateError')),
   });
 
   const deleteLesson = useMutation({
     mutationFn: lessonsApi.deleteLesson,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKey });
-      toast.success('تم حذف الدرس');
+      toast.success(t('lessons.actions.deleteSuccess'));
     },
-    onError: () => toast.error('فشل حذف الدرس'),
+    onError: () => toast.error(t('lessons.actions.deleteError')),
   });
 
   const reorderLessons = useMutation({
     mutationFn: lessonsApi.reorderLessons,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKey });
-      toast.success('تم حفظ الترتيب');
+      toast.success(t('lessons.actions.reorderSuccess'));
     },
-    onError: () => toast.error('فشل حفظ الترتيب'),
+    onError: () => toast.error(t('lessons.actions.reorderError')),
   });
 
   const markProgress = useMutation({
@@ -50,7 +52,7 @@ export function useLessonActions(courseId) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollments'] });
     },
-    onError: () => toast.error('فشل تحديث التقدم'),
+    onError: () => toast.error(t('lessons.actions.progressError')),
   });
 
   const addResource = useMutation({
@@ -58,18 +60,18 @@ export function useLessonActions(courseId) {
       lessonsApi.addResource({ lessonId, formData, onUploadProgress }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKey });
-      toast.success('تم رفع المرفق بنجاح');
+      toast.success(t('lessons.actions.resourceUploadSuccess'));
     },
-    onError: () => toast.error('فشل رفع المرفق'),
+    onError: () => toast.error(t('lessons.actions.resourceUploadError')),
   });
 
   const deleteResource = useMutation({
     mutationFn: lessonsApi.deleteResource,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKey });
-      toast.success('تم حذف المرفق بنجاح');
+      toast.success(t('lessons.actions.resourceDeleteSuccess'));
     },
-    onError: () => toast.error('فشل حذف المرفق'),
+    onError: () => toast.error(t('lessons.actions.resourceDeleteError')),
   });
 
   return {

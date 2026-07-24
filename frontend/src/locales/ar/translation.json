@@ -717,6 +717,21 @@
       "namePlaceholder": "اسم المرفق (مثال: ملخص الدرس)",
       "supportedTypes": "الأنواع المدعومة: PDF, Word, PPT, ZIP",
       "uploadButton": "رفع المرفق"
+    },
+    "actions": {
+      "createSuccess": "تم إضافة الدرس بنجاح",
+      "createError": "فشل إضافة الدرس",
+      "updateSuccess": "تم تحديث الدرس بنجاح",
+      "updateError": "فشل تحديث الدرس",
+      "deleteSuccess": "تم حذف الدرس بنجاح",
+      "deleteError": "فشل حذف الدرس",
+      "reorderSuccess": "تم حفظ الترتيب بنجاح",
+      "reorderError": "فشل حفظ الترتيب",
+      "progressError": "فشل تحديث التقدم",
+      "resourceUploadSuccess": "تم رفع المرفق بنجاح",
+      "resourceUploadError": "فشل رفع المرفق",
+      "resourceDeleteSuccess": "تم حذف المرفق بنجاح",
+      "resourceDeleteError": "فشل حذف المرفق"
     }
   }
 }
