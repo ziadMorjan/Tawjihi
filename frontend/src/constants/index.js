@@ -35,6 +35,7 @@ export const PATH = {
 
   // ── Teacher ──────────────────────────────────────────────────────────────────
   teacherDashboard: '/teacher/dashboard',
+  teacherCourseLessons: (id = ':courseId') => `/teacher/dashboard/courses/${id}/lessons`,
 
   // ── Search ───────────────────────────────────────────────────────────────────
   search:          '/search',

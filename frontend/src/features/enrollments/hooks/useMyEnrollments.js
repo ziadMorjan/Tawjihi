@@ -23,7 +23,6 @@ export function useMyEnrollments() {
     refetchOnWindowFocus: false,
   });
 
-  // 🔴 المشكلة كانت هنا — المقارنة غلط
   // enrollment.course قد يكون object أو string ID
   const isEnrolled = (courseId) => {
     if (!courseId) return false;
@@ -33,5 +32,23 @@ export function useMyEnrollments() {
     });
   };
 
-  return { enrollments, isEnrolled, isLoading };
+  // جلب الـ enrollment الخاص بكورس معين
+  const getEnrollment = (courseId) => {
+    if (!courseId) return null;
+    return enrollments.find((e) => {
+      const enrolledCourseId = e?.course?._id ?? e?.course ?? e;
+      return String(enrolledCourseId) === String(courseId);
+    }) ?? null;
+  };
+
+  // هل درس معين مكتمل في كورس معين؟
+  const isLessonCompleted = (courseId, lessonId) => {
+    const enrollment = getEnrollment(courseId);
+    if (!enrollment || !lessonId) return false;
+    return (enrollment.completedLessons ?? []).some(
+      (id) => String(id) === String(lessonId),
+    );
+  };
+
+  return { enrollments, isEnrolled, isLessonCompleted, getEnrollment, isLoading };
 }

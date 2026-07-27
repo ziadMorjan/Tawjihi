@@ -17,10 +17,15 @@ import {
   Check,
   X,
   Sparkles,
+  CheckCircle2,
+  Circle,
+  FileText,
+  Download,
 } from "lucide-react";
 import { useAuth } from "../../features/auth";
 import { useMyEnrollments } from "../../features/enrollments/hooks/useMyEnrollments";
 import { useLessons, useGenerateAI, AISummary, Flashcards } from "../../features/lessons";
+import { useLessonActions } from "../../features/lessons";
 import {
   useComments,
   useAddComment,
@@ -86,8 +91,9 @@ export default function VideoPage() {
   const generateAIMutation = useGenerateAI(id);
 
   // ─── Data ───
-  const { isEnrolled, isLoading: enrollLoading } = useMyEnrollments();
+  const { isEnrolled, isLessonCompleted, isLoading: enrollLoading } = useMyEnrollments();
   const { data: lessons = [], isLoading: lessonsLoading } = useLessons(id);
+  const { markProgress } = useLessonActions(id);
 
   //  currentLesson يُعرَّف هنا — قبل أي hook يعتمد عليه
   const currentLesson = lessons[currentIndex] ?? null;
@@ -154,7 +160,16 @@ export default function VideoPage() {
     reset();
   };
 
-  // ─── Guards ───
+  // ─── Allow free preview without enrollment ───
+  const canWatch = isEnrolled(id) || currentLesson?.isFreePreview;
+
+  // ─── onEnded: auto-mark complete if enrolled ───
+  const handleVideoEnded = () => {
+    if (isEnrolled(id) && currentLesson?._id) {
+      markProgress({ courseId: id, lessonId: currentLesson._id, completed: true });
+    }
+  };
+
   if (enrollLoading || lessonsLoading) {
     return (
       <MainLayout>
@@ -172,7 +187,8 @@ export default function VideoPage() {
     );
   }
 
-  if (!isEnrolled(id)) {
+  // ─── Non-enrolled + not free preview ───
+  if (!canWatch) {
     return (
       <MainLayout>
         <EmptyState>
@@ -241,6 +257,7 @@ export default function VideoPage() {
                   controls
                   controlsList="nodownload"
                   onContextMenu={(e) => e.preventDefault()}
+                  onEnded={handleVideoEnded}
                 >
                   <source src={currentLesson.video} type="video/mp4" />
                   {t('video.noBrowserSupport')}
@@ -279,30 +296,58 @@ export default function VideoPage() {
                 {t('video.nextLesson')}
               </Button>
             </NavButtons>
-            {/* Tabs for comments, summary, and flashcards */}
+            {/* Tabs */}
             <TabsContainer>
-              <TabButton
-                $active={activeTab === "comments"}
-                onClick={() => setActiveTab("comments")}
-              >
+              <TabButton $active={activeTab === "comments"} onClick={() => setActiveTab("comments")}>
                 <MessageSquare size={16} />
                 {t('video.comments')} ({comments.length})
               </TabButton>
-              <TabButton
-                $active={activeTab === "summary"}
-                onClick={() => setActiveTab("summary")}
-              >
+              <TabButton $active={activeTab === "summary"} onClick={() => setActiveTab("summary")}>
                 <Sparkles size={16} />
                 {t('aiSummary.title')}
               </TabButton>
-              <TabButton
-                $active={activeTab === "flashcards"}
-                onClick={() => setActiveTab("flashcards")}
-              >
-                <Sparkles size={16} style={{ display: 'none' }} />
+              <TabButton $active={activeTab === "flashcards"} onClick={() => setActiveTab("flashcards")}>
                 {t('flashcards.title')}
               </TabButton>
+              {currentLesson?.resources?.length > 0 && (
+                <TabButton $active={activeTab === "resources"} onClick={() => setActiveTab("resources")}>
+                  <FileText size={16} />
+                  {t('lessons.resources.title')} ({currentLesson.resources.length})
+                </TabButton>
+              )}
             </TabsContainer>
+
+            {/* Progress Button — enrolled only */}
+            {isEnrolled(id) && currentLesson?._id && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+                <button
+                  onClick={() =>
+                    markProgress({
+                      courseId: id,
+                      lessonId: currentLesson._id,
+                      completed: !isLessonCompleted(id, currentLesson._id),
+                    })
+                  }
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '6px 14px',
+                    borderRadius: 20,
+                    border: isLessonCompleted(id, currentLesson._id)
+                      ? '1.5px solid #16A34A' : '1.5px solid #CBD5E1',
+                    background: isLessonCompleted(id, currentLesson._id)
+                      ? '#F0FDF4' : 'transparent',
+                    color: isLessonCompleted(id, currentLesson._id) ? '#15803D' : '#64748B',
+                    cursor: 'pointer', fontSize: 13,
+                    fontFamily: 'inherit', fontWeight: 600,
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {isLessonCompleted(id, currentLesson._id)
+                    ? <><CheckCircle2 size={15} /> {t('lessons.progress.completed')}</>
+                    : <><Circle size={15} /> {t('lessons.progress.markComplete')}</>}
+                </button>
+              </div>
+            )}
 
             {/* Tab Contents */}
             {activeTab === "comments" && (
@@ -568,9 +613,63 @@ export default function VideoPage() {
             )}
 
             {activeTab === "flashcards" && (
-              <Flashcards
-                flashcards={currentLesson?.aiFlashcards}
-              />
+              <Flashcards flashcards={currentLesson?.aiFlashcards} />
+            )}
+
+            {/* Resources Tab */}
+            {activeTab === "resources" && (
+              <ReviewsSection>
+                <ReviewsTitle>
+                  <FileText size={18} style={{ marginInlineEnd: 8 }} />
+                  {t('lessons.resources.title')}
+                </ReviewsTitle>
+                {!currentLesson?.resources?.length ? (
+                  <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: 14 }}>
+                    {t('lessons.resources.noResources')}
+                  </p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {currentLesson.resources.map((res) => (
+                      <div
+                        key={res._id}
+                        style={{
+                          display: 'flex', alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '12px 16px',
+                          borderRadius: 10,
+                          border: '1px solid #E2E8F0',
+                          background: '#F8FAFC',
+                          gap: 12,
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <FileText size={18} color="#0D7FA3" />
+                          <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+                            {res.name}
+                          </span>
+                        </div>
+                        <a
+                          href={res.content}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 5,
+                            fontSize: 12, fontWeight: 600,
+                            color: '#0D7FA3', textDecoration: 'none',
+                            padding: '5px 12px',
+                            borderRadius: 8,
+                            border: '1px solid #0D7FA3',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          <Download size={13} />
+                          {t('lessons.resources.download')}
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ReviewsSection>
             )}
           </PlayerSection>
 
@@ -593,6 +692,8 @@ export default function VideoPage() {
                     <LessonNumber $active={isActive}>
                       {isActive ? (
                         <PlayCircle size={14} />
+                      ) : isLessonCompleted(id, lesson._id) ? (
+                        <CheckCircle2 size={14} color="#16A34A" />
                       ) : (
                         String(index + 1).padStart(2, "0")
                       )}

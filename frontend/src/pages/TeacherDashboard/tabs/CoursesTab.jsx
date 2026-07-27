@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Plus, Edit3, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit3, Trash2, BookOpen } from 'lucide-react';
 import { useLanguage } from '../../../shared/hooks/useLanguage';
+import { PATH } from '../../../constants';
 import { useTeacherActions, useTeacherCourses } from '../../../features/teacher';
 import { useBranches, useSubjects } from '../../../features/admin';
 import { Button } from '../../../shared/components/Button';
@@ -14,6 +16,7 @@ import { formatPrice } from '../helpers';
 
 export default function CoursesTab() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const { courses, isLoading } = useTeacherCourses();
   const { deleteCourse, updateCourse, createCourse, isDeleting, isCreating, isUpdating } = useTeacherActions();
   const { subjects } = useSubjects();
@@ -123,7 +126,7 @@ export default function CoursesTab() {
       {courses.length > 0 && (
         <TableWrap>
           <StyledTable>
-            <thead><tr><Th>{t('teacherDashboard.table.image')}</Th><Th>{t('teacherDashboard.table.title')}</Th><Th>{t('teacherDashboard.table.subject')}</Th><Th>{t('teacherDashboard.table.branch')}</Th><Th>{t('teacherDashboard.table.price')}</Th><Th>{t('teacherDashboard.table.rating')}</Th><Th>{t('teacherDashboard.table.actions')}</Th></tr></thead>
+            <thead><tr><Th>{t('teacherDashboard.table.image')}</Th><Th>{t('teacherDashboard.table.title')}</Th><Th>{t('teacherDashboard.table.subject')}</Th><Th>{t('teacherDashboard.table.branch')}</Th><Th>{t('teacherDashboard.table.price')}</Th><Th>{t('teacherDashboard.table.rating')}</Th><Th>{t('teacherDashboard.table.lessons')}</Th><Th>{t('teacherDashboard.table.actions')}</Th></tr></thead>
             <tbody>
               {courses.map((c) => (
                 <RowHover key={c._id}>
@@ -133,6 +136,19 @@ export default function CoursesTab() {
                   <Td>{c.branches?.[0]?.name || '—'}</Td>
                   <Td>{c.priceAfterDiscount ? <><span>{formatPrice(c.priceAfterDiscount)}</span> <OldPrice>{formatPrice(c.price)}</OldPrice></> : formatPrice(c.price)}</Td>
                   <Td>{c.averageRating > 0 ? <Badge>{c.averageRating.toFixed(1)}</Badge> : '—'}</Td>
+                  <Td>
+                    <ActionBtn
+                      $color="primary"
+                      title={t('teacherDashboard.actions.lessons')}
+                      onClick={() =>
+                        navigate(PATH.teacherCourseLessons(c._id), {
+                          state: { courseName: c.name },
+                        })
+                      }
+                    >
+                      <BookOpen size={16} />
+                    </ActionBtn>
+                  </Td>
                   <ActionsCell>
                     <ActionBtn $color="primary" title={t('teacherDashboard.actions.edit')} onClick={() => openEdit(c)}><Edit3 size={16} /></ActionBtn>
                     <ActionBtn $color="danger" title={t('teacherDashboard.actions.delete')} onClick={() => handleDelete(c)} disabled={isDeleting}><Trash2 size={16} /></ActionBtn>

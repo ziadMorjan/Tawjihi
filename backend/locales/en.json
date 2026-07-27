@@ -58,7 +58,10 @@
 		"lesson_on_unowned_course": "This lesson belongs to a course that does not belong to you"
 	},
 	"resources": {
-		"resource_does_not_belong_to_you": "This resource does not belong to you"
+		"resource_does_not_belong_to_you": "This resource does not belong to you",
+		"invalid_file_type": "Unsupported file type. Please upload PDF, Word, PPT or Zip files",
+		"invalid_data": "Invalid reorder data",
+		"reorder_success": "Lessons reordered successfully"
 	},
 	"reviews": {
 		"no_review_found": "No review found with that ID",
